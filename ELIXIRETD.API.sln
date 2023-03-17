@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ELIXIRETD.API", "ELIXIRETD.API\ELIXIRETD.API.csproj", "{59403848-102A-4113-AE06-CE915F524CC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ELIXIRETD.DATA", "ELIXIRETD.DATA\ELIXIRETD.DATA.csproj", "{51E30275-C654-46CB-9B63-69F710BC7042}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59403848-102A-4113-AE06-CE915F524CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59403848-102A-4113-AE06-CE915F524CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59403848-102A-4113-AE06-CE915F524CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59403848-102A-4113-AE06-CE915F524CC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E30275-C654-46CB-9B63-69F710BC7042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E30275-C654-46CB-9B63-69F710BC7042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E30275-C654-46CB-9B63-69F710BC7042}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E30275-C654-46CB-9B63-69F710BC7042}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73F8EFEA-810A-4A79-9977-C7FB3A57D4A7}
+	EndGlobalSection
+EndGlobal

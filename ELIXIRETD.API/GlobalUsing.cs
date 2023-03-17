@@ -1,0 +1,11 @@
+﻿global using System;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
+global using Microsoft.AspNetCore.SignalR;
+global using Microsoft.AspNetCore.Authorization;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Text;
+global using System.Threading.Tasks;
+global using Microsoft.AspNetCore.Identity;
