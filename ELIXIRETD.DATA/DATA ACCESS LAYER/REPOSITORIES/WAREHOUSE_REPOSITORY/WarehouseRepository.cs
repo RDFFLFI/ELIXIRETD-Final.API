@@ -108,7 +108,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      IsActive = receive.Key.IsActive,
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      TotalReject = receive.Sum(x => x.TotalReject),
-                                                     ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood + x.TotalReject),
+                                                     ActualRemaining = receive.Key.QuantityOrdered ,
 
                                                  }).OrderBy(x => x.PO_Number)
                                                    .Where(x => x.IsActive == false);
@@ -170,7 +170,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      IsActive = receive.Key.IsActive,
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      TotalReject = receive.Sum(x => x.TotalReject),
-                                                     ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood + x.TotalReject),
+                                                     ActualRemaining = receive.Key.QuantityOrdered,
 
                                                  }).OrderBy(x => x.PO_Number)
                                                    .Where(x => x.IsActive == false)
@@ -238,7 +238,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          TotalReject = receive.Sum(x => x.TotalReject),
                                                          QuantityOrdered = receive.Key.QuantityOrdered ,
                                                          ActualGood = receive.Sum(x => x.ActualGood),
-                                                         ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood + x.TotalReject),
+                                                         ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
                                                          IsActive = receive.Key.IsActive,
                                                         
                                                      })
@@ -303,7 +303,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                       Supplier = receive.Key.Supplier,
                                                       QuantityOrdered = receive.Sum(x => x.QuantityOrdered),
                                                       ActualGood = receive.Sum(x => x.ActualGood),
-                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood + x.TotalReject),
+                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood ),
                                                       IsActive = receive.Key.IsActive,
                                                       TotalReject = receive.Sum(x => x.TotalReject),
 
@@ -738,6 +738,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             return await warehouseInventory.ToListAsync();
 
         }
+
 
      
     }

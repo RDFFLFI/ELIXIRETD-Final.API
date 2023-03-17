@@ -53,6 +53,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
 
         public virtual DbSet<BorrowedReceipt> BorrowedReceipts { get; set; }
 
+        public virtual DbSet<TransactionType> TransactionTypes { get; set; }
+
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var configuration = new ConfigurationBuilder()

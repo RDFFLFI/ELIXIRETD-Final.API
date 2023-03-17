@@ -51,6 +51,8 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
 
         IMRPInventory Inventory { get; }
 
+        ITransactType TransactType { get; }
+
 
                                            
         Task CompleteAsync();

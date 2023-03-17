@@ -384,7 +384,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<bool> CancelIssuePerItemCode(BorrowedIssueDetails borrowed)
         {
 
-            var items = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
+            var items = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                           .Where(x => x.IsTransact == true)
+                                                           .Where(x => x.IsReturned == null)
                                                            .FirstOrDefaultAsync();
 
 
@@ -392,6 +394,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 return false;
 
             items.IsActive = false;
+            items.Quantity = 0 ;
             
 
             return true;

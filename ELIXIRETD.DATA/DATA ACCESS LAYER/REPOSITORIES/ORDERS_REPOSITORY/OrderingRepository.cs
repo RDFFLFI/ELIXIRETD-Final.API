@@ -599,7 +599,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
         {
-            var orders = _context.Orders.Select(x => new GetMoveOrderDetailsForMoveOrderDto
+            var orders = _context.Orders.Where(x => x.IsMove == false)
+                .Select(x => new GetMoveOrderDetailsForMoveOrderDto
             {
                 Id = x.Id,
                 OrderNo = x.OrderNoPKey,
@@ -618,6 +619,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             }) ;
 
             return await orders.Where(x => x.Id == orderId)
+                               
                                .FirstOrDefaultAsync();
                                            
         }
@@ -666,6 +668,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var orders = _context.Orders
                    .Where(x => x.OrderNoPKey == id)
+                   .Where(x => x.IsMove == false )
                    .GroupJoin(moveorders, ordering => ordering.Id, moveorder => moveorder.OrderPKey, (ordering, moveorder) => new { ordering, moveorder })
                    .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
                    .GroupBy(x => new

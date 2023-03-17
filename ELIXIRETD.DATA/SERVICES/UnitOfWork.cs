@@ -57,6 +57,8 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public IMRPInventory Inventory { get; set; }
 
+        public ITransactType TransactType { get; set; }
+
         public UnitOfWork(StoreContext context)
   
         {
@@ -80,6 +82,7 @@ namespace ELIXIRETD.DATA.SERVICES
             miscellaneous = new MiscellaneousRepository(_context);
             Borrowed = new BorrowedRepository(_context);
             Inventory = new MRPInvetoryRepository(_context);
+            TransactType = new TransactTypeRepository(_context);
 
         }
 
