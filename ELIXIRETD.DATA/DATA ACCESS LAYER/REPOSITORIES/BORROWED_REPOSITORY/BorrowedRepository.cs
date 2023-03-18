@@ -583,23 +583,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
         {
             var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
-                                                      .Where(x => x.IsReturned == true)
-                                                      .Where(x => x.IsActive == true)
-                                                      .GroupBy(x => new
+                                                     .Where(x => x.IsActive == true)
+                                                     .Where(x => x.IsReturned == true)
+                                                     .Where(x => x.IsTransact == false)
+                                                       .Select(x => new DtoViewBorrewedReturnedDetails
                                                       {
-                                                          x.ItemCode,
-                                                          x.ItemDescription,
-                                                          x.ReturnedDate,
+                                                          ItemCode = x.ItemCode,
+                                                          ItemDescription = x.ItemDescription,
+                                                          Quantity =  x.Quantity,
+                                                          Consume = x.Quantity - x.ReturnQuantity,
+                                                          ReturnQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
 
-                                                      }).Select(x => new DtoViewBorrewedReturnedDetails
-                                                      {
-                                                          ItemCode = x.Key.ItemCode,
-                                                          ItemDescription = x.Key.ItemDescription,
-                                                          Quantity = x.Sum(x => x.Quantity),
-                                                          Consume = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),
-                                                          ReturnQuantity = x.Sum(x => x.ReturnQuantity),
-
-                                                      }).OrderBy(x => x.ItemCode);
+                                                       }).OrderBy(x => x.ItemCode);
 
 
             return await borrow.ToListAsync();
