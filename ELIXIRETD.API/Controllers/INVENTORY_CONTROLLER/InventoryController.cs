@@ -33,7 +33,7 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
         [Route("MRPInventory")]
         public async Task<IActionResult> MRPInventory()
         {
-            var inventory = await _unitofwork.Inventory.MRPInventory();
+           var inventory =  await _unitofwork.Inventory.MRPInventory();
 
             return Ok(inventory);
         }

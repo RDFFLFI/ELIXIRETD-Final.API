@@ -323,7 +323,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                         Remarks = x.Remarks,
                                                         PreparedBy = x.PreparedBy,
-                                                        IsActive = x.IsActive
+                                                        IsActive = x.IsActive,
+                                                    
 
                                                     });
 
@@ -427,7 +428,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              ItemDescription= x.ItemDescription,
                                                              Uom = x.Uom,
                                                              TotalQuantity = x.Quantity,
-                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy")
+                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
+                                                             Barcode = x.WareHouseId
 
                                                          });
 

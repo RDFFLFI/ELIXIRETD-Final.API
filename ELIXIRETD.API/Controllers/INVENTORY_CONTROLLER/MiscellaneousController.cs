@@ -23,7 +23,7 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
 
         [HttpPost]
         [Route("AddNewMiscellaneousReceipt")]
-
+           
         public async Task<IActionResult> AddNewMiscellaneousReceipt([FromBody] MiscellaneousReceipt receipt)
         {
             await _unitofwork.miscellaneous.AddMiscellaneousReceipt(receipt);

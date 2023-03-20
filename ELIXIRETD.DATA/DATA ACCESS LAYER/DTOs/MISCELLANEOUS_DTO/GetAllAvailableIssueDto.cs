@@ -17,6 +17,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
         public string Uom { get; set; }
 
         public decimal TotalQuantity { get; set; }
+
+        public int Barcode { get; set; }
         public string PreparedDate { get; set; }   
     }
 }
