@@ -292,6 +292,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<decimal>("TotalQuantity")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("MiscellaneousIssues");

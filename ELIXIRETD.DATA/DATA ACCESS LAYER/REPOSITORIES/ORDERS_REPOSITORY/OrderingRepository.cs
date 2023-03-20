@@ -843,7 +843,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                   DateReceived = x.Key.RecievingDate.ToString(),
                                   Remaining = x.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ActualGood) +
                                               x.Sum(x => x.returned.Remaining == null ? 0 : x.returned.Remaining) -
-                                              x.Sum(x => x.warehouse.warehouse.warehouse.moveorder.Remaining == null ? 0 :  x.warehouse.warehouse.warehouse.moveorder.Remaining) - 
+                                              x.Sum(x => x.warehouse.warehouse.warehouse.moveorder.Remaining == null ? 0 : x.warehouse.warehouse.warehouse.moveorder.Remaining) -
                                               x.Sum(x => x.warehouse.warehouse.issue.Remaining == null ? 0 : x.warehouse.warehouse.issue.Remaining) -
                                               x.Sum(x => x.warehouse.borrow.Remaining == null ? 0 : x.warehouse.borrow.Remaining) 
                                 
@@ -1143,6 +1143,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams)
         {
             var order = _context.MoveOrders.Where(x => x.IsActive == true)
+                                           .Where(x => x.IsReject == null)
                                            .GroupBy(x => new
                                            {
 
@@ -1682,14 +1683,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             foreach(var x in existingsMoveOrders )
             {
+
                 x.CompanyCode = order.CompanyCode;
-               x.CompanyName = order.CompanyName;
+                x.CompanyName = order.CompanyName;
                 x.DepartmentCode = order.DepartmentCode;
                 x.DepartmentName = order.DepartmentName;
                 x.LocationCode = order.LocationCode;
                 x.LocationName = order.LocationName;
                 x.AccountCode = order.AccountCode;
                 x.AccountTitles = order.AccountTitles;
+                x.RejectBy = null;
+                x.RejectedDate = null;
+                x.RejectedDateTempo = null;
+                x.IsReject = null;
+
             }
            
 

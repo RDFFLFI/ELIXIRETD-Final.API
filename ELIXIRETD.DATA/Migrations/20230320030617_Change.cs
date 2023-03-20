@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ELIXIRETD.DATA.Migrations
 {
-    public partial class addInitial : Migration
+    public partial class Change : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -270,6 +270,7 @@ namespace ELIXIRETD.DATA.Migrations
                     Customer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Customercode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TotalQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
                     PreparedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PreparedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -477,6 +478,22 @@ namespace ELIXIRETD.DATA.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TransactionTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Addedby = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TransactOrder",
                 columns: table => new
                 {
@@ -493,7 +510,8 @@ namespace ELIXIRETD.DATA.Migrations
                     PreparedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     OrderNoPkey = table.Column<int>(type: "int", nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsTransact = table.Column<bool>(type: "bit", nullable: false)
+                    IsTransact = table.Column<bool>(type: "bit", nullable: false),
+                    DeliveryStatus = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -652,7 +670,6 @@ namespace ELIXIRETD.DATA.Migrations
                     AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                  
                 },
                 constraints: table =>
                 {
@@ -863,6 +880,9 @@ namespace ELIXIRETD.DATA.Migrations
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
+
+            migrationBuilder.DropTable(
+                name: "TransactionTypes");
 
             migrationBuilder.DropTable(
                 name: "TransactOrder");

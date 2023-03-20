@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
 
         [Column(TypeName ="decimal(18,2)")]
         public decimal TotalQuantity { get; set; }
-
+        public int WarehouseId { get; set; }
         public DateTime PreparedDate { get; set; }
 
         public string PreparedBy { get; set; }

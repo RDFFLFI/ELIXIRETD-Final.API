@@ -1213,7 +1213,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               SOH = total.Sum(x => x.warehouse.ActualGood == null ? x.warehouse.ActualGood : 0) +
                              total.Sum(x => x.returned.ReturnQuantity == null ? x.returned.ReturnQuantity : 0) -
                              total.Sum(x => x.issue.Quantity == null ? x.issue.Quantity : 0) -
-                             total.Sum(x => x.borrowed.Quantity == null ? x.borrowed.Quantity : 0)
+                             total.Sum(x => x.borrowed.Quantity == null ? x.borrowed.Quantity : 0)-
+                             total.Sum(x => x.moveorder.QuantityOrdered == null ? x.moveorder.QuantityOrdered : 0)
 
                           });
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230310002731_createdeliveryStatus")]
-    partial class createdeliveryStatus
+    [Migration("20230320030617_Change")]
+    partial class Change
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -293,6 +293,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<decimal>("TotalQuantity")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1052,6 +1055,31 @@ namespace ELIXIRETD.DATA.Migrations
                     b.ToTable("Suppliers");
                 });
 
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.TransactionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Addedby")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TransactionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TransactionTypes");
+                });
+
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.Uom", b =>
                 {
                     b.Property<int>("Id")
@@ -1163,9 +1191,6 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("MainMenuId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MenuOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("ModuleName")
