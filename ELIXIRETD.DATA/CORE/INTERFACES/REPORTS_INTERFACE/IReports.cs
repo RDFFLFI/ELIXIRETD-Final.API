@@ -14,6 +14,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
         Task<IReadOnlyList<DtoMoveOrderReports>> WarehouseMoveOrderReports(string DateFrom , string DateTo);
 
+        Task<IReadOnlyList<DtoMiscReports>> MiscReports(string DateFrom, string DateTo);
+
 
     }
 }

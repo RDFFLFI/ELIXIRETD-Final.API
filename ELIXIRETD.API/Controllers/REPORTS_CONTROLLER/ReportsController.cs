@@ -35,6 +35,19 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         }
 
+        [HttpGet]
+        [Route("MiscellaneousReceiptReport")]
+        public async Task<IActionResult> MiscellaneousReceiptReport([FromQuery] string DateFrom, [FromQuery] string DateTo)
+        {
+
+            var receipt = await _unitofwork.Reports.MiscReports(DateFrom, DateTo);
+
+            return Ok(receipt);
+
+        }
+
+
+
 
 
 

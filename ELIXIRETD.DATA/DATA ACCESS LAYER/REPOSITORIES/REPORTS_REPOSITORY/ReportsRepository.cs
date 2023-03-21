@@ -74,11 +74,37 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
+        public async Task<IReadOnlyList<DtoMiscReports>> MiscReports(string DateFrom, string DateTo)
+        {
+            var receipts = (from receiptHeader in _context.MiscellaneousReceipts
+                            join receipt in _context.WarehouseReceived
+                            on receiptHeader.Id equals receipt.MiscellanousReceiptId
+                            into leftJ
+                            from receipt in leftJ.DefaultIfEmpty()
+
+                            where receipt.ReceivingDate >= DateTime.Parse(DateFrom) && receipt.ReceivingDate <= DateTime.Parse(DateTo) && receipt.IsActive == true && receipt.TransactionType == "MiscellaneousReceipt"
+
+                            select new DtoMiscReports
+                            {
+
+                                ReceiptId = receiptHeader.Id,
+                                SupplierCode = receiptHeader.SupplierCode,
+                                SupplierName = receiptHeader.supplier,
+                                Details = receiptHeader.Remarks,
+                                ItemCode = receipt.ItemCode,
+                                ItemDescription = receipt.ItemDescription,
+                                Uom = receipt.Uom,
+                                Category = receipt.LotCategory,
+                                Quantity = receipt.ActualGood,
+                                TransactBy = receiptHeader.PreparedBy,
+                                TransactDate = receipt.ReceivingDate.ToString()
 
 
+                            });
 
+            return await receipts.ToListAsync();
 
-
+        }
     }
 
 }
