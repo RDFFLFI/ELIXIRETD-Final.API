@@ -27,4 +27,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DATA ACCESS LAYER\REPOSITORIES\REPORTS_REPOSITORY\" />
+  </ItemGroup>
+
 </Project>
