@@ -20,13 +20,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public decimal BufferLevel { get; set; }
 
         public decimal ReceiveIn { get; set; }  
-        public decimal RejectOut { get; set; }
 
         public decimal ReceiptIn { get; set; }
         public decimal MoveOrderOut { get; set; }
 
         public decimal IssueOut { get; set; }   
-        public decimal WReceiving { get; set; }
 
         public decimal TotalPrice { get; set; }
 
@@ -34,7 +32,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public decimal AverageIssuance { get; set; }
         public decimal DaysLevel { get; set; }
 
-        public string LastUsed { get; set; }
 
         public decimal ReserveUsage { get; set; }
 

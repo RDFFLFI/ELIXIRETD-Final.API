@@ -510,14 +510,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  IssueOut = total.Key.issueOut,
                                  BorrowedDepartment = total.Key.borrow,
                                  ReturnedBorrowed = total.Key.returned,
-                                 TotalPrice = Math.Round(decimal.Parse(total.Key.TotalPrice.ToString("0.00"))),
+                                 TotalPrice = decimal.Round(total.Key.TotalPrice , 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow - total.Key.moveorders,
                                  SuggestedPo = total.Key.sudggest,
-                                 AverageIssuance = Math.Round(decimal.Parse(total.Key.averageissuance.ToString("0.00"))),
+                                 AverageIssuance = decimal.Round(total.Key.averageissuance, 2),
                                  ReserveUsage = total.Key.usage,
-                                 DaysLevel = Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m))
-                             });
+                                 DaysLevel = decimal.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1), 2)
+        });
 
             return await inventory.ToListAsync();
 
@@ -972,7 +972,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              select new DtoMRP
 
                              {
-                                 ItemCode = total.Key.ItemCode,
+                                   ItemCode = total.Key.ItemCode,
                                  ItemDescription = total.Key.ItemDescription,
                                  Uom = total.Key.UomCode,
                                  SubCategory = total.Key.SubCategoryName,
