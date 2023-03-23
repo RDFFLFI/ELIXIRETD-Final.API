@@ -43,6 +43,7 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
             var receipt = await _unitofwork.Reports.MiscReports(DateFrom, DateTo);
 
             return Ok(receipt);
+            
 
         }
 

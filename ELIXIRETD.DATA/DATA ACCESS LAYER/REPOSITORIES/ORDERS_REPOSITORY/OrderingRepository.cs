@@ -637,7 +637,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             {
                                                 Id = x.Id,
                                                 OrderNo = x.OrderNo,
-                                                BarCodes = x.warehouseId,
+                                                BarCodes = x.WarehouseId,
                                                 ItemCode = x.ItemCode,
                                                 ItemDescription = x.ItemDescription,
                                                 Quantity = x.QuantityOrdered,
@@ -756,13 +756,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                   .GroupBy(x => new
                                                    {
                                                        x.ItemCode,
-                                                       x.warehouseId
+                                                       x.WarehouseId
 
                                                    }).Select(x => new ItemStocksDto
                                                    {
                                                        ItemCode = x.Key.ItemCode,
                                                        Remaining = x.Sum( x => x.QuantityOrdered),
-                                                       warehouseId = x.Key.warehouseId
+                                                       warehouseId = x.Key.WarehouseId
 
                                                    });
 
@@ -771,13 +771,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                 .GroupBy(x => new
                                                                 {
                                                                     x.ItemCode,
-                                                                    x.WareHouseId,
+                                                                    x.WarehouseId,
 
                                                                 }).Select(x => new ItemStocksDto
                                                                 {
                                                                     ItemCode = x.Key.ItemCode,
                                                                     Remaining = x.Sum(x => x.Quantity),
-                                                                    warehouseId = x.Key.WareHouseId,
+                                                                    warehouseId = x.Key.WarehouseId,
 
                                                                 });
 
@@ -859,13 +859,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<ItemStocksDto> GetActualItemQuantityInWarehouse(int id, string itemcode)
         {
-            var TotaloutMoveOrder = await _context.MoveOrders.Where(x => x.warehouseId == id)
+            var TotaloutMoveOrder = await _context.MoveOrders.Where(x => x.WarehouseId == id)
                                                              .Where(x => x.IsActive == true)
                                                              .Where(x => x.IsPrepared == true)
                                                              .Where(x => x.ItemCode == itemcode)
                                                              .SumAsync(x => x.QuantityOrdered);
 
-            var TotalIssue = await _context.MiscellaneousIssueDetail.Where(x => x.WareHouseId == id)
+            var TotalIssue = await _context.MiscellaneousIssueDetail.Where(x => x.WarehouseId == id)
                                                                     .Where(x => x.IsActive == true)
                                                                     .Where(x => x.IsTransact == true)
                                                                     .SumAsync(x => x.Quantity);
@@ -923,13 +923,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  .GroupBy(x => new
                                                  {
                                                      x.ItemCode,
-                                                     x.warehouseId,
+                                                     x.WarehouseId,
 
                                                  }).Select(x => new OrderingInventory
                                                  {
                                                      ItemCode = x.Key.ItemCode,
                                                      QuantityOrdered = x.Sum(x => x.QuantityOrdered),
-                                                     warehouseId = x.Key.warehouseId
+                                                     warehouseId = x.Key.WarehouseId
 
                                                  });
 
@@ -938,14 +938,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                .GroupBy(x => new
                                                                {
                                                                    x.ItemCode,
-                                                                   x.WareHouseId
+                                                                   x.WarehouseId
 
                                                                }).Select(x => new IssueInventoryDto
                                                                {
 
                                                                    ItemCode = x.Key.ItemCode,
                                                                    Quantity = x.Sum(x => x.Quantity),
-                                                                   warehouseId = x.Key.WareHouseId
+                                                                   warehouseId = x.Key.WarehouseId
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
@@ -1103,7 +1103,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             {
                                                 Id = x.Id,
                                                 OrderNo = x.OrderNo,
-                                                BarcodeNo = x.warehouseId,
+                                                BarcodeNo = x.WarehouseId,
                                                 ItemCode = x.ItemCode,
                                                 ItemDescription = x.ItemDescription,
                                                 Uom = x.Uom,
@@ -1308,7 +1308,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .GroupBy(x => new
                                             {
                                                 x.OrderNo,
-                                                x.warehouseId,
+                                                x.WarehouseId,
                                                 x.ItemCode,
                                                 x.ItemDescription,
                                                 x.Uom,
@@ -1330,7 +1330,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                              .Select(x => new GetAllApprovedMoveOrderDto
                                              {
                                                  OrderNo = x.Key.OrderNo,
-                                                 BarcodeNo = x.Key.warehouseId,
+                                                 BarcodeNo = x.Key.WarehouseId,
                                                  ItemCode = x.Key.ItemCode,
                                                  ItemDescription = x.Key.ItemDescription,
                                                  Uom = x.Key.Uom,
@@ -1608,7 +1608,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            {
                                                OrderNoPKey = x.OrderNoPkey,
                                                OrderNo = x.OrderNo,
-                                               BarcodeNo = x.warehouseId,
+                                               BarcodeNo = x.WarehouseId,
                                                OrderDate = x.OrderDate.ToString(),
                                                PreparedDate = x.PreparedDate.ToString(),
                                                DateNeeded = x.DateNeeded.ToString(),

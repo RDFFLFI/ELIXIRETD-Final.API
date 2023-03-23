@@ -27,7 +27,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         [Column(TypeName ="Date")]
         public DateTime DateNeeded { get; set; }
         
-        public int warehouseId { get; set; }
+        public int WarehouseId { get; set; }
 
         public bool IsActive { get; set; }
 

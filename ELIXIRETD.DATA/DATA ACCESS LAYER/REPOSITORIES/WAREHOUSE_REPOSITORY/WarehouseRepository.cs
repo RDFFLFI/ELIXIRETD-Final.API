@@ -486,13 +486,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                   {
 
                                                       x.ItemCode,
-                                                      x.warehouseId,
+                                                      x.WarehouseId,
                                                   }).Select(x => new ItemStocksDto
                                                   {
 
                                                       ItemCode = x.Key.ItemCode,
                                                       Out = x.Sum(x => x.QuantityOrdered),
-                                                      warehouseId = x.Key.warehouseId
+                                                      warehouseId = x.Key.WarehouseId
                                                   });
 
             var IssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
@@ -500,13 +500,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                             .GroupBy(x => new
                                                             {
                                                                 x.ItemCode,
-                                                                x.WareHouseId,
+                                                                x.WarehouseId,
                                                             }).Select(x => new ItemStocksDto
                                                             {
 
                                                                 ItemCode = x.Key.ItemCode,
                                                                 Out = x.Sum(x => x.Quantity),
-                                                                warehouseId = x.Key.WareHouseId
+                                                                warehouseId = x.Key.WarehouseId
                                                             });
 
 
@@ -597,13 +597,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                          {
 
                                              x.ItemCode,
-                                             x.warehouseId,
+                                             x.WarehouseId,
                                          }).Select(x => new ItemStocksDto
                                          {
 
                                              ItemCode = x.Key.ItemCode,
                                              Out = x.Sum(x => x.QuantityOrdered),
-                                             warehouseId = x.Key.warehouseId
+                                             warehouseId = x.Key.WarehouseId
                                          });
 
             var IssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
@@ -611,13 +611,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                             .GroupBy(x => new
                                                             {
                                                                 x.ItemCode,
-                                                                x.WareHouseId,
+                                                                x.WarehouseId,
                                                             }).Select(x => new ItemStocksDto
                                                             {
 
                                                                 ItemCode = x.Key.ItemCode,
                                                                 Out = x.Sum(x => x.Quantity),
-                                                                warehouseId = x.Key.WareHouseId
+                                                                warehouseId = x.Key.WarehouseId
                                                             });
 
 

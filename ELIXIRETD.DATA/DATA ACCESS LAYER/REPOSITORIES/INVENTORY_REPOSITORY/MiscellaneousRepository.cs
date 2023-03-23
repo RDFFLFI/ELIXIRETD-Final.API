@@ -205,11 +205,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                   .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
-                                                      x.warehouseId,
+                                                      x.WarehouseId,
                                                       x.ItemCode
                                                   }).Select(x => new MoveOrderInventory
                                                   {
-                                                      WarehouseId = x.Key.warehouseId,
+                                                      WarehouseId = x.Key.WarehouseId,
                                                       ItemCode = x.Key.ItemCode,
                                                       QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
@@ -219,12 +219,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             .GroupBy(x => new
                                                             {
                                                                 x.ItemCode,
-                                                                x.WareHouseId
+                                                                x.WarehouseId
 
                                                             }).Select(x => new ItemStocksDto
                                                             {
                                                                 ItemCode = x.Key.ItemCode,
-                                                                warehouseId = x.Key.WareHouseId,
+                                                                warehouseId = x.Key.WarehouseId,
                                                                 Out = x.Sum(x => x.Quantity)
 
                                                             });
@@ -429,7 +429,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              Uom = x.Uom,
                                                              TotalQuantity = x.Quantity,
                                                              PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
-                                                             Barcode = x.WareHouseId
+                                                             Barcode = x.WarehouseId
 
                                                          });
 
@@ -464,7 +464,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             foreach(var items in validate)
             {
-                var issue = await _context.MiscellaneousIssueDetail.Where(x => x.WareHouseId == items.Id )
+                var issue = await _context.MiscellaneousIssueDetail.Where(x => x.WarehouseId == items.Id )
                                                                    .FirstOrDefaultAsync();
 
                 if (issue != null)

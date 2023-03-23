@@ -25,7 +25,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
 
         public string PreparedBy { get; set; }
 
-        public int WareHouseId { get; set; }
+        public int WarehouseId { get; set; }
 
         public int IssuePKey { get; set; }
 

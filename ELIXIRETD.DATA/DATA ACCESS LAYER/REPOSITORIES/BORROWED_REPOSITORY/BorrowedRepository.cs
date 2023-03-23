@@ -138,13 +138,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   .GroupBy(x => new
                                                   {
 
-                                                      x.warehouseId,
+                                                      x.WarehouseId,
                                                       x.ItemCode
 
                                                   }).Select(x => new MoveOrderInventory
                                                   {
 
-                                                      WarehouseId = x.Key.warehouseId,
+                                                      WarehouseId = x.Key.WarehouseId,
                                                       ItemCode = x.Key.ItemCode,
                                                       QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
@@ -156,13 +156,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             {
 
                                                                 x.ItemCode,
-                                                                x.WareHouseId
+                                                                x.WarehouseId
 
                                                             }).Select(x => new ItemStocksDto
                                                             {
                                                                 ItemCode = x.Key.ItemCode,
                                                                 Out = x.Sum(x => x.Quantity),
-                                                                warehouseId = x.Key.WareHouseId
+                                                                warehouseId = x.Key.WarehouseId
 
                                                             });
 
