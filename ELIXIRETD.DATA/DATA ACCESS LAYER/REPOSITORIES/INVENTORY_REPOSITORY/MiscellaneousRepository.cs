@@ -44,7 +44,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var existing = await _context.MiscellaneousReceipts.Where(x => x.Id == receipt.Id)
                                                                .FirstOrDefaultAsync();
 
-            var existingWH = await _context.WarehouseReceived.Where(x => x.MiscellanousReceiptId == receipt.Id)
+            var existingWH = await _context.WarehouseReceived.Where(x => x.MiscellaneousReceiptId == receipt.Id)
                                                             .ToListAsync();
 
 
@@ -66,7 +66,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var existing = await _context.MiscellaneousReceipts.Where(x => x.Id == receipt.Id)
                                                                .FirstOrDefaultAsync();
 
-            var existingWH = await _context.WarehouseReceived.Where(x => x.MiscellanousReceiptId == receipt.Id)
+            var existingWH = await _context.WarehouseReceived.Where(x => x.MiscellaneousReceiptId == receipt.Id)
                                                              .ToListAsync();
 
             if (existing == null) 
@@ -130,8 +130,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
         {
 
             var receipt = _context.WarehouseReceived
-                      .Where(x => x.MiscellanousReceiptId == id && x.IsActive == true)
-                      .GroupJoin(_context.MiscellaneousReceipts, warehouse => warehouse.MiscellanousReceiptId, receiptparents => receiptparents.Id, (warehouse, receiptparents) => new { warehouse, receiptparents })
+                      .Where(x => x.MiscellaneousReceiptId == id && x.IsActive == true)
+                      .GroupJoin(_context.MiscellaneousReceipts, warehouse => warehouse.MiscellaneousReceiptId, receiptparents => receiptparents.Id, (warehouse, receiptparents) => new { warehouse, receiptparents })
                       .SelectMany(x => x.receiptparents.DefaultIfEmpty(), (x, receiptparents) => new { x.warehouse, receiptparents })
                       .Select(x => new GetWarehouseDetailsByMReceiptDto
                       {
@@ -439,18 +439,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<bool> CancelItemCodeInMiscellaneousIssue(MiscellaneousIssueDetails issue)
         {
-            var validate = await _context.WarehouseReceived.Where(x => x.MiscellanousReceiptId == issue.Id)
-                                                           .ToListAsync();
+            var issueDetails = await _context.MiscellaneousIssueDetail.Where(x => x.Id == issue.Id)
+                                                                .FirstOrDefaultAsync();
 
-            foreach (var items in validate)
-            {
-                var issueDetails = await _context.MiscellaneousIssueDetail.Where(x => x.WareHouseId == items.Id)
-                                                                    .FirstOrDefaultAsync();
+          
 
-                if (issueDetails != null)
+            if (issueDetails == null)
                     return false;
-            }
 
+            issueDetails.IsActive = false;
+            
             return true;
         }
 
@@ -461,7 +459,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<bool> ValidateMiscellaneousInIssue(MiscellaneousReceipt receipt)
         {
-            var validate = await _context.WarehouseReceived.Where(x => x.MiscellanousReceiptId == receipt.Id)
+            var validate = await _context.WarehouseReceived.Where(x => x.MiscellaneousReceiptId == receipt.Id)
                                                            .ToListAsync();
 
             foreach(var items in validate)

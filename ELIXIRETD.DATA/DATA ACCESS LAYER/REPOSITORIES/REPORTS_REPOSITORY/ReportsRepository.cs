@@ -78,7 +78,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         {
             var receipts = (from receiptHeader in _context.MiscellaneousReceipts
                             join receipt in _context.WarehouseReceived
-                            on receiptHeader.Id equals receipt.MiscellanousReceiptId
+                            on receiptHeader.Id equals receipt.MiscellaneousReceiptId
                             into leftJ
                             from receipt in leftJ.DefaultIfEmpty()
 
@@ -105,6 +105,37 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await receipts.ToListAsync();
 
         }
+
+        public async Task<IReadOnlyList<DtoMiscIssue>> MiscIssue(string DateFrom, string DateTo)
+        {
+            var issues = _context.MiscellaneousIssues
+                       .GroupJoin(_context.MiscellaneousIssueDetail, receipt => receipt.Id, issue => issue.IssuePKey, (receipt, issue) => new { receipt, issue })
+                       .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.receipt, issue })
+                       .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo) && x.issue.IsActive == true && x.issue.IsTransact == true)
+                       .Select(x => new DtoMiscIssue
+                       {
+
+                           IssueId = x.receipt.Id,
+                           CustomerCode = x.receipt.Customercode,
+                           CustomerName = x.receipt.Customer,
+                           Details = x.issue.Remarks,
+                           ItemCode = x.issue !=null ? x.issue.ItemCode : null ,
+                           ItemDescription = x.issue !=null ? x.issue.ItemDescription : null ,
+                           Uom = x.issue != null    ? x.issue.Uom : null ,  
+                           Quantity = x.issue != null ? x.issue.Quantity : 0,
+                           TransactBy = x.receipt.PreparedBy ,
+                           TransactDate = x.issue.Remarks != null ? x.issue.PreparedDate.ToString() : null
+
+                       });
+
+
+            return await issues.ToListAsync();
+        }   
+        
+
+
+
+
     }
 
 }

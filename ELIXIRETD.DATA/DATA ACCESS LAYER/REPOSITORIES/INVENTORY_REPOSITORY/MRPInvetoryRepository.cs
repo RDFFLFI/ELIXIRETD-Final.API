@@ -70,6 +70,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getWarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                           .Where(x => x.TransactionType == "Receiving")
                                                            .OrderBy(x => x.ActualReceivingDate)
                                                            .GroupBy(x => new
                                                            {
@@ -183,7 +184,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.IsPrepared == true)
+                                                    .Where(x => x.PreparedDate != null)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -545,6 +546,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getWarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                           .Where(x => x.TransactionType == "Receiving")
                                                            .OrderBy(x => x.ActualReceivingDate)
                                                            .GroupBy(x => new
                                                            {
@@ -658,7 +660,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.IsPrepared == true)
+                                                    .Where(x => x.PreparedDate != null)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -669,6 +671,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         QuantityOrdered = x.Sum(x => x.QuantityOrdered),
 
                                                     });
+
+
 
             var getSOH = (from warehouse in getWarehouseStock
                           join issue in getIssueOut
@@ -731,7 +735,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               on warehouse.ItemCode equals ordering.ItemCode
                               into leftJ1
                               from ordering in leftJ1.DefaultIfEmpty()
-
+                            
                               group new
                               {
 
@@ -750,7 +754,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   ItemCode = total.Key.ItemCode,
                                   Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) -
-                                  (total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0))
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
 
                               });
 
@@ -1023,6 +1027,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getWarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                           .Where(x => x.TransactionType == "Receiving")
                                                            .OrderBy(x => x.ActualReceivingDate)
                                                            .GroupBy(x => new
                                                            {
@@ -1136,7 +1141,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.IsPrepared == true)
+                                                     .Where(x => x.PreparedDate != null)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,

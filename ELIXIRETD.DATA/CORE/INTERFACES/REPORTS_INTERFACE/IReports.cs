@@ -16,6 +16,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
         Task<IReadOnlyList<DtoMiscReports>> MiscReports(string DateFrom, string DateTo);
 
+        Task<IReadOnlyList<DtoMiscIssue>> MiscIssue (string DateFrom, string DateTo);
+
 
     }
 }

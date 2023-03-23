@@ -47,6 +47,18 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("MiscellaneousIssueReport")]
+        public async Task<IActionResult> MiscellaneousIssueReport([FromQuery] string DateFrom, [FromQuery] string DateTo)
+        {
+
+            var issue = await _unitofwork.Reports.MiscIssue(DateFrom, DateTo);
+
+            return Ok(issue);
+
+        }
+
+
 
 
 

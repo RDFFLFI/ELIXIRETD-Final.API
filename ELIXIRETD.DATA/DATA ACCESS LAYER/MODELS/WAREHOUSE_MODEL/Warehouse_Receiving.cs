@@ -26,7 +26,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
 
         public string LotCategory { get; set; }
         public string TransactionType { get; set; }
-        public int? MiscellanousReceiptId { get; set; }
+        public int? MiscellaneousReceiptId { get; set; }
         public string Reason { get; set; }
         public bool IsActive { get; set; } = true;
         public bool? IsWarehouseReceived { get; set; }

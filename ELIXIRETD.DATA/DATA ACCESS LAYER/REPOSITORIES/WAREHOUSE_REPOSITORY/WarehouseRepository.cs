@@ -33,32 +33,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
             return true;
         }
-        //public async Task<bool> EditReceivingDetails(Warehouse_Receiving receive)
-        //{
-        //    throw new NotImplementedException();
-        //}
+       
 
         public async Task<PagedList<CancelledPoDto>> GetAllCancelledPOWithPagination(UserParams userParams)
         {
 
-
-            //var cancelpo = _context.PoSummaries.Where(x => x.IsActive == false)
-            //                                   .Where(x => x.IsCancelled == true)
-            //                                   .Where(x => x.Reason != null)
-            //                                   .Select(x => new CancelledPoDto
-            //                                   {
-            //                                       Id = x.Id,
-            //                                       PO_Number = x.PO_Number,
-            //                                       ItemCode = x.ItemCode,
-            //                                       ItemDescription = x.ItemDescription,
-            //                                       Supplier = x.VendorName,
-            //                                       QuantityOrdered = x.Ordered,
-            //                                       //QuantityCancel = actual != null ? receive.Actual_Delivered : 0,
-            //                                       //QuantityGood = x.Orde
-            //                                       DateCancelled = x.DateCancelled.ToString(),
-            //                                       Remarks = x.Reason,
-            //                                       IsActive = x.IsActive
-            //                                   });
             var poSummary = (from posummary in _context.PoSummaries
                              where posummary.IsActive == false
                              where posummary.IsCancelled == true
@@ -336,29 +315,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
         public async Task<PagedList<RejectWarehouseReceivingDto>> RejectRawMaterialsByWarehousePagination(UserParams userParams)
         {
-            //var qcreceiving = (from posummary in _context.PoSummaries
-            //                   join receive in _context.QC_Receiving on posummary.Id equals receive.PO_Summary_Id
-            //                   select new
-            //                   {
-            //                       Id = receive.Id,
-            //                       PO_Number = posummary.PO_Number,
-            //                       ItemCode = posummary.ItemCode,
-            //                       ItemDescription = posummary.ItemDescription,
-            //                       Supplier = posummary.VendorName,
-            //                       Uom = posummary.UOM,
-            //                       QuantityOrderded = posummary.Ordered
-            //                   });
-
 
             var warehousereject = (from warehouse in _context.WarehouseReceived
                                    join rejectwarehouse in _context.WarehouseReject
                                    on warehouse.Id equals rejectwarehouse.WarehouseReceivingId into leftJ
                                    from rejectwarehouse in leftJ.DefaultIfEmpty()
-                                       //where warehouse.ConfirmRejectbyWarehouse == true &&
-                                       //warehouse.IsWarehouseReceive == true &&
-                                       //warehouse.ConfirmRejectbyQc == false
-
-                                       //join qc in qcreceiving on warehouse.QcReceivingId equals qc.Id
+                     
 
                                    group rejectwarehouse by new
                                    {
@@ -383,16 +345,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                        ItemCode = total.Key.ItemCode,
                                        ItemDescription = total.Key.ItemDescription,
                                        Supplier = total.Key.Supplier,
-                                       Uom = total.Key.Uom,
-                                       //QuantityOrdered = total.Key.QuantityOrderded,
-                                       //ActualGood = total.Key.QuantityGood - total.Sum(x => x.Quantity),
-                                       //QcReceivingId = total.Key.QcReceivingId,   
+                                       Uom = total.Key.Uom,                                    
                                        ReceivingDate = total.Key.ReceivingDate.ToString(),
                                        ActualReject = total.Key.TotalReject,
                                        Remarks = total.Key.Reason,
-                                       //ConfirmRejectByQc = total.Key.ConfirmRejectbyQc,
-                                       //ConfirmRejectByWarehouse = total.Key.ConfirmRejectbyWarehouse,
-                                       //IsWarehouseReceived = total.Key.IsWarehouseReceive
+                                      
 
                                    });
 
@@ -738,6 +695,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             return await warehouseInventory.ToListAsync();
 
         }
+
+
 
 
      
