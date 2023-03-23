@@ -207,6 +207,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                   {
                                                       x.WarehouseId,
                                                       x.ItemCode
+
                                                   }).Select(x => new MoveOrderInventory
                                                   {
                                                       WarehouseId = x.Key.WarehouseId,
@@ -309,6 +310,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         }
 
+
         public async Task<PagedList<GetAllMIssueWithPaginationDto>> GetAllMIssueWithPagination(UserParams userParams, bool status)
         {
             var issue = _context.MiscellaneousIssues.OrderByDescending(x => x.PreparedDate)
@@ -353,6 +355,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             return await PagedList<GetAllMIssueWithPaginationDto>.CreateAsync(issue, userParams.PageNumber, userParams.PageSize);
         }
 
+
         public async Task<bool> InActivateMiscellaenousIssue(MiscellaneousIssue issue)
         {
             var existing = await _context.MiscellaneousIssues.Where(x => x.Id == issue.Id)
@@ -371,6 +374,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             }
             return true;
         }
+
 
         public async Task<bool> ActivateMiscellaenousIssue(MiscellaneousIssue issue)
         {
@@ -392,6 +396,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             return true;
         }
+
+
           public async Task<IReadOnlyList<GetAllDetailsInMiscellaneousIssueDto>> GetAllDetailsInMiscellaneousIssue(int id)
         {
 
@@ -412,6 +418,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             return await warehouse.ToListAsync();
         }
+
 
         public async Task<IReadOnlyList<GetAllAvailableIssueDto>> GetAllAvailableIssue(int empid)
         {
@@ -436,6 +443,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             return await items.ToListAsync();
 
         }
+
 
         public async Task<bool> CancelItemCodeInMiscellaneousIssue(MiscellaneousIssueDetails issue)
         {

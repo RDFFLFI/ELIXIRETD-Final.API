@@ -100,18 +100,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 QuantityOrdered = x.Sum(x => x.QuantityOrdered)
             });
 
-            var moveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsPrepared == true)
-                                                  .GroupBy(x => new
-                                                  {
-                                                      x.ItemCode,
-
-                                                  }).Select(x => new OrderingInventory
-                                                  {
-                                                      ItemCode = x.Key.ItemCode,
-                                                      QuantityOrdered = x.Sum(x => x.QuantityOrdered)
-
-                                                  });
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                .Where(x => x.IsTransact == true)
@@ -162,19 +150,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
                 .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.ItemCode , returned => returned.ItemCode , (warehouse , returned) => new { warehouse , returned} )
                 .SelectMany(x => x.returned.DefaultIfEmpty() , (x, returned) => new { x.warehouse , returned})
-                .GroupJoin(moveOrderOut , warehouse => warehouse.warehouse.warehouse.warehouse.ItemCode , moveorder => moveorder.ItemCode , (warehouse , moveorder) => new {warehouse , moveorder })
-                .SelectMany(x => x.moveorder.DefaultIfEmpty() , (x , moveorder) => new {x.warehouse , moveorder})
-                .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode, borrowed => borrowed.ItemCode, (warehouse, borrowed) => new { warehouse, borrowed })
+                .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.warehouse.ItemCode, borrowed => borrowed.ItemCode, (warehouse, borrowed) => new { warehouse, borrowed })
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
-                .GroupBy(x => x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode)
+                .GroupBy(x => x.warehouse.warehouse.warehouse.warehouse.ItemCode)
                 .Select(total => new ReserveInventory
                 {
 
                     ItemCode = total.Key,
-                    Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.warehouse.ActualGood) + 
-                              total.Sum(x => x.warehouse.warehouse.returned.In == null ? 0 : x.warehouse.warehouse.returned.In) -  total.Sum(x => x.warehouse.moveorder.QuantityOrdered == null ? 0 : x.warehouse.moveorder.QuantityOrdered) -                 
-                               total.Sum(x => x.warehouse.warehouse.warehouse.issue.Quantity == null ? 0 : x.warehouse.warehouse.warehouse.issue.Quantity) -
-                                total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ordering.QuantityOrdered == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ordering.QuantityOrdered) -
+                    Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ActualGood) + 
+                              total.Sum(x => x.warehouse.returned.In == null ? 0 : x.warehouse.returned.In) -                 
+                               total.Sum(x => x.warehouse.warehouse.issue.Quantity == null ? 0 : x.warehouse.warehouse.issue.Quantity) -
+                                total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered == null ? 0 : x.warehouse.warehouse.warehouse.ordering.QuantityOrdered) -
                                total.Sum(x => x.borrowed.Quantity == null ? 0 : x.borrowed.Quantity) 
 
                 });
