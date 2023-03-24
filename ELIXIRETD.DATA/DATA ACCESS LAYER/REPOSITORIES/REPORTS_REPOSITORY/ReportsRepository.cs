@@ -124,7 +124,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            Uom = x.issue != null    ? x.issue.Uom : null ,  
                            Quantity = x.issue != null ? x.issue.Quantity : 0,
                            TransactBy = x.receipt.PreparedBy ,
-                           TransactDate = x.issue.Remarks != null ? x.issue.PreparedDate.ToString() : null
+                           TransactDate = x.issue.PreparedDate.ToString() 
 
                        });
 
@@ -138,7 +138,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var borrow = _context.BorrowedIssues
                         .GroupJoin(_context.BorrowedIssueDetails, borrowedissue => borrowedissue.Id, borrowed => borrowed.BorrowedPKey, (borrowedissue, borrowed) => new { borrowedissue, borrowed })
                         .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.borrowedissue, borrowed })
-                        .Where(x => x.borrowed.BorrowedDate >= DateTime.Parse(DateFrom) && x.borrowed.BorrowedDate <= DateTime.Parse(DateTo) && x.borrowed.IsActive)
+                        .Where(x => x.borrowed.BorrowedDate >= DateTime.Parse(DateFrom) && x.borrowed.BorrowedDate <= DateTime.Parse(DateTo) && x.borrowed.IsActive  /*&& x.borrowed.IsReturned == null*/)
                         .Select(x => new DtoBorrowedAndReturned
                         {
 
@@ -151,7 +151,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                             BorrowedQuantity = x.borrowed != null ? x.borrowed.Quantity : 0,
                             Remarks = x.borrowed.Remarks,
                             TransactedBy = x.borrowedissue.PreparedBy,
-                            BorrowedDate =  x.borrowed.Remarks != null ?  x.borrowed.BorrowedDate.ToString() : null
+                            BorrowedDate =   x.borrowed.BorrowedDate.ToString() 
 
 
                         });
@@ -160,6 +160,35 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
         }
+
+        public async Task<IReadOnlyList<DtoReturnedReports>> ReturnedReports(string DateFrom, string DateTo)
+        {
+            var Returned = _context.BorrowedIssues
+                          .GroupJoin(_context.BorrowedIssueDetails, returnissue => returnissue.Id, returned => returned.BorrowedPKey, (returnissue, returned) => new { returnissue, returned })
+                          .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.returnissue, returned })
+                          .Where(x => x.returned.BorrowedDate >= DateTime.Parse(DateFrom) && x.returned.BorrowedDate <= DateTime.Parse(DateTo) && x.returned.IsActive == true && x.returned.IsReturned == true)
+                          .Select(x => new DtoReturnedReports
+                          {
+
+                              ReturnedId = x.returnissue.Id,
+                              CustomerCode = x.returnissue.CustomerCode,
+                              CustomerName = x.returnissue.CustomerName,
+                              ItemCode = x.returned != null ? x.returned.ItemCode : null,
+                              ItemDescription = x.returned != null ? x.returned.ItemDescription : null,
+                              Uom = x.returned != null ? x.returned.Uom : null,
+                              Category = x.returned.Remarks,
+                              ReturnedQuantity = x.returned != null ? x.returned.ReturnQuantity : 0,
+                              Consumes = x.returned != null ? x.returned.Quantity : 0 - (x.returned != null ? x.returned.ReturnQuantity : 0),
+                              TransactBy = x.returnissue.PreparedBy,
+                              TransactDate =  x.returned.BorrowedDate.ToString() 
+
+
+                          });
+
+            return await Returned.ToListAsync();
+        }
+
+
 
 
     }

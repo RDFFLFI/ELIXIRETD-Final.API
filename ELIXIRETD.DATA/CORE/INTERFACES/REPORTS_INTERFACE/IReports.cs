@@ -20,6 +20,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
         Task<IReadOnlyList<DtoBorrowedAndReturned>> BorrowedAndReturnedReports (string DateFrom, string DateTo);
 
+        Task<IReadOnlyList<DtoReturnedReports>> ReturnedReports (string DateFrom, string DateTo);
+
 
     }
 }
