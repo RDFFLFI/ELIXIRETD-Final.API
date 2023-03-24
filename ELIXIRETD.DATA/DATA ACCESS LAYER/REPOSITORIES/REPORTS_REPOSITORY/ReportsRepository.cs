@@ -178,7 +178,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               Uom = x.returned != null ? x.returned.Uom : null,
                               Category = x.returned.Remarks,
                               ReturnedQuantity = x.returned != null ? x.returned.ReturnQuantity : 0,
-                              Consumes = x.returned != null ? x.returned.Quantity : 0 - (x.returned != null ? x.returned.ReturnQuantity : 0),
                               TransactBy = x.returnissue.PreparedBy,
                               TransactDate =  x.returned.BorrowedDate.ToString() 
 
@@ -189,8 +188,72 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         }
 
 
+        public async Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports(string DateFrom, string DateTo)
+        {
+            var getBorrowed = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                        .Select(x => new DtoBorrowedAndreturns
+                                                        {
+
+                                                            BorrowedPKey = x.BorrowedPKey,
+                                                            ItemCode = x.ItemCode,
+                                                            Quantity = x.Quantity != null ? x.ReturnQuantity : 0
+
+                                                        });
+
+            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                           .Where(x => x.IsReturned == true)
+                                                           .Select(x => new DtoBorrowedAndreturns
+                                                           {
+                                                               BorrowedPKey = x.BorrowedPKey,
+                                                               ItemCode = x.ItemCode,
+                                                               ReturnedQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0
+
+                                                           });
 
 
+            var getBorrowedReturn = getBorrowed
+                              .GroupJoin(getReturned, borrowed => borrowed.BorrowedPKey, returned => returned.BorrowedPKey, (borrowed, returned) => new { borrowed, returned })
+                              .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.borrowed, returned })
+                              .Select(x => new 
+                              {
+
+                                  BorrowedPKey = x.borrowed.BorrowedPKey,
+                                  ItemCode = x.borrowed.ItemCode,
+                                  ItemDescription = x.borrowed.ItemDescription,
+                                  Quantity = x.borrowed.Quantity,
+                                  ReturnedQuantity = x.returned.ReturnedQuantity,
+                                  Uom = x.borrowed.Uom,
+                                  Category = x.borrowed.Category,
+                                  Consumes = x.borrowed.Quantity - x.returned.ReturnedQuantity,
+                                
+                              });
+
+
+            var Reports = _context.BorrowedIssues
+                      .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
+                      .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
+                      .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo))
+                      .Select(x => new DtoBorrowedAndReturned
+                      {
+                          BorrowedId = x.Borrowedissue.Id,
+                          CustomerCode = x.Borrowedissue.CustomerCode,
+                          CustomerName = x.Borrowedissue.CustomerName,
+                          ItemCode = x.borrowedreturned.ItemCode 
+                          //ItemDescription = 
+                          //Remarks = x.borrowedreturned.Category,
+                          //Uom = x.borrowedreturned != null ? x.borrowedreturned.Uom : null,
+                          //BorrowedQuantity = x.borrowedreturned.Quantity,
+                          //ReturnQuantity = x.borrowedreturned.ReturnedQuantity,
+                          //Consumes = x.borrowedreturned.Quantity - x.borrowedreturned.ReturnedQuantity,
+                          //TransactedBy = x.Borrowedissue.PreparedBy,
+                          //BorrowedDate =x.Borrowedissue.PreparedDate.ToString()
+
+                      });
+
+
+            return await Reports.ToListAsync();
+
+        }
     }
 
 }

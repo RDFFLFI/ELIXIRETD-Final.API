@@ -82,7 +82,16 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         }
 
+        [HttpGet]
+        [Route("BorrowedReturnedReports")]
+        public async Task<IActionResult> BorrowedReturnedReports([FromQuery] string DateFrom, [FromQuery] string DateTo)
+        {
 
+            var issue = await _unitofwork.Reports.ReturnBorrowedReports(DateFrom, DateTo);
+
+            return Ok(issue);
+
+        }
 
 
 

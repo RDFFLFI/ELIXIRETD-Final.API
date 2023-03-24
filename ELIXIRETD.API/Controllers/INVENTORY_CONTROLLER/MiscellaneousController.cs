@@ -147,6 +147,8 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
         {
             issue.IsActive = true;
             issue.PreparedDate = DateTime.Now;
+    
+
             await _unitofwork.miscellaneous.AddMiscellaneousIssueDetails(issue);
             await _unitofwork.CompleteAsync();
 

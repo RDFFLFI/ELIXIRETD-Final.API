@@ -427,6 +427,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var items = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                          .Where(x => x.PreparedBy == employee.FullName)
+                                                         .Where(x => x.IsTransact != true)
                                                          .Select(x => new GetAllAvailableIssueDto
                                                          {
 
@@ -437,6 +438,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              TotalQuantity = x.Quantity,
                                                              PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                              Barcode = x.WarehouseId
+
 
                                                          });
 

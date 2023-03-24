@@ -598,8 +598,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Uom = x.Uom,
                 QuantityOrder = x.QuantityOrdered,
                 Category = x.Category,
-                OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
-                DateNeeded = x.DateNeeded.ToString("yyyy/MM/dd"),
+                OrderDate = x.OrderDate.ToString(),
+                DateNeeded = x.DateNeeded.ToString(),
                 PrepareDate = x.PreparedDate.ToString()
 
             }) ;
