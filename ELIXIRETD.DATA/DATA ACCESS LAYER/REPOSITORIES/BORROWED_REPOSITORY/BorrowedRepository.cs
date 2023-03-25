@@ -384,9 +384,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<bool> CancelIssuePerItemCode(BorrowedIssueDetails borrowed)
         {
 
-            var items = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+            var items = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
+                                                           .Where(x => x.IsActive == true)
                                                            .Where(x => x.IsTransact == true)
-                                                           .Where(x => x.IsReturned == null)
                                                            .FirstOrDefaultAsync();
 
 
@@ -394,7 +394,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 return false;
 
             items.IsActive = false;
-            items.Quantity = 0 ;
+            items.ReturnQuantity = 0;
             
 
             return true;
@@ -444,42 +444,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-        //public async Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed)
-        //{
-
-        //    var returned  = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-
-        //                                                       .ToListAsync();
-
-        //    var returnedDetails = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-        //                                                             .Where(x => x.ReturnQuantity != 0)
-        //                                                             .ToListAsync() ;
-
-
-        //    foreach( var item in returned)
-        //    {
-        //        foreach (var items in returnedDetails)
-        //        {
-        //            if(items.ReturnQuantity == 0)
-        //            {
-        //                item.IsTransact = true;
-        //                item.IsActive = true;
-        //            }
-        //                items.IsReturned = true;
-        //                items.IsActive = false;
-        //                items.IsTransact = false;
-        //                items.ReturnedDate = DateTime.Now;
-        //        }
-
-        //        item.ReturnedDate = DateTime.Now;
-        //        item.IsReturned= true;
-        //        item.IsTransact =false;
-        //        item.IsActive = false;
-
-        //    }
-        //    return true;
-
-        //}
 
 
         public async Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed)
@@ -601,6 +565,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+        public async Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed)
+        {
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
+                                                             .FirstOrDefaultAsync();
 
+
+
+            if (borrow == null)
+                return false;
+
+
+            borrow.IsActive = false;
+
+            return true;
+
+        }
     }
 }

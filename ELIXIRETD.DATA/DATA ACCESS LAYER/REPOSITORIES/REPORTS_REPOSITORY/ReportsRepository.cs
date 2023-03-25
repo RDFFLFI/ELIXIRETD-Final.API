@@ -196,7 +196,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                             BorrowedPKey = x.BorrowedPKey,
                                                             ItemCode = x.ItemCode,
-                                                            Quantity = x.Quantity != null ? x.ReturnQuantity : 0
+                                                            Quantity = x.Quantity != null ? x.Quantity : 0,
+                                                            ItemDescription = x.ItemDescription,
+                                                            Uom = x.Uom,
+                                                            Category = x.Remarks,
+                                                            BorrowedDate = x.BorrowedDate.ToString()    
 
                                                         });
 
@@ -224,7 +228,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                   ReturnedQuantity = x.returned.ReturnedQuantity,
                                   Uom = x.borrowed.Uom,
                                   Category = x.borrowed.Category,
-                                  Consumes = x.borrowed.Quantity - x.returned.ReturnedQuantity,
+                                  BorrowedDate = x.borrowed.BorrowedDate.ToString(),
+                                  
                                 
                               });
 
@@ -232,17 +237,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var Reports = _context.BorrowedIssues
                       .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
                       .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
-                      .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo))
+                      .Where(x => Convert.ToDateTime(x.borrowedreturned.BorrowedDate) >= DateTime.Parse(DateFrom) && Convert.ToDateTime(x.borrowedreturned.BorrowedDate) <= DateTime.Parse(DateTo))
                       .Select(x => new DtoBorrowedAndReturned
                       {
                           BorrowedId = x.Borrowedissue.Id,
                           CustomerCode = x.Borrowedissue.CustomerCode,
                           CustomerName = x.Borrowedissue.CustomerName,
-                          ItemCode = x.borrowedreturned.ItemCode 
-                          //ItemDescription = 
-                          //Remarks = x.borrowedreturned.Category,
-                          //Uom = x.borrowedreturned != null ? x.borrowedreturned.Uom : null,
-                          //BorrowedQuantity = x.borrowedreturned.Quantity,
+                          ItemCode = x.borrowedreturned.ItemCode,
+                          ItemDescription = x.borrowedreturned.ItemDescription,
+                          Remarks = x.borrowedreturned.Category,
+                          Uom = x.borrowedreturned != null ? x.borrowedreturned.Uom : null,
+                          BorrowedQuantity = x.borrowedreturned.Quantity,
                           //ReturnQuantity = x.borrowedreturned.ReturnedQuantity,
                           //Consumes = x.borrowedreturned.Quantity - x.borrowedreturned.ReturnedQuantity,
                           //TransactedBy = x.Borrowedissue.PreparedBy,
