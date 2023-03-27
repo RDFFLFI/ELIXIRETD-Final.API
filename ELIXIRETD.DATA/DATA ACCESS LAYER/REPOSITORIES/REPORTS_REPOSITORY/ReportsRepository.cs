@@ -14,6 +14,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
     {
         private readonly StoreContext _context;
 
+    
+
         public ReportsRepository(StoreContext storeContext)
         {
             _context = storeContext;
@@ -132,66 +134,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await issues.ToListAsync();
         }
 
-        public async Task<IReadOnlyList<DtoBorrowedAndReturned>> BorrowedAndReturnedReports(string DateFrom, string DateTo)
-        {
-
-            var borrow = _context.BorrowedIssues
-                        .GroupJoin(_context.BorrowedIssueDetails, borrowedissue => borrowedissue.Id, borrowed => borrowed.BorrowedPKey, (borrowedissue, borrowed) => new { borrowedissue, borrowed })
-                        .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.borrowedissue, borrowed })
-                        .Where(x => x.borrowed.BorrowedDate >= DateTime.Parse(DateFrom) && x.borrowed.BorrowedDate <= DateTime.Parse(DateTo) && x.borrowed.IsActive  /*&& x.borrowed.IsReturned == null*/)
-                        .Select(x => new DtoBorrowedAndReturned
-                        {
-
-                            BorrowedId = x.borrowedissue.Id,
-                            CustomerCode = x.borrowedissue.CustomerCode,
-                            CustomerName = x.borrowedissue.CustomerName,
-                            ItemCode = x.borrowed != null ?  x.borrowed.ItemCode : null,
-                            ItemDescription = x.borrowed != null ? x.borrowed.ItemDescription : null,
-                            Uom = x.borrowed != null  ? x.borrowed.Uom : null ,
-                            BorrowedQuantity = x.borrowed != null ? x.borrowed.Quantity : 0,
-                            Remarks = x.borrowed.Remarks,
-                            TransactedBy = x.borrowedissue.PreparedBy,
-                            BorrowedDate =   x.borrowed.BorrowedDate.ToString() 
-
-
-                        });
-
-            return await borrow.ToListAsync();
-
-
-        }
-
-        public async Task<IReadOnlyList<DtoReturnedReports>> ReturnedReports(string DateFrom, string DateTo)
-        {
-            var Returned = _context.BorrowedIssues
-                          .GroupJoin(_context.BorrowedIssueDetails, returnissue => returnissue.Id, returned => returned.BorrowedPKey, (returnissue, returned) => new { returnissue, returned })
-                          .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.returnissue, returned })
-                          .Where(x => x.returned.BorrowedDate >= DateTime.Parse(DateFrom) && x.returned.BorrowedDate <= DateTime.Parse(DateTo) && x.returned.IsActive == true && x.returned.IsReturned == true)
-                          .Select(x => new DtoReturnedReports
-                          {
-
-                              ReturnedId = x.returnissue.Id,
-                              CustomerCode = x.returnissue.CustomerCode,
-                              CustomerName = x.returnissue.CustomerName,
-                              ItemCode = x.returned != null ? x.returned.ItemCode : null,
-                              ItemDescription = x.returned != null ? x.returned.ItemDescription : null,
-                              Uom = x.returned != null ? x.returned.Uom : null,
-                              Category = x.returned.Remarks,
-                              ReturnedQuantity = x.returned != null ? x.returned.ReturnQuantity : 0,
-                              TransactBy = x.returnissue.PreparedBy,
-                              TransactDate =  x.returned.BorrowedDate.ToString() 
-
-
-                          });
-
-            return await Returned.ToListAsync();
-        }
 
 
         public async Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports(string DateFrom, string DateTo)
         {
             var getBorrowed = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                        .Select(x => new DtoBorrowedAndreturns
+                                                        .Select(x => new 
                                                         {
 
                                                             BorrowedPKey = x.BorrowedPKey,
@@ -200,13 +148,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                             ItemDescription = x.ItemDescription,
                                                             Uom = x.Uom,
                                                             Category = x.Remarks,
-                                                            BorrowedDate = x.BorrowedDate.ToString()    
+
 
                                                         });
 
             var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                            .Where(x => x.IsReturned == true)
-                                                           .Select(x => new DtoBorrowedAndreturns
+                                                           .Select(x => new
                                                            {
                                                                BorrowedPKey = x.BorrowedPKey,
                                                                ItemCode = x.ItemCode,
@@ -228,16 +176,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                   ReturnedQuantity = x.returned.ReturnedQuantity,
                                   Uom = x.borrowed.Uom,
                                   Category = x.borrowed.Category,
-                                  BorrowedDate = x.borrowed.BorrowedDate.ToString(),
-                                  
-                                
+                                                               
                               });
 
 
             var Reports = _context.BorrowedIssues
                       .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
                       .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
-                      .Where(x => Convert.ToDateTime(x.borrowedreturned.BorrowedDate) >= DateTime.Parse(DateFrom) && Convert.ToDateTime(x.borrowedreturned.BorrowedDate) <= DateTime.Parse(DateTo))
+                      .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo))
                       .Select(x => new DtoBorrowedAndReturned
                       {
                           BorrowedId = x.Borrowedissue.Id,
@@ -248,16 +194,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           Remarks = x.borrowedreturned.Category,
                           Uom = x.borrowedreturned != null ? x.borrowedreturned.Uom : null,
                           BorrowedQuantity = x.borrowedreturned.Quantity,
-                          //ReturnQuantity = x.borrowedreturned.ReturnedQuantity,
-                          //Consumes = x.borrowedreturned.Quantity - x.borrowedreturned.ReturnedQuantity,
-                          //TransactedBy = x.Borrowedissue.PreparedBy,
-                          //BorrowedDate =x.Borrowedissue.PreparedDate.ToString()
+                          ReturnQuantity = x.borrowedreturned.ReturnedQuantity,
+                          Consumes = x.borrowedreturned.Quantity - x.borrowedreturned.ReturnedQuantity,
+                          TransactedBy = x.Borrowedissue.PreparedBy,
+                          BorrowedDate = x.Borrowedissue.PreparedDate.ToString("MM/dd/yyyy")
 
                       });
 
-
             return await Reports.ToListAsync();
 
+        }
+
+        public async Task<IReadOnlyList<DtoCancelledReports>> CancelledReports(string DateFrom, string DateTo)
+        {
+            var orders = _context.Orders.Where(x => x.OrderDate >= DateTime.Parse(DateFrom) && x.OrderDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
+                                        .Select(x => new DtoCancelledReports
+                                        {
+
+                                            OrderId = x.Id,
+
+
+
+
+
+                                        });
+
+            return await orders.ToListAsync();
         }
     }
 

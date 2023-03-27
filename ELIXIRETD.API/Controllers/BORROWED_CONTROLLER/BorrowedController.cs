@@ -198,23 +198,18 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpPut]
         [Route("CancelItemCodeInBorrowedIssue")]
-        public async Task<IActionResult> CancelItemCodeInBorrowedIssue([FromBody] BorrowedIssueDetails borrowed)
+        public async Task<IActionResult> CancelItemCodeInBorrowedIssue([FromBody] BorrowedIssueDetails[] borrowed)
         {
 
-                await _unitofwork.Borrowed.CancelIssuePerItemCode(borrowed);
-                await _unitofwork.CompleteAsync();  
-             
+            foreach(BorrowedIssueDetails items in borrowed)
 
+            {
+                await _unitofwork.Borrowed.CancelIssuePerItemCode(items);
+                await _unitofwork.CompleteAsync();
+            }
+              
             return new JsonResult("Successfully cancelled transaction!");
         }
-
-
-        
-
-
-
-
-
 
 
         [HttpPut]

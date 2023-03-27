@@ -59,28 +59,7 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         }
 
-        [HttpGet]
-        [Route("BorrowedIssueReport")]
-        public async Task<IActionResult> BorrowedIssueReport([FromQuery] string DateFrom, [FromQuery] string DateTo)
-        {
 
-            var issue = await _unitofwork.Reports.BorrowedAndReturnedReports(DateFrom, DateTo);
-
-            return Ok(issue);
-
-        }
-
-
-        [HttpGet]
-        [Route("ReturnedReports")]
-        public async Task<IActionResult> ReturnedReports([FromQuery] string DateFrom, [FromQuery] string DateTo)
-        {
-
-            var issue = await _unitofwork.Reports.ReturnedReports(DateFrom, DateTo);
-
-            return Ok(issue);
-
-        }
 
         [HttpGet]
         [Route("BorrowedReturnedReports")]
@@ -92,6 +71,9 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
             return Ok(issue);
 
         }
+
+
+
 
 
 

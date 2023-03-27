@@ -393,10 +393,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             if (items == null)
                 return false;
 
-            items.IsActive = false;
             items.ReturnQuantity = 0;
             
-
             return true;
 
         }
