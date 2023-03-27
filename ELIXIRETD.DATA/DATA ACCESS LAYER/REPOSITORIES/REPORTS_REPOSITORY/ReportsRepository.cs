@@ -212,15 +212,25 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                         {
 
                                             OrderId = x.Id,
-
-
-
+                                            DateNeeded = x.DateNeeded.ToString(),
+                                            DateOrdered = x.OrderDate.ToString(),
+                                            CustomerCode = x.Customercode,
+                                            CustomerName = x.CustomerName,
+                                            ItemCode = x.ItemCode,
+                                            ItemDescription = x.ItemdDescription,
+                                            QuantityOrdered = x.QuantityOrdered,
+                                            CancelledDate = x.CancelDate.ToString(),
+                                            CancelledBy = x.IsCancelBy,
+                                            Reason = x.Remarks
 
 
                                         });
 
             return await orders.ToListAsync();
         }
+
+
+
     }
 
 }

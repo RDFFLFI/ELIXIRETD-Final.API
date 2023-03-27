@@ -16,7 +16,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string CustomerName { get; set; }
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
-        public string QuantityOrdered { get; set; }
+        public decimal QuantityOrdered { get; set; }
 
         public string CancelledDate { get; set; }   
         public string CancelledBy { get; set; }

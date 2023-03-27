@@ -73,6 +73,20 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("CancelledOrderedReports")]
+        public async Task<IActionResult> CancelledOrderedReports([FromQuery] string DateFrom, [FromQuery] string DateTo)
+        {
+
+            var issue = await _unitofwork.Reports.CancelledReports(DateFrom, DateTo);
+
+            return Ok(issue);
+
+        }
+
+
+
+
 
 
 
