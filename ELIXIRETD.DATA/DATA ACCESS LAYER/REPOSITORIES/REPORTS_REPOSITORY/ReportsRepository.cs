@@ -1,4 +1,7 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -229,8 +232,456 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await orders.ToListAsync();
         }
 
+        public async Task<IReadOnlyList<DtoInventoryMovement>> InventoryMovementReports(string DateFrom, string DateTo , string PlusOne)
+        {
+            var DateToday = DateTime.Now.ToString("MM/dd/yyyy");
 
 
+            var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                              .GroupBy(x => new
+                                                              {
+
+                                                                  x.ItemCode,
+
+                                                              }).Select(x => new WarehouseInventory
+                                                              {
+
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  ActualGood = x.Sum(x=> x.ActualGood)
+
+                                                              });
+
+            var getMoveOrdersOutByDate = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsPrepared == true)
+                                                            .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo) && x.ApprovedDate != null)
+                                                            .GroupBy(x => new
+                                                            {
+
+                                                                x.ItemCode,
+                                                            }).Select(x => new MoveOrderInventory
+                                                            {
+
+                                                                ItemCode = x.Key.ItemCode,
+                                                                QuantityOrdered = x.Sum(x=> x.QuantityOrdered)
+
+
+                                                            });
+
+
+            var getMoveOrdersOutbyDatePlus = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsPrepared == true)
+                                                                .Where(x => x.PreparedDate >= DateTime.Parse(PlusOne) && x.PreparedDate <= DateTime.Parse(DateToday) && x.ApprovedDate != null)
+                                                                .GroupBy(x => new
+                                                                {
+
+                                                                    x.ItemCode,
+
+                                                                }).Select(x => new MoveOrderInventory
+                                                                {
+
+
+                                                                    ItemCode = x.Key.ItemCode,
+                                                                    QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+
+                                                                });
+
+
+            var getIssueOutByDate = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+                                                                     .Where(x => x.IsTransact == true)
+                                                                     .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo))
+                                                                     .GroupBy(x => new
+                                                                     {
+                                                                         x.ItemCode,
+
+                                                                     }).Select(x => new DtoMiscIssue
+                                                                     {
+
+                                                                         ItemCode = x.Key.ItemCode,
+                                                                         Quantity = x.Sum(x => x.Quantity)
+
+                                                                     });
+
+            var getIssueOutByDatePlus = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true && x.IsTransact == true)
+                                                                         .Where(x => x.PreparedDate >= DateTime.Parse(PlusOne) && x.PreparedDate <= DateTime.Parse(DateToday))
+                                                                         .GroupBy(x => new
+                                                                         {
+
+                                                                             x.ItemCode,
+
+                                                                         }).Select(x => new DtoMiscIssue
+                                                                         {
+
+                                                                             ItemCode = x.Key.ItemCode,
+                                                                             Quantity = x.Sum(x => x.Quantity)
+
+                                                                         });
+
+            var getBorrowedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                    .Where(x => x.BorrowedDate >= DateTime.Parse(DateTo) && x.BorrowedDate <= DateTime.Parse(DateFrom))
+                                                                    .GroupBy(x => new
+                                                                    {
+                                                                        x.ItemCode,
+
+                                                                    }).Select(x => new DtoBorrowedIssue
+                                                                    {
+                                                                        ItemCode = x.Key.ItemCode,
+                                                                        Quantity = x.Sum(x => x.Quantity)
+
+                                                                    });
+
+            var getBorrowedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                  .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= DateTime.Parse(DateToday))
+                                                                  .GroupBy(x => new
+                                                                  {
+                                                                      x.ItemCode,
+
+                                                                  }).Select(x => new DtoBorrowedIssue
+                                                                  {
+                                                                      ItemCode = x.Key.ItemCode,
+                                                                      Quantity = x.Sum(x => x.Quantity)
+
+                                                                  });
+
+
+
+
+            var getReturnedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                       .Where(x => x.IsReturned == true)
+                                                                       .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(DateTo))
+                                                                       .GroupBy(x => new
+                                                                       {
+                                                                           x.ItemCode,
+
+                                                                       }).Select(x => new DtoBorrowedIssue
+
+                                                                       {
+
+                                                                           ItemCode = x.Key.ItemCode,
+                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+
+                                                                       });
+
+
+
+            var getReturnedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                        .Where(x => x.IsReturned == true)
+                                                                        .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= DateTime.Parse(DateToday))
+                                                                        .GroupBy(x => new
+                                                                        {
+                                                                            x.ItemCode,
+
+                                                                        }).Select(x => new DtoBorrowedIssue
+
+                                                                        {
+
+                                                                           ItemCode = x.Key.ItemCode,
+                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+
+                                                                        });
+
+
+            var getReceiveIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                         .Where(x => x.TransactionType == "Receiving")
+                                                         .Where(x => x.ReceivingDate >= DateTime.Parse(DateFrom) && x.ReceivingDate <= DateTime.Parse(DateTo))
+                                                         .GroupBy(x => new
+                                                         {
+                                                             x.ItemCode,
+
+                                                         }).Select(x => new DtoReceiveIn
+                                                         {
+
+                                                             ItemCode = x.Key.ItemCode,
+                                                             Quantity = x.Sum(x => x.ActualGood)
+
+                                                         });
+
+            var getReceiveInPlus = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                        .Where(x => x.TransactionType == "Receiving")
+                                                        .Where(x => x.ReceivingDate >= DateTime.Parse(PlusOne) && x.ReceivingDate <= DateTime.Parse(DateToday))
+                                                        .GroupBy(x => new
+                                                        {
+                                                            x.ItemCode,
+
+                                                        }).Select(x => new DtoReceiveIn
+                                                        {
+
+                                                            ItemCode = x.Key.ItemCode,
+                                                            Quantity = x.Sum(x => x.ActualGood)
+
+                                                        });
+
+
+            var getReceiptIn = _context.WarehouseReceived.Where(x => x.IsActive == true && x.TransactionType == "MiscellaneousReceipt")
+                                                             .Where(x => x.ReceivingDate >= DateTime.Parse(DateFrom) && x.ReceivingDate <= DateTime.Parse(DateTo))
+                                                             .GroupBy(x => new
+                                                             {
+                                                                 x.ItemCode,
+
+                                                             }).Select(x => new DtoRecieptIn
+                                                             {
+
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 Quantity = x.Sum(x => x.ActualGood)
+
+                                                             });
+
+
+            var getReceiptInPlus = _context.WarehouseReceived.Where(x => x.IsActive == true && x.TransactionType == "MiscellaneousReceipt")
+                                                            .Where(x => x.ReceivingDate >= DateTime.Parse(PlusOne) && x.ReceivingDate <= DateTime.Parse(DateToday))
+                                                            .GroupBy(x => new
+                                                            {
+                                                                x.ItemCode,
+
+                                                            }).Select(x => new DtoRecieptIn
+                                                            {
+
+                                                                ItemCode = x.Key.ItemCode,
+                                                                Quantity = x.Sum(x => x.ActualGood)
+
+                                                            });
+
+
+            var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                     .Where(X => X.IsPrepared == true)
+                                                     .GroupBy(x => new
+                                                     {
+
+                                                         x.ItemCode,
+
+                                                     }).Select(x => new MoveOrderInventory
+                                                     {
+                                                         ItemCode = x.Key.ItemCode,
+                                                         QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+
+                                                     });
+
+            var getIssueOut = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                 .Where(x => x.IsTransact == true)
+                                                 .GroupBy(x => new
+                                                 {
+
+                                                     x.ItemCode,
+
+                                                 }).Select(x => new DtoMiscIssue
+                                                 {
+
+                                                     ItemCode = x.Key.ItemCode,
+                                                     Quantity = x.Sum(x => x.QuantityOrdered)
+
+                                                 });
+
+
+
+
+            var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                              .GroupBy(x => new
+                                                              {
+
+                                                                 x.ItemCode,
+
+                                                              }).Select(x => new DtoBorrowedIssue
+                                                              {
+
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  Quantity = x.Sum(x => x.Quantity)
+
+                                                              });
+
+
+            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsReturned == true)
+                                                             .GroupBy(x => new
+                                                             {
+
+                                                                 x.ItemCode,
+
+                                                             }).Select(x => new DtoBorrowedIssue
+                                                             {
+
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+
+                                                             });
+
+
+            var getSOH = (from warehouse in getWarehouseStock
+                          join moveorder in getMoveOrderOut
+                          on warehouse.ItemCode equals moveorder.ItemCode
+                          into leftJ1
+                          from moveorder in leftJ1.DefaultIfEmpty()
+
+                          join issue in getIssueOut
+                          on warehouse.ItemCode equals issue.ItemCode
+                          into leftJ2
+                          from issue in leftJ2.DefaultIfEmpty()
+
+                          join borrowed in getBorrowedOut
+                          on warehouse.ItemCode equals borrowed.ItemCode
+                          into leftJ3
+                          from borrowed in leftJ3.DefaultIfEmpty()
+
+                          join returned in getReturned
+                          on warehouse.ItemCode equals returned.ItemCode
+                          into leftJ4
+                          from returned in leftJ4.DefaultIfEmpty()
+
+                          group new
+                          {
+
+                              warehouse,
+                              moveorder,
+                              issue,
+                              borrowed,
+                              returned,
+
+                          }
+
+                          by new
+                          {
+                              warehouse.ItemCode
+                          }
+
+                          into total
+
+                          select new DtoSOH
+                          {
+
+                              ItemCode = total.Key.ItemCode,
+                              SOH  = total.Sum(x => x.warehouse != null ? x.warehouse.ActualGood : 0 ) + 
+                                     total.Sum(x => x.returned != null ? x.returned.ReturnQuantity : 0 ) -
+                                     total.Sum(x => x.moveorder != null ? x.moveorder.QuantityOrdered : 0) -
+                                     total.Sum(x => x.issue != null ? x.issue.Quantity : 0 ) -
+                                     total.Sum(x => x.borrowed != null ? x.borrowed.Quantity : 0)
+
+                          });
+
+            var movementInventory = (from material in _context.Materials
+                                     join moveorder in getMoveOrdersOutByDate
+                                     on material.ItemCode equals moveorder.ItemCode
+                                     into leftJ1
+                                     from moveorder in leftJ1.DefaultIfEmpty()
+
+                                     join issue in getIssueOutByDate
+                                     on material.ItemCode equals issue.ItemCode
+                                     into leftJ2
+                                     from issue in leftJ2.DefaultIfEmpty()
+
+                                     join borrowed in getBorrowedOutByDate
+                                     on material.ItemCode equals borrowed.ItemCode
+                                     into leftJ3
+                                     from borrowed in leftJ3.DefaultIfEmpty()
+
+                                     join returned in getReturnedOutByDate
+                                     on material.ItemCode equals returned.ItemCode
+                                     into leftJ4
+                                     from returned in leftJ4.DefaultIfEmpty()
+
+                                     join receiveIn in getReceiveIn
+                                     on material.ItemCode equals receiveIn.ItemCode
+                                     into leftJ5
+                                     from receiveIn in leftJ5.DefaultIfEmpty()
+
+                                     join receipt in getReceiptIn
+                                     on material.ItemCode equals receipt.ItemCode
+                                     into leftJ6
+                                     from receipt in leftJ6.DefaultIfEmpty()
+
+                                     join SOH in getSOH
+                                     on material.ItemCode equals SOH.ItemCode
+                                     into leftJ7
+                                     from SOH in leftJ7.DefaultIfEmpty()
+
+                                     join moveorderPlus in getMoveOrdersOutbyDatePlus
+                                     on material.ItemCode equals moveorderPlus.ItemCode
+                                     into leftJ8
+                                     from moverorderPlus in leftJ8.DefaultIfEmpty()
+
+                                     join issuePlus in getIssueOutByDatePlus
+                                     on material.ItemCode equals issuePlus.ItemCode
+                                     into leftJ9
+                                     from issuePlus in leftJ9.DefaultIfEmpty()
+
+                                     join borrowedPlus in getBorrowedOutByDatePlus
+                                     on material.ItemCode equals borrowedPlus.ItemCode
+                                     into leftJ10
+                                     from borrowedPlus in leftJ10.DefaultIfEmpty()
+
+                                     join returnedPlus in getBorrowedOutByDatePlus
+                                     on material.ItemCode equals returnedPlus.ItemCode
+                                     into leftJ11
+                                     from returnedPlus in leftJ11.DefaultIfEmpty()
+
+                                     join receiveInPlus in getReceiptInPlus
+                                     on material.ItemCode equals receiveInPlus.ItemCode
+                                     into leftJ12
+                                     from receiveInPlus in leftJ12.DefaultIfEmpty()
+
+                                     join receiptInPlus in getReceiptInPlus
+                                     on material.ItemCode equals receiptInPlus.ItemCode
+                                     into leftJ13
+                                     from receiptInPlus in leftJ13.DefaultIfEmpty()
+
+                                     group new
+                                     {
+
+                                         material,
+                                         moveorder,
+                                         issue,
+                                         borrowed,
+                                         returned,
+                                         receiveIn,
+                                         receipt,
+                                         SOH,
+                                         moverorderPlus,
+                                         issuePlus,
+                                         borrowedPlus,
+                                         returnedPlus,
+                                         receiveInPlus,
+                                         receiptInPlus,
+
+                                     }
+
+                                     by new
+                                     {
+                                         material.ItemCode,
+                                         material.ItemDescription,
+                                         material.SubCategory.SubCategoryName,
+                                         Moveorder = moveorder != null ? moveorder.QuantityOrdered : 0,
+                                         Issue = issue != null ? issue.Quantity : 0,
+                                         borrowed = borrowed != null ? borrowed.Quantity : 0,
+                                         returned = returned != null ? returned.ReturnQuantity : 0,
+                                         receiveIn = receiveIn != null ? receiveIn.Quantity : 0,
+                                         receipt = receipt != null ? receipt.Quantity : 0,
+                                         SOH = SOH.SOH != null ? SOH.SOH : 0,
+                                         moverorderPlus = moverorderPlus != null ? moverorderPlus.QuantityOrdered : 0,
+                                         issuePlus = issuePlus != null ? issuePlus.Quantity : 0,
+                                         borrowedPlus = borrowedPlus != null ? borrowedPlus.Quantity : 0,
+                                         returnedPlus = returnedPlus != null ? returnedPlus.ReturnQuantity : 0,
+                                         receiptInPlus = receiptInPlus != null ? receiptInPlus.Quantity : 0,
+                                         receiveInPlus = receiveInPlus != null ? receiveInPlus.Quantity : 0,
+
+                                     }
+                                     into total
+
+                                     select new DtoInventoryMovement
+                                     {
+
+                                         ItemCode = total.Key.ItemCode,
+                                         ItemDescription = total.Key.ItemDescription,
+                                         ItemCategory = total.Key.SubCategoryName,
+                                         TotalOut = total.Key.Moveorder + total.Key.Issue + total.Key.borrowed,
+                                         TotalIn = total.Key.receipt + total.Key.receiveIn + total.Key.returned,
+                                         Ending = (total.Key.receipt + total.Key.receiveIn + total.Key.returned) - (total.Key.Moveorder + total.Key.Issue + total.Key.borrowed),
+                                         CurrentStock = total.Key.SOH,
+                                         PurchaseOrder = total.Key.receiveInPlus + total.Key.receiptInPlus + total.Key.returnedPlus,
+                                         OtherPlus = total.Key.moverorderPlus + total.Key.issuePlus + total.Key.borrowedPlus,
+
+                                     });
+
+            return await movementInventory.ToListAsync();
+
+
+        }
     }
 
 }

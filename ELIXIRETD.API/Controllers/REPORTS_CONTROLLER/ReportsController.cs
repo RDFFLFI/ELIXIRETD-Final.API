@@ -86,7 +86,16 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
 
 
+        [HttpGet]
+        [Route("InventoryMovementReport")]
+        public async Task<IActionResult> InventoryMovementReport([FromQuery] string DateFrom, [FromQuery] string DateTo , [FromQuery] string PlusOne)
+        {
 
+            var issue = await _unitofwork.Reports.InventoryMovementReports(DateFrom, DateTo , PlusOne);
+
+            return Ok(issue);
+
+        }
 
 
 
