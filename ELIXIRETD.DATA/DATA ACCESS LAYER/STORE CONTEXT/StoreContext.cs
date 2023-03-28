@@ -63,7 +63,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
                 .Build();
 
             var connectionString = configuration.GetConnectionString("DevConnection");
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString).EnableSensitiveDataLogging();
         }
 
 

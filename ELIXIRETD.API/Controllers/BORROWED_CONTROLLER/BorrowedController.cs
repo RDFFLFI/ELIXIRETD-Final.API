@@ -91,15 +91,14 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         public async Task<IActionResult> AddNewBorrowedIssueDetails ([FromBody] BorrowedIssueDetails borrowed)
         {
             borrowed.IsActive= true;
-            borrowed.IsTransact= true;
             borrowed.PreparedDate= DateTime.Now;
+            borrowed.BorrowedDate= DateTime.Now;
   
 
             await _unitofwork.Borrowed.AddBorrowedIssueDetails(borrowed);
             await _unitofwork.CompleteAsync();
 
             return Ok("Successfully add new borrowed issue!");
-
         }
 
 
@@ -121,7 +120,6 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         {
 
             foreach(BorrowedIssueDetails items in borrowed)
-
             {
 
                 await _unitofwork.Borrowed.Cancelborrowedfortransact(items);

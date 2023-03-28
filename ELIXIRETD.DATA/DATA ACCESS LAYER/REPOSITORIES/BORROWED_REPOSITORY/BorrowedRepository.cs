@@ -32,7 +32,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       x.BorrowedPKey,
                                                       x.CustomerCode,
                                                       x.CustomerName,
-                                                      x.Remarks,
                                                       x.PreparedBy,
                                                       x.IsActive,
                                                       x.BorrowedDate,
@@ -45,7 +44,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       CustomerName = x.Key.CustomerName,
                                                       CustomerCode = x.Key.CustomerCode,
                                                       TotalQuantity = x.Sum(x => x.Quantity),                              
-                                                      Remarks = x.Key.Remarks,
                                                       PreparedBy = x.Key.PreparedBy,
                                                       IsActive = x.Key.IsActive,
                                                       BorrowedDate = x.Key.BorrowedDate.ToString(),
@@ -69,7 +67,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       x.BorrowedPKey,
                                                       x.CustomerCode,
                                                       x.CustomerName,
-                                                      x.Remarks,
                                                       x.PreparedBy,
                                                       x.IsActive,
                                                       x.BorrowedDate,
@@ -82,7 +79,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    CustomerName = x.Key.CustomerName,
                                                    CustomerCode = x.Key.CustomerCode,
                                                    TotalQuantity = x.Sum(x => x.Quantity),
-                                                   Remarks = x.Key.Remarks,
                                                    PreparedBy = x.Key.PreparedBy,
                                                    IsActive = x.Key.IsActive,
                                                    BorrowedDate = x.Key.BorrowedDate.ToString(),
@@ -272,6 +268,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             existing.BorrowedPKey = borowed.BorrowedPKey;
             existing.IsActive = borowed.IsActive;
 
+            existing.IsTransact = true;
+
             return true;
         }
 
@@ -326,11 +324,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
             var warehouse = _context.BorrowedIssueDetails
 
-            .OrderBy(x => x.WarehouseId )
-              .ThenBy(x => x.PreparedDate)
+            .OrderBy(x => x.BorrowedDate)
               .ThenBy(x => x.ItemCode)
               .ThenBy(x => x.CustomerName )
-              .Where(x => x.Id == id)
+              .Where(x => x.BorrowedPKey == id)
               .Where(x => x.IsTransact == true)
               .Where(x => x.IsActive == true)
               
@@ -339,17 +336,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             .Select(x => new GetAllDetailsInBorrowedIssueDto
                                                             {
 
-                                                                WarehouseId = x.WarehouseId,
                                                                 BorrowedPKey = x.BorrowedPKey,
                                                                 Customer = x.CustomerName,
                                                                 CustomerCode = x.CustomerCode,
-                                                                PreparedDate = x.PreparedDate.ToString(),
+                                                                PreparedDate = x.BorrowedDate.ToString(),
                                                                 ItemCode = x.ItemCode,
                                                                 ItemDescription = x.ItemDescription,
                                                                 Quantity = x.Quantity,
                                                                 Consumes = x.Quantity  - x.ReturnQuantity,
                                                                 ReturnQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
-                                                                Remarks = x.Remarks
+                                                                PreparedBy = x.PreparedBy,
 
                                                             });
 

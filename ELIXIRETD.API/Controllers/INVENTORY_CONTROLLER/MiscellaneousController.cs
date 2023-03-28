@@ -302,8 +302,6 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
 
             }
               
-            
-
             return new JsonResult("Successfully cancelled transaction!");
         }
 
