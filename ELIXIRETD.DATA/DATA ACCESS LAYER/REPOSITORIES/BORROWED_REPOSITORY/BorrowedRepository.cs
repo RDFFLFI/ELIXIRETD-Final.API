@@ -24,7 +24,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status)
         {
             var borrow = _context.BorrowedIssueDetails.OrderByDescending(x => x.BorrowedDate)       
-                                                  .Where(x => x.IsReturned == null)
+                                                  
                                                   .Where(x => x.IsActive == status)
                                                   .GroupBy(x => new
                                                   {
@@ -43,12 +43,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       BorrowedPKey = x.Key.BorrowedPKey,
                                                       CustomerName = x.Key.CustomerName,
                                                       CustomerCode = x.Key.CustomerCode,
-                                                      TotalQuantity = x.Sum(x => x.Quantity),                              
+                                                      TotalQuantity = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),                              
                                                       PreparedBy = x.Key.PreparedBy,
                                                       IsActive = x.Key.IsActive,
                                                       BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   
-                                                  });
+                                                  }).Where(x => x.TotalQuantity != 0 && (x.TotalQuantity > 0));
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
 
@@ -78,12 +78,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    BorrowedPKey = x.Key.BorrowedPKey,
                                                    CustomerName = x.Key.CustomerName,
                                                    CustomerCode = x.Key.CustomerCode,
-                                                   TotalQuantity = x.Sum(x => x.Quantity),
+                                                   TotalQuantity = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),
                                                    PreparedBy = x.Key.PreparedBy,
                                                    IsActive = x.Key.IsActive,
                                                    BorrowedDate = x.Key.BorrowedDate.ToString(),
 
-                                               }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower()
+                                               }).Where(x => x.TotalQuantity != 0 && (x.TotalQuantity > 0))
+                                                 .Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower()
                                                  .Contains(search.Trim().ToLower()));
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
@@ -324,7 +325,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
             var warehouse = _context.BorrowedIssueDetails
 
-            .OrderBy(x => x.BorrowedDate)
+            .OrderBy(x => x.WarehouseId )
+               .ThenBy(x => x.PreparedDate)            
               .ThenBy(x => x.ItemCode)
               .ThenBy(x => x.CustomerName )
               .Where(x => x.BorrowedPKey == id)
@@ -335,7 +337,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                             .Select(x => new GetAllDetailsInBorrowedIssueDto
                                                             {
-
+                                                                Id = x.Id,
+                                                                WarehouseId = x.WarehouseId,
                                                                 BorrowedPKey = x.BorrowedPKey,
                                                                 Customer = x.CustomerName,
                                                                 CustomerCode = x.CustomerCode,
@@ -347,7 +350,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                 ReturnQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
                                                                 PreparedBy = x.PreparedBy,
 
-                                                            });
+                                                            }).Where(x => x.Quantity != 0 && (x.Quantity > 0));
 
 
             return await warehouse.ToListAsync();
@@ -428,6 +431,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 return false;
 
             editquantity.ReturnQuantity = borrowed.ReturnQuantity;
+            editquantity.IsReturned = true;
+            editquantity.ReturnedDate = DateTime.Now;
 
             if(editquantity.Quantity < editquantity.ReturnQuantity || editquantity.ReturnQuantity < 0) 
                 return false;
@@ -458,14 +463,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 item.IsReturned = true;
                 item.IsActive = true;
-                item.IsTransact = false;
                 item.ReturnedDate = DateTime.Now;
 
             }
 
             returned.ReturnedDate = DateTime.Now;
             returned.IsReturned = true;
-            returned.IsTransact = false;
             returned.IsActive = true;
 
             return true;
@@ -476,7 +479,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
             var BorrowIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
-                                                     .Where(x => x.IsTransact == false)
                                                      .GroupBy(x => new
                                                      {
 
@@ -508,7 +510,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var BorrowIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
-                                                     .Where(x => x.IsTransact == false)
                                                      .GroupBy(x => new
                                                      {
 
@@ -543,7 +544,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
                                                      .Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
-                                                     .Where(x => x.IsTransact == false)
                                                        .Select(x => new DtoViewBorrewedReturnedDetails
                                                       {
                                                           ItemCode = x.ItemCode,

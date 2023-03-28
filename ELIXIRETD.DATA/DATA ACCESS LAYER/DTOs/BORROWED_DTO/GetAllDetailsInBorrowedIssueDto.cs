@@ -9,7 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 {
     public class GetAllDetailsInBorrowedIssueDto
     {
-
+        public int Id { get; set; }
         public int WarehouseId { get; set; }
         public int BorrowedPKey { get; set; }
         public string Customer { get; set; }

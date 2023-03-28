@@ -269,7 +269,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                             });
 
-            //Error Variable
+       
 
             var getMoveOrdersOutbyDatePlus = _context.MoveOrders.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsPrepared == true)
