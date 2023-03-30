@@ -245,7 +245,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                            });
 
-            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var BorrowedReturn = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .GroupBy(x => new
                                                              {
@@ -256,7 +256,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.ReturnQuantity),
+                                                                 In = x.Sum(x => x.ReturnedQuantity),
                                                                  warehouseId = x.Key.WarehouseId,
 
                                                              });

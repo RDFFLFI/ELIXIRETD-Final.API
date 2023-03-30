@@ -154,7 +154,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                        });
 
-            var getReturnedBorrow = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getReturnedBorrow = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                                  .Where(x => x.IsReturned == true)
                                                                  .GroupBy(x => new
                                                                  {
@@ -165,7 +165,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                  {
 
                                                                      ItemCode = x.Key.ItemCode,
-                                                                     ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                     ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
 
                                                                  });
 
@@ -630,7 +630,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                        });
 
-            var getReturnedBorrow = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getReturnedBorrow = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                                  .Where(x => x.IsReturned == true)
                                                                  .GroupBy(x => new
                                                                  {
@@ -641,7 +641,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                  {
 
                                                                      ItemCode = x.Key.ItemCode,
-                                                                     ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                     ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
 
                                                                  });
 
@@ -1111,7 +1111,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                        });
 
-            var getReturnedBorrow = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getReturnedBorrow = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                                  .Where(x => x.IsReturned == true)
                                                                  .GroupBy(x => new
                                                                  {
@@ -1122,7 +1122,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                  {
 
                                                                      ItemCode = x.Key.ItemCode,
-                                                                     ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                     ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
 
                                                                  });
 

@@ -522,10 +522,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                             .Where(x => x.SubCategoryName == category)
                                             .Select(x => new SubCategoryDto
                                               {
-                                                
-                                                  SubcategoryName = x.SubCategoryName,
-                                                 
-                                              });
+
+                                                SubCategoryId = x.Id,
+                                                SubcategoryName = x.SubCategoryName,
+                                                ItemCategoryId = x.ItemCategoryId,
+                                                CategoryName = x.ItemCategory.ItemCategoryName,
+
+                                            });
 
 
             return await sub.ToListAsync();

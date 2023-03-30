@@ -55,6 +55,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
 
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
 
+        public virtual DbSet<ReturnedBorrowed> ReturnedBorroweds { get; set; }
+
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var configuration = new ConfigurationBuilder()

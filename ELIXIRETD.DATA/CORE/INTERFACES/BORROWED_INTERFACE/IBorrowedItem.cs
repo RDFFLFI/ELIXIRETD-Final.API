@@ -32,9 +32,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> CancelIssuePerItemCode(BorrowedIssueDetails borrowed);
 
-        
-
-        Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed);
+        Task<bool> EditReturnQuantity(ReturnedBorrowed borrowed);
         Task<bool> SaveReturnedQuantity (BorrowedIssue borrowed);
         Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams);
         Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams , string search);
