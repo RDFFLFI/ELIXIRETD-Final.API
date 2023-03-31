@@ -24,7 +24,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
      public string Uom { get; set; }
 
-        public string Remarks { get; set; }
 
         public decimal Consumes { get; set; }
 

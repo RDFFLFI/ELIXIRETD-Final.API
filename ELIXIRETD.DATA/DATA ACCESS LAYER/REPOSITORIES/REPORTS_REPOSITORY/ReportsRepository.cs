@@ -7,6 +7,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,44 +142,47 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports(string DateFrom, string DateTo)
         {
-            var getBorrowed = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                        .Select(x => new 
-                                                        {
-
-                                                            BorrowedPKey = x.BorrowedPKey,
-                                                            ItemCode = x.ItemCode,
-                                                            Quantity = x.Quantity != null ? x.Quantity : 0,
-                                                            ItemDescription = x.ItemDescription,
-                                                            Uom = x.Uom,
-                                                            Category = x.Remarks,
-
-
-                                                        });
 
             var getReturned = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                            .Where(x => x.IsReturned == true)
+                                                           .GroupBy(x => new
+                                                           {
+                                                               x.TotalbPkey,
+                                                               x.ItemCode,
+
+                                                           })
                                                            .Select(x => new
                                                            {
-                                                               BorrowedPKey = x.BorrowedPKey,
-                                                               ItemCode = x.ItemCode,
-                                                               ReturnedQuantity = x.ReturnedQuantity != null ? x.ReturnedQuantity : 0
+                                                               TotalbPkey = x.Key.TotalbPkey,
+                                                               ItemCode = x.Key.ItemCode,
+                                                               ReturnedQuantity = x.Sum(x => x.ReturnedQuantity != null ? x.ReturnedQuantity : 0)
 
                                                            });
 
 
-            var getBorrowedReturn = getBorrowed
-                              .GroupJoin(getReturned, borrowed => borrowed.BorrowedPKey, returned => returned.BorrowedPKey, (borrowed, returned) => new { borrowed, returned })
+            var getBorrowedReturn = _context.BorrowedIssueDetails
+                              .Where(x => x.IsActive == true)
+                              .GroupJoin(getReturned, borrowed => borrowed.BorrowedPKey, returned => returned.TotalbPkey, (borrowed, returned) => new { borrowed, returned })
                               .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.borrowed, returned })
+                              .GroupBy(x => new
+                              {
+                                  x.borrowed.BorrowedPKey,
+                                  x.borrowed.ItemCode,
+                                  x.borrowed.ItemDescription,
+                                  x.borrowed.Uom,
+
+
+                              })
+
                               .Select(x => new 
                               {
 
-                                  BorrowedPKey = x.borrowed.BorrowedPKey,
-                                  ItemCode = x.borrowed.ItemCode,
-                                  ItemDescription = x.borrowed.ItemDescription,
-                                  Quantity = x.borrowed.Quantity,
-                                  ReturnedQuantity = x.returned.ReturnedQuantity,
-                                  Uom = x.borrowed.Uom,
-                                  Category = x.borrowed.Category,
+                                  BorrowedPKey = x.Key.BorrowedPKey,
+                                  ItemCode = x.Key.ItemCode,
+                                  ItemDescription = x.Key.ItemDescription,
+                                  Quantity = x.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0),
+                                  ReturnedQuantity = x.Sum(x => x.returned.ReturnedQuantity != null ? x.returned.ReturnedQuantity : 0),
+                                  Uom = x.Key.Uom,
                                                                
                               });
 
@@ -186,21 +190,31 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var Reports = _context.BorrowedIssues
                       .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
                       .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
-                      .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo))
-                      .Select(x => new DtoBorrowedAndReturned
+                      .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo) && x.Borrowedissue.IsActive == true)
+                      .GroupBy(x => new
                       {
-                          BorrowedId = x.Borrowedissue.Id,
-                          CustomerCode = x.Borrowedissue.CustomerCode,
-                          CustomerName = x.Borrowedissue.CustomerName,
-                          ItemCode = x.borrowedreturned.ItemCode,
-                          ItemDescription = x.borrowedreturned.ItemDescription,
-                          Remarks = x.borrowedreturned.Category,
-                          Uom = x.borrowedreturned != null ? x.borrowedreturned.Uom : null,
-                          BorrowedQuantity = x.borrowedreturned.Quantity,
-                          ReturnQuantity = x.borrowedreturned.ReturnedQuantity,
-                          Consumes = x.borrowedreturned.Quantity - x.borrowedreturned.ReturnedQuantity,
-                          TransactedBy = x.Borrowedissue.PreparedBy,
-                          BorrowedDate = x.Borrowedissue.PreparedDate.ToString("MM/dd/yyyy")
+                          x.Borrowedissue.Id,
+                          x.Borrowedissue.CustomerCode,
+                          x.Borrowedissue.CustomerName,
+                          x.borrowedreturned.ItemCode,
+                          x.borrowedreturned.ItemDescription,
+                          x.borrowedreturned.Uom,
+                          x.Borrowedissue.PreparedBy,
+                          x.Borrowedissue.PreparedDate,
+
+                      }).Select(x => new DtoBorrowedAndReturned
+                      {
+                          BorrowedId = x.Key.Id,
+                          CustomerCode = x.Key.CustomerCode,
+                          CustomerName = x.Key.CustomerName,
+                          ItemCode = x.Key.ItemCode,
+                          ItemDescription = x.Key.ItemDescription,
+                          Uom = x.Key.Uom,
+                          BorrowedQuantity = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0),
+                          ReturnQuantity = x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
+                          Consumes = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0) - x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
+                          TransactedBy = x.Key.PreparedBy,
+                          BorrowedDate = x.Key.PreparedDate.ToString()
 
                       });
 
