@@ -145,16 +145,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         //    var getReturned = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
         //                                                   .Where(x => x.IsReturned == true)
+        //                                                   .GroupBy(x => new
+        //                                                   {
+        //                                                       x.TotalbPkey,
+        //                                                       x.ItemCode,
+
+        //                                                   })
         //                                                   .Select(x => new
         //                                                   {
-        //                                                       TotalbPkey = x.TotalbPkey,
-        //                                                       ItemCode = x.ItemCode,
-        //                                                       ReturnedQuantity =  x.ReturnedQuantity != null ? x.ReturnedQuantity : 0
+        //                                                       TotalbPkey = x.Key.TotalbPkey,
+        //                                                       ItemCode = x.Key.ItemCode,
+        //                                                       ReturnedQuantity = x.Sum(x => x.ReturnedQuantity != null ? x.ReturnedQuantity : 0),
 
         //                                                   });
 
 
         //    var getBorrowed = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+        //                                                      .GroupBy(x => new
+        //                                                      {
+
+        //                                                          x.BorrowedPKey,
+        //                                                          x.ItemCode,
+        //                                                          x.ItemDescription,
+        //                                                          x.Uom,
+                                                                  
+
+        //                                                      })
         //                                                      .Select(x => new
         //                                                      {
 
@@ -163,56 +179,57 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         //                                                          ItemDescription = x.ItemDescription,
         //                                                          Uom = x.Uom,
         //                                                          BorrowedQuantity = x.Quantity != null ? x.Quantity : 0,
-        //                                                          BorrowedDate =x.BorrowedDate.ToString()
+        //                                                          BorrowedDate = x.BorrowedDate.ToString()
 
         //                                                      });
 
 
 
-        //    //var Reports = (from borrorewdissue in _context.BorrowedIssues
-        //    //               join borroweddetails in getBorrowed
-        //    //               on borrorewdissue.Id equals borroweddetails.BorrowedPKey
-        //    //               into leftJ1 
-        //    //               from borrowedissue in leftJ1.DefaultIfEmpty()
+        //    var Reports = (from borrorewdissue in _context.BorrowedIssues
+        //                   join borroweddetails in getBorrowed
+        //                   on borrorewdissue.Id equals borroweddetails.BorrowedPKey
+        //                   into leftJ1
+        //                   from borrowedissue in leftJ1.DefaultIfEmpty()
 
-        //    //               )
-        //    var Reports =
+        //                    join returned in getReturned 
+        //                    on borrowedissue )
+        //        //    var Reports =
 
-        //       .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
-        //              .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
-        //              .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo) && x.Borrowedissue.IsActive == true)
-        //              .GroupBy(x => new
-        //              {
-        //                  x.Borrowedissue.Id,
-        //                  x.Borrowedissue.CustomerCode,
-        //                  x.Borrowedissue.CustomerName,
-        //                  x.borrowedreturned.ItemCode,
-        //                  x.borrowedreturned.ItemDescription,
-        //                  x.borrowedreturned.Uom,
-        //                  x.Borrowedissue.PreparedBy,
-        //                  x.Borrowedissue.PreparedDate,
+            //       .GroupJoin(getBorrowedReturn, Borrowedissue => Borrowedissue.Id, borrowedreturned => borrowedreturned.BorrowedPKey, (Borrowedissue, borrowedreturned) => new { Borrowedissue, borrowedreturned })
+            //              .SelectMany(x => x.borrowedreturned.DefaultIfEmpty(), (x, borrowedreturned) => new { x.Borrowedissue, borrowedreturned })
+            //              .Where(x => x.Borrowedissue.PreparedDate >= DateTime.Parse(DateFrom) && x.Borrowedissue.PreparedDate <= DateTime.Parse(DateTo) && x.Borrowedissue.IsActive == true)
+            //              .GroupBy(x => new
+            //              {
+            //                  x.Borrowedissue.Id,
+            //                  x.Borrowedissue.CustomerCode,
+            //                  x.Borrowedissue.CustomerName,
+            //                  x.borrowedreturned.ItemCode,
+            //                  x.borrowedreturned.ItemDescription,
+            //                  x.borrowedreturned.Uom,
+            //                  x.Borrowedissue.PreparedBy,
+            //                  x.Borrowedissue.PreparedDate,
 
-        //              }).Select(x => new DtoBorrowedAndReturned
-        //              {
-        //                  BorrowedId = x.Key.Id,
-        //                  CustomerCode = x.Key.CustomerCode,
-        //                  CustomerName = x.Key.CustomerName,
-        //                  ItemCode = x.Key.ItemCode,
-        //                  ItemDescription = x.Key.ItemDescription,
-        //                  Uom = x.Key.Uom,
-        //                  BorrowedQuantity = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0),
-        //                  ReturnQuantity = x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
-        //                  Consumes = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0) - x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
-        //                  TransactedBy = x.Key.PreparedBy,
-        //                  BorrowedDate = x.Key.PreparedDate.ToString()
+            //              }).Select(x => new DtoBorrowedAndReturned
+            //              {
+            //                  BorrowedId = x.Key.Id,
+            //                  CustomerCode = x.Key.CustomerCode,
+            //                  CustomerName = x.Key.CustomerName,
+            //                  ItemCode = x.Key.ItemCode,
+            //                  ItemDescription = x.Key.ItemDescription,
+            //                  Uom = x.Key.Uom,
+            //                  BorrowedQuantity = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0),
+            //                  ReturnQuantity = x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
+            //                  Consumes = x.Sum(x => x.borrowedreturned.Quantity != null ? x.borrowedreturned.Quantity : 0) - x.Sum(x => x.borrowedreturned.ReturnedQuantity != null ? x.borrowedreturned.ReturnedQuantity : 0),
+            //                  TransactedBy = x.Key.PreparedBy,
+            //                  BorrowedDate = x.Key.PreparedDate.ToString()
 
-        //              });
+            //              });
 
-        //    return await Reports.ToListAsync();
+            //    return await Reports.ToListAsync();
 
-        //}
+            //}
 
-        public async Task<IReadOnlyList<DtoCancelledReports>> CancelledReports(string DateFrom, string DateTo)
+            public async Task<IReadOnlyList<DtoCancelledReports>> CancelledReports(string DateFrom, string DateTo)
         {
             var orders = _context.Orders.Where(x => x.OrderDate >= DateTime.Parse(DateFrom) && x.OrderDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
                                         .Select(x => new DtoCancelledReports

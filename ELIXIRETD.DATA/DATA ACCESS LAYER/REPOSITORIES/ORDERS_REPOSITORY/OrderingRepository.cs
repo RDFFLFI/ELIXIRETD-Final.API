@@ -794,7 +794,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                   }).Select(x => new ItemStocksDto
                                                                   {
                                                                       ItemCode = x.Key.ItemCode,
-                                                                      Remaining = x.Sum(x => x.ReturnQuantity),
+                                                                      Remaining = x.Sum(x => x.ReturnedQuantity),
                                                                       warehouseId = x.Key.WarehouseId
 
                                                                   });
@@ -1770,7 +1770,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<bool> ValidateWarehouseId(int id, string itemcode)
         {
             var validate = await _context.WarehouseReceived.Where(x => x.Id == id)
-                                                           .Where(x => x.ItemCode == itemcode)
+                                                           .Where(x => x.ItemCode == itemcode) 
+
+                                                              
                                                            .Where(x => x.IsActive == true)
                                                             .FirstOrDefaultAsync();
 
