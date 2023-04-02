@@ -20,6 +20,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public decimal Quantity { get; set; } 
         public string TransactBy { get; set; }
         public string TransactDate { get; set; }
+        
 
 
 

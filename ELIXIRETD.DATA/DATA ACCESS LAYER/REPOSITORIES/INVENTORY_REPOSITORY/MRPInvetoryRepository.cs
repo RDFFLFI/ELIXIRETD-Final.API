@@ -1320,7 +1320,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                       {
 
                                           ItemCode = total.Key.ItemCode,
-                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered == null ? x.moveorder.QuantityOrdered : 0)) / 30
+                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)) / 30
 
                                       });
 

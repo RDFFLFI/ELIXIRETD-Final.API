@@ -20,6 +20,7 @@
         public bool IsTransact { get; set; }
 
         public string DeliveryStatus { get; set; }
+        public string TransactionType { get; set; }
 
         
     }

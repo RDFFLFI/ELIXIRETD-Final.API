@@ -77,5 +77,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string AddressOrder { get; set; }
 
+
     }
 }

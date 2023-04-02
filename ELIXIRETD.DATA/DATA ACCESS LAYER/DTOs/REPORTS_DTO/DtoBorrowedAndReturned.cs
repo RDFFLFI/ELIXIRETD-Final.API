@@ -25,10 +25,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
      public string Uom { get; set; }
 
 
-        public decimal Consumes { get; set; }
-
-    public decimal  ReturnQuantity { get; set; }
-
         public string BorrowedDate { get; set; }
       
      
