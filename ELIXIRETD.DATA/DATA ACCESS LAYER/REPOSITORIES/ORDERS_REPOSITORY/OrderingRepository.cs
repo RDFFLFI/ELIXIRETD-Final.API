@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
@@ -1685,6 +1686,162 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
+        public async Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotification()
+        {
+            var orders = _context.Orders.OrderBy(x => x.OrderDate)
+                                   .GroupBy(x => new
+                                   {
+                                       x.CustomerName,
+                                       x.IsActive,
+                                       x.PreparedDate
+
+                                   }).Where(x => x.Key.IsActive == true)
+                                     .Where(x => x.Key.PreparedDate == null)
+
+                                     .Select(x => new DtoOrderNotif
+                                     {
+                                         CustomerName = x.Key.CustomerName,
+                                         IsActive = x.Key.IsActive
+                                     });
+
+            return await orders.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotification()
+        {
+            var orders = _context.Orders
+                                  .GroupBy(x => new
+                                  {
+                                      x.CustomerName,
+                                      x.IsActive,
+                                      x.IsApproved,
+                                      x.IsMove
+
+                                  }).Where(x => x.Key.IsActive == true)
+                                    .Where(x => x.Key.IsApproved == true)
+                                    .Where(x => x.Key.IsMove == false)
+                                    .Select(x => new DtoForMoveOrderNotif
+                                    {
+                                        CustomerName = x.Key.CustomerName,
+                                        IsActive = x.Key.IsActive,
+                                        IsApproved = x.Key.IsApproved != null
+                                    });
+
+            return await orders.ToListAsync();
+        }
+
+
+        public async Task<IReadOnlyList<DtoForTransactNotif>> GetAllForTransactMoveOrderNotification()
+        {
+            var orders = _context.MoveOrders.Where(x => x.IsActive == true)
+                                         .Where(x => x.IsTransact == false)
+             .GroupBy(x => new
+             {
+                 x.OrderNo,
+                 x.Customercode,
+                 x.CustomerName,
+                 x.OrderDate,
+                 x.DateNeeded,
+                 x.PreparedDate,
+                 x.IsApprove,
+                 x.IsTransact,
+
+             }).Where(x => x.Key.IsApprove == true)
+
+        .Select(x => new DtoForTransactNotif
+        {
+            OrderNo = x.Key.OrderNo,
+            CustomerCode = x.Key.Customercode,
+            CustomerName = x.Key.CustomerName,         
+            TotalOrder = x.Sum(x => x.QuantityOrdered),
+            OrderDate = x.Key.OrderDate.ToString("MM/dd/yyyy"),
+            DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
+            PrepareDate = x.Key.PreparedDate.ToString(),
+            IsApproved = x.Key.IsApprove != null
+
+        });
+
+            return await orders.ToListAsync();
+
+        }
+
+        public async Task<IReadOnlyList<DtoForApprovalMoveOrderNotif>> GetForApprovalMoveOrdersNotification()
+        {
+            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == null)
+            .GroupBy(x => new
+            {
+
+                x.OrderNo,
+                x.Customercode,
+                x.CustomerName,
+                x.OrderDate,
+                x.PreparedDate,
+                x.IsApprove,
+                x.IsPrepared
+
+            }).Where(x => x.Key.IsApprove != true)
+              .Where(x => x.Key.IsPrepared == true)
+
+       .Select(x => new DtoForApprovalMoveOrderNotif
+       {
+           OrderNo = x.Key.OrderNo,
+           CustomerCode = x.Key.Customercode,
+           CustomerName = x.Key.CustomerName,
+           Quantity = x.Sum(x => x.QuantityOrdered),
+           OrderDate = x.Key.OrderDate.ToString(),
+           PreparedDate = x.Key.PreparedDate.ToString(),
+
+       });
+
+            return await orders.ToListAsync();
+
+        }
+
+        public async Task<IReadOnlyList<DtoRejectMoveOrderNotif>> GetRejectMoveOrderNotification()
+        {
+            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
+           .GroupBy(x => new
+           {
+
+               x.OrderNo,
+               x.Customercode,
+               x.CustomerName,
+               x.OrderDate,
+               x.PreparedDate,
+               x.IsApprove,
+               x.IsReject,
+               x.RejectedDateTempo,
+               x.Remarks
+
+           })
+         
+
+       .Select(x => new DtoRejectMoveOrderNotif
+       {
+           OrderNo = x.Key.OrderNo,
+           CustomerCode = x.Key.Customercode,
+           CustomerName = x.Key.CustomerName,
+           Quantity = x.Sum(x => x.QuantityOrdered),
+           OrderDate = x.Key.OrderDate.ToString(),
+           PreparedDate = x.Key.PreparedDate.ToString(),
+           IsReject = x.Key.IsReject != null,
+           RejectedDate = x.Key.RejectedDateTempo.ToString(),
+           Remarks = x.Key.Remarks
+
+       });
+
+            return await orders.ToListAsync();
+        }
+
+
+
+
+
+
+
+
+
+
         //================================= Validation =============================================================================
 
 
@@ -1812,10 +1969,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-       
-
-      
-
-       
+        
     }
 }

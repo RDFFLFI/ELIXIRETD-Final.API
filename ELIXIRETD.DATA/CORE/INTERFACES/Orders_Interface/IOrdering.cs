@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
@@ -74,6 +75,19 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<bool> SavePreparedMoveOrder(MoveOrder order);
 
+
+
+
+        //Notification
+
+        Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotification();
+        Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotification();
+
+        Task<IReadOnlyList<DtoForApprovalMoveOrderNotif>> GetForApprovalMoveOrdersNotification();
+
+        Task<IReadOnlyList<DtoForTransactNotif>> GetAllForTransactMoveOrderNotification();
+
+        Task<IReadOnlyList<DtoRejectMoveOrderNotif>> GetRejectMoveOrderNotification();
 
 
 

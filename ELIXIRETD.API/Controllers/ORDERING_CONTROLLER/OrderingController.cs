@@ -119,7 +119,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    PreviousDateNeeded,
                     QuantityInValid,
 
-                    //CustomerCodeNotExist
+                  
                 };
 
                 if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0)
