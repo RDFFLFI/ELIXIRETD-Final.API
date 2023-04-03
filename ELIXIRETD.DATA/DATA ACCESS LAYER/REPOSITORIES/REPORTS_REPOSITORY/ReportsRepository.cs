@@ -153,13 +153,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports(string DateFrom, string DateTo)
         {
 
+
             var getReturned = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
                                                            .Where(x => x.IsReturned == true)
                                                            .Select(x => new
                                                            {
                                                                BorrowedPKey = x.BorrowedPKey,
                                                                ItemCode = x.ItemCode,
-                                                               ReturnedQuantity =  x.ReturnedQuantity != null ? x.ReturnedQuantity : 0,
+                                                               ReturnedQuantity = x.ReturnedQuantity != null ? x.ReturnedQuantity : 0,
+                                                               ReturnedDate = x.ReturnedDate,
 
                                                            });
 
@@ -174,12 +176,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            select new DtoBorrowedAndReturned
                            {
 
-                               BorrowedId = borrowed.Id,
+                               BorrowedId = borrowed.BorrowedPKey,
                                CustomerCode = borrowed.CustomerCode,
                                CustomerName = borrowed.CustomerName,
                                ItemCode = borrowed.ItemCode,
                                ItemDescription = borrowed.ItemDescription,
-                               BorrowedQuantity = ( borrowed.Quantity != null ? borrowed.Quantity : 0) - ( returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0),
+                               BorrowedQuantity = borrowed.Quantity != null ? borrowed.Quantity : 0,
+                               Consumed = (borrowed.Quantity != null ? borrowed.Quantity : 0) - (returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0),
+                               ReturnedQuantity = returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0,
+                               ReturnedDate = returned.ReturnedDate.ToString(),
                                Uom = borrowed.Uom,
                                TransactedBy = borrowed.PreparedBy,
                                BorrowedDate = borrowed.BorrowedDate.ToString()
@@ -190,37 +195,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             return await Reports.ToListAsync();
 
-        }
-
-        public async Task<IReadOnlyList<DtoReturnedReports>> ReturnedReports(string DateFrom, string DateTo)
-        {
-
-
-            var Reports = (from borrowed in _context.BorrowedIssueDetails
-                           join returned in _context.ReturnedBorroweds
-                           on borrowed.Id equals returned.BorrowedPKey
-                           into leftJ
-                           from returned in leftJ.DefaultIfEmpty()
-
-                           where returned.ReturnedDate >= DateTime.Parse(DateFrom) && returned.ReturnedDate <= DateTime.Parse(DateTo) && borrowed.IsActive == true && returned.IsReturned == true && returned.IsActive == true
-
-                           select new DtoReturnedReports
-                           {
-
-                               ReturnedId = borrowed.Id,
-                               CustomerCode = borrowed.CustomerCode,
-                               CustomerName = borrowed.CustomerName,
-                               ItemCode = borrowed.ItemCode,
-                               ItemDescription = borrowed.ItemDescription,
-                               ReturnedQuantity = returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0,
-                               Uom = borrowed.Uom,
-                               TransactBy = borrowed.PreparedBy,
-                               TransactDate = returned.ReturnedDate.ToString(),
-                               
-
-                           });
-
-            return await Reports.ToListAsync();
         }
 
 
@@ -573,11 +547,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
                              total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)
 
-                              //SOH  = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0 ) + 
-                              //       total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0 ) -
-                              //       total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0) -
-                              //       total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0 ) -
-                              //       total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0)
+                             
 
                           });
 

@@ -72,18 +72,6 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         }
 
-        [HttpGet]
-        [Route("ReturnedReports")]
-        public async Task<IActionResult> ReturnedReports([FromQuery] string DateFrom, [FromQuery] string DateTo)
-        {
-
-            var issue = await _unitofwork.Reports.ReturnedReports(DateFrom, DateTo);
-
-            return Ok(issue);
-
-        }
-
-
 
         [HttpGet]
         [Route("CancelledOrderedReports")]
