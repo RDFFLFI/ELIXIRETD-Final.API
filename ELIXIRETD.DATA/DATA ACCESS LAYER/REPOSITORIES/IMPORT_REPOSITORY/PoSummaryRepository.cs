@@ -32,8 +32,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
                 return false;
 
 
-            posummary.ItemDescription = existingInfo.ItemDescription;
-
             await _context.PoSummaries.AddAsync(posummary);
             return true;
         }
@@ -41,6 +39,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
         public async Task<bool> CheckItemCode(string rawmaterial)
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == rawmaterial)
+                                                   .Where(x => x.IsActive == true)
+                                                   .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> CheckItemDescription(string itemdescription , string itemcode)
+        {
+            var validate = await _context.Materials.Where(x => x.ItemCode == itemcode)
+                                                   .Where(x => x.ItemDescription == itemdescription)
                                                    .Where(x => x.IsActive == true)
                                                    .FirstOrDefaultAsync();
 

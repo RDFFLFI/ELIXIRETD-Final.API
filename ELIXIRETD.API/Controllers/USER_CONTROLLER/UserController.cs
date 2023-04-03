@@ -50,7 +50,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 return BadRequest("Department doesn't exist, Please input data first!");
 
             if (validateuserRolemodules == true)
-                return BadRequest("No Rolemodules has been tag!");
+                return BadRequest("No Role modules has been tag!");
 
 
             await _unitOfWork.Users.AddNewUser(user);
@@ -78,7 +78,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 return BadRequest("Department doesn't exist, Please input data first!");
 
             if (validateuserRolemodules == true)
-                return BadRequest("No Rolemodules has been tag!");
+                return BadRequest("No Role modules has been tag!");
 
             await _unitOfWork.Users.UpdateUserInfo(user);
             await _unitOfWork.CompleteAsync();

@@ -28,9 +28,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 
                 List<Ordering> DuplicateList = new List<Ordering>();
                 List<Ordering> AvailableImport = new List<Ordering>();
+                List<Ordering> CustomerCodeNotExist = new List<Ordering>();
                 List<Ordering> CustomerNameNotExist = new List<Ordering>();
                 List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> ItemCodesExist = new List<Ordering>();
+                List<Ordering> ItemDescriptionNotExist = new List<Ordering>();
                 List<Ordering> QuantityInValid = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
                 
@@ -52,8 +54,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     {
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerName);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
-                        var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.CustomerName);
+                        var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
+                        var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName);
                         var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode);
+                        var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemCode , items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
                         var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
 
@@ -67,6 +71,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             PreviousDateNeeded.Add(items);
                         }
+                        else if (validateCustomerCode == false)
+                        {
+                            CustomerCodeNotExist.Add(items);
+                        }
 
                         else if (validateCustomerName == false)
                         {
@@ -76,6 +84,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         else if (validateItemCode == false)
                         {
                             ItemCodesExist.Add(items);
+                        }
+                        else if (validateItemDescription == false)
+                        {
+                            ItemDescriptionNotExist.Add(items);
                         }
 
                         else if (validateUom == false)
@@ -100,15 +112,17 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    AvailableImport,
                    DuplicateList,
                    ItemCodesExist,
+                   ItemDescriptionNotExist, 
                    UomNotExist,
                    CustomerNameNotExist,
+                   CustomerCodeNotExist,
                    PreviousDateNeeded,
                     QuantityInValid,
 
                     //CustomerCodeNotExist
                 };
 
-                if ( DuplicateList.Count == 0 &&  CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0)
+                if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();
                     return Ok("Successfully Add!");
@@ -150,6 +164,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         [Route("GetAllListofOrders")]
         public async Task<IActionResult> GetAllListofOrders([FromQuery] string customer)
         {
+            
+
+
             var orders = await _unitofwork.Orders.GetAllListofOrders(customer);
 
             return Ok(orders);
@@ -185,12 +202,12 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
                 if (!await _unitofwork.Orders.SchedulePreparedDate(order))
                 {
-                    return BadRequest("Failed to schedule prepared date.");
+                    return BadRequest("Failed to schedule prepared date");
                 }
             }
 
             await _unitofwork.CompleteAsync();
-            return new JsonResult("Orders scheduled successfully.");
+            return new JsonResult("Orders scheduled successfully");
         }
        
 
@@ -298,7 +315,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
          
             if (string.IsNullOrEmpty(DateFrom) || string.IsNullOrEmpty(DateTo))
             {
-                return BadRequest("Date range is required.");
+                return BadRequest("Date range is required");
             }
 
             var orderSummary = await _unitofwork.Orders.OrderSummary(DateFrom, DateTo);

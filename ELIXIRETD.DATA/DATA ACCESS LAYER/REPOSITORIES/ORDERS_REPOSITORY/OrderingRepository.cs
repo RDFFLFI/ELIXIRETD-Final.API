@@ -25,21 +25,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
         public async Task<bool> AddNewOrders(Ordering Orders)
-        {
-
-            var existingInfo = await _context.Materials.Where(x => x.ItemCode == Orders.ItemCode)
-                                                        .FirstOrDefaultAsync();
+        { 
 
             var existing = await _context.Customers.Where(x => x.CustomerName == Orders.CustomerName)
                                                    .FirstOrDefaultAsync();
-
-
-
             if (existing == null)
                 return false;
 
-            Orders.ItemdDescription = existingInfo.ItemDescription;
-            Orders.Customercode = existing.CustomerCode;
+
             Orders.AddressOrder = existing.Address;
             Orders.IsActive = true;
 
@@ -157,11 +150,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
 
                     ItemCode = total.Key,
-                    Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ActualGood) +
-                              total.Sum(x => x.warehouse.returned.In == null ? 0 : x.warehouse.returned.In) -
-                               total.Sum(x => x.warehouse.warehouse.issue.Quantity == null ? 0 : x.warehouse.warehouse.issue.Quantity) -
-                                total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered == null ? 0 : x.warehouse.warehouse.warehouse.ordering.QuantityOrdered) -
-                               total.Sum(x => x.borrowed.Quantity == null ? 0 : x.borrowed.Quantity)
+                    Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood != null ?  x.warehouse.warehouse.warehouse.warehouse.ActualGood : 0) +
+                              total.Sum(x => x.warehouse.returned.In != null ?  x.warehouse.returned.In : 0) -
+                               total.Sum(x => x.warehouse.warehouse.issue.Quantity != null ?  x.warehouse.warehouse.issue.Quantity : 0) -
+                                total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.ordering.QuantityOrdered : 0)-
+                               total.Sum(x => x.borrowed.Quantity != null ?   x.borrowed.Quantity : 0),
+
+                               
+
+
 
                 });
 
@@ -185,7 +182,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.QuantityOrdered,
                     x.ordering.IsActive,
                     x.ordering.IsPrepared,
-                    Reserve = x.warehouse.Reserve == null ? 0 : x.warehouse.Reserve
+                    Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0  
 
                 }).Select(total => new GetAllListofOrdersDto
                 {
@@ -201,7 +198,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     QuantityOrder = total.Key.QuantityOrdered,
                     IsActive = total.Key.IsActive,
                     IsPrepared = total.Key.IsPrepared,
-                    StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0
+                    StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0 
 
                 });
 
@@ -1739,15 +1736,43 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateCustomerName(string Customer)
+        public async Task<bool> ValidateItemDescription(string ItemCode, string ItemDescription)
         {
-            var validate = await _context.Customers.Where(x => x.CustomerName == Customer)
+            var validate = await _context.Materials.Where(x => x.ItemCode == ItemCode)
+                                                   .Where(x => x.ItemDescription == ItemDescription)
+                                                   .Where(x => x.IsActive == true)
+                                                   .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+
+
+            return true;
+        }
+
+
+
+        public async Task<bool> ValidateCustomerCode(string Customer)
+        {
+            var validate = await _context.Customers.Where(x => x.CustomerCode == Customer)
                                                  .Where(x => x.IsActive == true)
                                                  .FirstOrDefaultAsync();
             if (validate == null)
                 return false;
 
+            return true;
+        }
 
+        public async Task<bool> ValidateCustomerName(string Customer , string CustomerName )
+        {
+            var validate = await _context.Customers.Where(x => x.CustomerCode == Customer)
+                                                 .Where(x => x.CustomerName == CustomerName)
+                                                 .Where(x => x.IsActive == true)
+                                                 .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
 
             return true;
         }
@@ -1787,9 +1812,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
+       
 
+      
 
-
-
+       
     }
 }

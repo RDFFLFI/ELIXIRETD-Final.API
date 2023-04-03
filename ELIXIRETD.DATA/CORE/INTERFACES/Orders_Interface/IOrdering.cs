@@ -86,9 +86,14 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         //============================ Validation ====================================================================
         Task<bool> ValidateExistOrderandItemCode(int TransactId, string ItemCode , string customerName);
         Task<bool> ValidateDateNeeded(Ordering orders);
-        Task<bool> ValidateCustomerName(string Customer);
+
+        Task<bool> ValidateCustomerCode(string Customer);
+        Task<bool> ValidateCustomerName(string Customer , string CustomerName);
         Task<bool> ValidateUom(string Uom);
         Task<bool> ValidateItemCode (string ItemCode);
+        Task<bool> ValidateItemDescription (string ItemCode , string ItemDescription);
+
+
         //Task<bool> ValidateCustomerCode(string Customercode);
 
         Task<bool> ValidateWarehouseId(int id , string itemcode);

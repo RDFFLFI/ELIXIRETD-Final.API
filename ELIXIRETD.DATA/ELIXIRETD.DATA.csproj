@@ -8,6 +8,7 @@
   <ItemGroup>
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\BORROWED_REPOSITORY\iwffkyel.vzn~" />
+    <None Remove="DATA ACCESS LAYER\REPOSITORIES\IMPORT_REPOSITORY\PoSummaryRepository.cs~RFb3a532.TMP" />
   </ItemGroup>
 
   <ItemGroup>

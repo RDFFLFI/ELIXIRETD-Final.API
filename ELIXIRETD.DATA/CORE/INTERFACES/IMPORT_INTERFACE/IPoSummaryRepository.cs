@@ -17,6 +17,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE
         Task<bool> CheckSupplier(string supplier);
         Task<bool> ValidatePOAndItemcodeManual(int ponumber, string itemcode);
         Task<bool> ValidateQuantityOrder(decimal quantity);
+        Task<bool> CheckItemDescription(string itemdescription , string itemcode);
              
-    }
 }
+    }
