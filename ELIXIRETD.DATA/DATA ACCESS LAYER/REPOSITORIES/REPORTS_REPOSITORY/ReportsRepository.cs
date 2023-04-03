@@ -365,7 +365,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
 
-            var getReturnedOutByDate = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var getReturnedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                        .Where(x => x.IsReturned == true)
                                                                        .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(DateTo))
                                                                        .GroupBy(x => new
@@ -377,13 +377,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                        {
 
                                                                            ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
+                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                                        });
 
 
 
-            var getReturnedOutByDatePlus = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var getReturnedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                         .Where(x => x.IsReturned == true)
                                                                         .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= (DateToday))
                                                                         .GroupBy(x => new
@@ -395,7 +395,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                         {
 
                                                                            ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
+                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                                         });
 

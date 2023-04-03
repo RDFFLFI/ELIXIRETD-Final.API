@@ -211,16 +211,18 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("EditReturnedQuantity")]
-        public async Task<IActionResult> EditQuantityReturned ([FromBody]ReturnedBorrowed borrowed)
+        public async Task<IActionResult> EditQuantityReturned(BorrowedIssueDetails borrowed)
         {
 
-            if (borrowed.ReturnedQuantity <= 0)
-                return BadRequest("Returned failed , please check your input");
+            var edit = await _unitofwork.Borrowed.EditReturnQuantity(borrowed);
 
 
-            await _unitofwork.Borrowed.EditReturnQuantity(borrowed);
+
+            if (edit == false)
+                return BadRequest("Edit failed, please check your input in returned quantity!");
+
 
             await _unitofwork.CompleteAsync();
 

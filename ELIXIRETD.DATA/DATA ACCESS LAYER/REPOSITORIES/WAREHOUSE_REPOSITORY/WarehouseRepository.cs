@@ -525,7 +525,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                                                          });
 
-            var BorrowedReturn = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                               
                                                               .Where(x => x.IsReturned == true)
                                                               .GroupBy(x => new
@@ -537,7 +537,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                               {
 
                                                                   ItemCode = x.Key.ItemCode,
-                                                                  In = x.Sum(x => x.ReturnedQuantity),
+                                                                  In = x.Sum(x => x.ReturnQuantity),
                                                                   warehouseId = x.Key.WarehouseId,
 
                                                               });
@@ -636,7 +636,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             
                                                          });
 
-            var BorrowedReturn = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .GroupBy(x => new
                                                              {
@@ -647,7 +647,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.ReturnedQuantity),
+                                                                 In = x.Sum(x => x.ReturnQuantity),
                                                                  warehouseId = x.Key.WarehouseId,
 
                                                              });
