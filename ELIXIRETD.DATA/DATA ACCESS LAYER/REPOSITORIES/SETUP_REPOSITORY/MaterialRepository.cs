@@ -176,6 +176,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         {
                                               Id = x.Id,
                                               ItemCategoryName = x.ItemCategoryName,
+                                              SubCategoryName = x.SubCategory.SubCategoryName,
                                               AddedBy = x.AddedBy,
                                               DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
 
@@ -190,6 +191,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                       {
                                           Id = x.Id,
                                           ItemCategoryName = x.ItemCategoryName,
+                                          SubCategoryName = x.SubCategory.SubCategoryName,
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
 
@@ -250,9 +252,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                      {
                                                          Id = x.Id,
                                                          ItemCategoryName = x.ItemCategoryName,
+                                                         SubCategoryName = x.SubCategory.SubCategoryName,
                                                          AddedBy = x.AddedBy,
-                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                         IsActive = x.IsActive
+                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
                                                      });
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
@@ -265,10 +267,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                      .Select(x => new ItemCategoryDto
                                                      {
                                                          Id = x.Id,
-                                                         ItemCategoryName = x.ItemCategoryName,                                                    
+                                                         ItemCategoryName = x.ItemCategoryName,
+                                                         SubCategoryName = x.SubCategory.SubCategoryName,
                                                          AddedBy = x.AddedBy,
-                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                         IsActive = x.IsActive
+                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+
                                                      }).Where(x => x.ItemCategoryName.ToLower()
                                                        .Contains(search.Trim().ToLower()));
 
@@ -488,6 +491,44 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await _context.ItemCategories.AnyAsync(x => x.SubCategId == subcateg &&  x.IsActive == true);
                                                              
         }
+
+        public async Task<bool> ExistSubCategoryId(int subCategoryId)
+        {
+            var validate =  await _context.SubCategories.FindAsync(subCategoryId);
+
+            if (validate == null)
+                return false;
+
+            return true;
+
+        }
+
+        public async Task<bool> DuplicateItemCategoriesAndSubCateg(ItemCategory category)
+        {
+            var validate = await _context.ItemCategories.Where(x => x.ItemCategoryName == category.ItemCategoryName)
+                                                        .Where(x => x.SubCategId == category.SubCategId)
+                                                        .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+
+            return true;
+                                                                       
+        }
+
+        public async Task<bool> ValidateItemCategInUse(int ItemCateg)
+        {
+            return await _context.Materials.AnyAsync(x => x.ItemCategoryId == ItemCateg && x.IsActive == true);
+        }
+
+
+
+
+
+
+
+
 
 
 

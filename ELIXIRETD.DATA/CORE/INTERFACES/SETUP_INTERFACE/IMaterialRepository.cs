@@ -42,6 +42,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ActivateItemCategory(ItemCategory category);
         Task<PagedList<ItemCategoryDto>> GetAllItemCategoryWithPagination(bool status, UserParams userParams);
         Task<PagedList<ItemCategoryDto>> GetItemCategoryWithPaginationOrig(UserParams userParams, bool status, string search);
+
+
+        Task<bool> ExistSubCategoryId (int subCategoryId);
+        Task<bool> DuplicateItemCategoriesAndSubCateg(ItemCategory category);
+        Task<bool> ValidateItemCategInUse(int ItemCateg);
+
        
 
 
