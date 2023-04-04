@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
@@ -35,6 +36,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE
         Task<IReadOnlyList<ListofwarehouseReceivingIdDto>> ListOfWarehouseReceivingId(string search);
 
         Task<IReadOnlyList<ListofwarehouseReceivingIdDto>> ListOfWarehouseReceivingId();
+
+
+        // Notification
+
+        Task<IReadOnlyList<WarehouseReceivingDto>> PoSummaryForWarehouseNotif();
+        Task<IReadOnlyList<CancelledPoDto>> CancelledPoSummaryNotif();
 
     }
 }

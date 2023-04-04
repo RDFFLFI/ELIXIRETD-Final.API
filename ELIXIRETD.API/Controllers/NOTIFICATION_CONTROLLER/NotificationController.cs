@@ -22,15 +22,72 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
         {
 
             //Receiving
-            var PoSummary = await _unitOfWork.Receives.ListOfWarehouseReceivingId();
+            var PoSummaryNotif = await _unitOfWork.Receives.PoSummaryForWarehouseNotif();
+
+            //var CancelledPONotif = await _unitOfWork.Receives.CancelledPoSummaryNotif();
+
+            //Ordering 
+
+            var OrderingNotif = await _unitOfWork.Orders.GetOrdersForNotification();
+            var OrderingApprovalNotif = await _unitOfWork.Orders.GetAllListForApprovalOfSchedule();
+            var MoveorderlistNotif = await _unitOfWork.Orders.GetMoveOrdersForNotification();
+            var TransactmoveorderNotif = await _unitOfWork.Orders.GetAllForTransactMoveOrderNotification();
+            var ForApprovalListNotif = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotification();
+            var rejectlistNotif = await _unitOfWork.Orders.GetRejectMoveOrderNotification();
 
 
+            var posummarycount = PoSummaryNotif.Count();
+            //var cancelledcount = CancelledPONotif.Count();
 
+            var orderingnotifcount = OrderingNotif.Count();
+            var orderingapprovalcount = OrderingApprovalNotif.Count();
+            var moveorderlistcount = MoveorderlistNotif.Count();
+            var transactmoveordercount = TransactmoveorderNotif.Count();
+            var forapprovalmoveordercount = ForApprovalListNotif.Count();
+            var rejectlistcount = rejectlistNotif.Count();
 
+            var countlist = new
+            {
 
+                PoSummary = new
+                {
+                    posummarycount
+                },
+                //CancelledPosummary = new
+                //{
+                //    cancelledcount
+                //},
+                Ordering = new
+                {
+                    orderingnotifcount
+                },
+                OrderingApproval = new
+                {
+                    orderingapprovalcount
+                },
+                MoveOrderlist = new
+                {
+                    moveorderlistcount
+                },
+                Transactmoveorder = new
+                {
+                    transactmoveordercount
+                },
+                ForApprovalMoveOrder = new
+                {
+                    forapprovalmoveordercount
+                },
+                Rejectlist = new
+                {
+                    rejectlistcount
+                }
 
-            return Ok(PoSummary);
+            };
 
+            return Ok(countlist);
+
+            
+            
         }
 
 
