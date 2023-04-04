@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230323061655_updatemiscIssue")]
-    partial class updatemiscIssue
+    [Migration("20230404052726_changeofSubcategoryAndItemCategory")]
+    partial class changeofSubcategoryAndItemCategory
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -187,6 +187,61 @@ namespace ELIXIRETD.DATA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BorrowedReceipts");
+                });
+
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL.ReturnedBorrowed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("BorrowedDate")
+                        .HasColumnType("Date");
+
+                    b.Property<int>("BorrowedPKey")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsReturned")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PreparedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReturnedDate")
+                        .HasColumnType("Date");
+
+                    b.Property<decimal>("ReturnedQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TotalbPkey")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReturnedBorroweds");
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL.PoSummary", b =>
@@ -526,7 +581,7 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("Uom")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("warehouseId")
+                    b.Property<int>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -557,6 +612,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Cip_No")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
 
@@ -565,6 +623,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<DateTime>("DateNeeded")
                         .HasColumnType("Date");
+
+                    b.Property<int>("HelpdeskNo")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -618,6 +679,9 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rush")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("SyncDate")
@@ -683,6 +747,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<DateTime?>("PreparedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -829,7 +896,15 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ItemCategoryName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SubCategId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubCategoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("ItemCategories");
                 });
@@ -940,8 +1015,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ItemCategoryName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ItemCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ItemCode")
                         .HasColumnType("nvarchar(max)");
@@ -949,15 +1024,15 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ItemDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubCategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("SubCategoryName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UomId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubCategoryId");
+                    b.HasIndex("ItemCategoryId");
 
                     b.HasIndex("UomId");
 
@@ -1011,15 +1086,10 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ItemCategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SubCategoryName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ItemCategoryId");
 
                     b.ToTable("SubCategories");
                 });
@@ -1424,6 +1494,15 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Navigation("CustomerTypeP");
                 });
 
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.ItemCategory", b =>
+                {
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.SubCategory", "SubCategory")
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId");
+
+                    b.Navigation("SubCategory");
+                });
+
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotName", b =>
                 {
                     b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotCategory", "LotCategory")
@@ -1437,9 +1516,9 @@ namespace ELIXIRETD.DATA.Migrations
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Material", b =>
                 {
-                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.SubCategory", "SubCategory")
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.ItemCategory", "ItemCategory")
                         .WithMany()
-                        .HasForeignKey("SubCategoryId")
+                        .HasForeignKey("ItemCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1449,7 +1528,7 @@ namespace ELIXIRETD.DATA.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubCategory");
+                    b.Navigation("ItemCategory");
 
                     b.Navigation("Uom");
                 });
@@ -1463,17 +1542,6 @@ namespace ELIXIRETD.DATA.Migrations
                         .IsRequired();
 
                     b.Navigation("MainMenu");
-                });
-
-            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.SubCategory", b =>
-                {
-                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.ItemCategory", "ItemCategory")
-                        .WithMany()
-                        .HasForeignKey("ItemCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ItemCategory");
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.Module", b =>

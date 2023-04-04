@@ -27,13 +27,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ItemCategoryExist(string category);
         Task<bool> ValidateDescritionAndUom(Material materials);
         Task<bool> ExistingSubCateg(string subcateg);
-        Task<bool> ExistingItemAndSubCateg(Material materials);
-        Task<bool> ValidateSubcategAndcategor(int category);
-        Task<bool> ValidateSubCategand(int category);
+        Task<bool> ValidateSubcategInUse(int subcateg);
 
+      
 
-
-        Task<bool> ExistSubCategoryAndItemCateg(SubCategory category);
+        Task<bool> ExistSubCategory(SubCategory category);
         Task<bool> ValidateItemCategory(int ItemCateg);
         Task<bool> ValidationSubCategory(int Subcategory);
         Task<IReadOnlyList<ItemCategoryDto>> GetAllActiveItemCategory();
@@ -61,9 +59,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         
 
 
-        Task<IReadOnlyList<SubCategoryDto>> GetAllListofSubcategorymaterial(string category);
-
-        Task<IReadOnlyList<SubCategoryDto>> GetallActiveSubcategoryDropDown();
+        //Task<IReadOnlyList<SubCategoryDto>> GetAllListofSubcategorymaterial(string category);
+        //Task<IReadOnlyList<SubCategoryDto>> GetallActiveSubcategoryDropDown();
 
 
 

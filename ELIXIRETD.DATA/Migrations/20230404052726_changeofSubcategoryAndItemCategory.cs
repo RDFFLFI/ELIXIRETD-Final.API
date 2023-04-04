@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ELIXIRETD.DATA.Migrations
 {
-    public partial class Change : Migration
+    public partial class changeofSubcategoryAndItemCategory : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -169,22 +169,6 @@ namespace ELIXIRETD.DATA.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ItemCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemCategories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Locations",
                 columns: table => new
                 {
@@ -250,7 +234,7 @@ namespace ELIXIRETD.DATA.Migrations
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PreparedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PreparedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WareHouseId = table.Column<int>(type: "int", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
                     IssuePKey = table.Column<int>(type: "int", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
@@ -318,7 +302,7 @@ namespace ELIXIRETD.DATA.Migrations
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "Date", nullable: false),
                     DateNeeded = table.Column<DateTime>(type: "Date", nullable: false),
-                    warehouseId = table.Column<int>(type: "int", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsApprove = table.Column<bool>(type: "bit", nullable: true),
                     ApprovedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -388,7 +372,10 @@ namespace ELIXIRETD.DATA.Migrations
                     OrderNoPKey = table.Column<int>(type: "int", nullable: false),
                     IsMove = table.Column<bool>(type: "bit", nullable: false),
                     SyncDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AddressOrder = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    AddressOrder = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cip_No = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HelpdeskNo = table.Column<int>(type: "int", nullable: false),
+                    Rush = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -427,6 +414,32 @@ namespace ELIXIRETD.DATA.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ReturnedBorroweds",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CustomerCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ItemCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ItemDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReturnedQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BorrowedDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsReturned = table.Column<bool>(type: "bit", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BorrowedPKey = table.Column<int>(type: "int", nullable: false),
+                    PreparedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReturnedDate = table.Column<DateTime>(type: "Date", nullable: true),
+                    TotalbPkey = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReturnedBorroweds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RoleModules",
                 columns: table => new
                 {
@@ -457,6 +470,22 @@ namespace ELIXIRETD.DATA.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SubCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -511,7 +540,8 @@ namespace ELIXIRETD.DATA.Migrations
                     OrderNoPkey = table.Column<int>(type: "int", nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsTransact = table.Column<bool>(type: "bit", nullable: false),
-                    DeliveryStatus = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    DeliveryStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -553,7 +583,7 @@ namespace ELIXIRETD.DATA.Migrations
                     TotalReject = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     LotCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MiscellanousReceiptId = table.Column<int>(type: "int", nullable: true),
+                    MiscellaneousReceiptId = table.Column<int>(type: "int", nullable: true),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsWarehouseReceived = table.Column<bool>(type: "bit", nullable: true),
@@ -606,29 +636,6 @@ namespace ELIXIRETD.DATA.Migrations
                         name: "FK_Customers_CustomerTypes_CustomerTypeId",
                         column: x => x.CustomerTypeId,
                         principalTable: "CustomerTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SubCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ItemCategoryId = table.Column<int>(type: "int", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubCategories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SubCategories_ItemCategories_ItemCategoryId",
-                        column: x => x.ItemCategoryId,
-                        principalTable: "ItemCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -741,6 +748,29 @@ namespace ELIXIRETD.DATA.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ItemCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SubCategoryId = table.Column<int>(type: "int", nullable: true),
+                    SubCategId = table.Column<int>(type: "int", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemCategories_SubCategories_SubCategoryId",
+                        column: x => x.SubCategoryId,
+                        principalTable: "SubCategories",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Materials",
                 columns: table => new
                 {
@@ -748,21 +778,21 @@ namespace ELIXIRETD.DATA.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ItemDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubCategoryId = table.Column<int>(type: "int", nullable: false),
+                    ItemCategoryId = table.Column<int>(type: "int", nullable: false),
                     UomId = table.Column<int>(type: "int", nullable: false),
                     BufferLevel = table.Column<int>(type: "int", nullable: false),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ItemCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    SubCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Materials", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Materials_SubCategories_SubCategoryId",
-                        column: x => x.SubCategoryId,
-                        principalTable: "SubCategories",
+                        name: "FK_Materials_ItemCategories_ItemCategoryId",
+                        column: x => x.ItemCategoryId,
+                        principalTable: "ItemCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -779,14 +809,19 @@ namespace ELIXIRETD.DATA.Migrations
                 column: "CustomerTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ItemCategories_SubCategoryId",
+                table: "ItemCategories",
+                column: "SubCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LotNames_LotCategoryId",
                 table: "LotNames",
                 column: "LotCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Materials_SubCategoryId",
+                name: "IX_Materials_ItemCategoryId",
                 table: "Materials",
-                column: "SubCategoryId");
+                column: "ItemCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Materials_UomId",
@@ -802,11 +837,6 @@ namespace ELIXIRETD.DATA.Migrations
                 name: "IX_Reasons_MainMenuId",
                 table: "Reasons",
                 column: "MainMenuId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubCategories_ItemCategoryId",
-                table: "SubCategories",
-                column: "ItemCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_DepartmentId",
@@ -876,6 +906,9 @@ namespace ELIXIRETD.DATA.Migrations
                 name: "Reasons");
 
             migrationBuilder.DropTable(
+                name: "ReturnedBorroweds");
+
+            migrationBuilder.DropTable(
                 name: "RoleModules");
 
             migrationBuilder.DropTable(
@@ -903,7 +936,7 @@ namespace ELIXIRETD.DATA.Migrations
                 name: "LotCategories");
 
             migrationBuilder.DropTable(
-                name: "SubCategories");
+                name: "ItemCategories");
 
             migrationBuilder.DropTable(
                 name: "Uoms");
@@ -918,7 +951,7 @@ namespace ELIXIRETD.DATA.Migrations
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "ItemCategories");
+                name: "SubCategories");
         }
     }
 }
