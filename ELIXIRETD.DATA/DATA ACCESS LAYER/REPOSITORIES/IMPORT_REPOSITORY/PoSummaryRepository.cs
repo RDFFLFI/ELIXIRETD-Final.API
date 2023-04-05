@@ -48,7 +48,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
             return true;
         }
 
-        public async Task<bool> CheckItemDescription(string itemdescription , string itemcode)
+        public async Task<bool> CheckItemDescription(string itemcode ,string itemdescription )
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == itemcode)
                                                    .Where(x => x.ItemDescription == itemdescription)

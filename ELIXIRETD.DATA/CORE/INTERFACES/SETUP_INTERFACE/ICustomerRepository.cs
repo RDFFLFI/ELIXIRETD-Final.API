@@ -23,21 +23,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<PagedList<CustomerDto>> GetCustomerWithPaginationOrig(UserParams userParams, bool status, string search);
 
 
-        Task<bool> ValidateFarmId(int id);
         Task<bool> CustomerCodeExist(string customer);
-        Task<bool> CustomerTypeExist(string type);
 
 
         //--------------CUSTOMER TYPE---------------------//
 
-        Task<IReadOnlyList<CustomerTypeDto>> GetAllActiveCustomersType();
-        Task<IReadOnlyList<CustomerTypeDto>> GetAllInActiveCustomersType();
-        Task<bool> AddCustomerType(CustomerType type);
-        Task<bool> UpdateCustomerType(CustomerType type);
-        Task<bool> InActiveCustomerType(CustomerType type);
-        Task<bool> ActivateCustomerType(CustomerType type);
-        Task<PagedList<CustomerTypeDto>> GetAllCustomerTypeWithPagination(bool status, UserParams userParams);
-        Task<PagedList<CustomerTypeDto>> GetCustomerTypeWithPaginationOrig(UserParams userParams, bool status, string search);
+      
 
 
 

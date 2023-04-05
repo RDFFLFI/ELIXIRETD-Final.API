@@ -34,7 +34,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 return false;
 
 
-            Orders.AddressOrder = existing.Address;
             Orders.IsActive = true;
 
 

@@ -567,47 +567,5 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-
-
-
-
-
-
-
-
-        //public async Task<IReadOnlyList<SubCategoryDto>> GetAllListofSubcategorymaterial(string category)
-        //{
-
-        //var sub = _context.SubCategories.Where(x => x.IsActive == true)
-        //                                .Where(x => x.SubCategoryName == category)
-        //                                .Select(x => new SubCategoryDto
-        //                                {
-
-        //                                    SubCategoryId = x.Id,
-        //                                    SubcategoryName = x.SubCategoryName,
-        //                                    ItemCategoryId = x.ItemCategoryId,
-        //                                    CategoryName = x.ItemCategory.ItemCategoryName,
-
-        //                                });
-
-
-        //    return await sub.ToListAsync();
-        //}
-
-        //public async Task<IReadOnlyList<SubCategoryDto>> GetallActiveSubcategoryDropDown()
-        //{
-        //    var subcategory = _context.SubCategories.Where(x => x.IsActive == true)
-        //                                             .Select(x => new SubCategoryDto
-        //                                             {
-        //                                                 SubCategoryId = x.Id,
-        //                                                 SubcategoryName = x.SubCategoryName,
-        //                                                 ItemCategoryId = x.ItemCategoryId,
-        //                                                 CategoryName = x.ItemCategory.ItemCategoryName,
-
-        //                                             }).Distinct();
-
-        //           return await subcategory.ToListAsync();
-        //}
-
     }
 }
