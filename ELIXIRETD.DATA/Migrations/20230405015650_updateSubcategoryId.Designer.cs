@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20230404052726_changeofSubcategoryAndItemCategory")]
-    partial class changeofSubcategoryAndItemCategory
+    [Migration("20230405015650_updateSubcategoryId")]
+    partial class updateSubcategoryId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -896,10 +896,7 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ItemCategoryName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubCategId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SubCategoryId")
+                    b.Property<int>("SubCategoryId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1498,7 +1495,9 @@ namespace ELIXIRETD.DATA.Migrations
                 {
                     b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.SubCategory", "SubCategory")
                         .WithMany()
-                        .HasForeignKey("SubCategoryId");
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("SubCategory");
                 });

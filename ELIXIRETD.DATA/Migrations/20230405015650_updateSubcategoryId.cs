@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ELIXIRETD.DATA.Migrations
 {
-    public partial class changeofSubcategoryAndItemCategory : Migration
+    public partial class updateSubcategoryId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -755,8 +755,7 @@ namespace ELIXIRETD.DATA.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemCategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SubCategoryId = table.Column<int>(type: "int", nullable: true),
-                    SubCategId = table.Column<int>(type: "int", nullable: false),
+                    SubCategoryId = table.Column<int>(type: "int", nullable: false),
                     AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -767,7 +766,8 @@ namespace ELIXIRETD.DATA.Migrations
                         name: "FK_ItemCategories_SubCategories_SubCategoryId",
                         column: x => x.SubCategoryId,
                         principalTable: "SubCategories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

@@ -28,7 +28,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 ItemCategoryId = x.ItemCategoryId,
                                                 ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                 ItemDescription = x.ItemDescription,
-                                                SubCategoryId = x.ItemCategory.SubCategId,
+                                                SubCategoryId = x.ItemCategory.SubCategoryId,
                                                 SubCategoryName = x.ItemCategory.SubCategory.SubCategoryName,                                              
                                                 BufferLevel = x.BufferLevel,
                                                 Uom = x.Uom.UomCode,
@@ -51,7 +51,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  ItemCategoryId = x.ItemCategoryId,
                                                  ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                  ItemDescription = x.ItemDescription,
-                                                 SubCategoryId = x.ItemCategory.SubCategId,
+                                                 SubCategoryId = x.ItemCategory.SubCategoryId,
                                                  SubCategoryName = x.ItemCategory.SubCategory.SubCategoryName,
                                                  BufferLevel = x.BufferLevel,
                                                  Uom = x.Uom.UomCode,
@@ -81,7 +81,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             exisitngMaterial.ItemDescription = materials.ItemDescription;
             exisitngMaterial.ItemCategoryId = materials.ItemCategoryId;
-            exisitngMaterial.ItemCategory.SubCategId = materials.ItemCategory.SubCategId;
+            exisitngMaterial.ItemCategory.SubCategoryId = materials.ItemCategory.SubCategoryId;
             exisitngMaterial.UomId = materials.UomId;
             exisitngMaterial.BufferLevel = materials.BufferLevel;
 
@@ -123,7 +123,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                   ItemCategoryId = x.ItemCategoryId,
                                                   ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                   ItemDescription = x.ItemDescription,
-                                                  SubCategoryId = x.ItemCategory.SubCategId,
+                                                  SubCategoryId = x.ItemCategory.SubCategoryId,
                                                   SubCategoryName = x.ItemCategory.SubCategory.SubCategoryName,
                                                   BufferLevel = x.BufferLevel,
                                                   Uom = x.Uom.UomCode,
@@ -148,7 +148,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 ItemCategoryId = x.ItemCategoryId,
                                                 ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                 ItemDescription = x.ItemDescription,
-                                                SubCategoryId = x.ItemCategory.SubCategId,
+                                                SubCategoryId = x.ItemCategory.SubCategoryId,
                                                 SubCategoryName = x.ItemCategory.SubCategory.SubCategoryName,
                                                 BufferLevel = x.BufferLevel,
                                                 Uom = x.Uom.UomCode,
@@ -460,7 +460,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> ValidateDescritionAndUom(Material materials)
         {
             var valid = await _context.Materials.Where(x => x.ItemDescription == materials.ItemDescription)
-                                                .Where(x => x.UomId == materials.UomId)
+                                                .Where(x => x.ItemCategoryId == materials.ItemCategoryId)
                                                 .FirstOrDefaultAsync();
 
             if(valid == null)
@@ -488,7 +488,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ValidateSubcategInUse(int subcateg)
         {
-            return await _context.ItemCategories.AnyAsync(x => x.SubCategId == subcateg &&  x.IsActive == true);
+            return await _context.ItemCategories.AnyAsync(x => x.SubCategoryId == subcateg &&  x.IsActive == true);
                                                              
         }
 
@@ -506,7 +506,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> DuplicateItemCategoriesAndSubCateg(ItemCategory category)
         {
             var validate = await _context.ItemCategories.Where(x => x.ItemCategoryName == category.ItemCategoryName)
-                                                        .Where(x => x.SubCategId == category.SubCategId)
+                                                        .Where(x => x.SubCategoryId == category.SubCategoryId)
                                                         .FirstOrDefaultAsync();
 
             if (validate == null)
@@ -520,6 +520,48 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> ValidateItemCategInUse(int ItemCateg)
         {
             return await _context.Materials.AnyAsync(x => x.ItemCategoryId == ItemCateg && x.IsActive == true);
+        }
+
+        public async Task<bool> ExistItemCategId(int itemcateg)
+        {
+            var validate = await _context.ItemCategories.FindAsync(itemcateg);
+
+            if (validate == null)
+                return false;
+
+            return true;
+        }
+
+        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category)
+        {
+            var items = _context.ItemCategories.Where(x => x.IsActive == true)
+                                       .Where(x => x.ItemCategoryName == category)
+                                       .Select(x => new DtoItemcategDropdown
+                                       {
+
+                                             ItemCategoryId = x.Id,
+                                             ItemCategoryName = x.ItemCategoryName,
+                                            SubcategoryId = x.SubCategoryId,
+                                             SubcategoryName = x.SubCategory.SubCategoryName,
+
+                                       });
+
+            return await items.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
+        {
+            var subcategory = _context.ItemCategories.Where(x => x.IsActive == true)
+                                                     .Select(x => new DtoItemcategDropdown
+                                                     {
+                                                         ItemCategoryId = x.Id,
+                                                         ItemCategoryName = x.ItemCategoryName,
+                                                         SubcategoryId = x.SubCategoryId,
+                                                         SubcategoryName = x.SubCategory.SubCategoryName,
+
+                                                     }).Distinct();
+
+            return await subcategory.ToListAsync();
         }
 
 
@@ -536,17 +578,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         //public async Task<IReadOnlyList<SubCategoryDto>> GetAllListofSubcategorymaterial(string category)
         //{
 
-        //    var sub = _context.SubCategories.Where(x => x.IsActive == true)
-        //                                    .Where(x => x.SubCategoryName == category)
-        //                                    .Select(x => new SubCategoryDto
-        //                                      {
+        //var sub = _context.SubCategories.Where(x => x.IsActive == true)
+        //                                .Where(x => x.SubCategoryName == category)
+        //                                .Select(x => new SubCategoryDto
+        //                                {
 
-        //                                        SubCategoryId = x.Id,
-        //                                        SubcategoryName = x.SubCategoryName,
-        //                                        ItemCategoryId = x.ItemCategoryId,
-        //                                        CategoryName = x.ItemCategory.ItemCategoryName,
+        //                                    SubCategoryId = x.Id,
+        //                                    SubcategoryName = x.SubCategoryName,
+        //                                    ItemCategoryId = x.ItemCategoryId,
+        //                                    CategoryName = x.ItemCategory.ItemCategoryName,
 
-        //                                    });
+        //                                });
 
 
         //    return await sub.ToListAsync();

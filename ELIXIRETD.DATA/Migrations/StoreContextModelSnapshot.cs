@@ -894,10 +894,7 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ItemCategoryName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubCategId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SubCategoryId")
+                    b.Property<int>("SubCategoryId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1496,7 +1493,9 @@ namespace ELIXIRETD.DATA.Migrations
                 {
                     b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.SubCategory", "SubCategory")
                         .WithMany()
-                        .HasForeignKey("SubCategoryId");
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("SubCategory");
                 });

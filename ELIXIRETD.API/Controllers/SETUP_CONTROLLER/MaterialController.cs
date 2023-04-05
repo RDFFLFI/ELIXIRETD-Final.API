@@ -48,15 +48,20 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
                 var validDescriptionAndUom = await _unitOfWork.Materials.ValidateDescritionAndUom(material);
 
+            var existItemcateg = await _unitOfWork.Materials.ExistItemCategId(material.ItemCategoryId);
+
+
+            if (existItemcateg == false)
+                return BadRequest("Item categories doesn't exist");
            
             if (validDescriptionAndUom == true)
-                return BadRequest("Item Description and Uom already exist");
+                return BadRequest("Item Description, item categories and sub category already exist");
 
                 if (uomId == false)
-                    return BadRequest("UOM doesn't exist, Please add data first!");
+                    return BadRequest("UOM doesn't exist");
 
                 if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
-                    return BadRequest("Item Code already Exist!, Please try something else!");
+                    return BadRequest("Item Code already exist!");
 
 
 
@@ -76,11 +81,18 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             var validDescriptionAndUom = await _unitOfWork.Materials.ValidateDescritionAndUom(material);
 
-            if (validDescriptionAndUom == false)
-                return BadRequest("Item Description and Uom already exist");
+            if (validDescriptionAndUom == true)
+                return BadRequest("Item Description, item categories and sub category already exist");
 
             if (uomId == false)
                 return BadRequest("UOM doesn't exist, Please add data first!");
+
+            var existItemcateg = await _unitOfWork.Materials.ExistItemCategId(material.ItemCategoryId);
+
+            if (existItemcateg == false)
+                return BadRequest("Item categories doesn't exist");
+
+
 
             await _unitOfWork.Materials.UpdateMaterial(material);
             await _unitOfWork.CompleteAsync();
@@ -189,7 +201,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("AddNewItemCategories")]
         public async Task<IActionResult> CreateNewIteCategories(ItemCategory category)
         {
-                var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategId);
+                var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategoryId);
 
             var DuplicateItemcategoryandSub =  await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
 
@@ -217,7 +229,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             var DuplicateItemcategoryandSub = await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
 
-            var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategId);
+            var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategoryId);
 
             if (ExistSubcategory == false)
                 return BadRequest("No Sub category Exist!");
@@ -447,24 +459,24 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        //[HttpGet]
-        //[Route("GetAllSubcategoriesmaterial")]
-        //public async Task<IActionResult> GetAllsubcategories (string category)
-        //{
-        //   var categ = await _unitOfWork.Materials.GetAllListofSubcategorymaterial(category);
+        [HttpGet]
+        [Route("GetAllSubcategoriesmaterial")]
+        public async Task<IActionResult> GetAllsubcategories(string category)
+        {
+            var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
 
-        //    return Ok(categ);
+            return Ok(categ);
 
-        //}
+        }
 
-        //[HttpGet]
-        //[Route("GetallActiveSubcategoryDropDown")]
-        //public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
-        //{
-        //    var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
+        [HttpGet]
+        [Route("GetallActiveSubcategoryDropDown")]
+        public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
+        {
+            var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
 
-        //    return Ok(categ);
-        //}
+            return Ok(categ);
+        }
 
 
 
