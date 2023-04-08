@@ -30,7 +30,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ValidateDepartmentId(int id);
         Task<bool> ValidateUserExist(string username);
         Task<bool> ValidateDepartmentCodeExist(string code);
-        Task<bool>ValidateUserRolesModule(User user);
+        Task<bool> ValidateUserRolesModule(User user);
+        Task<bool> GetDepartmentByCodeAndNameAsync(string DepartmentCode, string DepartmentName);
+
 
 
 
@@ -46,6 +48,17 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ActivateDepartment(Department department);
         Task<PagedList<DepartmentDto>> GetAllDepartmentWithPagination(bool status, UserParams userParams);
         Task<PagedList<DepartmentDto>> GetAllDepartmentWithPaginationOrig(UserParams userParams, bool status, string search);
+
+        Task<Department> GetByDepartmentNo(int departmentNo);
+
+
+
+        Task<Department> GetById(int id);
+
+
+       Task Update(Department department);
+
+
 
 
 

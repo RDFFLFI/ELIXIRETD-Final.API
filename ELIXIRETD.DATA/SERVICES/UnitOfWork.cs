@@ -16,12 +16,15 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ELIXIRETD.DATA.SERVICES
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
+
     {
         private readonly StoreContext _context;
+        private IDbContextTransaction _transaction;
 
         public IUserRepository Users { get; private set; }
 
@@ -64,7 +67,7 @@ namespace ELIXIRETD.DATA.SERVICES
         public IReports Reports { get; set; }
 
         public UnitOfWork(StoreContext context)
-  
+
         {
             _context = context;
 
@@ -101,7 +104,6 @@ namespace ELIXIRETD.DATA.SERVICES
         {
             _context.Dispose();
         }
-
 
     }
 

@@ -165,8 +165,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> GetAllListofOrders([FromQuery] string customer)
         {
             
-
-
             var orders = await _unitofwork.Orders.GetAllListofOrders(customer);
 
             return Ok(orders);
@@ -204,6 +202,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 {
                     return BadRequest("Failed to schedule prepared date");
                 }
+                
             }
 
             await _unitofwork.CompleteAsync();
