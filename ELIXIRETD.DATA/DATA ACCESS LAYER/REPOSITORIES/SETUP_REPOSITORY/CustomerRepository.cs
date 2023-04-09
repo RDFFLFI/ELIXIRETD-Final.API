@@ -61,7 +61,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> AddCustomer(Customer customer)
         {
-            await _context.AddAsync(customer);
+            customer.Id = 0;
+            await _context.Customers.AddAsync(customer);
+
             return true;
         }
 
@@ -141,9 +143,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await _context.Customers.AnyAsync(x => x.CustomerCode == customer);
         }
 
-        public Task<bool> CustomerTypeExist(string type)
+      
+        public async Task<Customer> GetByCustomerNo(int customerNo)
         {
-            throw new NotImplementedException();
+            return await _context.Customers.FirstOrDefaultAsync(x => x.Customer_No == customerNo);
         }
+
+        public async Task<Customer> GetById(int id)
+        {
+            return await _context.Customers.FindAsync(id);
+        }
+
+        public async Task Update(Customer Customer)
+        {
+            _context.Customers.Update(Customer);
+            await Task.CompletedTask;
+        }
+
+
+
+
+
     }
 }

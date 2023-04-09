@@ -437,7 +437,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<Department> GetByDepartmentNo(int departmentNo)
         {
-            return await _context.Departments.FirstOrDefaultAsync(d => d.Department_No == departmentNo);
+            return await _context.Departments.FirstOrDefaultAsync(x => x.Department_No == departmentNo);
         }
 
         public async Task<Department> GetById(int id)

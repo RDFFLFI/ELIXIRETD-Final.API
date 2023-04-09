@@ -26,9 +26,13 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> CustomerCodeExist(string customer);
 
 
-        //--------------CUSTOMER TYPE---------------------//
+        //----------Validation -------//
 
-      
+
+        Task<Customer> GetByCustomerNo(int customerNo);
+        Task<Customer> GetById(int id);
+        Task Update(Customer Customer);
+
 
 
 

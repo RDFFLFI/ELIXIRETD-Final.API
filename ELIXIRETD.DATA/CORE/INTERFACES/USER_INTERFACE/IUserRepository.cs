@@ -50,12 +50,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<PagedList<DepartmentDto>> GetAllDepartmentWithPaginationOrig(UserParams userParams, bool status, string search);
 
         Task<Department> GetByDepartmentNo(int departmentNo);
-
-
-
         Task<Department> GetById(int id);
-
-
        Task Update(Department department);
 
 

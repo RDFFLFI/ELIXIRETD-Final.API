@@ -198,7 +198,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                if (departments.Count(x => x.DepartmentName == department.DepartmentName && x.DepartmentCode == department.DepartmentCode) > 1)
                 {
 
-                    // Add the department to the duplicate list
+                   
                     duplicateList.Add(department);
                 }
 
@@ -209,7 +209,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
                 if (existingDepartment != null)
                 {
-                    // Update the existing department
+
 
                     existingDepartment.DepartmentCode = department.DepartmentCode;
                     existingDepartment.DepartmentName = department.DepartmentName;
@@ -222,7 +222,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 }
                 else if (await _unitOfWork.Users.GetByDepartmentNo(department.Department_No) == null)
                 {
-                        // Add a new department if the department number does not exist
+
                         availableImport.Add(department);
                         await _unitOfWork.Users.AddNewDepartment(department);    
                 }
@@ -248,50 +248,6 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 return BadRequest(resultlist);
             }
         }
-
-        //[HttpPut]
-        //[Route("AddNewDepartment")]
-        //public async Task<IActionResult> AddNewDepartment([FromBody] Department[] departments)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return new JsonResult("Something went wrong!") { StatusCode = 500 };
-        //    }
-
-        //    List<Department> duplicateList = new List<Department>();
-        //    List<Department> availableImport = new List<Department>();
-
-        //    foreach (Department department in departments)
-        //    {
-
-        //        if (departments.Count(x => x.Department_No == department.Department_No && x.DepartmentName == department.DepartmentName && x.DepartmentCode == department.DepartmentCode) > 1)
-        //        {
-        //            duplicateList.Add(department);
-        //        }
-        //        else
-        //        {
-        //            availableImport.Add(department);
-        //            await _unitOfWork.Users.AddNewDepartment(department);
-        //        }
-        //    }
-
-        //    var resultlist = new
-        //    {
-        //        AvailableImport = availableImport,
-        //        DuplicateList = duplicateList,
-        //    };
-
-        //    if (duplicateList.Count == 0)
-        //    {
-        //        await _unitOfWork.CompleteAsync();
-        //        return Ok("Successfully added!");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest(resultlist);
-        //    }
-        //}
-
 
 
         [HttpPut]

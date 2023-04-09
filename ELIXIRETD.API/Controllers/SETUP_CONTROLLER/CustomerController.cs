@@ -40,20 +40,71 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             return Ok(customer);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("AddNewCustomer")]
-        public async Task<IActionResult> AddNewCustomer(Customer customer)
+        public async Task<IActionResult> AddNewCustomer([FromBody] Customer[] customer)
         {
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            }
+
+            List<Customer> duplicateList = new List<Customer>();
+            List<Customer> availableImport = new List<Customer>();
+
+            foreach ( Customer items in customer)
+            {
+
+                if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerName == items.CustomerName && x.CompanyName == items.CompanyName) > 1)
+                {
+
+                    duplicateList.Add(items);
+                }
+
+                else
+                {
+
+                    var existingCustomer = await _unitOfWork.Customers.GetById(items.Customer_No);
+
+                    if (existingCustomer != null)
+                    { 
+
+                        existingCustomer.CustomerCode = items.CustomerCode;
+                        existingCustomer.CustomerName = items.CustomerName;
+                        existingCustomer.AddedBy = items.AddedBy;
+                        existingCustomer.IsActive = items.IsActive;
+                        existingCustomer.DateAdded = items.DateAdded;
 
 
-            if (await _unitOfWork.Customers.CustomerCodeExist(customer.CustomerCode))
-                return BadRequest("Customer already Exist!, Please try something else!");
+                        await _unitOfWork.Customers.Update(existingCustomer);
+                    }
+                    else if (await _unitOfWork.Customers.GetByCustomerNo(items.Customer_No) == null)
+                    {
 
-            await _unitOfWork.Customers.AddCustomer(customer);
-            await _unitOfWork.CompleteAsync();
+                        availableImport.Add(items);
+                        await _unitOfWork.Customers.AddCustomer(items);
+                    }
 
-            return Ok(customer);
+                }
 
+            }
+
+            var resultlist = new
+            {
+                AvailableImport = availableImport,
+                DuplicateList = duplicateList,
+            };
+
+            if (duplicateList.Count == 0)
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Successfully added!");
+            }
+            else
+            {
+
+                return BadRequest(resultlist);
+            }
         }
 
 
