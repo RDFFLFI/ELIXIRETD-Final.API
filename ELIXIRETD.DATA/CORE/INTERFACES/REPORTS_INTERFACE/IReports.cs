@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +11,19 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
     public interface IReports
     {
 
-        Task<IReadOnlyList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(string DateFrom , string DateTo);
+        Task<PagedList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(UserParams userParams, string DateFrom , string DateTo);
 
-        Task<IReadOnlyList<DtoMoveOrderReports>> WarehouseMoveOrderReports(string DateFrom , string DateTo);
+        Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom , string DateTo);
 
-        Task<IReadOnlyList<DtoMiscReports>> MiscReports(string DateFrom, string DateTo);
+        Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo);
 
-        Task<IReadOnlyList<DtoMiscIssue>> MiscIssue (string DateFrom, string DateTo);
+        Task<PagedList<DtoMiscIssue>> MiscIssue (UserParams userParams, string DateFrom, string DateTo);
 
-        Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports (string DateFrom, string DateTo);
+        Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports (UserParams userParams, string DateFrom, string DateTo);
 
 
-        Task<IReadOnlyList<DtoCancelledReports>> CancelledReports(string DateFrom , string DateTo);
-        Task<IReadOnlyList<DtoInventoryMovement>>InventoryMovementReports (string DateFrom , string DateTo , string PlusOne);
+        Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams, string DateFrom , string DateTo);
+        Task<PagedList<DtoInventoryMovement>> InventoryMovementReports (UserParams userParams, string DateFrom , string DateTo , string PlusOne);
 
 
 

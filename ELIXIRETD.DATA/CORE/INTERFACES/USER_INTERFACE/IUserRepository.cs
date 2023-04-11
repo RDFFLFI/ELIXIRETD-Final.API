@@ -34,11 +34,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> GetDepartmentByCodeAndNameAsync(string DepartmentCode, string DepartmentName);
 
 
-
-
-
-
-
         //------------Department
         Task<IReadOnlyList<DepartmentDto>> GetAllActiveDepartment();
         Task<IReadOnlyList<DepartmentDto>> GetAllInActiveDepartment();

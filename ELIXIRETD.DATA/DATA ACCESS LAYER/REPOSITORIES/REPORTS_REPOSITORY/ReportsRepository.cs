@@ -3,6 +3,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
        
 
-        public async Task<IReadOnlyList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(UserParams userParams, string DateFrom, string DateTo)
         {
 
             var warehouse = _context.WarehouseReceived.Where(x => x.ReceivingDate >= DateTime.Parse(DateFrom) && x.ReceivingDate <= DateTime.Parse(DateTo))
@@ -39,14 +40,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           TotalReject = x.TotalReject,
                                                           SupplierName = x.Supplier,
                                                   
-        TransactionType = x.TransactionType,
+                                                          TransactionType = x.TransactionType,
                                                       });
 
-            return await warehouse.ToListAsync();
-                                               
+           
+            return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<IReadOnlyList<DtoMoveOrderReports>> WarehouseMoveOrderReports(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo )
         {
             var orders = _context.MoveOrders
                         .Where(moveorder => moveorder.PreparedDate >= DateTime.Parse(DateFrom) && moveorder.PreparedDate <= DateTime.Parse(DateTo) && moveorder.IsActive == true)
@@ -80,11 +81,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                          });
 
-            return await orders.ToListAsync();
+            return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
 
-        public async Task<IReadOnlyList<DtoMiscReports>> MiscReports(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo)
         {
             var receipts = (from receiptHeader in _context.MiscellaneousReceipts
                             join receipt in _context.WarehouseReceived
@@ -112,11 +113,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                             });
 
-            return await receipts.ToListAsync();
+            return await PagedList<DtoMiscReports>.CreateAsync(receipts, userParams.PageNumber, userParams.PageSize);
 
         }
 
-        public async Task<IReadOnlyList<DtoMiscIssue>> MiscIssue(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoMiscIssue>> MiscIssue(UserParams userParams, string DateFrom , string DateTo)
         {
             var issues = _context.MiscellaneousIssues
                        .GroupJoin(_context.MiscellaneousIssueDetail, receipt => receipt.Id, issue => issue.IssuePKey, (receipt, issue) => new { receipt, issue })
@@ -139,12 +140,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                        });
 
 
-            return await issues.ToListAsync();
+            return await PagedList<DtoMiscIssue>.CreateAsync(issues, userParams.PageNumber, userParams.PageSize);
         }
 
 
 
-        public async Task<IReadOnlyList<DtoBorrowedAndReturned>> ReturnBorrowedReports(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams ,string DateFrom, string DateTo)
         {
 
 
@@ -187,13 +188,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
 
-            return await Reports.ToListAsync();
+            return await PagedList<DtoBorrowedAndReturned>.CreateAsync(Reports, userParams.PageNumber, userParams.PageSize);
 
         }
 
 
 
-        public async Task<IReadOnlyList<DtoCancelledReports>> CancelledReports(string DateFrom, string DateTo)
+        public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo )
         {
             var orders = _context.Orders.Where(x => x.OrderDate >= DateTime.Parse(DateFrom) && x.OrderDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
                                         .Select(x => new DtoCancelledReports
@@ -214,10 +215,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                         });
 
-            return await orders.ToListAsync();
+            return await PagedList<DtoCancelledReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<IReadOnlyList<DtoInventoryMovement>> InventoryMovementReports(string DateFrom, string DateTo , string PlusOne)
+        public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom, string DateTo , string PlusOne )
         {
             var DateToday = DateTime.Parse(DateTime.Now.ToString());
 
@@ -668,7 +669,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                      });
 
-            return await movementInventory.ToListAsync();
+            return await PagedList<DtoInventoryMovement>.CreateAsync(movementInventory, userParams.PageNumber, userParams.PageSize);
 
 
         }
