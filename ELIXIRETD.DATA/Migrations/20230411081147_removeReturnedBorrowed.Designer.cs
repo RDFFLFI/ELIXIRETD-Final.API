@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20230411081147_removeReturnedBorrowed")]
+    partial class removeReturnedBorrowed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,6 +32,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<decimal>("Consume")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("CustomerCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -40,6 +45,9 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsReturned")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsTransact")
@@ -53,6 +61,12 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReturnedDate")
+                        .HasColumnType("Date");
+
+                    b.Property<decimal>("ReturnedQuantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalQuantity")
                         .HasColumnType("decimal(18,2)");

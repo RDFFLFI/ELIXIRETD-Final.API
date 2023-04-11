@@ -15,7 +15,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO
         public bool IsActive { get; set; }
         public int UserRoleId { get; set; }
         public string UserRole { get; set; }
-        public int DepartmentId { get; set; }
         public string Department { get; set; }
         public string DateAdded { get; set; }
         public string AddedBy { get; set; }

@@ -404,24 +404,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         //======================================================== Validation ================================================================
 
-        public async Task<bool> ValidateBorrowReceiptIssue(BorrowedReceipt borrowed)
-        {
-            var validate = await _context.WarehouseReceived.Where(x => x.BorrowedReceiptId == borrowed.Id)
-                                                     .ToListAsync();
-
-
-            foreach(var items in validate)
-            {
-                var issue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == items.Id)
-                                                                    .FirstOrDefaultAsync();
-
-                if (issue != null)
-                    return false;
-
-            }
-            return true;
-        }
-
+      
 
         public async Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed)
         {
@@ -467,8 +450,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             }
 
-            returned.ReturnedDate = DateTime.Now;
-            returned.IsReturned = true;
             returned.IsActive = true;
 
             return true;
@@ -540,14 +521,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
         {
-            var borrow = _context.ReturnedBorroweds.Where(x => x.TotalbPkey == id)
+            var borrow = _context.BorrowedIssueDetails.Where(x => x.Id == id)
                                                      .Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
                                                        .Select(x => new DtoViewBorrewedReturnedDetails
                                                       {
                                                           ItemCode = x.ItemCode,
                                                           ItemDescription = x.ItemDescription,
-                                                          ReturnQuantity = x.ReturnedQuantity,
+                                                          ReturnQuantity = x.ReturnQuantity,
                                                           ReturnedDate = x.ReturnedDate.ToString()
 
                                                        }).OrderByDescending(x => x.ReturnedDate);

@@ -50,11 +50,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public virtual DbSet<BorrowedIssue> BorrowedIssues { get; set; }
         public virtual DbSet<BorrowedIssueDetails> BorrowedIssueDetails { get; set; }
 
-        public virtual DbSet<BorrowedReceipt> BorrowedReceipts { get; set; }
-
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
 
-        public virtual DbSet<ReturnedBorrowed> ReturnedBorroweds { get; set; }
 
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

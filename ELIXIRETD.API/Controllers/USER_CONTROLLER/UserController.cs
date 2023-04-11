@@ -30,6 +30,15 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             return Ok(user);
         }
 
+        [HttpGet]
+        [Route("GetInAllUsers")]
+        public async Task<IActionResult> GetInActiveUsers()
+        {
+            var user = await _unitOfWork.Users.GetAllInActiveUsers();
+
+            return Ok(user);
+        }
+
         [HttpPost]
         [Route("AddNewUser")]
         public async Task<IActionResult> AddNewUser(User user)

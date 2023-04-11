@@ -149,13 +149,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         {
 
 
-            var getReturned = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                            .Where(x => x.IsReturned == true)
                                                            .Select(x => new
                                                            {
                                                                BorrowedPKey = x.BorrowedPKey,
                                                                ItemCode = x.ItemCode,
-                                                               ReturnedQuantity = x.ReturnedQuantity != null ? x.ReturnedQuantity : 0,
+                                                               ReturnedQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
                                                                ReturnedDate = x.ReturnedDate,
 
                                                            });
@@ -477,7 +477,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                               });
 
 
-            var getReturned = _context.ReturnedBorroweds.Where(x => x.IsActive == true)
+            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                             .Where(x => x.IsReturned == true)
                                                              .GroupBy(x => new
                                                              {
@@ -488,7 +488,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 ReturnQuantity = x.Sum(x => x.ReturnedQuantity)
+                                                                 ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                              });
 
