@@ -30,8 +30,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                          Password = x.Password,
                                          UserRoleId = x.UserRoleId,
                                          UserRole = x.UserRole.RoleName,
-                                         Department = x.Department.DepartmentName,
-                                         DepartmentId = x.DepartmentId,
+                                         Department = x.Department,
                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                          IsActive = x.IsActive,
                                          AddedBy = x.AddedBy
@@ -52,8 +51,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                         Password = x.Password,
                                         UserRoleId = x.UserRoleId,
                                         UserRole = x.UserRole.RoleName,
-                                        Department = x.Department.DepartmentName,
-                                        DepartmentId = x.DepartmentId,
+                                        Department = x.Department,
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                         IsActive = x.IsActive,
                                         AddedBy = x.AddedBy
@@ -65,9 +63,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> AddNewUser(User user)
         {
+
+            user.Password = user.UserName;
+
             await _context.Users.AddAsync(user);
             return true;
         }
+
+        public async Task<bool> ChangePassword(User user)
+        {
+            var pass = await _context.Users.Where(x => x.Id == user.Id)
+                                           .FirstOrDefaultAsync();
+
+            pass.Password = user.Password;
+
+            return true;
+        }
+
 
         public async Task<bool> UpdateUserInfo(User user)
         {
@@ -78,7 +90,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             existingUser.UserName = user.UserName;
             existingUser.Password = user.Password;
             existingUser.UserRoleId = user.UserRoleId;
-            existingUser.DepartmentId = user.DepartmentId;
+            existingUser.Department = user.Department;
 
             return true;
         }
@@ -116,8 +128,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                           Password = x.Password,
                                           UserRoleId = x.UserRoleId,
                                           UserRole = x.UserRole.RoleName,
-                                          Department = x.Department.DepartmentName,
-                                          DepartmentId = x.DepartmentId,
+                                          Department = x.Department,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive,
                                           AddedBy = x.AddedBy
@@ -139,8 +150,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                           Password = x.Password,
                                           UserRoleId = x.UserRoleId,
                                           UserRole = x.UserRole.RoleName,
-                                          Department = x.Department.DepartmentName,
-                                          DepartmentId = x.DepartmentId,
+                                          Department = x.Department,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive,
                                           AddedBy = x.AddedBy
@@ -205,16 +215,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             var roles = await _context.Roles.FindAsync(id);
 
             if (roles == null)
-                return false;
-
-            return true;
-        }
-
-        public async Task<bool> ValidateDepartmentId(int id)
-        {
-            var department = await _context.Departments.FindAsync(id);
-
-            if (department == null)
                 return false;
 
             return true;
@@ -293,17 +293,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         }
 
-        public async Task<bool> GetDepartmentByCodeAndNameAsync(string DepartmentCode, string DepartmentName)
-        {
-            var valid = await _context.Departments.Where(x => x.DepartmentCode == DepartmentCode && x.DepartmentName == DepartmentName)
-                                                      .FirstOrDefaultAsync();
-
-            if (valid == null)
-                return false;
-
-            return true;
-
-        }
 
         public async Task<Department> GetByDepartmentNo(int departmentNo)
         {
@@ -321,6 +310,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             await Task.CompletedTask;
         }
 
+      
     }
 }
 

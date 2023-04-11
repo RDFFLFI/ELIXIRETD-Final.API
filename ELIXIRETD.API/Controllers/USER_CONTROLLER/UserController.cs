@@ -36,18 +36,14 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         {
 
             var getRoleId = await _unitOfWork.Users.ValidateRoleId(user.UserRoleId);
-            var getDepId = await _unitOfWork.Users.ValidateDepartmentId(user.DepartmentId);
             var validateuserRolemodules = await _unitOfWork.Users.ValidateUserRolesModule(user);
 
-           
+
             if (await _unitOfWork.Users.ValidateUserExist(user.UserName))
                 return BadRequest("Username already exist, Please try something else!");
 
             if (getRoleId == false)
                 return BadRequest("Role doesn't exist, Please input data first!");
-
-            if (getDepId == false)
-                return BadRequest("Department doesn't exist, Please input data first!");
 
             if (validateuserRolemodules == true)
                 return BadRequest("No Role modules has been tag!");
@@ -60,11 +56,21 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         }
 
         [HttpPut]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] User user)
+        {
+
+            await _unitOfWork.Users.ChangePassword(user);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(user);
+        }
+
+        [HttpPut]
         [Route("UpdateUserInfo")]
         public async Task<IActionResult> UpdateUserInfo([FromBody]User user)
         {
             var getRoleId = await _unitOfWork.Users.ValidateRoleId(user.UserRoleId);
-            var getDepId = await _unitOfWork.Users.ValidateDepartmentId(user.DepartmentId);
             var validateuserRolemodules = await _unitOfWork.Users.ValidateUserRolesModule(user);
 
 
@@ -73,9 +79,6 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             if (getRoleId == false)
                 return BadRequest("Role doesn't exist, Please input data first!");
-
-            if (getDepId == false)
-                return BadRequest("Department doesn't exist, Please input data first!");
 
             if (validateuserRolemodules == true)
                 return BadRequest("No Role modules has been tag!");
@@ -159,7 +162,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         }
 
 
-        //------------DEPARTMENT
+        //------------DEPARTMENT-----------
 
         [HttpGet]
         [Route("GetAllActiveDepartment")]
@@ -301,6 +304,8 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             return Ok(departmentResult);
         }
+
+
 
     }
 }

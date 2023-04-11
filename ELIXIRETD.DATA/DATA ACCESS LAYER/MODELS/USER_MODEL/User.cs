@@ -14,8 +14,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL
         public bool IsActive { get; set; } = true;
         public UserRole UserRole { get; set; }
         public int UserRoleId { get; set; }
-        public Department Department { get; set; }
-        public int DepartmentId { get; set; }
+        public string Department { get; set; }
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public string AddedBy { get; set; }
         public string Reason { get; set; }
