@@ -43,9 +43,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<IReadOnlyList<DepartmentDto>> GetAllActiveDepartment();
         Task<IReadOnlyList<DepartmentDto>> GetAllInActiveDepartment();
         Task<bool> AddNewDepartment(Department department);
-        Task<bool> UpdateDepartment(Department department);
-        Task<bool> InActiveDepartment(Department department);
-        Task<bool> ActivateDepartment(Department department);
+
         Task<PagedList<DepartmentDto>> GetAllDepartmentWithPagination(bool status, UserParams userParams);
         Task<PagedList<DepartmentDto>> GetAllDepartmentWithPaginationOrig(UserParams userParams, bool status, string search);
 

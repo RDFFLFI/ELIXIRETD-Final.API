@@ -6,20 +6,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
     public class MoveOrder : BaseEntity
     {
         public int OrderNo { get; set; }
-      
         public string CustomerName { get; set; }
-
         public string Customercode { get; set; }
-
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
         public string Uom { get; set; }
 
         [Column (TypeName ="decimal(18,2)")]
         public decimal QuantityOrdered { get; set; }
-
         public string Category { get; set; }
-
 
         [Column(TypeName = "Date")]
         public DateTime OrderDate { get; set; }

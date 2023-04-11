@@ -250,41 +250,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         }
 
 
-        [HttpPut]
-        [Route("UpdateDepartment")]
-        public async Task<IActionResult> UpdateDepartment([FromBody] Department department)
-        {
-            if (await _unitOfWork.Users.ValidateDepartmentCodeExist(department.DepartmentCode))
-                return BadRequest("Department code already exist, please try something else!");
-
-            await _unitOfWork.Users.UpdateDepartment(department);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok("Successfully updated!");
-        }
-
-
-        [HttpPut]
-        [Route("InActiveDepartment")]
-        public async Task<IActionResult> InActiveDepartment([FromBody] Department department)
-        {
-            await _unitOfWork.Users.InActiveDepartment(department);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok("Successfully inactive department!");
-        }
-
-
-        [HttpPut]
-        [Route("ActivateDepartment")]
-        public async Task<IActionResult> ActivateDepartment([FromBody] Department department)
-        {
-            await _unitOfWork.Users.ActivateDepartment(department);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok("Successfully activate department!");
-        }
-
+      
         [HttpGet]
         [Route("GetAllDepartmentWithPagination/{status}")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllDepartmentWithPagination([FromRoute] bool status, [FromQuery] UserParams userParams)

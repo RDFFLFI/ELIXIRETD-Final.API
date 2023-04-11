@@ -74,7 +74,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             var existingUser = await _context.Users.Where(x => x.Id == user.Id)
                                               .FirstOrDefaultAsync();
 
-
             existingUser.FullName = user.FullName;
             existingUser.UserName = user.UserName;
             existingUser.Password = user.Password;
@@ -82,7 +81,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             existingUser.DepartmentId = user.DepartmentId;
 
             return true;
-
         }
 
         public async Task<bool> ActivateUser(User user)
@@ -93,7 +91,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             users.IsActive = true;
 
             return true;
-
         }
 
         public async Task<bool> InActiveUser(User user)
@@ -194,140 +191,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> AddNewDepartment(Department department)
         {
-            department.Id = 0; // set Id to 0 to allow the database to generate a new value
+            department.Id = 0; 
             await _context.Departments.AddAsync(department);
 
             return true;
 
         }
 
-        //public async Task<bool> AddNewDepartment(Department department)
-        //{
-        //    try
-        //    {
-        //        var existingDepartment = await _context.Departments.FindAsync(department.Id);
-
-        //        if (existingDepartment != null)
-        //        {
-        //            // Update existing department
-        //            existingDepartment.DepartmentCode = department.DepartmentCode;
-        //            existingDepartment.DepartmentName = department.DepartmentName;
-        //            existingDepartment.AddedBy = department.AddedBy;
-        //            existingDepartment.IsActive = department.IsActive;
-        //            existingDepartment.DateAdded = department.DateAdded;
-        //            existingDepartment.Reason = department.Reason;
-        //            _context.Entry(existingDepartment).State = EntityState.Modified;
-        //        }
-        //        else
-        //        {
-        //            if (department.Id != 0)
-        //            {
-        //                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Departments ON");
-        //            }
-        //            await _context.Departments.AddAsync(department);
-        //            if (department.Id != 0)
-        //            {
-        //                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Departments OFF");
-        //            }
-
-
-        //        }
-
-        //        return await _context.SaveChangesAsync() > 0;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception or handle it as needed
-        //        return false;
-        //    }
-        //}
-
-        //public async Task<bool> AddNewDepartment(Department department)
-        //{
-
-        //    try
-        //    {
-        //        await _context.Departments.Upsert(department).On(x => x.DepartmentCode).RunAsync();
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception or handle it as needed
-        //        var existingDepartment = await _context.Departments
-        //         .FirstOrDefaultAsync(d => d.DepartmentName == department.DepartmentName);
-
-        //        if (existingDepartment != null)
-        //        {
-        //            // Update existing department
-        //            existingDepartment.DepartmentCode = department.DepartmentCode;
-        //            existingDepartment.AddedBy = department.AddedBy;
-        //            existingDepartment.IsActive = department.IsActive;
-        //            existingDepartment.DateAdded = department.DateAdded;
-        //            existingDepartment.Reason = department.Reason;
-        //            _context.Entry(existingDepartment).State = EntityState.Modified;
-        //        }
-        //        else
-        //        {
-        //            // Add new department
-        //            await _context.Departments.AddAsync(department);
-        //        }
-
-        //        return await _context.SaveChangesAsync() > 0;
-        //    }
-        //}
-
-        //public async Task<bool> AddNewDepartment(Department department)
-        //{
-        //        var existingDepartment = await _context.Departments
-        //            .FirstOrDefaultAsync(d => d.DepartmentCode == department.DepartmentCode);
-
-        //            if (existingDepartment != null)
-        //            {
-        //                existingDepartment.DepartmentName = department.DepartmentName;
-        //                existingDepartment.AddedBy = department.AddedBy;
-        //                existingDepartment.IsActive = department.IsActive;
-        //                existingDepartment.DateAdded = department.DateAdded;
-        //                existingDepartment.Reason = department.Reason;
-        //                _context.Entry(existingDepartment).State = EntityState.Modified;
-        //            }
-        //            else
-        //            {
-        //                await _context.Departments.AddAsync(department);
-        //}
-
-        //return await _context.SaveChangesAsync() > 0;
-        //}
-
-        public async Task<bool> UpdateDepartment(Department department)
-        {
-            var dep = await _context.Departments.Where(x => x.Id == department.Id)
-                                                .FirstOrDefaultAsync();
-
-            dep.DepartmentName = department.DepartmentName;
-
-            return true;
-
-        }
-
-        public async Task<bool> InActiveDepartment(Department department)
-        {
-            var dep = await _context.Departments.Where(x => x.Id == department.Id)
-                                                .FirstOrDefaultAsync();
-
-            dep.IsActive = false;
-
-            return true;
-        }
-
-        public async Task<bool> ActivateDepartment(Department department)
-        {
-            var dep = await _context.Departments.Where(x => x.Id == department.Id)
-                                           .FirstOrDefaultAsync();
-
-            dep.IsActive = true;
-
-            return true;
-        }
+        
 
         public async Task<bool> ValidateRoleId(int id)
         {
@@ -419,7 +290,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 else
                     return false;
             }
-
 
         }
 
