@@ -35,23 +35,72 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             return Ok(supplier);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("AddNewSupplier")]
-        public async Task<IActionResult> AddNewSupplier(Supplier supplier)
+        public async Task<IActionResult> AddNewSupplier([FromBody] Supplier[] supplier)
         {
-            if (await _unitOfWork.Suppliers.SupplierCodeExist(supplier.SupplierCode))
-                return BadRequest("Supplier code already exist, please try something else!");
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            }
 
-            var validation = await _unitOfWork.Suppliers.ValidationDescritandAddress(supplier);
+            List<Supplier> duplicateList = new List<Supplier>();
+            List<Supplier> availableImport = new List<Supplier>();
 
-            if (validation == true)
-                return BadRequest("Supplier Name and Address was already exist");
+            foreach (Supplier items in supplier)
+            {
+
+                if (supplier.Count(x => x.SupplierCode == items.SupplierCode && x.SupplierName == items.SupplierName && x.SupplierAddress == items.SupplierAddress) > 1)
+                {
+
+                    duplicateList.Add(items);
+                }
+
+                else
+                {
+
+                    var existingSuppliers = await _unitOfWork.Suppliers.GetById(items.Supplier_No);
+
+                    if (existingSuppliers != null)
+                    {
+
+                        existingSuppliers.SupplierCode = items.SupplierCode;
+                        existingSuppliers.SupplierName = items.SupplierName;
+                        existingSuppliers.SupplierAddress = items.SupplierAddress;
+                        existingSuppliers.AddedBy = items.AddedBy;
+                        existingSuppliers.IsActive = items.IsActive;
+                        existingSuppliers.DateAdded = items.DateAdded;
 
 
-            await _unitOfWork.Suppliers.AddSupplier(supplier);
-            await _unitOfWork.CompleteAsync();
+                        await _unitOfWork.Suppliers.Update(existingSuppliers);
+                    }
+                    else if (await _unitOfWork.Suppliers.GetBySupplierNo(items.Supplier_No) == null)
+                    {
 
-            return Ok(supplier);
+                        availableImport.Add(items);
+                        await _unitOfWork.Suppliers.AddSupplier(items);
+                    }
+
+                }
+
+            }
+
+            var resultlist = new
+            {
+                AvailableImport = availableImport,
+                DuplicateList = duplicateList,
+            };
+
+            if (duplicateList.Count == 0)
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Successfully added!");
+            }
+            else
+            {
+
+                return BadRequest(resultlist);
+            }
         }
 
 

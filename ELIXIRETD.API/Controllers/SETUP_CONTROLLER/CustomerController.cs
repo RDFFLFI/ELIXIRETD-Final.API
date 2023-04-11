@@ -71,6 +71,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                         existingCustomer.CustomerCode = items.CustomerCode;
                         existingCustomer.CustomerName = items.CustomerName;
+                        existingCustomer.CompanyName = items.CompanyName;
                         existingCustomer.AddedBy = items.AddedBy;
                         existingCustomer.IsActive = items.IsActive;
                         existingCustomer.DateAdded = items.DateAdded;

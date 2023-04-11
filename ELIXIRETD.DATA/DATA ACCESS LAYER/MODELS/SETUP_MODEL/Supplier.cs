@@ -9,6 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
     public class Supplier : BaseEntity
     {
 
+        public int Supplier_No { get; set; }
         public string SupplierCode { get; set; }
         public string SupplierName { get; set; }
         public string SupplierAddress { get; set; }

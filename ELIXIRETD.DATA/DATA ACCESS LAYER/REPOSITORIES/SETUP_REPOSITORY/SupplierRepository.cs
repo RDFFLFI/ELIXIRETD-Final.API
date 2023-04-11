@@ -51,9 +51,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await supplier.ToListAsync();
         }
 
-        public async Task<bool> AddSupplier(Supplier supp)
+        public async Task<bool> AddSupplier(Supplier supplier)
         {
-            await _context.AddAsync(supp);
+            supplier.Id = 0;
+            await _context.Suppliers.AddAsync(supplier);
 
             return true;
         }
@@ -149,8 +150,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 
         }
 
+        public async Task<Supplier> GetBySupplierNo(int supplierNo)
+        {
+            return await _context.Suppliers.FirstOrDefaultAsync(x => x.Supplier_No == supplierNo);
+        }
 
+        public  async Task<Supplier> GetById(int id)
+        {
+            return await _context.Suppliers.FindAsync(id);
+        }
 
-
+        public async Task Update(Supplier supplier)
+        {
+            _context.Suppliers.Update(supplier);
+            await Task.CompletedTask;
+        }
     }
 }

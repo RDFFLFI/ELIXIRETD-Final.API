@@ -17,7 +17,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
         public string CompanyName { get; set; }
-        //public string MobileNumber { get; set; }
+
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;
         public string AddedBy { get; set; }
