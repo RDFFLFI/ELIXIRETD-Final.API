@@ -196,6 +196,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                     });
 
+
             var getSOH = (from warehouse in getWarehouseStock
                           join issue in getIssueOut
                           on warehouse.ItemCode equals issue.ItemCode
@@ -231,7 +232,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               borrowed,
                               returned,
                               receipt,
-
 
                           }
                           by new

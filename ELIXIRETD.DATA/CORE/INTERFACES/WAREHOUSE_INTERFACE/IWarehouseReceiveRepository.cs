@@ -23,8 +23,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE
         Task<PagedList<CancelledPoDto>> GetAllCancelledPOWithPagination(UserParams userParams);
         Task<PagedList<CancelledPoDto>> GetAllCancelledPOWithPaginationOrig(UserParams userParams, string search);
 
-        Task<PagedList<RejectWarehouseReceivingDto>> RejectRawMaterialsByWarehousePagination(UserParams userParams);
-        Task<PagedList<RejectWarehouseReceivingDto>> RejectRawMaterialsByWarehousePaginationOrig(UserParams userParams, string search);
 
         Task<bool> ValidatePoId(int id);
         Task<bool> ValidateActualRemaining(Warehouse_Receiving receiving);

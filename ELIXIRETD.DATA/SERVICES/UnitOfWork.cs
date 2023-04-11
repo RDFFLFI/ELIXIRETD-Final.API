@@ -46,7 +46,6 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public ICompanyRepository Companies { get; set; }
 
-        public IAccountRepository Accounts { get; set; }
 
         public ILocationRepository Locations { get; set; }
 
@@ -81,7 +80,6 @@ namespace ELIXIRETD.DATA.SERVICES
             Lots = new LotRepository(_context);
             Reasons = new ReasonRepository(_context);
             Companies = new CompanyRepository(_context);
-            Accounts = new AccountRepository(_context);
             Locations = new LocationRepository(_context);
             Imports = new PoSummaryRepository(_context);
             Receives = new WarehouseRepository(_context);

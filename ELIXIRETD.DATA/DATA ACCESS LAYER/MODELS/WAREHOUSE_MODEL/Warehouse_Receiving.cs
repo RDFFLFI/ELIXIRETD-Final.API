@@ -33,7 +33,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public bool? ConfirmRejectByWarehouse { get; set; }
 
         public DateTime ActualReceivingDate { get; set; } = DateTime.Now;
-        public int? BorrowedReceiptId { get; set; }
+
 
 
     }

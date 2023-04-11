@@ -308,55 +308,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             return true;
         }
 
-        public async Task<PagedList<RejectWarehouseReceivingDto>> RejectRawMaterialsByWarehousePagination(UserParams userParams)
-        {
-
-            var warehousereject = (from warehouse in _context.WarehouseReceived
-                                   join rejectwarehouse in _context.WarehouseReject
-                                   on warehouse.Id equals rejectwarehouse.WarehouseReceivingId into leftJ
-                                   from rejectwarehouse in leftJ.DefaultIfEmpty()
-                     
-
-                                   group rejectwarehouse by new
-                                   {
-                                       warehouse.PoNumber,
-                                       warehouse.ItemCode,
-                                       warehouse.ItemDescription,
-                                       warehouse.Supplier,
-                                       warehouse.Uom,
-                                       warehouse.Id,
-                                       warehouse.ReceivingDate,
-                                       warehouse.TotalReject,
-                                       warehouse.Reason,
-                                       warehouse.ConfirmRejectByWarehouse,
-                                       warehouse.IsWarehouseReceived
-
-                                   } into total
-
-                                   select new RejectWarehouseReceivingDto
-                                   {
-                                       Id = total.Key.Id,
-                                       PO_Number = total.Key.PoNumber,
-                                       ItemCode = total.Key.ItemCode,
-                                       ItemDescription = total.Key.ItemDescription,
-                                       Supplier = total.Key.Supplier,
-                                       Uom = total.Key.Uom,                                    
-                                       ReceivingDate = total.Key.ReceivingDate.ToString(),
-                                       ActualReject = total.Key.TotalReject,
-                                       Remarks = total.Key.Reason,
-                                      
-
-                                   });
-
-            return await PagedList<RejectWarehouseReceivingDto>.CreateAsync(warehousereject, userParams.PageNumber, userParams.PageSize);
-
-
-        }
-
-        public Task<PagedList<RejectWarehouseReceivingDto>> RejectRawMaterialsByWarehousePaginationOrig(UserParams userParams, string search)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> ValidatePoId(int id)
         {

@@ -31,11 +31,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public virtual DbSet<Reason> Reasons { get; set; }
         public virtual DbSet<Company> Companies { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
-        public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<PoSummary> PoSummaries { get; set; }
         public virtual DbSet<Warehouse_Receiving> WarehouseReceived { get; set; }
-        public virtual DbSet<Warehouse_Reject> WarehouseReject { get; set; }
-
         public virtual DbSet<Ordering> Orders { get; set; }
         public virtual DbSet<GenerateOrderNo> GenerateOrders { get; set; }
         public virtual DbSet<MoveOrder> MoveOrders { get; set; }
