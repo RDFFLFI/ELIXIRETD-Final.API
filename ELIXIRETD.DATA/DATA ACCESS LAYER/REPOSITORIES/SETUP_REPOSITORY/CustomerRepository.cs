@@ -67,37 +67,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public async Task<bool> UpdateCustomer(Customer customer)
-        {
-            var existingCustomer = await _context.Customers.Where(x => x.Id == customer.Id)
-                                                           .FirstOrDefaultAsync();
-
-            existingCustomer.CustomerName = customer.CustomerName;
-            existingCustomer.CompanyName = customer.CompanyName;
-
-            return true;
-
-        }
-
-        public async Task<bool> ActivateCustomer(Customer customer)
-        {
-            var customers = await _context.Customers.Where(x => x.Id == customer.Id)
-                                                    .FirstOrDefaultAsync();
-
-            customers.IsActive = true;
-
-            return true;
-        }
-
-        public async Task<bool> InActiveCustomer(Customer customer)
-        {
-            var customers = await _context.Customers.Where(x => x.Id == customer.Id)
-                                                   .FirstOrDefaultAsync();
-
-            customers.IsActive = false;
-
-            return true;
-        }
 
        
         public async Task<PagedList<CustomerDto>> GetAllCustomerWithPagination(bool status, UserParams userParams)

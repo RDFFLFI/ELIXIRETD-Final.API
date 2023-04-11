@@ -16,9 +16,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<CustomerDto>> GetAllActiveCustomers();
         Task<IReadOnlyList<CustomerDto>> GetAllInActiveCustomers();
         Task<bool> AddCustomer(Customer customer);
-        Task<bool> UpdateCustomer(Customer customer);
-        Task<bool> InActiveCustomer(Customer customer);
-        Task<bool> ActivateCustomer(Customer customer);
         Task<PagedList<CustomerDto>> GetAllCustomerWithPagination(bool status, UserParams userParams);
         Task<PagedList<CustomerDto>> GetCustomerWithPaginationOrig(UserParams userParams, bool status, string search);
 

@@ -109,40 +109,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        [HttpPut]
-        [Route("UpdateCustomer")]
-        public async Task<IActionResult> UpdateCustomerInfo([FromBody] Customer customer)
-        {
-
-
-            await _unitOfWork.Customers.UpdateCustomer(customer);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok(customer);
-        }
-
-
-        [HttpPut]
-        [Route("InActiveCustomer")]
-        public async Task<IActionResult> InActiveCustomer([FromBody] Customer customer)
-        {
-   
-            await _unitOfWork.Customers.InActiveCustomer(customer);
-            await _unitOfWork.CompleteAsync();
-
-            return new JsonResult("Successfully inactive customer!");
-        }
-
-        [HttpPut]
-        [Route("ActivateCustomer")]
-        public async Task<IActionResult> ActivateCustomer([FromBody] Customer customer)
-        {
-         
-            await _unitOfWork.Customers.ActivateCustomer(customer);
-            await _unitOfWork.CompleteAsync();
-
-            return new JsonResult("Successfully activate customer!");
-        }
 
         [HttpGet]
         [Route("GetAllCustomerWithPagination/{status}")]

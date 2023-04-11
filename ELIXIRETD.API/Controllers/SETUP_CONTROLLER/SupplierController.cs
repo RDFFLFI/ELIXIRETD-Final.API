@@ -104,43 +104,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        [HttpPut]
-        [Route("UpdateSupplier")]
-        public async Task<IActionResult> UpdateSupplier([FromBody] Supplier supplier)
-        {
-            var validation = await _unitOfWork.Suppliers.ValidationDescritandAddress(supplier);
-
-            if (validation == true)
-                return BadRequest("Supplier Name and Address was already exist");
-
-
-            await _unitOfWork.Suppliers.UpdateSupplier(supplier);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok(supplier);
-        }
-
-        [HttpPut]
-        [Route("InActiveSupplier")]
-        public async Task<IActionResult> InActiveSupplier([FromBody] Supplier supplier)
-        {
-
-            await _unitOfWork.Suppliers.InActiveSupplier(supplier);
-            await _unitOfWork.CompleteAsync();
-
-            return new JsonResult("Successfully inactive Supplier!");
-        }
-
-        [HttpPut]
-        [Route("ActivateSupplier")]
-        public async Task<IActionResult> ActivateSupplier([FromBody] Supplier supplier)
-        {
-            await _unitOfWork.Suppliers.ActivateSupplier(supplier);
-            await _unitOfWork.CompleteAsync();
-
-            return new JsonResult("Successfully activate supplier!");
-        }
-
         [HttpGet]
         [Route("GetAllSupplierithPagination/{status}")]
         public async Task<ActionResult<IEnumerable<UomDto>>> GetAllSupplierithPagination([FromRoute] bool status, [FromQuery] UserParams userParams)

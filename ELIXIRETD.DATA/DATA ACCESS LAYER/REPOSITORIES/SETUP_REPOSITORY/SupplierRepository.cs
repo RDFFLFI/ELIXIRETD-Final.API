@@ -59,38 +59,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public async Task<bool> UpdateSupplier(Supplier supp)
-        {
-            var supplier = await _context.Suppliers.Where(x => x.Id == supp.Id)
-                                                   .FirstOrDefaultAsync();
-
-            supplier.SupplierName = supp.SupplierName;
-            supplier.SupplierAddress = supp.SupplierAddress;
-
-            return true;
-
-        }
-
-
-
-        public async Task<bool> ActivateSupplier(Supplier supp)
-        {
-            var supplier = await _context.Suppliers.Where(x => x.Id == supp.Id)
-                                                   .FirstOrDefaultAsync();
-            supplier.IsActive = true;
-
-            return true;
-        }
-
-
-        public async Task<bool> InActiveSupplier(Supplier supp)
-        {
-            var supplier = await _context.Suppliers.Where(x => x.Id == supp.Id)
-                                                   .FirstOrDefaultAsync();
-            supplier.IsActive = false;
-
-            return true;
-        }
+  
 
 
         public async Task<PagedList<SupplierDto>> GetAllSupplierWithPagination(bool status, UserParams userParams)
