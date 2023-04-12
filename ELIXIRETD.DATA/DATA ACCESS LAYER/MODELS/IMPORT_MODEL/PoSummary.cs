@@ -42,9 +42,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
-
         public string VendorName { get; set; }
-
         public string AddedBy{ get; set; }
         public bool IsActive { get; set; } = true;
         public string Reason { get; set; }
