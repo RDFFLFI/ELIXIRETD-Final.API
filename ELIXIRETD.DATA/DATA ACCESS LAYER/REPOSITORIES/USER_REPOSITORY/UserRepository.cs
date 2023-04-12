@@ -162,51 +162,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         }
 
 
-        //--------------DEPARTMENT
+        //--------------Validation
 
-
-        public async Task<IReadOnlyList<DepartmentDto>> GetAllActiveDepartment()
-        {
-            var department = _context.Departments.Where(x => x.IsActive == true)
-                                                 .Select(x => new DepartmentDto
-                                                 {
-                                                     Id = x.Id,
-                                                     DepartmentName = x.DepartmentName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
-
-                                                 });
-
-            return await department.ToListAsync();
-
-        }
-
-        public async Task<IReadOnlyList<DepartmentDto>> GetAllInActiveDepartment()
-        {
-            var department = _context.Departments.Where(x => x.IsActive == false)
-                                                 .Select(x => new DepartmentDto
-                                                 {
-                                                     Id = x.Id,
-                                                     DepartmentName = x.DepartmentName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
-
-                                                 });
-
-            return await department.ToListAsync();
-
-        }
-
-
-
-        public async Task<bool> AddNewDepartment(Department department)
-        {
-            department.Id = 0; 
-            await _context.Departments.AddAsync(department);
-
-            return true;
-
-        }
 
         
 
@@ -225,46 +182,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return await _context.Users.AnyAsync(x => x.UserName == username);
         }
 
-        public async Task<bool> ValidateDepartmentCodeExist(string code)
-        {
-            return await _context.Departments.AnyAsync(x => x.DepartmentCode == code);
-        }
 
-        public async Task<PagedList<DepartmentDto>> GetAllDepartmentWithPagination(bool status, UserParams userParams)
-        {
-            var department = _context.Departments.Where(x => x.IsActive == status)
-                                                 .Select(x => new DepartmentDto
-                                                 {
-                                                     Id = x.Id,
-                                                     DepartmentCode = x.DepartmentCode,
-                                                     DepartmentName = x.DepartmentName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                     IsActive = x.IsActive
-                                                 });
-
-            return await PagedList<DepartmentDto>.CreateAsync(department, userParams.PageNumber, userParams.PageSize);
-        }
-
-        public async Task<PagedList<DepartmentDto>> GetAllDepartmentWithPaginationOrig(UserParams userParams, bool status, string search)
-        {
-            var department = _context.Departments.Where(x => x.IsActive == status)
-                                                 .Select(x => new DepartmentDto
-                                                 {
-                                                     Id = x.Id,
-                                                     DepartmentCode = x.DepartmentCode,
-                                                     DepartmentName = x.DepartmentName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                     IsActive = x.IsActive
-                                                 })
-                                                  .Where(x => x.DepartmentName.ToLower()
-                                                  .Contains(search.Trim().ToLower()));
-
-            return await PagedList<DepartmentDto>.CreateAsync(department, userParams.PageNumber, userParams.PageSize);
-
-        }
-
+             
 
         public async Task<bool> ValidateUserRolesModule(User user)
         {
@@ -294,22 +213,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         }
 
 
-        public async Task<Department> GetByDepartmentNo(int departmentNo)
-        {
-            return await _context.Departments.FirstOrDefaultAsync(x => x.Department_No == departmentNo);
-        }
-
-        public async Task<Department> GetById(int id)
-        {
-            return await _context.Departments.FindAsync(id);
-        }
-
-        public async Task Update(Department department)
-        {
-            _context.Departments.Update(department);
-            await Task.CompletedTask;
-        }
-
+     
       
     }
 }

@@ -17,7 +17,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public StoreContext(DbContextOptions<StoreContext> options) : base(options) { }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserRole> Roles { get; set; }
-        public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<UserRoleModules> RoleModules { get; set; }
         public virtual DbSet<MainMenu> MainMenus { get; set; }
         public virtual DbSet<Module> Modules { get; set; }

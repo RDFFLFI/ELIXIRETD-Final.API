@@ -18,6 +18,5 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS
             set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
         }
 
-
     }
 }

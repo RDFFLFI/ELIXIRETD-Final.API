@@ -227,10 +227,7 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
 
 
 
-        // ADDITIONAL
-
-
-
+        // -------------------- ADDITIONAL
 
 
         [HttpGet]
@@ -241,6 +238,7 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
 
             return Ok(warehouse);
         }
+
 
         [HttpGet]
         [Route("GetAllListOfWarehouseReceivingId")]
