@@ -33,6 +33,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public bool? IsWarehouseReceived { get; set; }
         public bool? ConfirmRejectByWarehouse { get; set; }
 
+        public string AddedBy { get; set; }
+
         public DateTime ActualReceivingDate { get; set; } = DateTime.Now;
 
 

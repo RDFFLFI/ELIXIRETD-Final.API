@@ -39,8 +39,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           Quantity = x.ActualGood,
                                                           TotalReject = x.TotalReject,
                                                           SupplierName = x.Supplier,
-                                                  
                                                           TransactionType = x.TransactionType,
+                                                          ReceivedBy = x.AddedBy
+
                                                       });
 
            
