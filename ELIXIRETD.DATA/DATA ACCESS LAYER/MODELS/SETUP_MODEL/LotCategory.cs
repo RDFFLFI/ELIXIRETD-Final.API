@@ -8,6 +8,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
 {
     public class LotCategory : BaseEntity
     {
+        public string LotCode { get; set; }
         public string LotName { get; set; }
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public string AddedBy { get; set; }
