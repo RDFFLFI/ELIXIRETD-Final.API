@@ -36,7 +36,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           ItemDescrption = x.ItemDescription,
                                                           Uom = x.Uom,
                                                           Category = x.LotCategory,
-                                                          Quantity = x.ActualGood,
+                                                          Quantity = x.ActualDelivered,
                                                           TotalReject = x.TotalReject,
                                                           SupplierName = x.Supplier,
                                                           TransactionType = x.TransactionType,
