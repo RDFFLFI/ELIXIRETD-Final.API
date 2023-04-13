@@ -163,8 +163,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 });
 
 
-            var orders = _context.Orders
-                .OrderBy(x => x.DateNeeded)
+            var orders = _context.Orders               
                 .Where(ordering => ordering.CustomerName == Customer && ordering.PreparedDate == null && ordering.IsActive == true)
                 .GroupJoin(getReserve, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
@@ -182,9 +181,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.QuantityOrdered,
                     x.ordering.IsActive,
                     x.ordering.IsPrepared,
+                    x.ordering.Rush,
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0  
 
-                }).Select(total => new GetAllListofOrdersDto
+                }).OrderBy(x => x.Key.Rush == null)
+                 .ThenBy(x => x.Key.Rush )
+                 .ThenBy(x => x.Key.DateNeeded)
+                .Select(total => new GetAllListofOrdersDto
                 {
                     Id = total.Key.Id,
                     OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
@@ -198,7 +201,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     QuantityOrder = total.Key.QuantityOrdered,
                     IsActive = total.Key.IsActive,
                     IsPrepared = total.Key.IsPrepared,
-                    StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0 
+                    StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0 ,
+                    Rush = total.Key.Rush
 
                 });
 

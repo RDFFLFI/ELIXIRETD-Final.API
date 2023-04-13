@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +49,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo )
+        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo)
         {
             var orders = _context.MoveOrders
                         .Where(moveorder => moveorder.PreparedDate >= DateTime.Parse(DateFrom) && moveorder.PreparedDate <= DateTime.Parse(DateTo) && moveorder.IsActive == true)
@@ -61,7 +62,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              CustomerCode = x.moveorder.Customercode,
                              CustomerName = x.moveorder.CustomerName,
                              ItemCode = x.moveorder.ItemCode,
-                             ItemDescription = x.moveorder.ItemDescription, 
+                             ItemDescription = x.moveorder.ItemDescription,
                              Uom = x.moveorder.Uom,
                              Category = x.moveorder.Category,
                              Quantity = x.moveorder.QuantityOrdered,
@@ -85,6 +86,69 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
+
+        public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo)
+        {
+            var orders = (from transact in _context.TransactOrder
+                          where transact.IsActive == true && transact.IsTransact == true && transact.DeliveryDate >= DateTime.Parse(DateFrom) && transact.DeliveryDate <= DateTime.Parse(DateTo)
+                          join moveorder in _context.MoveOrders
+                          on transact.OrderNo equals moveorder.OrderNo
+                          into leftJ
+                          from moveorder in leftJ.DefaultIfEmpty()
+
+                          join customer in _context.Customers
+                          on moveorder.Customercode equals customer.CustomerCode
+                          into leftJ2
+                          from customer in leftJ2.DefaultIfEmpty()
+
+                          group new
+                          {
+                              transact,
+                              moveorder,
+                              customer
+
+                          }
+
+                          by new
+                          {
+                              moveorder.OrderNo,
+                              customer.CustomerName,
+                              customer.CustomerCode,
+                              moveorder.ItemCode,
+                              moveorder.ItemDescription,
+                              moveorder.Uom,
+                              moveorder.QuantityOrdered,
+                              MoveOrderDate = moveorder.ApprovedDate.ToString(),
+                              transact.PreparedBy,
+                              TransactionDate = transact.PreparedDate.ToString(),
+                              DeliveryDate = transact.DeliveryDate.ToString(),
+                              transact.IsActive
+
+
+                          } into total
+
+                          select new DtoTransactReports
+                          {
+
+                              OrderNo = total.Key.OrderNo,
+                              CustomerName = total.Key.CustomerName,
+                              CustomerCode = total.Key.CustomerCode,
+                              ItemCode = total.Key.ItemCode,
+                              ItemDescription = total.Key.ItemDescription,
+                              Uom = total.Key.Uom,
+                              Quantity = total.Key.QuantityOrdered,
+                              MoveOrderDate = total.Key.MoveOrderDate,
+                              TransactedBy = total.Key.PreparedBy,
+                              TransactionType = total.Key.IsActive,
+                              TransactedDate = total.Key.TransactionDate,
+                              DeliveryDate = total.Key.DeliveryDate
+
+                          });
+
+            return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
+        }
+
 
         public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo)
         {

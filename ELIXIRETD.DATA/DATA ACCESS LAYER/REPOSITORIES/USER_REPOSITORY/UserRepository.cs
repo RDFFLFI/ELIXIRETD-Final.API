@@ -64,8 +64,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> AddNewUser(User user)
         {
 
-            user.Password = user.UserName;
-
             await _context.Users.AddAsync(user);
             return true;
         }
@@ -181,9 +179,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         {
             return await _context.Users.AnyAsync(x => x.UserName == username);
         }
-
-
-             
 
         public async Task<bool> ValidateUserRolesModule(User user)
         {

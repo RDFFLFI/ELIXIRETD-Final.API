@@ -29,7 +29,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public bool IsActive { get; set; }
 
-
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
 
