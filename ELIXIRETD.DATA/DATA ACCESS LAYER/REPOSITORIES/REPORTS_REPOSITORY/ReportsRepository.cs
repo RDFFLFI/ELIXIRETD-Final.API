@@ -371,7 +371,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                          });
 
             var getBorrowedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                    .Where(x => x.BorrowedDate >= DateTime.Parse(DateTo) && x.BorrowedDate <= DateTime.Parse(DateFrom))
+                                                                    .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(DateTo))
                                                                     .GroupBy(x => new
                                                                     {
                                                                         x.ItemCode,
@@ -379,9 +379,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                     }).Select(x => new DtoBorrowedIssue
                                                                     {
                                                                         ItemCode = x.Key.ItemCode,
-                                                                        Quantity = x.Sum(x => x.Quantity)
+                                                                        Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
 
                                                                     });
+
 
             var getBorrowedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                   .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= (DateToday))
@@ -392,7 +393,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                   }).Select(x => new DtoBorrowedIssue
                                                                   {
                                                                       ItemCode = x.Key.ItemCode,
-                                                                      Quantity = x.Sum(x => x.Quantity)
+                                                                      Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
 
                                                                   });
 
@@ -401,7 +402,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var getReturnedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                        .Where(x => x.IsReturned == true)
-                                                                       .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(DateTo))
+                                                                       .Where(x => x.ReturnedDate >= DateTime.Parse(DateFrom) && x.ReturnedDate <= DateTime.Parse(DateTo))
                                                                        .GroupBy(x => new
                                                                        {
                                                                            x.ItemCode,
@@ -419,7 +420,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var getReturnedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                         .Where(x => x.IsReturned == true)
-                                                                        .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= (DateToday))
+                                                                        .Where(x => x.ReturnedDate >= DateTime.Parse(PlusOne) && x.ReturnedDate <= (DateToday))
                                                                         .GroupBy(x => new
                                                                         {
                                                                             x.ItemCode,
@@ -725,7 +726,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          ItemCode = total.Key.ItemCode,
                                          ItemDescription = total.Key.ItemDescription,
                                          ItemCategory = total.Key.ItemCategoryName,
-                                         TotalOut = total.Key.Moveorder + total.Key.Issue + total.Key.borrowed,
+                                         TotalOut = total.Key.borrowed,
                                          TotalIn = total.Key.receipt + total.Key.receiveIn + total.Key.returned,
                                          Ending = (total.Key.receipt + total.Key.receiveIn + total.Key.returned) - (total.Key.Moveorder + total.Key.Issue + total.Key.borrowed),
                                          CurrentStock = total.Key.SOH,
