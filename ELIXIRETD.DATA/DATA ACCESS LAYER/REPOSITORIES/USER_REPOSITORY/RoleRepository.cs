@@ -230,10 +230,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                               .Join(_context.Modules, rolemoduless => rolemoduless.rolemodoless.ModuleId, module => module.Id, (rolemoduless, module) => new { rolemoduless, module })
                               .OrderBy(x => x.module.MainMenu.MenuOrder)
                               .Select(x => new RoleWithModuleDto
-                              //from rolemodule in _context.RoleModules
-                              //join role in _context.Roles on rolemodule.RoleId equals role.Id
-                              //join module in _context.Modules on rolemodule.ModuleId equals module.Id
-                              //select new RoleWithModuleDto
                               {
 
                                   RoleName = x.rolemoduless.role.RoleName,

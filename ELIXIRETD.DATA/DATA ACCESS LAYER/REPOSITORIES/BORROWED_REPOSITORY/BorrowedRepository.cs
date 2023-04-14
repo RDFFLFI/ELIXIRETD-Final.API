@@ -331,7 +331,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .ThenBy(x => x.PreparedDate)
               .ThenBy(x => x.ItemCode)
               .ThenBy(x => x.CustomerName)
-              .Where(x => x.Id == id)
+              .Where(x => x.BorrowedPKey == id)
               .Where(x => x.IsTransact == true)
               .Where(x => x.IsActive == true)
 
@@ -340,6 +340,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             .Select(x => new GetAllDetailsInBorrowedIssueDto
                                                             {
 
+                                                                Id = x.Id,
                                                                 WarehouseId = x.WarehouseId,
                                                                 BorrowedPKey = x.BorrowedPKey,
                                                                 Customer = x.CustomerName,
@@ -475,6 +476,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          Id = total.Key.BorrowedPKey,
                                                          CustomerCode = total.Key.CustomerCode,
                                                          CustomerName = total.Key.CustomerName,
+                                                         Consumed = total.Sum(x => x.Quantity) - total.Sum(x => x.ReturnQuantity),
                                                          TotalReturned = total.Sum(x => x.ReturnQuantity),                                                      
                                                          PreparedBy = total.Key.PreparedBy,
                                                          ReturnedDate = total.Key.ReturnedDate.ToString(),
@@ -506,7 +508,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          Id = total.Key.BorrowedPKey,
                                                          CustomerCode = total.Key.CustomerCode,
                                                          CustomerName = total.Key.CustomerName,
-                                                         TotalReturned = total.Sum(x => x.ReturnQuantity), 
+                                                         TotalReturned = total.Sum(x => x.ReturnQuantity),
+                                                         Consumed = total.Sum(x => x.Quantity) - total.Sum(x => x.ReturnQuantity),
                                                          PreparedBy = total.Key.PreparedBy,
                                                          ReturnedDate = total.Key.ReturnedDate.ToString(),
 
@@ -521,7 +524,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
         {
-            var borrow = _context.BorrowedIssueDetails.Where(x => x.Id == id)
+            var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
                                                      .Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
                                                        .Select(x => new DtoViewBorrewedReturnedDetails
@@ -529,6 +532,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                           ItemCode = x.ItemCode,
                                                           ItemDescription = x.ItemDescription,
                                                           ReturnQuantity = x.ReturnQuantity,
+                                                          Consume = x.Quantity - x.ReturnQuantity,
                                                           ReturnedDate = x.ReturnedDate.ToString()
 
                                                        }).OrderByDescending(x => x.ReturnedDate);

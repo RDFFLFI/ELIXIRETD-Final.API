@@ -84,11 +84,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             var existingUser = await _context.Users.Where(x => x.Id == user.Id)
                                               .FirstOrDefaultAsync();
 
-            existingUser.FullName = user.FullName;
+  
             existingUser.UserName = user.UserName;
-            existingUser.Password = user.Password;
             existingUser.UserRoleId = user.UserRoleId;
-            existingUser.Department = user.Department;
 
             return true;
         }
