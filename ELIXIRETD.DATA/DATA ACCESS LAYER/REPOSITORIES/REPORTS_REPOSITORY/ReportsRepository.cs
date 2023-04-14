@@ -49,6 +49,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
 
+
         public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo)
         {
             var orders = _context.MoveOrders
@@ -123,7 +124,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactionDate = transact.PreparedDate.ToString(),
                               DeliveryDate = transact.DeliveryDate.ToString(),
                               transact.IsActive
-
 
                           } into total
 
@@ -250,8 +250,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                BorrowedDate = borrowed.BorrowedDate.ToString()
 
                            });
-
-
 
             return await PagedList<DtoBorrowedAndReturned>.CreateAsync(Reports, userParams.PageNumber, userParams.PageSize);
 

@@ -69,7 +69,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
-                                 x.ActualGood,
                                  x.DateCancelled,
                        
 
@@ -81,8 +80,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      ItemCode = receive.Key.ItemCode,
                                                      ItemDescription = receive.Key.ItemDescription,
                                                      Supplier = receive.Key.Supplier,
-                                                     ActualGood = receive.Sum(x => x.ActualGood),
-                                                     QuantityOrdered = receive.Key.QuantityOrdered,
                                                      IsActive = receive.Key.IsActive,
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
@@ -128,7 +125,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
-                                 x.ActualGood,
                                  x.DateCancelled,
                                 
 
@@ -140,8 +136,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      ItemCode = receive.Key.ItemCode,
                                                      ItemDescription = receive.Key.ItemDescription,
                                                      Supplier = receive.Key.Supplier,
-                                                     ActualGood = receive.Sum(x => x.ActualGood),
-                                                     QuantityOrdered = receive.Key.QuantityOrdered,
                                                      IsActive = receive.Key.IsActive,
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
