@@ -285,9 +285,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         {
             var DateToday = DateTime.Parse(DateTime.Now.ToString());
 
-          
-
-
+         
             var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
                                                               .GroupBy(x => new
                                                               {

@@ -201,16 +201,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("AddNewItemCategories")]
         public async Task<IActionResult> CreateNewIteCategories(ItemCategory category)
         {
-                var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategoryId);
+           
 
             var DuplicateItemcategoryandSub =  await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
 
 
             if (DuplicateItemcategoryandSub == true)
                 return BadRequest("Item category and sub category already exist");
-
-                 if (ExistSubcategory == false)
-                   return BadRequest("No Sub category Exist!");
 
          
                 await _unitOfWork.Materials.AddNewItemCategory(category);
@@ -228,11 +225,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var valid = await _unitOfWork.Materials.UpdateItemCategory(category);
 
             var DuplicateItemcategoryandSub = await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
-
-            var ExistSubcategory = await _unitOfWork.Materials.ExistSubCategoryId(category.SubCategoryId);
-
-            if (ExistSubcategory == false)
-                return BadRequest("No Sub category Exist!");
 
             if (DuplicateItemcategoryandSub == true)
                 return BadRequest("Item category and sub category already exist");
@@ -460,7 +452,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
         [HttpGet]
-        [Route("GetAllSubcategoriesmaterial")]
+        [Route("GetAllItemcategoriesmaterial")]
         public async Task<IActionResult> GetAllsubcategories(string category)
         {
             var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);

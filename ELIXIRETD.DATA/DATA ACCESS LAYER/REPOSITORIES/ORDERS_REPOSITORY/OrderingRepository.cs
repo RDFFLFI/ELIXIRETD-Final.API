@@ -1696,7 +1696,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                    {
                                        x.CustomerName,
                                        x.IsActive,
-                                       x.PreparedDate
+                                       x.PreparedDate,
+                                       x.Rush
 
                                    }).Where(x => x.Key.IsActive == true)
                                      .Where(x => x.Key.PreparedDate == null)
@@ -1704,7 +1705,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      .Select(x => new DtoOrderNotif
                                      {
                                          CustomerName = x.Key.CustomerName,
-                                         IsActive = x.Key.IsActive
+                                         IsActive = x.Key.IsActive,
+                                         Rush = x.Key.Rush
                                      });
 
             return await orders.ToListAsync();
