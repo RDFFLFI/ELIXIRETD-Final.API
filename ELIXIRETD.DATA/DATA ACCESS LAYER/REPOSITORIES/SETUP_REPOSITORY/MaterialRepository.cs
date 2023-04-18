@@ -500,7 +500,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                 return false;
 
             return true;
-
+            
         }
 
         public async Task<bool> DuplicateItemCategoriesAndSubCateg(ItemCategory category)
@@ -551,7 +551,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
         {
-            var subcategory = _context.ItemCategories.Where(x => x.IsActive == true)
+            var itemcategory = _context.ItemCategories.Where(x => x.IsActive == true)
                                                      .Select(x => new DtoItemcategDropdown
                                                      {
                                                          ItemCategoryId = x.Id,
@@ -561,7 +561,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                                      }).Distinct();
 
-            return await subcategory.ToListAsync();
+            return await itemcategory.ToListAsync();
         }
 
 

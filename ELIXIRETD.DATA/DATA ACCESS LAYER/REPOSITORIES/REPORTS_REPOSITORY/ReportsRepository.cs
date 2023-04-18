@@ -214,21 +214,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         {
 
 
-            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsReturned == true)
-                                                           .Select(x => new
-                                                           {
-                                                               BorrowedPKey = x.BorrowedPKey,
-                                                               ItemCode = x.ItemCode,
-                                                               ReturnedQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
-                                                               ReturnedDate = x.ReturnedDate,
-
-                                                           });
-
-
-            var Reports = (from borrowed in _context.BorrowedIssueDetails
-                           where borrowed.BorrowedDate >= DateTime.Parse(DateFrom) && borrowed.BorrowedDate <= DateTime.Parse(DateTo) && borrowed.IsActive == true
-                           join returned in getReturned
+            var Reports = (from borrowed in _context.BorrowedIssues
+                           where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo) && borrowed.IsActive == true
+                           join returned in _context.BorrowedIssueDetails
                            on borrowed.Id equals returned.BorrowedPKey
                            into leftJ
                            from returned in leftJ.DefaultIfEmpty()
@@ -236,18 +224,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            select new DtoBorrowedAndReturned
                            {
 
-                               BorrowedId = borrowed.BorrowedPKey,
+                               BorrowedId = borrowed.Id,
                                CustomerCode = borrowed.CustomerCode,
                                CustomerName = borrowed.CustomerName,
-                               ItemCode = borrowed.ItemCode,
-                               ItemDescription = borrowed.ItemDescription,
-                               BorrowedQuantity = borrowed.Quantity != null ? borrowed.Quantity : 0,
-                               Consumed = (borrowed.Quantity != null ? borrowed.Quantity : 0) - (returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0),
-                               ReturnedQuantity = returned.ReturnedQuantity != null ? returned.ReturnedQuantity : 0,
+                               ItemCode = returned.ItemCode,
+                               ItemDescription = returned.ItemDescription,
+                               BorrowedQuantity = returned.Quantity != null ? returned.Quantity : 0,
+                               Consumed = (returned.Quantity != null ? returned.Quantity : 0) - (returned.ReturnQuantity != null ? returned.ReturnQuantity : 0),
+                               ReturnedQuantity = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                ReturnedDate = returned.ReturnedDate.ToString(),
-                               Uom = borrowed.Uom,
+                               Uom = returned.Uom,
                                TransactedBy = borrowed.PreparedBy,
-                               BorrowedDate = borrowed.BorrowedDate.ToString()
+                               BorrowedDate = borrowed.PreparedDate.ToString()
 
                            });
 
