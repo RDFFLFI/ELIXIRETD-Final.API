@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
 {
-    public class LotCategory : BaseEntity
+    public class LotNames : BaseEntity
     {
         public string LotCode { get; set; }
         public string LotName { get; set; }

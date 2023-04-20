@@ -79,18 +79,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         [Route("UpdateUserInfo")]
         public async Task<IActionResult> UpdateUserInfo([FromBody]User user)
         {
-            var getRoleId = await _unitOfWork.Users.ValidateRoleId(user.UserRoleId);
-            var validateuserRolemodules = await _unitOfWork.Users.ValidateUserRolesModule(user);
-
-
-            if (await _unitOfWork.Users.ValidateUserExist(user.UserName))
-                return BadRequest("Username already exist, Please try something else!");
-
-            if (getRoleId == false)
-                return BadRequest("Role doesn't exist, Please input data first!");
-
-            if (validateuserRolemodules == true)
-                return BadRequest("No Role modules has been tag!");
+            
 
             await _unitOfWork.Users.UpdateUserInfo(user);
             await _unitOfWork.CompleteAsync();

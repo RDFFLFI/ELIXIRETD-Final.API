@@ -15,17 +15,17 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         //--------LOT NAME---------//
         Task<IReadOnlyList<LotNameDto>> GetAllActiveLotName();
         Task<IReadOnlyList<LotNameDto>> GetAllInActiveLotName();
-        Task<bool> AddLotName(LotName lotname);
-        Task<bool> UpdateLotName(LotName lotname);
-        Task<bool> InActiveLotName(LotName lotname);
-        Task<bool> ActivateLotName(LotName lotname);
+        Task<bool> AddLotName(LotSection lotname);
+        Task<bool> UpdateLotName(LotSection lotname);
+        Task<bool> InActiveLotName(LotSection lotname);
+        Task<bool> ActivateLotName(LotSection lotname);
         Task<PagedList<LotNameDto>> GetAllLotNameWithPagination(bool status, UserParams userParams);
         Task<PagedList<LotNameDto>> GetLotNameWithPaginationOrig(UserParams userParams, bool status, string search);
 
 
         Task<bool> ValidateLotCategoryId(int id);
         Task<bool> SectionNameExist(string section);
-        Task<bool> ValidateLotNameAndSection(LotName lot);
+        Task<bool> ValidateLotNameAndSection(LotSection lot);
         Task<bool> LotCategoryNameExist(string name);
 
 
@@ -34,10 +34,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         //--------LOT cATEGORY---------//
         Task<IReadOnlyList<LotCategoryDto>> GetAllActiveLotCategories();
         Task<IReadOnlyList<LotCategoryDto>> GetAllInActiveLotCategories();
-        Task<bool> AddLotCategory(LotCategory lotname);
-        Task<bool> UpdateLotCategory(LotCategory lotname);
-        Task<bool> InActiveLotCategory(LotCategory lotname);
-        Task<bool> ActivateLotCategory(LotCategory lotname);
+        Task<bool> AddLotCategory(LotNames lotname);
+        Task<bool> UpdateLotCategory(LotNames lotname);
+        Task<bool> InActiveLotCategory(LotNames lotname);
+        Task<bool> ActivateLotCategory(LotNames lotname);
         Task<PagedList<LotCategoryDto>> GetAllLotCategoryWithPagination(bool status, UserParams userParams);
         Task<PagedList<LotCategoryDto>> GetLotCategoryWithPaginationOrig(UserParams userParams, bool status, string search);
 

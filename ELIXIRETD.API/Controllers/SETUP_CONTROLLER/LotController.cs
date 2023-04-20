@@ -40,13 +40,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPost]
         [Route("AddNewLotName")]
-        public async Task<IActionResult> CreateNewLotName(LotName lotname)
+        public async Task<IActionResult> CreateNewLotName(LotSection lotname)
         {
           
-                var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotCategoryId);
+                var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotNamesId);
 
                 if (categoryId == false)
-                    return BadRequest("Lot Category doesn't exist, Please add data first!");
+                    return BadRequest("Lot name doesn't exist, Please add data first!");
 
                 var validate = await _unitOfWork.Lots.ValidateLotNameAndSection(lotname);
 
@@ -61,12 +61,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("UpdateLotName")]
-        public async Task<IActionResult> UpdateLotName([FromBody] LotName lotname)
+        public async Task<IActionResult> UpdateLotName([FromBody] LotSection lotname)
         {
-            var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotCategoryId);
+            var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotNamesId);
 
             if (categoryId == false)
-                return BadRequest("Lot category doesn't exist, please add data first!");
+                return BadRequest("Lot name doesn't exist, please add data first!");
 
             var validate = await _unitOfWork.Lots.ValidateLotNameAndSection(lotname);
 
@@ -81,7 +81,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("InActiveLotName")]
-        public async Task<IActionResult> InActiveLotName([FromBody] LotName lotname)
+        public async Task<IActionResult> InActiveLotName([FromBody] LotSection lotname)
         {
             await _unitOfWork.Lots.InActiveLotName(lotname);
             await _unitOfWork.CompleteAsync();
@@ -91,7 +91,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("ActivateLotName")]
-        public async Task<IActionResult> ActivateLotName([FromBody] LotName lotname)
+        public async Task<IActionResult> ActivateLotName([FromBody] LotSection lotname)
         {
            
             await _unitOfWork.Lots.ActivateLotName(lotname);
@@ -177,11 +177,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPost]
         [Route("AddNewLotCategory")]
-        public async Task<IActionResult> CreateNewLotCategory(LotCategory category)
+        public async Task<IActionResult> CreateNewLotCategory(LotNames category)
         {
         
                 if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
-                    return BadRequest("Category Name already Exist!, Please try something else!");
+                    return BadRequest("Lot name already Exist!, Please try something else!");
 
                 await _unitOfWork.Lots.AddLotCategory(category);
                 await _unitOfWork.CompleteAsync();
@@ -194,10 +194,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("UpdateLotCategories")]
-        public async Task<IActionResult> UpdateLotCategories([FromBody] LotCategory category)
+        public async Task<IActionResult> UpdateLotCategories([FromBody] LotNames category)
         {
             if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
-                return BadRequest("Category Name already Exist!, Please try something else!");
+                return BadRequest("Lot Name already Exist!, Please try something else!");
 
             await _unitOfWork.Lots.UpdateLotCategory(category);
             await _unitOfWork.CompleteAsync();
@@ -208,7 +208,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("InActiveLotCategories")]
-        public async Task<IActionResult> InActiveLotCategories([FromBody] LotCategory category)
+        public async Task<IActionResult> InActiveLotCategories([FromBody] LotNames category)
         {
             await _unitOfWork.Lots.InActiveLotCategory(category);
             await _unitOfWork.CompleteAsync();
@@ -218,7 +218,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("ActivateLotCategories")]
-        public async Task<IActionResult> ActivateLotCategories([FromBody] LotCategory category)
+        public async Task<IActionResult> ActivateLotCategories([FromBody] LotNames category)
         {
 
             await _unitOfWork.Lots.ActivateLotCategory(category);
@@ -281,11 +281,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
         
-
-
-
-
-
 
     }
 }

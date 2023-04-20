@@ -85,8 +85,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                               .FirstOrDefaultAsync();
 
   
-            existingUser.UserName = user.UserName;
-            existingUser.UserRoleId = user.UserRoleId;
+            existingUser.Password = user.Password;
+            
 
             return true;
         }

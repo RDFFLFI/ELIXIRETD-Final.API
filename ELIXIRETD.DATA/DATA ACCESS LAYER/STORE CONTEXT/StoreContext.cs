@@ -25,8 +25,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public virtual DbSet<ItemCategory> ItemCategories { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
-        public virtual DbSet<LotName> LotNames { get; set; }
-        public virtual DbSet<LotCategory> LotCategories { get; set; }
+        public virtual DbSet<LotSection> LotSections { get; set; }
+        public virtual DbSet<LotNames> Lotnames { get; set; }
         public virtual DbSet<Reason> Reasons { get; set; }
         public virtual DbSet<Company> Companies { get; set; }
         public virtual DbSet<Location> Locations { get; set; }

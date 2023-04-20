@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
 {
-    public class LotName : BaseEntity
+    public class LotSection : BaseEntity
     {
 
-        public LotCategory LotCategory { get; set; }
-        public int LotCategoryId { get; set; }
+        public LotNames LotNames { get; set; }
+        public int LotNamesId { get; set; }
         public string SectionName { get; set; }
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public string AddedBy { get; set; }

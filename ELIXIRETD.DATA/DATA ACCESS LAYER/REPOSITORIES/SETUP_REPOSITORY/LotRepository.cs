@@ -20,13 +20,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<IReadOnlyList<LotNameDto>> GetAllActiveLotName()
         {
-            var lots = _context.LotNames.Where(x => x.IsActive == true)
+            var lots = _context.LotSections.Where(x => x.IsActive == true)
                                         .Select(x => new LotNameDto
                                         {
                                             Id = x.Id,
-                                            LotCategoryId = x.LotCategoryId,
-                                            LotCategory = x.LotCategory.LotName,
-                                            LotNameCode = x.LotCategory.LotCode,
+                                            LotCategoryId = x.LotNamesId,
+                                            LotCategory = x.LotNames.LotName,
+                                            LotName = x.LotNames.LotCode,
                                             SectionName = x.SectionName,
                                             AddedBy = x.AddedBy,
                                             IsActive = x.IsActive,
@@ -38,13 +38,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<IReadOnlyList<LotNameDto>> GetAllInActiveLotName()
         {
-            var lots = _context.LotNames.Where(x => x.IsActive == false)
+            var lots = _context.LotSections.Where(x => x.IsActive == false)
                                        .Select(x => new LotNameDto
                                        {
                                            Id = x.Id,
-                                           LotCategoryId = x.LotCategoryId,
-                                           LotCategory = x.LotCategory.LotName,
-                                           LotNameCode = x.LotCategory.LotCode,
+                                           LotCategoryId = x.LotNamesId,
+                                           LotCategory = x.LotNames.LotName,
+                                           LotName = x.LotNames.LotCode,
                                            SectionName = x.SectionName,
                                            AddedBy = x.AddedBy,
                                            IsActive = x.IsActive,
@@ -54,27 +54,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await lots.ToListAsync();
         }
 
-        public async Task<bool> AddLotName(LotName lotname)
+        public async Task<bool> AddLotName(LotSection lotname)
         {
-            await _context.LotNames.AddAsync(lotname);
+            await _context.LotSections.AddAsync(lotname);
             return true;
         }
 
-        public async Task<bool> UpdateLotName(LotName lotname)
+        public async Task<bool> UpdateLotName(LotSection lotname)
         {
-            var lots = await _context.LotNames.Where(x => x.Id == lotname.Id)
+            var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
                                               .FirstOrDefaultAsync();
 
             lots.SectionName = lotname.SectionName;
-            lots.LotCategoryId = lotname.LotCategoryId;
+            lots.LotNamesId = lotname.LotNamesId;
 
             return true;
 
         }
 
-        public async Task<bool> ActivateLotName(LotName lotname)
+        public async Task<bool> ActivateLotName(LotSection lotname)
         {
-            var lots = await _context.LotNames.Where(x => x.Id == lotname.Id)
+            var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
                                               .FirstOrDefaultAsync();
 
             lots.IsActive = true;
@@ -82,9 +82,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public async Task<bool> InActiveLotName(LotName lotname)
+        public async Task<bool> InActiveLotName(LotSection lotname)
         {
-            var lots = await _context.LotNames.Where(x => x.Id == lotname.Id)
+            var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
                                              .FirstOrDefaultAsync();
 
             lots.IsActive = false;
@@ -96,13 +96,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<PagedList<LotNameDto>> GetAllLotNameWithPagination(bool status, UserParams userParams)
         {
 
-            var lots = _context.LotNames.Where(x => x.IsActive == status)
+            var lots = _context.LotSections.Where(x => x.IsActive == status)
                                         .Select(x => new LotNameDto
                                         {
                                             Id = x.Id,
-                                            LotCategoryId = x.LotCategoryId,
-                                            LotCategory = x.LotCategory.LotName,
-                                            LotNameCode = x.LotCategory.LotCode,
+                                            LotCategoryId = x.LotNamesId,
+                                            LotCategory = x.LotNames.LotName,
+                                            LotName = x.LotNames.LotCode,
                                             SectionName = x.SectionName,
                                             AddedBy = x.AddedBy,
                                             IsActive = x.IsActive,
@@ -114,13 +114,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<PagedList<LotNameDto>> GetLotNameWithPaginationOrig(UserParams userParams, bool status, string search)
         {
-            var lots = _context.LotNames.Where(x => x.IsActive == status)
+            var lots = _context.LotSections.Where(x => x.IsActive == status)
                                       .Select(x => new LotNameDto
                                       {
                                           Id = x.Id,
-                                          LotCategoryId = x.LotCategoryId,
-                                          LotCategory = x.LotCategory.LotName,
-                                          LotNameCode = x.LotCategory.LotCode,
+                                          LotCategoryId = x.LotNamesId,
+                                          LotCategory = x.LotNames.LotName,
+                                          LotName = x.LotNames.LotCode,
                                           SectionName = x.SectionName,
                                           AddedBy = x.AddedBy,
                                           IsActive = x.IsActive,
@@ -143,17 +143,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-        //----------LOT CATEGORY----------------//
+        //----------LOT Section----------------//
 
 
         public async Task<IReadOnlyList<LotCategoryDto>> GetAllActiveLotCategories()
         {
-            var category = _context.LotCategories.Where(x => x.IsActive == true)
+            var category = _context.Lotnames.Where(x => x.IsActive == true)
                                                  .Select(x => new LotCategoryDto
                                                  {
                                                      Id = x.Id,
-                                                     LotCategoryCode = x.LotCode,
-                                                     LotCategoryName = x.LotName,
+                                                     LotCode = x.LotCode,
+                                                     LotName = x.LotName,
                                                      AddedBy = x.AddedBy,
                                                      DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                      IsActive = x.IsActive
@@ -165,12 +165,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<IReadOnlyList<LotCategoryDto>> GetAllInActiveLotCategories()
         {
-            var category = _context.LotCategories.Where(x => x.IsActive == false)
+            var category = _context.Lotnames.Where(x => x.IsActive == false)
                                                .Select(x => new LotCategoryDto
                                                {
                                                    Id = x.Id,
-                                                   LotCategoryCode = x.LotCode,
-                                                   LotCategoryName = x.LotName,
+                                                   LotCode = x.LotCode,
+                                                   LotName = x.LotName,
                                                    AddedBy = x.AddedBy,
                                                    DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                    IsActive = x.IsActive
@@ -180,17 +180,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         }
 
-        public async Task<bool> AddLotCategory(LotCategory lotname)
+        public async Task<bool> AddLotCategory(LotNames lotname)
         {
-            await _context.LotCategories.AddAsync(lotname);
+            await _context.Lotnames.AddAsync(lotname);
 
             return true;
 
         }
 
-        public async Task<bool> UpdateLotCategory(LotCategory lotname)
+        public async Task<bool> UpdateLotCategory(LotNames lotname)
         {
-            var category = await _context.LotCategories.Where(x => x.Id == lotname.Id)
+            var category = await _context.Lotnames.Where(x => x.Id == lotname.Id)
                                                        .FirstOrDefaultAsync();
 
             category.LotName = lotname.LotName;
@@ -200,9 +200,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         }
 
-        public async Task<bool> InActiveLotCategory(LotCategory lotname)
+        public async Task<bool> InActiveLotCategory(LotNames lotname)
         {
-            var category = await _context.LotCategories.Where(x => x.Id == lotname.Id)
+            var category = await _context.Lotnames.Where(x => x.Id == lotname.Id)
                                                       .FirstOrDefaultAsync();
 
             category.IsActive = false;
@@ -211,9 +211,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         }
 
-        public async Task<bool> ActivateLotCategory(LotCategory lotname)
+        public async Task<bool> ActivateLotCategory(LotNames lotname)
         {
-            var category = await _context.LotCategories.Where(x => x.Id == lotname.Id)
+            var category = await _context.Lotnames.Where(x => x.Id == lotname.Id)
                                                      .FirstOrDefaultAsync();
 
             category.IsActive = true;
@@ -223,13 +223,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<PagedList<LotCategoryDto>> GetAllLotCategoryWithPagination(bool status, UserParams userParams)
         {
-            var lots = _context.LotCategories.Where(x => x.IsActive == status)
+            var lots = _context.Lotnames.Where(x => x.IsActive == status)
                                              .OrderByDescending(x => x.DateAdded)
                                     .Select(x => new LotCategoryDto
                                     {
                                         Id = x.Id,
-                                        LotCategoryCode = x.LotCode,
-                                        LotCategoryName = x.LotName,
+                                        LotCode = x.LotCode,
+                                        LotName = x.LotName,
                                         AddedBy = x.AddedBy,
                                         IsActive = x.IsActive,
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
@@ -241,17 +241,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<PagedList<LotCategoryDto>> GetLotCategoryWithPaginationOrig(UserParams userParams, bool status, string search)
         {
-            var lots = _context.LotCategories.Where(x => x.IsActive == status)
+            var lots = _context.Lotnames.Where(x => x.IsActive == status)
                                              .OrderByDescending(x => x.DateAdded)
                                     .Select(x => new LotCategoryDto
                                     {
                                         Id = x.Id,
-                                        LotCategoryCode = x.LotCode,
-                                        LotCategoryName = x.LotName,
+                                        LotCode = x.LotCode,
+                                        LotName = x.LotName,
                                         AddedBy = x.AddedBy,
                                         IsActive = x.IsActive,
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
-                                    }).Where(x => x.LotCategoryName.ToLower()
+                                    }).Where(x => x.LotName.ToLower()
                                       .Contains(search.Trim().ToLower()));
 
 
@@ -260,7 +260,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ValidateLotCategoryId(int id)
         {
-            var validateExisting = await _context.LotCategories.FindAsync(id);
+            var validateExisting = await _context.Lotnames.FindAsync(id);
 
             if (validateExisting == null)
                 return false;
@@ -270,12 +270,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> SectionNameExist(string section)
         {
-            return await _context.LotNames.AnyAsync(x => x.SectionName == section);
+            return await _context.LotSections.AnyAsync(x => x.SectionName == section);
         }
 
-        public async Task<bool> ValidateLotNameAndSection(LotName lot)
+        public async Task<bool> ValidateLotNameAndSection(LotSection lot)
         {
-            var validate = await _context.LotNames.Where(x => x.LotCategoryId == lot.LotCategoryId)
+            var validate = await _context.LotSections.Where(x => x.LotNamesId == lot.LotNamesId)
                                                 .Where(x => x.SectionName == lot.SectionName)
                                                 .Where(x => x.IsActive == true)
                                                 .FirstOrDefaultAsync();
@@ -289,7 +289,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> LotCategoryNameExist(string name)
         {
-            return await _context.LotCategories.AnyAsync(x => x.LotName == name);
+            return await _context.Lotnames.AnyAsync(x => x.LotName == name);
         }
     }
 }
