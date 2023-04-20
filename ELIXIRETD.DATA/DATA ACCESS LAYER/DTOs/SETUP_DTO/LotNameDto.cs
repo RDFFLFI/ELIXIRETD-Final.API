@@ -9,9 +9,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
     public class LotNameDto
     {
         public int Id { get; set; }
+        public string LotCode { get; set; }
         public string LotName { get; set; }
-        public string LotCategory { get; set; }
-        public int LotCategoryId { get; set; }
+        public int LotNamesId { get; set; }
 
         public string SectionName { get; set; }
         public string DateAdded { get; set; }

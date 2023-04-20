@@ -179,7 +179,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("AddNewLotCategory")]
         public async Task<IActionResult> CreateNewLotCategory(LotNames category)
         {
-        
+
+                 if(await _unitOfWork.Lots.ValidateLotCode(category.LotCode))
+                return BadRequest(" Lot Code Already Exist");
+
+
                 if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
                     return BadRequest("Lot name already Exist!, Please try something else!");
 

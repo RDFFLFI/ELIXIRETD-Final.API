@@ -24,9 +24,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         .Select(x => new LotNameDto
                                         {
                                             Id = x.Id,
-                                            LotCategoryId = x.LotNamesId,
-                                            LotCategory = x.LotNames.LotName,
-                                            LotName = x.LotNames.LotCode,
+                                            LotNamesId = x.LotNamesId,                                         
+                                            LotCode = x.LotNames.LotCode,
+                                            LotName = x.LotNames.LotName,
                                             SectionName = x.SectionName,
                                             AddedBy = x.AddedBy,
                                             IsActive = x.IsActive,
@@ -42,9 +42,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                        .Select(x => new LotNameDto
                                        {
                                            Id = x.Id,
-                                           LotCategoryId = x.LotNamesId,
-                                           LotCategory = x.LotNames.LotName,
-                                           LotName = x.LotNames.LotCode,
+                                           LotNamesId = x.LotNamesId,
+                                           LotCode = x.LotNames.LotCode,
+                                           LotName = x.LotNames.LotName,
                                            SectionName = x.SectionName,
                                            AddedBy = x.AddedBy,
                                            IsActive = x.IsActive,
@@ -100,9 +100,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         .Select(x => new LotNameDto
                                         {
                                             Id = x.Id,
-                                            LotCategoryId = x.LotNamesId,
-                                            LotCategory = x.LotNames.LotName,
-                                            LotName = x.LotNames.LotCode,
+                                            LotNamesId = x.LotNamesId,
+                                            LotCode = x.LotNames.LotCode,
+                                            LotName = x.LotNames.LotName,
                                             SectionName = x.SectionName,
                                             AddedBy = x.AddedBy,
                                             IsActive = x.IsActive,
@@ -118,29 +118,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                       .Select(x => new LotNameDto
                                       {
                                           Id = x.Id,
-                                          LotCategoryId = x.LotNamesId,
-                                          LotCategory = x.LotNames.LotName,
-                                          LotName = x.LotNames.LotCode,
+                                          LotNamesId = x.LotNamesId,
+                                          LotCode = x.LotNames.LotCode,
+                                          LotName = x.LotNames.LotName,
                                           SectionName = x.SectionName,
                                           AddedBy = x.AddedBy,
                                           IsActive = x.IsActive,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+
                                       }).Where(x => x.SectionName.ToLower()
                                         .Contains(search.Trim().ToLower()));
 
             return await PagedList<LotNameDto>.CreateAsync(lots, userParams.PageNumber, userParams.PageSize);
 
         }
-
-
-
-
-
-
-
-
-
-
 
 
         //----------LOT Section----------------//
@@ -290,6 +281,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> LotCategoryNameExist(string name)
         {
             return await _context.Lotnames.AnyAsync(x => x.LotName == name);
+        }
+
+        public async Task<bool> ValidateLotCode(string lotcode)
+        {
+            return await _context.Lotnames.AnyAsync(x => x.LotCode == lotcode);
+                                                 
+     
         }
     }
 }

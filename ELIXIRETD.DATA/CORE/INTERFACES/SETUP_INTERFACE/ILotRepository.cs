@@ -42,6 +42,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<PagedList<LotCategoryDto>> GetLotCategoryWithPaginationOrig(UserParams userParams, bool status, string search);
 
 
+        Task<bool> ValidateLotCode(string lotcode);
+
+
 
 
 
