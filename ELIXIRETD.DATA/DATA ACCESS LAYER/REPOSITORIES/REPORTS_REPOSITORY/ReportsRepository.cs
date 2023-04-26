@@ -200,7 +200,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            Uom = x.issue != null    ? x.issue.Uom : null ,  
                            Quantity = x.issue != null ? x.issue.Quantity : 0,
                            TransactBy = x.receipt.PreparedBy ,
-                           TransactDate = x.issue.PreparedDate.ToString() 
+                           TransactDate = x.issue.PreparedDate.ToString() ,
+                           CompanyCode = x.receipt.CompanyCode,
+                           CompanyName = x.receipt.CompanyName,
+                           DepartmentCode = x.receipt.DepartmentCode,
+                           DepartmentName = x.receipt.DepartmentName,
+                           LocationCode = x.receipt.LocationCode,
+                           LocationName = x.receipt.LocationName,
+                           AccountCode = x.receipt.AccountCode,
+                           AccountTitles = x.receipt.AccountTitles,
+
 
                        });
 
@@ -235,7 +244,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                ReturnedDate = returned.ReturnedDate.ToString(),
                                Uom = returned.Uom,
                                TransactedBy = borrowed.PreparedBy,
-                               BorrowedDate = borrowed.PreparedDate.ToString()
+                               BorrowedDate = borrowed.PreparedDate.ToString(),
+                               CompanyCode = borrowed.CompanyCode,
+                               CompanyName = borrowed.CompanyName,
+                               DepartmentCode = borrowed.DepartmentCode,
+                               DepartmentName = borrowed.DepartmentName,
+                               LocationCode = borrowed.LocationCode,
+                               LocationName = borrowed.LocationName,
+                               AccountCode = borrowed.AccountCode,
+                               AccountTitles = borrowed.AccountTitles,
 
                            });
 

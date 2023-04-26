@@ -230,7 +230,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  Id = posummary.Id,
                                  PoNumber = posummary.PO_Number,
                                  PoDate = posummary.PO_Date,
-
                                  PrNumber = posummary.PR_Number,
                                  PrDate = posummary.PR_Date,
                                  ItemCode = posummary.ItemCode,
@@ -406,7 +405,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
                .Select(x => new WarehouseReceivingDto
                {
-                   Id = x.Id,
+                   Id = x.Id,  
                    ItemCode = x.ItemCode,
                    ItemDescription = x.ItemDescription,
                    ActualGood = x.ActualDelivered,

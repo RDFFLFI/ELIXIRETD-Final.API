@@ -39,15 +39,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public virtual DbSet<SubCategory> SubCategories { get; set; }
         public virtual DbSet<MiscellaneousIssue> MiscellaneousIssues { get; set; }
         public virtual DbSet<MiscellaneousIssueDetails> MiscellaneousIssueDetail { get; set; }
-
         public virtual DbSet<MiscellaneousReceipt> MiscellaneousReceipts { get; set; }
-
-
         public virtual DbSet<BorrowedIssue> BorrowedIssues { get; set; }
         public virtual DbSet<BorrowedIssueDetails> BorrowedIssueDetails { get; set; }
-
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
-
 
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
