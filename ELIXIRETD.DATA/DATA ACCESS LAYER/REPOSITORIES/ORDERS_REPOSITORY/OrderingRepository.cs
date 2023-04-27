@@ -156,10 +156,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                 total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.ordering.QuantityOrdered : 0)-
                                total.Sum(x => x.borrowed.Quantity != null ?   x.borrowed.Quantity : 0),
 
-                               
-
-
-
+                             
                 });
 
 
@@ -194,8 +191,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
                     DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
                     Department = total.Key.Department,
-                    CustomerName = total.Key.CustomerName,
                     CustomerCode = total.Key.Customercode,
+                    CustomerName = total.Key.CustomerName,
                     Category = total.Key.Category,
                     ItemCode = total.Key.ItemCode,
                     ItemDescription = total.Key.ItemdDescription,
@@ -274,6 +271,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            .Select(x => new GetAllListCancelOrdersDto
                                            {
                                                Id = x.Id,
+                                               Department = x.Department,
                                                CustomerName = x.CustomerName,
                                                Category = x.Category,
                                                QuantityOrder = x.QuantityOrdered,
@@ -314,6 +312,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var orders = _context.Orders.GroupBy(x => new
             {
                 x.OrderNoPKey,
+                x.Department,
                 x.CustomerName,
                 x.Customercode,
                 x.Category,
@@ -327,6 +326,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               .Select(x => new GetallApproveDto
               {
                   OrderNoPKey = x.Key.OrderNoPKey,
+                  Department   = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Category = x.Key.Category,
@@ -349,6 +349,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             OrderNo = x.OrderNoPKey,
                                             OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
                                             DateNeeded = x.DateNeeded.ToString("MM/dd/yyyy"),
+                                            Department = x.Department,
                                             CustomerName = x.CustomerName,
                                             CustomerCode = x.Customercode,
                                             ItemCode = x.ItemCode,
@@ -497,6 +498,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         {
                                             OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
                                             DateNeeded = x.DateNeeded.ToString("MM/dd/yyyy"),
+                                            Department = x.Department,
                                             CustomerName = x.CustomerName,
                                             CustomerCode = x.Customercode,
                                             ItemCode = x.ItemCode,
@@ -514,6 +516,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var orders = _context.Orders.GroupBy(x => new
             {
                 x.OrderNoPKey,
+                x.Department,
                 x.CustomerName,
                 x.Category,
                 x.Customercode,
@@ -531,6 +534,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               {
 
                   Id = x.Key.OrderNoPKey,
+                  Department = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Category = x.Key.Category,
@@ -554,6 +558,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var orders = _context.Orders.GroupBy(x => new
             {
                 x.OrderNoPKey,
+                x.Department,
                 x.CustomerName,
                 x.Customercode,
                 x.Category,
@@ -570,6 +575,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               .Select(x => new TotalListOfApprovedPreparedDateDto
               {
                   Id = x.Key.OrderNoPKey,
+                  Department = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Category = x.Key.Category,
@@ -593,6 +599,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
                     Id = x.Id,
                     OrderNo = x.OrderNoPKey,
+                    Department = x.Department,
                     CustomerName = x.CustomerName,
                     CustomerCode = x.Customercode,
                     Address = x.AddressOrder,
@@ -666,6 +673,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.OrderNoPKey,
                        x.ordering.OrderDate,
                        x.ordering.DateNeeded,
+                       x.ordering.Department,
                        x.ordering.CustomerName,
                        x.ordering.Customercode,
                        x.ordering.Category,
@@ -681,6 +689,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        OrderNo = total.Key.OrderNoPKey,
                        OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
                        DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
+                       Department = total.Key.Department,
                        CustomerName = total.Key.CustomerName,
                        CustomerCode = total.Key.Customercode,
                        Category = total.Key.Category,
@@ -1022,6 +1031,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                       x.ordering.Id,
                       x.ordering.OrderDate,
                       x.ordering.DateNeeded,
+                      x.ordering.Department,
                       x.ordering.CustomerName,
                       x.ordering.Customercode,
                       x.ordering.Category,
@@ -1040,6 +1050,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                       Id = total.Key.Id,
                       OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
                       DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
+                      Department = total.Key.Department,
                       CustomerName = total.Key.CustomerName,
                       CustomerCode = total.Key.Customercode,
                       Category = total.Key.Category,
@@ -1134,6 +1145,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            {
 
                                                x.OrderNo,
+                                               x.Department,
                                                x.CustomerName,
                                                x.Customercode,
                                                x.AddressOrder,
@@ -1151,6 +1163,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                               {
 
                                                   OrderNo = x.Key.OrderNo,
+                                                  Department = x.Key.Department,
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
                                                   Address = x.Key.AddressOrder,
@@ -1169,6 +1182,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .GroupBy(x => new
                                             {
                                                 x.OrderNo,
+                                                x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
                                                 x.AddressOrder,
@@ -1184,6 +1198,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .Select(x => new ForApprovalMoveOrderPaginationDto
                                             {
                                                 OrderNo = x.Key.OrderNo,
+                                                Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 Customercode = x.Key.Customercode,
                                                 Address = x.Key.AddressOrder,
@@ -1204,6 +1219,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      .GroupBy(x => new
                      {
                          x.OrderNo,
+                         x.Department,
                          x.CustomerName,
                          x.Customercode,
                          x.AddressOrder,
@@ -1224,6 +1240,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               {
 
                   OrderNo = x.Key.OrderNo,
+                  Department = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Address = x.Key.AddressOrder,
@@ -1247,6 +1264,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var orders = _context.MoveOrders.GroupBy(x => new
             {
                 x.OrderNo,
+                x.Department,
                 x.CustomerName,
                 x.Customercode,
                 x.AddressOrder,
@@ -1268,6 +1286,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               {
 
                   OrderNo = x.Key.OrderNo,
+                  Department = x.Key.Department,    
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Address = x.Key.AddressOrder,
@@ -1298,6 +1317,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.ItemCode,
                                                 x.ItemDescription,
                                                 x.Uom,
+                                                x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
                                                 x.Category,
@@ -1320,6 +1340,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  ItemCode = x.Key.ItemCode,
                                                  ItemDescription = x.Key.ItemDescription,
                                                  Uom = x.Key.Uom,
+                                                 Department = x.Key.Department,
                                                  CustomerName = x.Key.CustomerName,
                                                  CustomerCode = x.Key.Customercode,
                                                  Category = x.Key.Category,
@@ -1478,6 +1499,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             {
 
                                                 x.OrderNo,
+                                                x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
                                                 x.Category,
@@ -1492,6 +1514,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             }).Select(x => new RejectedMoveOrderPaginationDto
                                             {
                                                 OrderNo = x.Key.OrderNo,
+                                                Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
                                                 Category = x.Key.Category,
@@ -1515,6 +1538,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .GroupBy(x => new
                                             {
                                                 x.OrderNo,
+                                                x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
                                                 x.Category,
@@ -1530,6 +1554,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             }).Select(x => new RejectedMoveOrderPaginationDto
                                             {
                                                 OrderNo = x.Key.OrderNo,
+                                                Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
                                                 Category = x.Key.Category,
@@ -1558,6 +1583,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .GroupBy(x => new
                                             {
                                                 x.OrderNo,
+                                                x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
                                                 x.Category,
@@ -1571,6 +1597,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             .Select(x => new TotalListForTransactMoveOrderDto
                                             {
                                                 OrderNo = x.Key.OrderNo,
+                                                Department= x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
                                                 Category = x.Key.Category,
@@ -1598,6 +1625,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                OrderDate = x.OrderDate.ToString(),
                                                PreparedDate = x.PreparedDate.ToString(),
                                                DateNeeded = x.DateNeeded.ToString(),
+                                               Department = x.Department,
                                                CustomerCode = x.Customercode,
                                                CustomerName = x.CustomerName,
                                                Category = x.Category,
@@ -1669,7 +1697,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             foreach (var x in existingsMoveOrders)
             {
-
+                x.Department = order.Department;
                 x.CompanyCode = order.CompanyCode;
                 x.CompanyName = order.CompanyName;
                 x.DepartmentCode = order.DepartmentCode;

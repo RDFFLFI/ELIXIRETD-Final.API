@@ -346,6 +346,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.OrderDate = Convert.ToDateTime(details.OrderDate);
             order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
             order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
+            order.Department = details.Department;
             order.CustomerName= details.CustomerName;
             order.Customercode = details.CustomerCode;
             order.AddressOrder = details.Address;
