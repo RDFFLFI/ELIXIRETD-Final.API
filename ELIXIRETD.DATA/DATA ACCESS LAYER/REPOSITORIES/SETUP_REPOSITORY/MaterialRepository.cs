@@ -555,7 +555,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                      .Select(x => new DtoItemcategDropdown
                                                      {
                                                          //ItemCategoryId = x.Id,
-                                                         ItemCategoryName = x.ItemCategoryName,
+                                                         ItemCategoryName = x.ItemCategoryName,                                                 
                                                          //SubcategoryId = x.SubCategoryId,
                                                          //SubcategoryName = x.SubCategory.SubCategoryName,
 

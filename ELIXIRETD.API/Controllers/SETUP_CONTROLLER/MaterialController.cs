@@ -121,7 +121,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             await _unitOfWork.Materials.ActivateMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
 
-            return Ok("Successfully activated aterials!");
+            return Ok("Successfully activated materials!");
 
         }
 

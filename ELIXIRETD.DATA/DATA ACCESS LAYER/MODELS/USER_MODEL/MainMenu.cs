@@ -8,6 +8,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL
 {
     public class MainMenu : BaseEntity
     {
+
+        
         public string ModuleName { get; set; }
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public string AddedBy { get; set; }

@@ -716,7 +716,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      x.IsMove
                                  }).Where(x => x.Key.IsActive == true)
                                    .Where(x => x.Key.IsApproved == true)
-                                   .Where(x => x.Key.IsMove == false)
+                                    .Where(x => x.Key.IsMove == true)
                                    .Select(x => new GetAllListForMoveOrderPaginationDto
                                    {
                                        CustomerName = x.Key.CustomerName,
@@ -1421,7 +1421,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             foreach (var items in existingorders)
             {
-                items.IsMove = true;
+
                 items.IsReject = null;
                 items.RejectBy = null;
                 items.Remarks = null;

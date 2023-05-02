@@ -29,8 +29,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  Id = x.Id, 
                                                  CustomerCode = x.CustomerCode, 
                                                  CustomerName = x.CustomerName,
+                                                 CompanyCode = x.CompanyCode,
+                                                 CompanyName = x.CompanyName,
+                                                 DepartmentCode = x.DepartmentCode,
+                                                 DepartmentName = x.DepartmentName,
+                                                 LocationCode = x.LocationCode, 
+                                                 LocationName = x.LocationName,
                                                  //MobileNumber = x.MobileNumber, 
-                                                 CompanyName = x.CompanyName, 
                                                  AddedBy = x.AddedBy,
                                                  DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                  IsActive = x.IsActive 
@@ -49,8 +54,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                               Id = x.Id,
                                               CustomerCode = x.CustomerCode,
                                               CustomerName = x.CustomerName,
-                                              //MobileNumber = x.MobileNumber,
+                                              CompanyCode = x.CompanyCode,
                                               CompanyName = x.CompanyName,
+                                              DepartmentCode = x.DepartmentCode,
+                                              DepartmentName = x.DepartmentName,
+                                              LocationCode = x.LocationCode,
+                                              LocationName = x.LocationName,
+                                              //MobileNumber = x.MobileNumber, 
                                               AddedBy = x.AddedBy,
                                               DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                               IsActive = x.IsActive
@@ -77,7 +87,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
+                                          CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,
+                                          DepartmentCode = x.DepartmentCode,
+                                          DepartmentName = x.DepartmentName,
+                                          LocationCode = x.LocationCode,
+                                          LocationName = x.LocationName,
+                                          //MobileNumber = x.MobileNumber, 
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive
@@ -96,10 +112,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
+                                          CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,
+                                          DepartmentCode = x.DepartmentCode,
+                                          DepartmentName = x.DepartmentName,
+                                          LocationCode = x.LocationCode,
+                                          LocationName = x.LocationName,
+                                          //MobileNumber = x.MobileNumber, 
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive
+
                                       }).Where(x => x.CustomerName.ToLower()
                                         .Contains(search.Trim().ToLower()));
           

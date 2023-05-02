@@ -9,7 +9,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     public  class DtoMoveOrderReports
     {
 
-        public int MoveOrderId { get; set; } 
+        public int MoveOrderId { get; set; }
+
+        public string Department { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
         public string ItemCode { get; set; }   

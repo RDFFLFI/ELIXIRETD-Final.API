@@ -60,6 +60,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          {
 
                              MoveOrderId = x.moveorder.OrderNo,
+                             Department = x.moveorder.Department,
                              CustomerCode = x.moveorder.Customercode,
                              CustomerName = x.moveorder.CustomerName,
                              ItemCode = x.moveorder.ItemCode,
