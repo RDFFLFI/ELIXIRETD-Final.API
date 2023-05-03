@@ -530,39 +530,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
            return await _context.ItemCategories.AnyAsync(x => x.ItemCategoryName == itemcateg  &&  x.IsActive == true);
         }
 
-        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category)
-        {
-            var items = _context.ItemCategories.Where(x => x.IsActive == true)
-                                       .Where(x => x.ItemCategoryName == category)
-                                       .Select(x => new DtoItemcategDropdown
-                                       {
-
-                                           ItemCategoryId = x.Id,
-                                           ItemCategoryName = x.ItemCategoryName,
-                                           //SubcategoryId = x.SubCategoryId,
-                                           //SubcategoryName = x.SubCategory.SubCategoryName,
-
-                                       });
-
-            return await items.ToListAsync();
-
-
-        }
-
-        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
-        {
-            var itemcategory = _context.ItemCategories.Where(x => x.IsActive == true)
-                                                     .Select(x => new DtoItemcategDropdown
-                                                     {
-                                                         //ItemCategoryId = x.Id,
-                                                         ItemCategoryName = x.ItemCategoryName,
-                                                         //SubcategoryId = x.SubCategoryId,
-                                                         //SubcategoryName = x.SubCategory.SubCategoryName,
-
-                                                     }).Distinct();
-
-            return await itemcategory.ToListAsync();
-        }
 
         public async Task<bool> ExistingMaterialAndItemCode(Material material)
         {
@@ -576,14 +543,94 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public async Task<bool> ValidateMaterialSubCategoryInActive(int Itemcateg)
+        public async Task<bool> ValidateMaterialSubCategoryInActive(ItemCategory Itemcateg)
         {
-            return await _context.SubCategories.AnyAsync(x => x.Id == Itemcateg && x.IsActive == false);
+            var validate = await _context.ItemCategories.Where(x => x.Id == Itemcateg.Id && x.IsActive == false)
+                                                        .FirstOrDefaultAsync();
+                                                        
+
+            if (validate == null) 
+                return false;
+
+            return true;
         }
 
         public async Task<bool> ValidateMaterialItemCategoryInActive(int Itemcateg)
         {
-            return await _context.ItemCategories.AnyAsync(x => x.Id == Itemcateg && x.IsActive == false);
+            var validate = await _context.ItemCategories.Where(x => x.IsActive == false)
+                                                        .Where(x => x.Id == Itemcateg)
+                                                        .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+            return true;
         }
+
+
+        //public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItem(string category)
+        //{
+        //    var items = _context.ItemCategories.Where(x => x.IsActive == true)
+        //                               .Where(x => x.ItemCategoryName == category)
+        //                               .Select(x => new DtoItemcategDropdown
+        //                               {
+
+        //                                   ItemCategoryId = x.Id,
+        //                                   ItemCategoryName = x.ItemCategoryName,
+        //                                   //SubcategoryId = x.SubCategoryId,
+        //                                   //SubcategoryName = x.SubCategory.SubCategoryName,
+
+        //                               });
+
+        //    return await items.ToListAsync();
+
+        //}
+
+        //public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
+        //{
+        //    var itemcategory = _context.ItemCategories.Where(x => x.IsActive == true)
+        //                                             .Select(x => new DtoItemcategDropdown
+        //                                             {
+        //                                                 //ItemCategoryId = x.Id,
+        //                                                 ItemCategoryName = x.ItemCategoryName,
+        //                                                 //SubcategoryId = x.SubCategoryId,
+        //                                                 //SubcategoryName = x.SubCategory.SubCategoryName,
+
+        //                                             }).Distinct();
+
+        //    return await itemcategory.ToListAsync();
+        //}
+
+        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category)
+        {
+            var items = _context.SubCategories.Where(x => x.IsActive == true)
+                                       .Where(x => x.ItemCategory.ItemCategoryName == category)
+                                       .Select(x => new DtoItemcategDropdown
+                                       {
+                                           SubcategoryId = x.Id,
+                                           SubcategoryName = x.SubCategoryName,
+
+                                       });
+
+            return await items.ToListAsync();
+
+        }
+
+
+        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
+        {
+            var itemcategory = _context.SubCategories.Where(x => x.IsActive == true)
+                                                     .Select(x => new DtoItemcategDropdown
+                                                     {
+                                                         ItemCategoryId = x.ItemCategoryId,
+                                                         ItemCategoryName = x.ItemCategory.ItemCategoryName,
+                                                       
+
+                                                     }).Distinct();
+
+            return await itemcategory.ToListAsync();
+        }
+
+       
     }
 }

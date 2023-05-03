@@ -110,8 +110,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> ActivateRawMaterial([FromBody] Material rawmaterial)
         {
 
-            if (await _unitOfWork.Materials.ValidateMaterialSubCategoryInActive(rawmaterial.SubCategoryId))
-                return BadRequest("sub category was in inactive!, Please active the sub category");
+           
+
+            //if (await _unitOfWork.Materials.ValidateMaterialSubCategoryInActive(rawmaterial))
+            //    return BadRequest("sub category was in inactive!, Please active the sub category");
 
             await _unitOfWork.Materials.ActivateMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
@@ -366,8 +368,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (valid == false)
                 return BadRequest("No Item category existing! Please try another input!");
 
-            if (await _unitOfWork.Materials.ValidateMaterialItemCategoryInActive(category.ItemCategoryId))
-                return BadRequest("item category was in inactive!, Please active the item category");
+            var validateInUse = await _unitOfWork.Materials.ValidateMaterialItemCategoryInActive(category.ItemCategoryId);
+
+            if(validateInUse == true)
+              return BadRequest("item category was in inactive!, Please active the item category");
 
             await _unitOfWork.Materials.ActivateSubCategory(category);
             await _unitOfWork.CompleteAsync();
@@ -443,24 +447,24 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        //[HttpGet]
-        //[Route("GetAllItemcategoriesmaterial")]
-        //public async Task<IActionResult> GetAllsubcategories(string category)
-        //{
-        //    var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
+        [HttpGet]
+        [Route("GetAllItemcategoriesmaterial")]
+        public async Task<IActionResult> GetAllsubcategories(string category)
+        {
+            var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
 
-        //    return Ok(categ);
+            return Ok(categ);
 
-        //}
+        }
 
-        //[HttpGet]
-        //[Route("GetallActiveSubcategoryDropDown")]
-        //public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
-        //{
-        //    var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
+        [HttpGet]
+        [Route("GetallActiveSubcategoryDropDown")]
+        public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
+        {
+            var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
 
-        //    return Ok(categ);
-        //}
+            return Ok(categ);
+        }
 
 
 

@@ -50,7 +50,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ExistItemCateg(string itemcateg);
 
         Task<bool> ExistingMaterialAndItemCode(Material material);
-        Task<bool> ValidateMaterialSubCategoryInActive(int Itemcateg);
+        Task<bool> ValidateMaterialSubCategoryInActive(ItemCategory Itemcateg);
 
 
 
