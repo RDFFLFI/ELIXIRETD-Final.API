@@ -5,6 +5,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data.OleDb;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
@@ -109,7 +110,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("ActivateMaterial")]
         public async Task<IActionResult> ActivateRawMaterial([FromBody] Material rawmaterial)
         {
-
            
 
             //if (await _unitOfWork.Materials.ValidateMaterialSubCategoryInActive(rawmaterial))
@@ -363,21 +363,22 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("ActiveSubCategory")]
         public async Task<IActionResult> ActiveSubcategory(SubCategory category)
         {
+
+
             var valid = await _unitOfWork.Materials.ActivateSubCategory(category);
 
             if (valid == false)
                 return BadRequest("No Item category existing! Please try another input!");
 
-            var validateInUse = await _unitOfWork.Materials.ValidateMaterialItemCategoryInActive(category.ItemCategoryId);
-
-            if(validateInUse == true)
-              return BadRequest("item category was in inactive!, Please active the item category");
-
             await _unitOfWork.Materials.ActivateSubCategory(category);
             await _unitOfWork.CompleteAsync();
             return Ok(category);
 
+
         }
+
+
+        
 
         [HttpPut]
         [Route("InActiveSubCategory")]

@@ -5,6 +5,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Security.Cryptography;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 {
@@ -87,14 +88,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             exisitngMaterial.BufferLevel = materials.BufferLevel;
 
             return true;
-
         }
 
         public async Task<bool> ActivateMaterial(Material materials)
         {
-            var existingMaterial = await _context.Materials.Where(x => x.Id == materials.Id)
+            var existingMaterial = await _context.Materials.Where(x => x.SubCategoryId == materials.Id)
                                                            .FirstOrDefaultAsync();
 
+            var existingSubcategory = await _context.SubCategories.Where(x => x.Id == materials.Id)
+                                                                  .FirstOrDefaultAsync();
+
+            existingSubcategory.IsActive = true;
             existingMaterial.IsActive = true;
 
             return true;
@@ -337,13 +341,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ActivateSubCategory(SubCategory category)
         {
-            var update = await _context.SubCategories.Where(x => x.Id == category.Id)
+            var update = await _context.SubCategories.Where(x => x.ItemCategoryId == category.Id)
                                                    .FirstOrDefaultAsync();
+
+
+            var updateItemCateg = await _context.ItemCategories.Where(x => x.Id == category.Id)
+                                                               .FirstOrDefaultAsync();
+
 
             if (update == null)
                 return false;
 
+            updateItemCateg.IsActive = category.IsActive = true;
+
             update.IsActive = category.IsActive = true;
+
 
             return true;
         }
@@ -353,7 +365,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             var update = await _context.SubCategories.Where(x => x.Id == category.Id)
                                                   .FirstOrDefaultAsync();
-
 
             if (update == null)
                 return false;
@@ -547,21 +558,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         {
             var validate = await _context.ItemCategories.Where(x => x.Id == Itemcateg.Id && x.IsActive == false)
                                                         .FirstOrDefaultAsync();
-                                                        
+          
 
             if (validate == null) 
-                return false;
-
-            return true;
-        }
-
-        public async Task<bool> ValidateMaterialItemCategoryInActive(int Itemcateg)
-        {
-            var validate = await _context.ItemCategories.Where(x => x.IsActive == false)
-                                                        .Where(x => x.Id == Itemcateg)
-                                                        .FirstOrDefaultAsync();
-
-            if (validate == null)
                 return false;
 
             return true;
