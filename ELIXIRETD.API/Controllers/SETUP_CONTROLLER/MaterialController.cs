@@ -110,6 +110,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> ActivateRawMaterial([FromBody] Material rawmaterial)
         {
 
+            if (await _unitOfWork.Materials.ValidateMaterialSubCategoryInActive(rawmaterial.SubCategoryId))
+                return BadRequest("sub category was in inactive!, Please active the sub category");
 
             await _unitOfWork.Materials.ActivateMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
@@ -217,6 +219,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             if (valid == false)
                 return BadRequest("No Existing Item Category");
+
+            
           
 
             await _unitOfWork.Materials.UpdateItemCategory(category);
@@ -361,6 +365,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             if (valid == false)
                 return BadRequest("No Item category existing! Please try another input!");
+
+            if (await _unitOfWork.Materials.ValidateMaterialItemCategoryInActive(category.ItemCategoryId))
+                return BadRequest("item category was in inactive!, Please active the item category");
 
             await _unitOfWork.Materials.ActivateSubCategory(category);
             await _unitOfWork.CompleteAsync();

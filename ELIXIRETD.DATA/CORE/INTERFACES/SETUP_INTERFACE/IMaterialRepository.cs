@@ -50,6 +50,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ExistItemCateg(string itemcateg);
 
         Task<bool> ExistingMaterialAndItemCode(Material material);
+        Task<bool> ValidateMaterialSubCategoryInActive(int Itemcateg);
 
 
 
@@ -70,7 +71,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category);
         Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown();
 
-
+        Task<bool> ValidateMaterialItemCategoryInActive(int Itemcateg);
 
 
 
