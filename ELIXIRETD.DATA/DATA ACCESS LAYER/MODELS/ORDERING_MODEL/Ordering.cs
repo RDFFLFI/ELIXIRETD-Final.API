@@ -6,10 +6,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
     public class Ordering : BaseEntity
     {
         public int TrasactId { get; set; }
+       
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string DepartmentCode { get; set; }
         public string Department { get; set; }
+        public string LocationCode { get; set; }
+        public string LocationName { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
         public string CustomerName { get; set; }
         public string Customercode { get; set; }
-
         public int OrderNo { get; set; }
 
         [Column(TypeName = "Date")]

@@ -46,24 +46,18 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
    
                 var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
-                var validDescriptionAndUom = await _unitOfWork.Materials.ValidateDescritionAndUom(material);
+              
+            var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
 
-            var existItemcateg = await _unitOfWork.Materials.ExistItemCategId(material.ItemCategoryId);
-
-
-            if (existItemcateg == false)
-                return BadRequest("Item categories doesn't exist");
+            if (existingMaterialsAndItemCode == true)
+                return BadRequest("Item code and item description already exist!");
+              
            
-            if (validDescriptionAndUom == true)
-                return BadRequest("Item Description, item categories and sub category already exist");
-
                 if (uomId == false)
                     return BadRequest("UOM doesn't exist");
 
                 if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
                     return BadRequest("Item Code already exist!");
-
-
 
                 await _unitOfWork.Materials.AddMaterial(material);
                 await _unitOfWork.CompleteAsync();
@@ -79,20 +73,19 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
           
             var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
 
-            var validDescriptionAndUom = await _unitOfWork.Materials.ValidateDescritionAndUom(material);
 
-            if (validDescriptionAndUom == true)
-                return BadRequest("Item Description, item categories and sub category already exist");
+            var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
+
+            if (existingMaterialsAndItemCode == true)
+                return BadRequest("Item code and item description already exist!");
+
 
             if (uomId == false)
                 return BadRequest("UOM doesn't exist, Please add data first!");
 
-            var existItemcateg = await _unitOfWork.Materials.ExistItemCategId(material.ItemCategoryId);
 
-            if (existItemcateg == false)
-                return BadRequest("Item categories doesn't exist");
-
-
+            if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
+                return BadRequest("Item Code already exist!");
 
             await _unitOfWork.Materials.UpdateMaterial(material);
             await _unitOfWork.CompleteAsync();
@@ -201,15 +194,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("AddNewItemCategories")]
         public async Task<IActionResult> CreateNewIteCategories(ItemCategory category)
         {
-           
 
-            var DuplicateItemcategoryandSub =  await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
+            if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
+                return BadRequest("Item category already exist!");
 
-
-            if (DuplicateItemcategoryandSub == true)
-                return BadRequest("Item category and sub category already exist");
-
-         
                 await _unitOfWork.Materials.AddNewItemCategory(category);
                 await _unitOfWork.CompleteAsync();
 
@@ -224,10 +212,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
          
             var valid = await _unitOfWork.Materials.UpdateItemCategory(category);
 
-            var DuplicateItemcategoryandSub = await _unitOfWork.Materials.DuplicateItemCategoriesAndSubCateg(category);
-
-            if (DuplicateItemcategoryandSub == true)
-                return BadRequest("Item category and sub category already exist");
+            if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
+                return BadRequest("Item category already exist!");
 
             if (valid == false)
                 return BadRequest("No Existing Item Category");
@@ -341,10 +327,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> AddnewSubCategory(SubCategory category)
         {
            
-            var existingSubCateg = await _unitOfWork.Materials.ExistSubCategory(category);
+            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
 
-            if (existingSubCateg == true)
-                return BadRequest("Sub category already existing");
+                if (existingSubCategAndItemCateg == true)
+                return BadRequest("Sub category and item category already exist!");
 
             await _unitOfWork.Materials.AddNewSubCategory(category);
             await _unitOfWork.CompleteAsync();
@@ -356,11 +342,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateSubCategory (SubCategory category)
         {
 
+            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
 
-            var existingSubCateg = await _unitOfWork.Materials.ExistSubCategory(category);
-
-            if (existingSubCateg == true)
-                return BadRequest("Sub category already existing! ");
+            if (existingSubCategAndItemCateg == true)
+                return BadRequest("Sub category and item category already exist!");
 
             await _unitOfWork.Materials.UpdateSubCategory(category);
             await _unitOfWork.CompleteAsync();
@@ -451,24 +436,24 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        [HttpGet]
-        [Route("GetAllItemcategoriesmaterial")]
-        public async Task<IActionResult> GetAllsubcategories(string category)
-        {
-            var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
+        //[HttpGet]
+        //[Route("GetAllItemcategoriesmaterial")]
+        //public async Task<IActionResult> GetAllsubcategories(string category)
+        //{
+        //    var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
 
-            return Ok(categ);
+        //    return Ok(categ);
 
-        }
+        //}
 
-        [HttpGet]
-        [Route("GetallActiveSubcategoryDropDown")]
-        public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
-        {
-            var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
+        //[HttpGet]
+        //[Route("GetallActiveSubcategoryDropDown")]
+        //public async Task<IActionResult> GetallActiveSubcategoryDropDowns()
+        //{
+        //    var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
 
-            return Ok(categ);
-        }
+        //    return Ok(categ);
+        //}
 
 
 

@@ -704,7 +704,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                      {
                                          material.ItemCode,
                                          material.ItemDescription,
-                                         material.ItemCategory.ItemCategoryName,
+                                         //material.ItemCategory.ItemCategoryName,
                                          Moveorder = moveorder.QuantityOrdered != null ? moveorder.QuantityOrdered : 0,
                                          Issue = issue.Quantity != null ? issue.Quantity : 0,
                                          borrowed = borrowed.Quantity != null ? borrowed.Quantity : 0,
@@ -727,7 +727,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                          ItemCode = total.Key.ItemCode,
                                          ItemDescription = total.Key.ItemDescription,
-                                         ItemCategory = total.Key.ItemCategoryName,
+                                         //ItemCategory = total.Key.ItemCategoryName,
                                          TotalOut = total.Key.borrowed,
                                          TotalIn = total.Key.receipt + total.Key.receiveIn + total.Key.returned,
                                          Ending = (total.Key.receipt + total.Key.receiveIn + total.Key.returned) - (total.Key.Moveorder + total.Key.Issue + total.Key.borrowed),
