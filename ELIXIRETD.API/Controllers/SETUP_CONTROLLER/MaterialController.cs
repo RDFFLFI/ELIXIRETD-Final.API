@@ -112,9 +112,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
            
 
-            //if (await _unitOfWork.Materials.ValidateMaterialSubCategoryInActive(rawmaterial))
-            //    return BadRequest("sub category was in inactive!, Please active the sub category");
-
             await _unitOfWork.Materials.ActivateMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
 

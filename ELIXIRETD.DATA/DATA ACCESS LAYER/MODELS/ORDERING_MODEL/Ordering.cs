@@ -5,8 +5,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 {
     public class Ordering : BaseEntity
     {
+        public int MIRId { get; set; }
         public int TrasactId { get; set; }
-       
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
 

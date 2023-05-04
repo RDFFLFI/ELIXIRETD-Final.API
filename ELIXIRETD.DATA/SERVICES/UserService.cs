@@ -25,7 +25,7 @@ namespace ELIXIRETD.DATA.SERVICES
         public AuthenticateResponse Authenticate(AuthenticateRequest request)
         {
             var user = _context.Users.SingleOrDefault(x => x.UserName == request.Username
-                                                        && x.Password == request.Password
+                                                        && x.Password == request.Password                                                        
                                                         && x.IsActive != false);
             if (user == null)
                 return null;

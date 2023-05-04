@@ -170,6 +170,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 await _unitOfWork.Roles.TagAndUntagUpdate(module);
                 await _unitOfWork.CompleteAsync();
             }
+
+
+
             return new JsonResult("Successfully Activated Tag Modules!");
         }
 
@@ -181,11 +184,16 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             foreach (UserRoleModules module in rolemodule)
             {
+                var validation = await _unitOfWork.Roles.validateActiveRoleModules(module);
+
+                    if (validation == true)
+                    return BadRequest("At least one mainmenu and module must be tagged for the specified role");
+
                 await _unitOfWork.Roles.UntagModuleinRole(module);
                 await _unitOfWork.CompleteAsync();
             }
 
-            return new JsonResult("Successfully Untag Module!");
+            return new JsonResult("Successfully untag module!");
         }
 
 

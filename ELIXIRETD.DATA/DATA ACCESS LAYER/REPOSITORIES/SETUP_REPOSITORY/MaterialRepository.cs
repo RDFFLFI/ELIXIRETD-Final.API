@@ -244,7 +244,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             existingCategory.IsActive = true;
 
             return true;
-
         }
 
 
@@ -279,7 +278,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
         }
-
 
         //==================================================== Sub Category ===================================================
 
@@ -324,6 +322,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
+
         public async Task<bool> UpdateSubCategory(SubCategory category)
         {
             var update = await _context.SubCategories.Where(x => x.Id == category.Id)
@@ -338,6 +337,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
 
         }
+
 
         public async Task<bool> ActivateSubCategory(SubCategory category)
         {
@@ -360,6 +360,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
+
         public async Task<bool> InActiveSubCategory(SubCategory category)
         {
 
@@ -373,6 +374,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return true;
         }
+
 
         public async Task<PagedList<SubCategoryDto>> GetAllSubCategoryPagination(bool status, UserParams userParams)
         {
@@ -606,6 +608,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                        .Where(x => x.ItemCategory.ItemCategoryName == category)
                                        .Select(x => new DtoItemcategDropdown
                                        {
+                                           ItemCategoryId = x.ItemCategoryId,
                                            SubcategoryId = x.Id,
                                            SubcategoryName = x.SubCategoryName,
 

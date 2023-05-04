@@ -32,6 +32,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<PagedList<RoleDto>> GetAllRoleWithPagination(bool status, UserParams userParams);
         Task<PagedList<RoleDto>> GetAllRoleWithPaginationOrig(UserParams userParams, bool status, string search);
 
+        Task<bool> validateActiveRoleModules(UserRoleModules rolemodule);
+
         
 
 

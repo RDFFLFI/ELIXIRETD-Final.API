@@ -14,7 +14,5 @@
         public bool IsActive { get; set; } = true;
         public string ItemCategoryName { get; set; }
 
-
-
     }
 }

@@ -1,4 +1,4 @@
-﻿    using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
+﻿using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
@@ -25,6 +25,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                      .Select(x => new UserDto
                                      {
                                          Id = x.Id,
+                                         EmpId = x.EmpId,
                                          FullName = x.FullName,
                                          UserName = x.UserName,
                                          Password = x.Password,
@@ -46,6 +47,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                     .Select(x => new UserDto
                                     {
                                         Id = x.Id,
+                                        EmpId = x.EmpId,
                                         FullName = x.FullName,
                                         UserName = x.UserName,
                                         Password = x.Password,
@@ -84,10 +86,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             var existingUser = await _context.Users.Where(x => x.Id == user.Id)
                                               .FirstOrDefaultAsync();
 
-  
+
             existingUser.Password = user.Password;
             
-
             return true;
         }
 
@@ -119,6 +120,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                       .Select(x => new UserDto
                                       {
                                           Id = x.Id,
+                                          EmpId = x.EmpId,
                                           FullName = x.FullName,
                                           UserName = x.UserName,
                                           Password = x.Password,
@@ -141,6 +143,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                       .Select(x => new UserDto
                                       {
                                           Id = x.Id,
+                                          EmpId = x.EmpId,
                                           FullName = x.FullName,
                                           UserName = x.UserName,
                                           Password = x.Password,
