@@ -88,6 +88,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             var existingUom = await _context.Uoms.Where(x => x.Id == uoms.Id)
                                                  .FirstOrDefaultAsync();
 
+           
+
             existingUom.UomDescription = uoms.UomDescription;
 
             return true;
@@ -133,12 +135,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> UomCodeExist(string uom)
         {
-            return await _context.Uoms.AnyAsync(x => x.UomCode == uom);
+            return await _context.Uoms.AnyAsync(x => x.UomCode == uom );
         }
 
         public async Task<bool> UomDescriptionExist(string uom)
         {
             return await _context.Uoms.AnyAsync(x => x.UomDescription == uom);
+        }
+
+        public async Task<bool> ValidateUomInUse(int id)
+        {
+            return await _context.Materials.AnyAsync(x => x.UomId == id && x.IsActive == true);
+        }
+
+        public async Task<bool> validateItemUse(Uom uom)
+        {
+            var validate = await _context.Uoms.Where(x => x.Id == uom.Id )
+                                               .Where(x => x.UomDescription == uom.UomDescription)
+                                                .FirstOrDefaultAsync();
+
+            if(validate == null )
+            {
+                return false;
+
+            }
+
+            return true;
         }
     }
 }

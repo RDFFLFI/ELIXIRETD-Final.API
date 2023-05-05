@@ -62,7 +62,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateUom")]
         public async Task<IActionResult> UpdateUom( [FromBody] Uom uom)
         {
-     
+
+            var validate = await _unitOfWork.Uoms.validateItemUse(uom);
+            if (validate == true)
+                return BadRequest("The uom cannot be changed because you entered the same uom!");
+
+            if (await _unitOfWork.Uoms.UomDescriptionExist(uom.UomDescription))
+                return BadRequest("Uom code description already exist, please try something else!");
+
             await _unitOfWork.Uoms.UpdateUom(uom);
             await _unitOfWork.CompleteAsync();
 
@@ -73,7 +80,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("InActiveUom")]
         public async Task<IActionResult> InActiveUom([FromBody] Uom uom)
         {
-        
+
+            if (await _unitOfWork.Uoms.ValidateUomInUse(uom.Id))
+                return BadRequest("Uom is in use!");
+
             await _unitOfWork.Uoms.InActiveUom(uom);
             await _unitOfWork.CompleteAsync();
 

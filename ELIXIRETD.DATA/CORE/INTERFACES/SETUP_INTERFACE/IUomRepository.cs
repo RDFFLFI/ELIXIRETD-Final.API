@@ -26,6 +26,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> UomCodeExist(string uom);
         Task<bool> UomDescriptionExist(string uom);
 
+        Task<bool> ValidateUomInUse(int id);
+
+        Task<bool> validateItemUse(Uom uom);
+
 
     }
 }

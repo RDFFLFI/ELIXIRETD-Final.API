@@ -94,6 +94,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
+
         public async Task<bool> ActivateUser(User user)
         {
 
