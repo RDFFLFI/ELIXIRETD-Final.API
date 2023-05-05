@@ -32,6 +32,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ValidateUserExist(string username);
         Task<bool> ValidateUserRolesModule(User user);
        
+        Task<bool> ValidationPassword(User user);
 
 
         

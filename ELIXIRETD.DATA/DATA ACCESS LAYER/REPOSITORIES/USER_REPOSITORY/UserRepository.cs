@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.USER_REPOSITORY.Excemption;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 {
@@ -86,6 +87,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             var existingUser = await _context.Users.Where(x => x.Id == user.Id)
                                               .FirstOrDefaultAsync();
 
+            
 
             existingUser.Password = user.Password;
             
@@ -94,19 +96,29 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> ActivateUser(User user)
         {
-            var users = await _context.Users.Where(x => x.Id == user.Id)
+
+            var Users = await _context.Users.Where(x => x.Id == user.Id)
                                             .Where(x => x.UserRoleId == user.UserRoleId)
                                             .FirstOrDefaultAsync();
 
+            if( Users == null)
+            {
+                return false;
+            }
 
-            var Roles = await _context.Roles.Where(x => x.Id == user.UserRoleId)
-                                            .FirstOrDefaultAsync();
+            Users.IsActive = true;
 
-            Roles.IsActive = true;
-            users.IsActive = true;
 
+            var Role = await _context.Roles.Where(x => x.Id == user.UserRoleId)
+                                               
+                                           .FirstOrDefaultAsync();
+
+            Role.IsActive = true;
+            
             return true;
+           
         }
+
 
         public async Task<bool> InActiveUser(User user)
         {
@@ -214,9 +226,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         }
 
+        public async Task<bool> ValidationPassword(User user)
+        {
+            var validation = await _context.Users.Where(x => x.Id == user.Id)
+                                                 .Where(x => x.Password == user.Password)
+                                                 .FirstOrDefaultAsync();
 
-     
-      
+            if (validation == null)
+                return false;
+
+            return true;
+
+            
+                                           
+        }
     }
 }
 

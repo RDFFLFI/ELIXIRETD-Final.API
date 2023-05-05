@@ -185,7 +185,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                               Id = x.Id,
                                               ItemCategoryName = x.ItemCategoryName,
                                               AddedBy = x.AddedBy,
-                                              DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+                                              DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                              IsActive = x.IsActive
+                                              
 
                                           });
             return await categories.ToListAsync();
@@ -199,7 +201,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           ItemCategoryName = x.ItemCategoryName,                                      
                                           AddedBy = x.AddedBy,
-                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                          IsActive = x.IsActive
 
                                       });
             return await categories.ToListAsync();
@@ -258,7 +261,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          Id = x.Id,
                                                          ItemCategoryName = x.ItemCategoryName,                                                      
                                                          AddedBy = x.AddedBy,
-                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                                         IsActive = x.IsActive
                                                      });
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
@@ -273,7 +277,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          Id = x.Id,
                                                          ItemCategoryName = x.ItemCategoryName,
                                                          AddedBy = x.AddedBy,
-                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                                         IsActive = x.IsActive
+
 
                                                      }).Where(x => x.ItemCategoryName.ToLower()
                                                        .Contains(search.Trim().ToLower()));

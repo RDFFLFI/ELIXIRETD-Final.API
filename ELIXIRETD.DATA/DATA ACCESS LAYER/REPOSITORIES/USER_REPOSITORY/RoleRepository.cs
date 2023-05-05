@@ -145,12 +145,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             }
 
             if (existingrolemodule == null)
-                throw new NoRoleFoundException();
-            throw new AtLeast1RoleException();
+                throw new NoRoleFoundException(); // If 
+            throw new AtLeast1RoleException(); // Else
 
         }
-
-
 
         // Tag Module
 

@@ -80,6 +80,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UpdateUserInfo([FromBody]User user)
         {
             
+            var validate = await _unitOfWork.Users.ValidationPassword(user);
+            if (validate == true)
+                return BadRequest("The password cannot be changed because you entered the same password!");
 
             await _unitOfWork.Users.UpdateUserInfo(user);
             await _unitOfWork.CompleteAsync();
@@ -100,7 +103,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
         [HttpPut]
         [Route("ActivateUser")]
-        public async Task<IActionResult> ActivateUser([FromBody] User user)
+        public async Task<IActionResult> ActivateUser(User user)
         {
             await _unitOfWork.Users.ActivateUser(user);
             await _unitOfWork.CompleteAsync();
