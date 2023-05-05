@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.USER_REPOSITORY.Excemption;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 
@@ -126,16 +127,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> UntagModuleinRole(UserRoleModules rolemodules)
         {
+
             var existingrolemodule = await _context.RoleModules.Where(x => x.ModuleId == rolemodules.ModuleId)
                                                                .Where(x => x.RoleId == rolemodules.RoleId)
                                                                .FirstOrDefaultAsync();
 
+            var taggedModules = await _context.RoleModules.Where(x => x.RoleId == rolemodules.RoleId && x.IsActive == true)
+            .Select(x => new
+            {
+                x.ModuleId
+            }).ToListAsync();
+
+            if(taggedModules.Count> 1)
+            {
+                existingrolemodule.IsActive = false;
+                return true;
+            }
+
             if (existingrolemodule == null)
-                return false;
+                throw new NoRoleFoundException();
+            throw new AtLeast1RoleException();
 
-            existingrolemodule.IsActive = false;
-
-            return true;
         }
 
 
@@ -292,33 +304,46 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         //}
 
-        public async Task<bool> validateActiveRoleModules(UserRoleModules rolemodule)
-        {
+        //public async Task<bool> validateActiveRoleModules(UserRoleModules rolemodule)
+        //{
 
-                
-            var validate = await _context.Roles.Where(x => x.Id == rolemodule.RoleId && x.IsActive == true).FirstOrDefaultAsync();
+        //    //var role = await _context.RoleModules
+        //    //                                     .FirstOrDefaultAsync(x => x.RoleId == rolemodule.RoleId);
 
-            if (validate == null)
-            {
-                return false;
-            }
-            else
-            {
-                var roleModuleCount = await _context.RoleModules.Where(x => x.RoleId == rolemodule.RoleId && x.IsActive == true).CountAsync();
+        //    //if(role == null)
+        //    //{
+        //    //    return false;
+        //    //}
+        //    // else
+        //    //{
+        //    //    var roleModuleCount = await _context.RoleModules
+        //    //                                                    .Where(x => x.RoleId == rolemodule.Id)
+        //    //                                                    .Where (x => x.ModuleId == rolemodule.ModuleId)
+        //    //                                                    .Where(x => x.IsActive == false)
+        //    //                                                    .CountAsync();
+        //    //    if (roleModuleCount > 0)
+        //    //    {
+        //    //        return true;
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        return false;
+        //    //    }
 
-                if (roleModuleCount <= 0 )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
 
-          
 
-        }
+        //    //}
+
+        //    var tagmodules = await _context.RoleModules.ToListAsync();
+            
+        //    if(tagmodules.Count > 1)
+        //    {
+
+        //    }
+
+
+
+        //}
 
       
         

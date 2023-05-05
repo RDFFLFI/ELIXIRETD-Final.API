@@ -95,8 +95,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> ActivateUser(User user)
         {
             var users = await _context.Users.Where(x => x.Id == user.Id)
+                                            .Where(x => x.UserRoleId == user.UserRoleId)
                                             .FirstOrDefaultAsync();
 
+
+            var Roles = await _context.Roles.Where(x => x.Id == user.UserRoleId)
+                                            .FirstOrDefaultAsync();
+
+            Roles.IsActive = true;
             users.IsActive = true;
 
             return true;

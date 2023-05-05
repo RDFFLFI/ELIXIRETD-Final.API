@@ -182,18 +182,23 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UntagModule([FromBody] UserRoleModules[] rolemodule)
         {
 
-            foreach (UserRoleModules module in rolemodule)
+            try
             {
-                var validation = await _unitOfWork.Roles.validateActiveRoleModules(module);
+                foreach (UserRoleModules module in rolemodule)
+                {
 
-                    if (validation == true)
-                    return BadRequest("At least one mainmenu and module must be tagged for the specified role");
 
-                await _unitOfWork.Roles.UntagModuleinRole(module);
-                await _unitOfWork.CompleteAsync();
+                    var rolemodules = await _unitOfWork.Roles.UntagModuleinRole(module);
+                    await _unitOfWork.CompleteAsync();
+
+                }
+                return new JsonResult("Successfully untag module!");
             }
-
-            return new JsonResult("Successfully untag module!");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
 
 

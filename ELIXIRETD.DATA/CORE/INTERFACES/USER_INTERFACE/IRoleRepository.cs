@@ -19,7 +19,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> InActiveRole(UserRole role);
         Task<bool> ActivateRole(UserRole role);
         Task<bool> ValidateRoleExist(string role);
-
         Task<bool> TagModules(UserRoleModules roleModule);
         Task<bool> UntagModuleinRole(UserRoleModules rolemodules);
         Task<bool> TagAndUntagUpdate(UserRoleModules rolemodule);
@@ -27,16 +26,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<IReadOnlyList<UntagModuleDto>> GetUntagModuleByRoleId(int id, int menuid);
         Task<bool> CheckRoleandTagModules(UserRoleModules rolemodule);
         Task<IReadOnlyList<RoleWithModuleDto>> GetRoleModuleWithId(int id);
-
-
         Task<PagedList<RoleDto>> GetAllRoleWithPagination(bool status, UserParams userParams);
         Task<PagedList<RoleDto>> GetAllRoleWithPaginationOrig(UserParams userParams, bool status, string search);
 
-        Task<bool> validateActiveRoleModules(UserRoleModules rolemodule);
-
-        
-
-
+        //Task<bool> validateActiveRoleModules(UserRoleModules rolemodule);
 
 
     }

@@ -69,6 +69,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
    
         public async Task<bool> AddMaterial(Material materials)
         {
+            
+
             await _context.AddAsync(materials);
 
             return true;
@@ -569,38 +571,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         }
 
 
-        //public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItem(string category)
-        //{
-        //    var items = _context.ItemCategories.Where(x => x.IsActive == true)
-        //                               .Where(x => x.ItemCategoryName == category)
-        //                               .Select(x => new DtoItemcategDropdown
-        //                               {
-
-        //                                   ItemCategoryId = x.Id,
-        //                                   ItemCategoryName = x.ItemCategoryName,
-        //                                   //SubcategoryId = x.SubCategoryId,
-        //                                   //SubcategoryName = x.SubCategory.SubCategoryName,
-
-        //                               });
-
-        //    return await items.ToListAsync();
-
-        //}
-
-        //public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
-        //{
-        //    var itemcategory = _context.ItemCategories.Where(x => x.IsActive == true)
-        //                                             .Select(x => new DtoItemcategDropdown
-        //                                             {
-        //                                                 //ItemCategoryId = x.Id,
-        //                                                 ItemCategoryName = x.ItemCategoryName,
-        //                                                 //SubcategoryId = x.SubCategoryId,
-        //                                                 //SubcategoryName = x.SubCategory.SubCategoryName,
-
-        //                                             }).Distinct();
-
-        //    return await itemcategory.ToListAsync();
-        //}
 
         public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category)
         {
