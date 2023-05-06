@@ -3,6 +3,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Cryptography;
@@ -79,13 +80,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> UpdateMaterial(Material materials)
         {
+
             var exisitngMaterial = await _context.Materials.Where(x => x.Id == materials.Id)
                                                            .FirstOrDefaultAsync();
 
             exisitngMaterial.ItemDescription = materials.ItemDescription;
             exisitngMaterial.SubCategoryId = materials.SubCategoryId;
-            exisitngMaterial.SubCategory.ItemCategoryId = materials.SubCategory.ItemCategoryId;
-            exisitngMaterial.SubCategory.ItemCategory.ItemCategoryName = materials.ItemCategoryName;
             exisitngMaterial.UomId = materials.UomId;
             exisitngMaterial.BufferLevel = materials.BufferLevel;
 
@@ -609,6 +609,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await itemcategory.ToListAsync();
         }
 
-       
+        public async Task<bool> ValidateMaterialExist(string itemCode, string itemDescription, int materialId)
+        {
+            var existingMaterial = await _context.Materials.FirstOrDefaultAsync(x => x.ItemDescription == itemDescription && x.Id != materialId);
+            return existingMaterial == null;
+        }
+    
+
+        public async Task<bool> ValidateItemDescriptionExist(string itemDescription, int materialId)
+        {
+            var validate = await _context.Materials.FirstOrDefaultAsync(x => x.ItemDescription == itemDescription && x.Id != materialId);
+
+            if (validate == null)
+            {
+                return false;
+
+
+            }
+
+            return true;
+        }
+
     }
 }

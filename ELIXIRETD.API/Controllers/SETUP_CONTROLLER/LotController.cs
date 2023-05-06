@@ -214,6 +214,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("InActiveLotCategories")]
         public async Task<IActionResult> InActiveLotCategories([FromBody] LotNames category)
         {
+            if (await _unitOfWork.Lots.ValidateLotInUse(category.Id)) 
+            return BadRequest("Lot name is in use!");
+
             await _unitOfWork.Lots.InActiveLotCategory(category);
             await _unitOfWork.CompleteAsync();
 

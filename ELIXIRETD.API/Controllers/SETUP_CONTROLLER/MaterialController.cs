@@ -71,22 +71,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
-          
-            var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
 
-
-            var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
-
-            if (existingMaterialsAndItemCode == true)
-                return BadRequest("Item code and item description already exist!");
-
-
-            if (uomId == false)
-                return BadRequest("UOM doesn't exist, Please add data first!");
-
-
-            if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
-                return BadRequest("Item Code already exist!");
 
             await _unitOfWork.Materials.UpdateMaterial(material);
             await _unitOfWork.CompleteAsync();

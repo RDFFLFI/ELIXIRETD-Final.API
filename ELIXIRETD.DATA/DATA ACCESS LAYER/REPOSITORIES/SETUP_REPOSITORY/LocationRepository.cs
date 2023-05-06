@@ -137,5 +137,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         {
             return await _context.Locations.AnyAsync(x => x.LocationCode == location);
         }
+
+       
     }
 }

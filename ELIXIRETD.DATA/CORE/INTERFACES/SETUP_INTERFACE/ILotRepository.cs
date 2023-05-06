@@ -45,6 +45,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ValidateLotCode(string lotcode);
 
 
+        Task<bool> ValidateLotInUse(int id);
 
 
 

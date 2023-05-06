@@ -77,6 +77,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
                                               .FirstOrDefaultAsync();
 
+ 
+
             lots.IsActive = true;
 
             return true;
@@ -289,5 +291,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  
      
         }
+
+        public async Task<bool> ValidateLotInUse(int id)
+        {
+            return await _context.LotSections.AnyAsync(x => x.LotNamesId == id && x.IsActive == true);
+
+
+        }
+
     }
 }

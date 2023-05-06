@@ -71,7 +71,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.IsActive,
                                  x.DateCancelled,
                        
-
                              })
                                                  .Select(receive => new CancelledPoDto
                                                  {
@@ -395,6 +394,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                     ItemDescription = x.ItemDescription,
                     ActualGood = x.ActualDelivered,
                     DateReceive = x.ReceivingDate.ToString(),
+                    Supplier = x.Supplier,
+                    Uom = x.Uom
+
                 });
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(warehouseInventory, userParams.PageNumber, userParams.PageSize);
@@ -405,11 +407,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
                .Select(x => new WarehouseReceivingDto
                {
-                   Id = x.Id,  
+                   Id = x.Id,
                    ItemCode = x.ItemCode,
                    ItemDescription = x.ItemDescription,
                    ActualGood = x.ActualDelivered,
                    DateReceive = x.ReceivingDate.ToString(),
+                   Supplier = x.Supplier,
+                   Uom = x.Uom
 
                }).Where(x => x.ItemCode.ToLower()
                  .Contains(search.Trim().ToLower()));

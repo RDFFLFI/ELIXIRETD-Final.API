@@ -71,9 +71,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category);
         Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown();
 
+        Task<bool> ValidateMaterialExist(string itemCode, string itemDescription, int materialId);
 
-
-
+        Task<bool> ValidateItemDescriptionExist(string itemDescription, int materialId);
 
 
 
