@@ -114,7 +114,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<bool> ValidateQuantity(decimal quantity);
 
-        Task<bool> ValidateDepartment(string departmentcode , string departmentname);
+        Task<bool> ValidateDepartment(string departmentname);
         Task<bool> ValidateCompany(string companycode, string companyname);
         Task<bool> ValidateLocation(string locationcode, string locationname);
 

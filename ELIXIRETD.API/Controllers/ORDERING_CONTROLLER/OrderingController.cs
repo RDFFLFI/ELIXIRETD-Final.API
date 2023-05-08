@@ -28,7 +28,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 
                 List<Ordering> DuplicateList = new List<Ordering>();
                 List<Ordering> AvailableImport = new List<Ordering>();
-                List<Ordering> CustomerCodeNotExist = new List<Ordering>();
+                //List<Ordering> CustomerCodeNotExist = new List<Ordering>();
                 List<Ordering> CustomerNameNotExist = new List<Ordering>();
                 List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> ItemCodesExist = new List<Ordering>();
@@ -36,8 +36,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 List<Ordering> QuantityInValid = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
                 List<Ordering> DepartmentCodeanNameNotExist = new List <Ordering>();
-                List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
-                List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
+                //List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
+                //List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
 
                 foreach (Ordering items in order)
                 {
@@ -57,13 +57,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     {
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerName);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
-                        var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
+                        //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName);
                         var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode);
-                        var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemCode , items.ItemdDescription);
+                        var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
                         var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
-                        var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.DepartmentCode , items.Department);
+                        var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.Department);
                         //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
                         //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
 
@@ -75,20 +75,20 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             PreviousDateNeeded.Add(items);
                         }
-                        else if (validateCustomerCode == false)
-                        {
-                            CustomerCodeNotExist.Add(items);
-                        }
+                        //else if (validateCustomerCode == false)
+                        //{
+                        //    CustomerCodeNotExist.Add(items);
+                        //}
 
                         else if (validateCustomerName == false)
                         {
                             CustomerNameNotExist.Add(items);
                         }
 
-                        else if (validateItemCode == false)
-                        {
-                            ItemCodesExist.Add(items);
-                        }
+                        //else if (validateItemCode == false)
+                        //{
+                        //    ItemCodesExist.Add(items);
+                        //}
                         else if (validateItemDescription == false)
                         {
                             ItemDescriptionNotExist.Add(items);
@@ -132,7 +132,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    ItemDescriptionNotExist, 
                    UomNotExist,
                    CustomerNameNotExist,
-                   CustomerCodeNotExist,
+                   //CustomerCodeNotExist,
                    PreviousDateNeeded,
                    QuantityInValid,
                    DepartmentCodeanNameNotExist,
@@ -142,7 +142,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                   
                 };
 
-                if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 
+                if ( DuplicateList.Count == 0/* && CustomerCodeNotExist.Count == 0*/ && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 
                     && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0 
                     && DepartmentCodeanNameNotExist.Count == 0 /*&& CompanyCodeanNameNotExist.Count == 0 && LocationCodeanNameNotExist.Count == 0*/)
                 {

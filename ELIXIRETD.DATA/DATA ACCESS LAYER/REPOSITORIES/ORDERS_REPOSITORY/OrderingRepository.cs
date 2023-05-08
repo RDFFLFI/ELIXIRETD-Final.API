@@ -1929,12 +1929,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateItemDescription(string ItemCode, string ItemDescription)
+        public async Task<bool> ValidateItemDescription(string ItemDescription)
         {
-            var validate = await _context.Materials.Where(x => x.ItemCode == ItemCode)
-                                                   .Where(x => x.ItemDescription == ItemDescription)
+            var validate = await _context.Materials.Where(x => x.ItemDescription == ItemDescription)
                                                    .Where(x => x.IsActive == true)
                                                    .FirstOrDefaultAsync();
+
 
             if (validate == null)
                 return false;
@@ -2006,12 +2006,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateDepartment(string departmentcode, string departmentname)
+        public async Task<bool> ValidateDepartment(string departmentname)
         {
-            var validate = await _context.Customers.Where(x => x.DepartmentCode == departmentcode)
-                                                 .Where(x => x.DepartmentName == departmentname)
+            var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
                                                  .Where(x => x.IsActive == true)
                                                 .FirstOrDefaultAsync();
+
             if (validate == null)
                 return false;
 
