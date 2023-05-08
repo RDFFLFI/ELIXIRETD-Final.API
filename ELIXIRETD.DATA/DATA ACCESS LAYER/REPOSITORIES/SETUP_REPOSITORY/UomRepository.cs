@@ -57,10 +57,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> ActivateUom(Uom uoms)
         {
             var existingUom = await _context.Uoms.Where(x => x.Id == uoms.Id)
-                                                 .FirstOrDefaultAsync();
+                                               .FirstOrDefaultAsync();
 
             existingUom.IsActive = true;
- 
+
             return true;
         }
 

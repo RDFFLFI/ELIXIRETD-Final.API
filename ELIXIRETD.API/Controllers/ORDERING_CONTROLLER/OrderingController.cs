@@ -35,7 +35,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 List<Ordering> ItemDescriptionNotExist = new List<Ordering>();
                 List<Ordering> QuantityInValid = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
-                
+                List<Ordering> DepartmentCodeanNameNotExist = new List <Ordering>();
+                List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
+                List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
+
                 foreach (Ordering items in order)
                 {
 
@@ -60,8 +63,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemCode , items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
                         var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
-
-
+                        var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.DepartmentCode , items.Department);
+                        var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
+                        var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
 
                         if (validateOrderNoAndItemcode == true)
                         {
@@ -94,10 +98,27 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             UomNotExist.Add(items);
                         }
-                        else if (validateQuantity == false )
+                        else if (validateQuantity == false)
                         {
                             QuantityInValid.Add(items);
                         }
+                        else if (validateDepartmentCodeAndName == false)
+                        {
+                            DepartmentCodeanNameNotExist.Add(items);
+                        }
+                        else if (validateCompanyCodeAndName == false)
+                        {
+                            CompanyCodeanNameNotExist.Add(items);
+                        }
+                        else if (validateCompanyCodeAndName == false)
+                        {
+                            CompanyCodeanNameNotExist.Add(items);
+                        }
+                        else if (validateLocationCodeAndName == false)
+                        {
+                            LocationCodeanNameNotExist.Add(items);
+                        }
+                       
 
 
                         else
@@ -117,12 +138,17 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    CustomerNameNotExist,
                    CustomerCodeNotExist,
                    PreviousDateNeeded,
-                    QuantityInValid,
+                   QuantityInValid,
+                   DepartmentCodeanNameNotExist,
+                   CompanyCodeanNameNotExist,
+                   LocationCodeanNameNotExist
 
                   
                 };
 
-                if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0)
+                if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 
+                    && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0 
+                    && DepartmentCodeanNameNotExist.Count == 0 && CompanyCodeanNameNotExist.Count == 0 && LocationCodeanNameNotExist.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();
                     return Ok("Successfully Add!");

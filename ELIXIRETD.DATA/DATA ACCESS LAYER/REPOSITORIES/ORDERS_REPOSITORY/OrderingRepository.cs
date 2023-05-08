@@ -7,9 +7,11 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -1983,9 +1985,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<bool> ValidateWarehouseId(int id, string itemcode)
         {
             var validate = await _context.WarehouseReceived.Where(x => x.Id == id)
-                                                           .Where(x => x.ItemCode == itemcode) 
-
-                                                              
+                                                           .Where(x => x.ItemCode == itemcode)                                                             
                                                            .Where(x => x.IsActive == true)
                                                             .FirstOrDefaultAsync();
 
@@ -2000,9 +2000,46 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                  .Where(x => x.QuantityOrdered == quantity)
                                  .FirstOrDefaultAsync();
 
+            if (existingQuantity == null)
+                return false;
+
             return true;
         }
 
-        
+        public async Task<bool> ValidateDepartment(string departmentcode, string departmentname)
+        {
+            var validate = await _context.Customers.Where(x => x.DepartmentCode == departmentcode)
+                                                 .Where(x => x.DepartmentName == departmentname)
+                                                 .Where(x => x.IsActive == true)
+                                                .FirstOrDefaultAsync();
+            if (validate == null)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> ValidateCompany(string companycode, string companyname)
+        {
+            var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
+                                                .Where(x => x.CompanyName == companyname)
+                                                .Where(x => x.IsActive == true)
+                                               .FirstOrDefaultAsync();
+            if (validate == null)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> ValidateLocation(string locationcode, string locationname)
+        {
+            var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
+                                               .Where(x => x.LocationName == locationname)
+                                               .Where(x => x.IsActive == true)
+                                              .FirstOrDefaultAsync();
+            if (validate == null)
+                return false;
+
+            return true;
+        }
     }
 }
