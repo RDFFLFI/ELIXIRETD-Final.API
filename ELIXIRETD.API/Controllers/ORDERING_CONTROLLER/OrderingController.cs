@@ -64,8 +64,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
                         var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
                         var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.DepartmentCode , items.Department);
-                        var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
-                        var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
+                        //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
+                        //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
 
                         if (validateOrderNoAndItemcode == true)
                         {
@@ -106,18 +106,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             DepartmentCodeanNameNotExist.Add(items);
                         }
-                        else if (validateCompanyCodeAndName == false)
-                        {
-                            CompanyCodeanNameNotExist.Add(items);
-                        }
-                        else if (validateCompanyCodeAndName == false)
-                        {
-                            CompanyCodeanNameNotExist.Add(items);
-                        }
-                        else if (validateLocationCodeAndName == false)
-                        {
-                            LocationCodeanNameNotExist.Add(items);
-                        }
+                        //else if (validateCompanyCodeAndName == false)
+                        //{
+                        //    CompanyCodeanNameNotExist.Add(items);
+                        //}
+                        //else if (validateLocationCodeAndName == false)
+                        //{
+                        //    LocationCodeanNameNotExist.Add(items);
+                        //}
                        
 
 
@@ -140,15 +136,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    PreviousDateNeeded,
                    QuantityInValid,
                    DepartmentCodeanNameNotExist,
-                   CompanyCodeanNameNotExist,
-                   LocationCodeanNameNotExist
+                   //CompanyCodeanNameNotExist,
+                   //LocationCodeanNameNotExist
 
                   
                 };
 
                 if ( DuplicateList.Count == 0 && CustomerCodeNotExist.Count == 0 && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 
                     && ItemDescriptionNotExist.Count == 0 && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 && QuantityInValid.Count == 0 
-                    && DepartmentCodeanNameNotExist.Count == 0 && CompanyCodeanNameNotExist.Count == 0 && LocationCodeanNameNotExist.Count == 0)
+                    && DepartmentCodeanNameNotExist.Count == 0 /*&& CompanyCodeanNameNotExist.Count == 0 && LocationCodeanNameNotExist.Count == 0*/)
                 {
                     await _unitofwork.CompleteAsync();
                     return Ok("Successfully Add!");

@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
@@ -94,16 +95,44 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ActivateMaterial(Material materials)
         {
-            var existingMaterial = await _context.Materials.Where(x => x.SubCategoryId == materials.Id)
+            //var existingMaterial = await _context.Materials.Where(x => x.SubCategoryId == materials.Id)
+            //                                               .FirstOrDefaultAsync();
+
+            //var existingSubcategory = await _context.SubCategories.Where(x => x.Id == materials.Id)
+            //                                                      .FirstOrDefaultAsync();
+
+            //var existingUom = await _context.Uoms.Where(x => x.)
+
+            //existingSubcategory.IsActive = true;
+            //existingMaterial.IsActive = true;
+
+            //return true;
+
+            var material = await _context.Materials.Where(x => x.Id == materials.Id)
+                                          .Where(x => x.SubCategoryId == materials.SubCategoryId)
+                                          .Where(x => x.UomId == materials.UomId)
+                                          .FirstOrDefaultAsync();
+
+            if (material == null)
+            {
+                return false;
+            }
+            material.IsActive = true;
+
+
+            var subcategory = await _context.SubCategories.Where(x => x.Id == material.SubCategoryId)
                                                            .FirstOrDefaultAsync();
 
-            var existingSubcategory = await _context.SubCategories.Where(x => x.Id == materials.Id)
-                                                                  .FirstOrDefaultAsync();
+            subcategory.IsActive = true;
 
-            existingSubcategory.IsActive = true;
-            existingMaterial.IsActive = true;
+            var uom = await _context.Uoms.Where(x => x.Id == material.UomId)
+                                                          .FirstOrDefaultAsync();
+
+            uom.IsActive = true;
 
             return true;
+
+
         }
 
         public async Task<bool> InActiveMaterial(Material materials)
@@ -513,7 +542,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ValidateSubcategInUse(int subcateg)
         {
-            return await _context.Materials.AnyAsync(x => x.SubCategoryId == subcateg && x.SubCategory.IsActive == true);
+            return await _context.Materials.AnyAsync(x => x.SubCategoryId == subcateg && x.IsActive == true);
 
         }
 

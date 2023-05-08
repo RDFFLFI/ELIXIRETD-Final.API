@@ -109,7 +109,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             Users.IsActive = true;
 
-
             var Role = await _context.Roles.Where(x => x.Id == user.UserRoleId)
                                                
                                            .FirstOrDefaultAsync();
