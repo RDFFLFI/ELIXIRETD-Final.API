@@ -22,9 +22,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ActivateModule(Module module);
         Task<PagedList<ModuleDto>> GetAllModulessWithPagination(bool status, UserParams userParams);
         Task<PagedList<ModuleDto>> GetModulesByStatusWithPaginationOrig(UserParams userParams, bool status, string search);
-        Task<bool> ValidateMenu (int module);
-        Task<bool> validatemoduleMainMenu (int module);
-             
+        Task<bool> ValidateMenu(int module);
+        Task<bool> validatemoduleMainMenu(int module);
+
 
 
 
@@ -38,6 +38,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<PagedList<ModuleDto>> GetAllMainMenuWithPagination(bool status, UserParams userParams);
         Task<PagedList<ModuleDto>> GetMainMenuPaginationOrig(UserParams userParams, bool status, string search);
         Task<bool> UpdateMenuOrder(MainMenu menu);
+
+        Task<bool> ValidateMenuSame(MainMenu menu);
+
+        Task<bool> ValidateModuleSame(Module module);
 
 
     }

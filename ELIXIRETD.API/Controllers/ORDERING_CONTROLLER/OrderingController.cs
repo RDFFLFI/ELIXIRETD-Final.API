@@ -45,7 +45,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     //if (items.QuantityOrdered <= 0)
                     //{
                     //    QuantityInValid.Add(items);
-                    //}
+                    //
 
                     if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.CustomerName == items.CustomerName) > 1)
                     {
@@ -376,7 +376,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.Category = details.Category;
             order.IsActive = true;
             order.IsPrepared = true;
-
 
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();

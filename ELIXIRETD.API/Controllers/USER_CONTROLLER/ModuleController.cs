@@ -64,6 +64,10 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         {
             var getMainMenuId = await _unitOfWork.Modules.CheckMainMenu(module.MainMenuId);
 
+            var validate = await _unitOfWork.Modules.ValidateModuleSame(module);
+            if (validate == true)
+                return BadRequest("The menu cannot be changed because you entered the same menu!");
+
             if (getMainMenuId == false)
                 return BadRequest("MainMenu doesn't exist");
 
@@ -201,6 +205,10 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UpdateMenu([FromBody] MainMenu menu)
         {
 
+            var validate = await _unitOfWork.Modules.ValidateMenuSame(menu);
+            if (validate == true)
+                return BadRequest("The menu cannot be changed because you entered the same menu!");
+
             if (await _unitOfWork.Modules.MenuAlreadyExist(menu.ModuleName))
                 return BadRequest("Menu already exist!");
 
@@ -219,8 +227,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             return Ok(menu);
 
-
         }
+
+
 
 
         [HttpPut]

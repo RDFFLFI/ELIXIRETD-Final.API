@@ -321,6 +321,28 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         }
 
+        public async Task<bool> ValidateMenuSame(MainMenu menu)
+        {
+           var mainmenus = await _context.MainMenus.Where(x => x.Id == menu.Id && x.ModuleName == menu.ModuleName && x.MenuPath == menu.MenuPath)
+                                                   .FirstOrDefaultAsync();
 
+            if(mainmenus == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> ValidateMenuSameOrig(Module module)
+        {
+            var modules = await _context.Modules.Where(x => x.Id == module.Id && x.MainMenuId == module.MainMenuId
+                                                 && x.SubMenuName == module.SubMenuName && x.ModuleName == module.ModuleName)
+                                                 .FirstOrDefaultAsync();
+
+            if(modules == null) 
+                return false;
+
+            return true;
+        }
     }
 }
