@@ -94,7 +94,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (duplicateList.Count == 0)
             {
                 await _unitOfWork.CompleteAsync();
-                return Ok("Successfully added!");
+                return Ok("Successfully updated and added!");
             }
             else
             {

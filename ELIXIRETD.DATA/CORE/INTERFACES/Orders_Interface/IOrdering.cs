@@ -105,10 +105,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> ValidateCustomerName(string Customer , string CustomerName);
         Task<bool> ValidateUom(string Uom);
         Task<bool> ValidateItemCode (string ItemCode);
-        Task<bool> ValidateItemDescription (string ItemCode , string ItemDescription);
-
-
-        //Task<bool> ValidateCustomerCode(string Customercode);
+        Task<bool> ValidateItemDescription (string ItemDescription);
 
         Task<bool> ValidateWarehouseId(int id , string itemcode);
 
