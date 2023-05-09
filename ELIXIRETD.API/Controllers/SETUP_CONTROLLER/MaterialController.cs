@@ -71,11 +71,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
+            var updated = await _unitOfWork.Materials.UpdateMaterial(material);
+            if (!updated)
+                return BadRequest("The material cannot be updated because a material with the same description already exists!");
 
-
-            await _unitOfWork.Materials.UpdateMaterial(material);
             await _unitOfWork.CompleteAsync();
-
             return Ok(material);
         }
 

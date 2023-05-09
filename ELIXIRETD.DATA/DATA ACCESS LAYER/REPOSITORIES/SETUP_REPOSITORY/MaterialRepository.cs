@@ -1,6 +1,7 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
@@ -82,13 +83,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> UpdateMaterial(Material materials)
         {
 
-            var exisitngMaterial = await _context.Materials.Where(x => x.Id == materials.Id)
-                                                           .FirstOrDefaultAsync();
+          
 
-            exisitngMaterial.ItemDescription = materials.ItemDescription;
-            exisitngMaterial.SubCategoryId = materials.SubCategoryId;
-            exisitngMaterial.UomId = materials.UomId;
-            exisitngMaterial.BufferLevel = materials.BufferLevel;
+            var existingMaterial = await _context.Materials.Where(x => x.Id == materials.Id).FirstOrDefaultAsync();
+
+            // Check if the updated Uom already exists in the database
+            var materialExists = await ValidateMaterialExist(materials.ItemDescription) && existingMaterial.ItemDescription != materials.ItemDescription;
+
+            if (materialExists)
+                return false;
+
+            existingMaterial.ItemDescription = materials.ItemDescription;
+            existingMaterial.SubCategoryId = materials.SubCategoryId;
+            existingMaterial.UomId = materials.UomId;
+            existingMaterial.BufferLevel = materials.BufferLevel;
 
             return true;
         }
@@ -638,26 +646,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await itemcategory.ToListAsync();
         }
 
-        public async Task<bool> ValidateMaterialExist(string itemCode, string itemDescription, int materialId)
+        public async Task<bool> ValidateMaterialExist( string materialname)
         {
-            var existingMaterial = await _context.Materials.FirstOrDefaultAsync(x => x.ItemDescription == itemDescription && x.Id != materialId);
-            return existingMaterial == null;
+            return await _context.Materials.AnyAsync(x => x.ItemDescription== materialname);
         }
     
-
-        public async Task<bool> ValidateItemDescriptionExist(string itemDescription, int materialId)
-        {
-            var validate = await _context.Materials.FirstOrDefaultAsync(x => x.ItemDescription == itemDescription && x.Id != materialId);
-
-            if (validate == null)
-            {
-                return false;
-
-
-            }
-
-            return true;
-        }
 
     }
 }

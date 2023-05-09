@@ -89,7 +89,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  .FirstOrDefaultAsync();
 
 
-
+            
             existingUom.UomDescription = uoms.UomDescription;
 
             return true;

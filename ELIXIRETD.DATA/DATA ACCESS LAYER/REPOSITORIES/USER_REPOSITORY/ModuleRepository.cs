@@ -333,7 +333,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
-        public async Task<bool> ValidateMenuSameOrig(Module module)
+        public async Task<bool> ValidateModuleSame(Module module)
         {
             var modules = await _context.Modules.Where(x => x.Id == module.Id && x.MainMenuId == module.MainMenuId
                                                  && x.SubMenuName == module.SubMenuName && x.ModuleName == module.ModuleName)
