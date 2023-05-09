@@ -31,6 +31,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
 
         //Task<bool> validateActiveRoleModules(UserRoleModules rolemodule);
 
+        Task<bool> ValidateRoleSame(UserRole roles);
+
 
     }
 }

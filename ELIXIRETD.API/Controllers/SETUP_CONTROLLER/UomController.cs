@@ -60,7 +60,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("UpdateUom")]
-        public async Task<IActionResult> UpdateUom( [FromBody] Uom uom)
+        public async Task<IActionResult> UpdateUom([FromBody] Uom uom)
         {
 
             var validate = await _unitOfWork.Uoms.validateItemUse(uom);
@@ -74,6 +74,15 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             await _unitOfWork.CompleteAsync();
 
             return Ok(uom);
+
+            //var updated = await _unitOfWork.Uoms.UpdateUom(uom);
+            //if (!updated)
+            //    return BadRequest("The uom cannot be updated because a uom with the same description already exists!");
+
+            //await _unitOfWork.CompleteAsync();
+
+            //return Ok(uom);
+
         }
 
         [HttpPut]

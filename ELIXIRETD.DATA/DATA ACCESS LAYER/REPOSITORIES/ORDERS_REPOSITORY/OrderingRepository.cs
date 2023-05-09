@@ -715,10 +715,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      x.CustomerName,
                                      x.IsActive,
                                      x.IsApproved,
-                                     x.IsMove
+                                     //x.IsMove
                                  }).Where(x => x.Key.IsActive == true)
                                    .Where(x => x.Key.IsApproved == true)
-                                    .Where(x => x.Key.IsMove == true)
+                                    //.Where(x => x.Key.IsMove == true)
                                    .Select(x => new GetAllListForMoveOrderPaginationDto
                                    {
                                        CustomerName = x.Key.CustomerName,
@@ -2010,40 +2010,40 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateDepartment(string departmentname)
-        {
-            var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
-                                                 .Where(x => x.IsActive == true)
-                                                .FirstOrDefaultAsync();
+        //public async Task<bool> ValidateDepartment(string departmentname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
+        //                                         .Where(x => x.IsActive == true)
+        //                                        .FirstOrDefaultAsync();
 
-            if (validate == null)
-                return false;
+        //    if (validate == null)
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public async Task<bool> ValidateCompany(string companycode, string companyname)
-        {
-            var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
-                                                .Where(x => x.CompanyName == companyname)
-                                                .Where(x => x.IsActive == true)
-                                               .FirstOrDefaultAsync();
-            if (validate == null)
-                return false;
+        //public async Task<bool> ValidateCompany(string companycode, string companyname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
+        //                                        .Where(x => x.CompanyName == companyname)
+        //                                        .Where(x => x.IsActive == true)
+        //                                       .FirstOrDefaultAsync();
+        //    if (validate == null)
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public async Task<bool> ValidateLocation(string locationcode, string locationname)
-        {
-            var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
-                                               .Where(x => x.LocationName == locationname)
-                                               .Where(x => x.IsActive == true)
-                                              .FirstOrDefaultAsync();
-            if (validate == null)
-                return false;
+        //public async Task<bool> ValidateLocation(string locationcode, string locationname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
+        //                                       .Where(x => x.LocationName == locationname)
+        //                                       .Where(x => x.IsActive == true)
+        //                                      .FirstOrDefaultAsync();
+        //    if (validate == null)
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
     }
 }

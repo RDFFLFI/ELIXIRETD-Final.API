@@ -49,6 +49,11 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UpdateUserInfo([FromBody] UserRole role)
         {
 
+            var validateroles = await _unitOfWork.Roles.ValidateRoleSame(role);
+
+            if (validateroles == true)
+                return BadRequest("The role cannot be changed because you entered the same role!");
+
             if (await _unitOfWork.Roles.ValidateRoleExist(role.RoleName))
                 return BadRequest("Role already exist, please try something else!");
 
@@ -132,6 +137,10 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             return Ok(roleResult);
         }
+
+
+        //Role Modules
+
 
 
         [HttpGet]
