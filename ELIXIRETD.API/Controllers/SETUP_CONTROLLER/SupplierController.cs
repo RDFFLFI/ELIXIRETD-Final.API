@@ -53,14 +53,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                 if (supplier.Count(x => x.SupplierCode == items.SupplierCode && x.SupplierName == items.SupplierName && x.SupplierAddress == items.SupplierAddress) > 1)
                 {
-                    
+
                     duplicateList.Add(items);
-                    
+
                 }
 
                 else
                 {
-
                     var existingSuppliers = await _unitOfWork.Suppliers.GetById(items.Supplier_No);
 
                     if (existingSuppliers != null)
@@ -107,6 +106,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
+
         [HttpGet]
         [Route("GetAllSupplierithPagination/{status}")]
         public async Task<ActionResult<IEnumerable<UomDto>>> GetAllSupplierithPagination([FromRoute] bool status, [FromQuery] UserParams userParams)
@@ -135,7 +135,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
             if (search == null)
                 return await GetAllSupplierithPagination(status, userParams);
-
 
             var supplier = await _unitOfWork.Suppliers.GetSupplierWithPaginationOrig(userParams, status, search);
 

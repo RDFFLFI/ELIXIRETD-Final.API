@@ -6,6 +6,7 @@ using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -28,14 +29,14 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
         IMaterialRepository Materials { get; }
 
         ISupplierRepository Suppliers { get; }
-        
+
         ICustomerRepository Customers { get; }
 
         ILotRepository Lots { get; }
 
         IReasonRepository Reasons { get; }
 
-        ICompanyRepository Companies{ get; }
+        ICompanyRepository Companies { get; }
 
 
         ILocationRepository Locations { get; }
@@ -57,8 +58,9 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
         IReports Reports { get; }
 
 
-                                           
+
         Task CompleteAsync();
-        
+
+      
     }
 }

@@ -78,7 +78,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         }
 
 
-       
         public async Task<PagedList<CustomerDto>> GetAllCustomerWithPagination(bool status, UserParams userParams)
         {
             var customer = _context.Customers.Where(x => x.IsActive == status)
