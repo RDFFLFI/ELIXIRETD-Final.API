@@ -29,6 +29,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
 
         public decimal ActualAdd { get; set; }
 
+        public string LotSection { get; set; }
+
 
 
     }

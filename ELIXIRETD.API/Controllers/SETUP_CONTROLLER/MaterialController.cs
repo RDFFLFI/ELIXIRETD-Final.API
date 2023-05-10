@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -195,18 +196,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateItemCategories")]
         public async Task<IActionResult> UpdateItemCategories([FromBody] ItemCategory category)
         {
-         
-            var valid = await _unitOfWork.Materials.UpdateItemCategory(category);
+
+            var validate = await _unitOfWork.Materials.ValidateItemCategorySame(category);
+            if (validate == true)
+                return BadRequest("The item category cannot be changed because you entered the same item category!");
 
             if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
                 return BadRequest("Item category already exist!");
-
-            if (valid == false)
-                return BadRequest("No Existing Item Category");
-
-            
-          
-
+                    
             await _unitOfWork.Materials.UpdateItemCategory(category);
             await _unitOfWork.CompleteAsync();
 
@@ -330,8 +327,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateSubCategory (SubCategory category)
         {
 
-            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
+            var validate = await _unitOfWork.Materials.ValidateSubCategorySame(category);
+            if (validate == true)
+                return BadRequest("The sub category cannot be changed because you entered the same sub category!");
 
+            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
             if (existingSubCategAndItemCateg == true)
                 return BadRequest("Sub category and item category already exist!");
 

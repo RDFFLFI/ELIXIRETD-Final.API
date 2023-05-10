@@ -59,9 +59,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-  
-
-
         public async Task<PagedList<SupplierDto>> GetAllSupplierWithPagination(bool status, UserParams userParams)
         {
             var supplier = _context.Suppliers.Where(x => x.IsActive == status)

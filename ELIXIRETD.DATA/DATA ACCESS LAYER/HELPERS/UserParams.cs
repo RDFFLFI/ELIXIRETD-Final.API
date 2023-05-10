@@ -8,7 +8,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS
 {
     public class UserParams
     {
-        private const int MaxPageSize = 2000;
+        private const int MaxPageSize = 10000;
         public int PageNumber { get; set; } = 1;
         private int _pageSize = 10;
 

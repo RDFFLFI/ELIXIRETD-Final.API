@@ -25,7 +25,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             {
                   x.ItemCode,
                   x.ItemDescription,
-                  x.LotCategory,
+                  x.LotSection,
                   x.Uom,
                   x.IsWarehouseReceived,
 
@@ -33,7 +33,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             {
                 ItemCode = inventory.Key.ItemCode,
                 ItemDescription = inventory.Key.ItemDescription,
-                LotCategory = inventory.Key.LotCategory,
+                LotCategory = inventory.Key.LotSection,
                 Uom = inventory.Key.Uom,
                 SOH = inventory.Sum(x => x.ActualGood),
                 ReceiveIn = inventory.Sum(x => x.ActualGood),

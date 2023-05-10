@@ -395,7 +395,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                     ActualGood = x.ActualDelivered,
                     DateReceive = x.ReceivingDate.ToString(),
                     Supplier = x.Supplier,
-                    Uom = x.Uom
+                    Uom = x.Uom,
+                    LotSection = x.LotSection
 
                 });
 
@@ -413,7 +414,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                    ActualGood = x.ActualDelivered,
                    DateReceive = x.ReceivingDate.ToString(),
                    Supplier = x.Supplier,
-                   Uom = x.Uom
+                   Uom = x.Uom,
+                   LotSection = x.LotSection
 
                }).Where(x => x.ItemCode.ToLower()
                  .Contains(search.Trim().ToLower()));
@@ -504,7 +506,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                        x.warehouse.warehouse.warehouse.warehouse.ItemCode,
                                        x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
                                        x.warehouse.warehouse.warehouse.warehouse.ReceivingDate,
-                                       x.warehouse.warehouse.warehouse.warehouse.LotCategory,
+                                       x.warehouse.warehouse.warehouse.warehouse.LotSection,
                                        x.warehouse.warehouse.warehouse.warehouse.Uom,
                                        x.warehouse.warehouse.warehouse.warehouse.ActualGood,
                                        x.warehouse.warehouse.warehouse.warehouse.Supplier,
@@ -612,7 +614,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                       x.warehouse.warehouse.warehouse.warehouse.ItemCode,
                                       x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
                                       x.warehouse.warehouse.warehouse.warehouse.ReceivingDate,
-                                      x.warehouse.warehouse.warehouse.warehouse.LotCategory,
+                                      x.warehouse.warehouse.warehouse.warehouse.LotSection,
                                       x.warehouse.warehouse.warehouse.warehouse.Uom,
                                       x.warehouse.warehouse.warehouse.warehouse.ActualGood,
                                       x.warehouse.warehouse.warehouse.warehouse.Supplier,

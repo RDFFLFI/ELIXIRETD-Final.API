@@ -29,7 +29,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ExistingSubCateg(string subcateg);
         Task<bool> ValidateSubcategInUse(int subcateg);
 
-      
+
 
         Task<bool> ExistSubCategory(SubCategory category);
         Task<bool> ValidateItemCategory(int ItemCateg);
@@ -44,7 +44,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<PagedList<ItemCategoryDto>> GetItemCategoryWithPaginationOrig(UserParams userParams, bool status, string search);
 
 
-        Task<bool> ExistSubCategoryId (int subCategoryId);
+        Task<bool> ExistSubCategoryId(int subCategoryId);
         Task<bool> DuplicateSubCategoryAndItemCategories(SubCategory category);
         Task<bool> ValidateItemCategInUse(int ItemCateg);
         Task<bool> ExistItemCateg(string itemcateg);
@@ -72,6 +72,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown();
 
         Task<bool> ValidateMaterialExist(string materialname);
+
+        Task<bool> ValidateItemCategorySame(ItemCategory category);
+        Task<bool> ValidateSubCategorySame(SubCategory category);
 
 
 

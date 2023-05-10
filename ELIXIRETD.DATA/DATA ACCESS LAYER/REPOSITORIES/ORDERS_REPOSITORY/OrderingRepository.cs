@@ -95,6 +95,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 QuantityOrdered = x.Sum(x => x.QuantityOrdered)
             });
 
+            //var getIssueReceipt = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                                .Where(x => x.IsWarehouseReceived == true)
+            //                                                .Where(x => x.IsActive == true)
+            //                                                .GroupBy(x => new
+            //                                                {
+            //                                                    x.ItemCode,
+
+            //                                                }).Select(x => new IssueInventoryDto
+            //                                                {
+
+            //                                                    ItemCode = x.Key.ItemCode,
+            //                                                    Quantity = x.Sum(x => x.ActualGood)
+            //                                                });
+
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                .Where(x => x.IsTransact == true)
@@ -147,18 +161,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
                 .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.warehouse.ItemCode, borrowed => borrowed.ItemCode, (warehouse, borrowed) => new { warehouse, borrowed })
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
+                //.GroupJoin(getIssueReceipt, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode, receipts => receipts.ItemCode , (warehouse, receipts) => new {warehouse,receipts} )
+                //.SelectMany(x => x.receipts.DefaultIfEmpty() , (x, receipts) => new {x.warehouse , receipts})
                 .GroupBy(x => x.warehouse.warehouse.warehouse.warehouse.ItemCode)
                 .Select(total => new ReserveInventory
                 {
 
                     ItemCode = total.Key,
                     Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood != null ?  x.warehouse.warehouse.warehouse.warehouse.ActualGood : 0) +
-                              total.Sum(x => x.warehouse.returned.In != null ?  x.warehouse.returned.In : 0) -
+                              total.Sum(x => x.warehouse.returned.In != null ? x.warehouse.returned.In : 0) /*+*/
+                             /*  total.Sum(x => x.receipts.Quantity != null ? x.receipts.Quantity : 0)*/ -
                                total.Sum(x => x.warehouse.warehouse.issue.Quantity != null ?  x.warehouse.warehouse.issue.Quantity : 0) -
                                 total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.ordering.QuantityOrdered : 0)-
                                total.Sum(x => x.borrowed.Quantity != null ?   x.borrowed.Quantity : 0),
-
-                             
+                 
                 });
 
 
@@ -178,7 +194,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemCode,
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
-                    x.ordering.QuantityOrdered,
                     x.ordering.IsActive,
                     x.ordering.IsPrepared,
                     x.ordering.Rush,
@@ -199,7 +214,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ItemCode = total.Key.ItemCode,
                     ItemDescription = total.Key.ItemdDescription,
                     Uom = total.Key.Uom,
-                    QuantityOrder = total.Key.QuantityOrdered,
+                    QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
                     IsActive = total.Key.IsActive,
                     IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0 ,
@@ -616,7 +631,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 });
 
             return await orders.Where(x => x.Id == orderId)
-
                                .FirstOrDefaultAsync();
 
         }
@@ -715,10 +729,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      x.CustomerName,
                                      x.IsActive,
                                      x.IsApproved,
-                                     //x.IsMove
+                                     x.IsMove
                                  }).Where(x => x.Key.IsActive == true)
                                    .Where(x => x.Key.IsApproved == true)
-                                    //.Where(x => x.Key.IsMove == true)
+                                    .Where(x => x.Key.IsMove == false)
                                    .Select(x => new GetAllListForMoveOrderPaginationDto
                                    {
                                        CustomerName = x.Key.CustomerName,
@@ -743,7 +757,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            {
                                                                WarehouseId = x.Key.Id,
                                                                ItemCode = x.Key.ItemCode,
-                                                               ActualGood = x.Sum(x => x.ActualDelivered),
+                                                               ActualGood = x.Sum(x => x.ActualGood),
                                                                RecievingDate = x.Key.ReceivingDate.ToString()
                                                            });
 
@@ -761,6 +775,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                       warehouseId = x.Key.WarehouseId
 
                                                   });
+
+            //var getMiscReceipts = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                                .Where(x => x.IsWarehouseReceived == true)
+            //                                                .Where(x => x.IsActive == true)
+            //                                                .GroupBy(x => new
+            //                                                {
+            //                                                    x.Id,
+            //                                                    x.ItemCode,
+
+            //                                                }).Select(x => new ItemStocksDto
+            //                                                {
+            //                                                    warehouseId = x.Key.Id,
+            //                                                    ItemCode = x.Key.ItemCode,
+            //                                                });
 
             var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)

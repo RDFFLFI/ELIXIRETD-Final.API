@@ -25,7 +25,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalReject { get; set; }
 
-        public string LotCategory { get; set; }
+        public string LotSection { get; set; }
         public string TransactionType { get; set; }
         public int? MiscellaneousReceiptId { get; set; }
         public string Reason { get; set; }

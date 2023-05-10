@@ -3,6 +3,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 {
@@ -52,8 +53,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                 if (supplier.Count(x => x.SupplierCode == items.SupplierCode && x.SupplierName == items.SupplierName && x.SupplierAddress == items.SupplierAddress) > 1)
                 {
-
+                    
                     duplicateList.Add(items);
+                    
                 }
 
                 else
