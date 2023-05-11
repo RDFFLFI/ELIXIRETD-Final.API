@@ -18,6 +18,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
 
         public bool IsActive { get; set; }
 
+        public string TransactionType { get; set; }
+
 
 
 
