@@ -27,6 +27,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
 
         public string Remarks { get; set; }
 
-        public string TransactionType { get; set; } 
+        //public string TransactionType { get; set; } 
     }
 }

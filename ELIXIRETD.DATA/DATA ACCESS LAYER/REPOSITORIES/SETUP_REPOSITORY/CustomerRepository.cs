@@ -105,6 +105,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<PagedList<CustomerDto>> GetCustomerWithPaginationOrig(UserParams userParams, bool status, string search)
         {
+
+            
+
             var customer = _context.Customers.Where(x => x.IsActive == status)
                                       .Select(x => new CustomerDto
                                       {
@@ -122,11 +125,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive
 
-                                      }).Where(x => x.CustomerName.ToLower()
-                                        .Contains(search.Trim().ToLower()));
-          
+                                      }).Where(x => x.CustomerName.ToLower().Contains(search.Trim().ToLower())
+                                        || x.CustomerCode.ToLower().Contains(search.Trim().ToLower())
+                                        || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+
             return await PagedList<CustomerDto>.CreateAsync(customer, userParams.PageNumber, userParams.PageSize);
         }
+
+
 
 
         public async Task<bool> CustomerCodeExist(string customer)

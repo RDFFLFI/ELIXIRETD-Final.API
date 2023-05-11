@@ -23,6 +23,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> AddnewTransactType(TransactionType transactType)
         {
+           
+
             await _context.TransactionTypes.AddAsync(transactType);
 
             return true;
@@ -125,6 +127,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           AddedBy = x.Addedby,
                                           IsActive = x.IsActive
+
                                       }).Where(x => x.TransactionName.ToLower()
                                         .Contains(search.Trim().ToLower()));
 

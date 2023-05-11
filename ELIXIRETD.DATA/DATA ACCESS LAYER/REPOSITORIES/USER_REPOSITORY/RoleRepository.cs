@@ -119,8 +119,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                            DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                            IsActive = x.IsActive
 
-                                       }).Where(x => x.RoleName.ToLower()
-                                         .Contains(search.Trim().ToLower()));
+                                       }).Where(x => x.RoleName.ToLower().Contains(search.Trim().ToLower())
+                                       || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<RoleDto>.CreateAsync(role, userParams.PageNumber, userParams.PageSize);
         }
@@ -260,8 +260,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
                               });
 
-            return await rolemodules
-
+                                    return await rolemodules
                                     .Where(x => x.RoleId == id)
                                     .Where(x => x.IsActive == true)
                                     .ToListAsync();

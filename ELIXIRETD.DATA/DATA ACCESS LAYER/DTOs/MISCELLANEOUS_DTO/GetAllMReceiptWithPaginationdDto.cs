@@ -19,6 +19,6 @@
 
         public bool IsActive { get; set; }
 
-        public string TransactionType { get; set; }
+
     }
 }

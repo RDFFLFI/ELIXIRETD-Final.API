@@ -36,6 +36,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                              AddedBy = x.AddedBy,
                                              IsActive = x.MainMenu.IsActive,
                                              Reason = x.Reason
+
                                          });
 
             return await module.ToListAsync();
@@ -157,8 +158,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                                DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                AddedBy = x.AddedBy,
                                                IsActive = x.IsActive
-                                           }).Where(x => x.SubMenuName.ToLower()
-                                             .Contains(search.Trim().ToLower()));
+                                           }).Where(x => x.SubMenuName.ToLower().Contains(search.Trim().ToLower())
+                                            || x.MainMenu.ToLower().Contains(search.Trim().ToLower())
+                                            || x.ModuleName.ToLower().Contains(search.Trim().ToLower())
+                                            || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<ModuleDto>.CreateAsync(modules, userParams.PageNumber, userParams.PageSize);
 
@@ -291,8 +294,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                             IsActive = x.IsActive,
                                            MenuOrder = x.MenuOrder
 
-                                       }).Where(x => x.MainMenu.ToLower()
-                                        .Contains(search.Trim().ToLower()));
+                                       }).Where(x => x.MainMenu.ToLower().Contains(search.Trim().ToLower())
+                                        || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<ModuleDto>.CreateAsync(module, userParams.PageNumber, userParams.PageSize);
         }

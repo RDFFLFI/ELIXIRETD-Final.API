@@ -67,6 +67,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> AddNewUser(User user)
         {
 
+            //user.Password = user.UserName;
+
             await _context.Users.AddAsync(user);
             return true;
         }
@@ -170,9 +172,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           IsActive = x.IsActive,
                                           AddedBy = x.AddedBy
+
                                       }).Where(x => x.IsActive == status)
-                                        .Where(x => x.UserName.ToLower()
-                                        .Contains(search.Trim().ToLower()));
+                                        .Where(x => x.UserName.ToLower().Contains(search.Trim().ToLower())
+                                         || x.EmpId.ToLower().Contains(search.Trim().ToLower())
+                                         || x.FullName.ToLower().Contains(search.Trim().ToLower())
+                                         || x.UserName.ToLower().Contains(search.Trim().ToLower())
+                                         || x.UserRole.ToLower().Contains(search.Trim().ToLower())
+                                         || x.Department.ToLower().Contains(search.Trim().ToLower())
+                                        || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<UserDto>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
