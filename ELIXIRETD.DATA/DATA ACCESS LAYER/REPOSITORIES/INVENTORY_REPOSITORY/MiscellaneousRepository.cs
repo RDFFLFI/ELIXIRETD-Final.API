@@ -94,6 +94,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             TotalQuantity= x.TotalQuantity,
                                                             PreparedBy = x.PreparedBy,
                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
+                                                            //TransactionType = x.TransactionType,
                                                             Remarks = x.Remarks,
                                                             IsActive= x.IsActive
                                                             
@@ -115,6 +116,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             TotalQuantity = x.TotalQuantity,
                                                             PreparedBy = x.PreparedBy,
                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
+                                                            //TransactionType = x.TransactionType,
                                                             Remarks = x.Remarks,
                                                             IsActive = x.IsActive
 
@@ -144,7 +146,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           SupplierCode = x.receiptparents.SupplierCode,
                           SupplierName = x.receiptparents.supplier,
                           PreparedDate = x.receiptparents.PreparedBy,
-                          Remarks = x.receiptparents.Remarks
+                          Remarks = x.receiptparents.Remarks,
+                          //TransactionType = x.receiptparents.TransactionType,
 
                       });
 
