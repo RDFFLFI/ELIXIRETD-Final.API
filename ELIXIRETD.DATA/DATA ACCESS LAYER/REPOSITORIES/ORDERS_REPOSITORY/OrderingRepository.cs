@@ -1920,11 +1920,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<bool> ValidateExistOrderandItemCode(int TransactId, string ItemCode, string customername)
+        public async Task<bool> ValidateExistOrderandItemCode(int TransactId, string ItemCode, string customername , string itemdescription , string customercode)
         {
             var validate = await _context.Orders.Where(x => x.TrasactId == TransactId)
+                                                    .Where(x => x.Customercode == customercode)
                                                     .Where(x => x.CustomerName == customername)
                                                     .Where(x => x.ItemCode == ItemCode)
+                                                    .Where(x => x.ItemdDescription  == itemdescription)
                                                     .FirstOrDefaultAsync();
 
             if (validate == null)
@@ -1944,15 +1946,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateItemCode(string ItemCode)
+        public async Task<bool> ValidateItemCode(string ItemCode , string itemdescription)
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == ItemCode)
+                                                .Where(x => x.ItemDescription == itemdescription)
                                                 .Where(x => x.IsActive == true)
                                                 .FirstOrDefaultAsync();
             if (validate == null)
                 return false;
-
-
 
             return true;
         }
@@ -1965,10 +1966,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             if (validate == null)
-
-
-
-
                 return false;
 
 

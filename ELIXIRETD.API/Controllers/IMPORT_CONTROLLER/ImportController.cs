@@ -44,11 +44,10 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
                     {
                         duplicateList.Add(items);
+                        continue;
                     }
 
-                    else
-                    {
-
+                  
                         var validateSupplier = await _unitOfWork.Imports.CheckSupplier(items.VendorName);
                         var validateItemCode = await _unitOfWork.Imports.CheckItemCode(items.ItemCode);
                         var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
@@ -84,14 +83,13 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                              quantityInValid.Add(items);
 
                         else
-                            availableImport.Add(items);
-
+                        {
+                        availableImport.Add(items);
                         await _unitOfWork.Imports.AddNewPORequest(items);
+                        }
+                        
                     }
                     
-                }
-
-
                 var resultList = new
                 {
                     availableImport,

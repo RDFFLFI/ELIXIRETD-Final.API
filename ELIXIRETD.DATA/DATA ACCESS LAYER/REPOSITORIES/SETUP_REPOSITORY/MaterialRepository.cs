@@ -201,17 +201,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 AddedBy = x.AddedBy,
                                                 IsActive = x.IsActive
 
-                                            }).Where(x => x.ItemCode.ToLower()
-                                              .Contains(search.Trim().ToLower()));
+                                            }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
+                                             || x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
+                                             || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
+                                             || x.SubCategoryName.ToLower().Contains(search.Trim().ToLower())
+                                             || x.Uom.ToLower().Contains(search.Trim().ToLower())
+                                             || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
             
             return await PagedList<MaterialDto>.CreateAsync(materials, userParams.PageNumber, userParams.PageSize);
 
         }
 
 
-
         //---------------ITEM CATEGORY---------------
-
 
 
         public async Task<IReadOnlyList<ItemCategoryDto>> GetAllActiveItemCategory()
@@ -318,8 +320,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          IsActive = x.IsActive
 
 
-                                                     }).Where(x => x.ItemCategoryName.ToLower()
-                                                       .Contains(search.Trim().ToLower()));
+                                                     }).Where(x => x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
+                                                      || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
         }
@@ -456,8 +458,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                          IsActive = x.IsActive
 
-                                                     }).Where(x => x.SubcategoryName.ToLower()
-                                                       .Contains(search.Trim().ToLower()));
+                                                     }).Where(x => x.SubcategoryName.ToLower().Contains(search.Trim().ToLower())
+                                                      || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
+                                                      || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<SubCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
 

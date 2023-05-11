@@ -135,8 +135,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         }
 
 
-
-
         // validation 
 
         public async Task<bool> ValidationTransactName(string transactName)
