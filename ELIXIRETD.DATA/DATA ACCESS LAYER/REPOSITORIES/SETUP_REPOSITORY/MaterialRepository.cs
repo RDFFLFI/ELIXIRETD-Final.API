@@ -206,7 +206,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
                                              || x.SubCategoryName.ToLower().Contains(search.Trim().ToLower())
                                              || x.Uom.ToLower().Contains(search.Trim().ToLower())
-                                             || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                             || x.Id == int.Parse(search.Trim()));
             
             return await PagedList<MaterialDto>.CreateAsync(materials, userParams.PageNumber, userParams.PageSize);
 
@@ -321,7 +321,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
                                                      }).Where(x => x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
-                                                      || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                                       || x.Id == int.Parse(search.Trim())).GroupBy(x => x.Id).Select(x => x.First());
+
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
         }

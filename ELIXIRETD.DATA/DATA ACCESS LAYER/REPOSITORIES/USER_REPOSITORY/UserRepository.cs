@@ -179,8 +179,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                          || x.FullName.ToLower().Contains(search.Trim().ToLower())
                                          || x.UserName.ToLower().Contains(search.Trim().ToLower())
                                          || x.UserRole.ToLower().Contains(search.Trim().ToLower())
-                                         || x.Department.ToLower().Contains(search.Trim().ToLower())
-                                        || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                         || x.Department.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<UserDto>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
