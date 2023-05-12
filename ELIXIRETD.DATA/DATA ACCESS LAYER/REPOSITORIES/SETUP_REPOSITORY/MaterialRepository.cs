@@ -205,8 +205,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              || x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
                                              || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
                                              || x.SubCategoryName.ToLower().Contains(search.Trim().ToLower())
-                                             || x.Uom.ToLower().Contains(search.Trim().ToLower())
-                                             || x.Id == int.Parse(search.Trim()));
+                                             || x.Uom.ToLower().Contains(search.Trim().ToLower()));
             
             return await PagedList<MaterialDto>.CreateAsync(materials, userParams.PageNumber, userParams.PageSize);
 
@@ -319,10 +318,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                          IsActive = x.IsActive
 
-
-                                                     }).Where(x => x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
-                                                       || x.Id == int.Parse(search.Trim())).GroupBy(x => x.Id).Select(x => x.First());
-
+                                                     }).Where(x => x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
         }
@@ -460,8 +456,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          IsActive = x.IsActive
 
                                                      }).Where(x => x.SubcategoryName.ToLower().Contains(search.Trim().ToLower())
-                                                      || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower())
-                                                      || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                                      || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<SubCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
 

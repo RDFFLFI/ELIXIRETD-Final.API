@@ -119,7 +119,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                            DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                            IsActive = x.IsActive
 
-                                       }).Where(x => x.RoleName.ToLower().Contains(search.Trim().ToLower()));
+                                       }).Where(x => x.RoleName.ToLower().Contains(search.Trim().ToLower())); 
 
             return await PagedList<RoleDto>.CreateAsync(role, userParams.PageNumber, userParams.PageSize);
         }
@@ -277,8 +277,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
+        public async Task<bool> ValidateRoleInUse(int role)
+        {
+        
+                var valid = await _context.RoleModules.Where(x => x.RoleId == role)
+                                                       .Where(x => x.IsActive == true)
+                                                       .FirstOrDefaultAsync();
+                if (valid == null)
+                    return false;
+                return true;
 
-
-
+          
+        }
     }
 }

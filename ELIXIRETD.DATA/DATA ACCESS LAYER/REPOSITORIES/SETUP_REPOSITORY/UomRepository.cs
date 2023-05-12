@@ -139,8 +139,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                        IsActive = x.IsActive
 
                                    }).Where(x => x.UomDescription.ToLower().Contains(search.Trim().ToLower()) 
-                                       || x.UomCode.ToLower().Contains(search.Trim().ToLower())
-                                       || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                       || x.UomCode.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<UomDto>.CreateAsync(role, userParams.PageNumber, userParams.PageSize);
         }

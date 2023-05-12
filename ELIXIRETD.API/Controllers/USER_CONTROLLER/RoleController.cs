@@ -68,6 +68,12 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         [Route("InActiveRoles")]
         public async Task<IActionResult> InActiveRoles([FromBody] UserRole role)
         {
+
+            var valid = await _unitOfWork.Roles.ValidateRoleInUse(role.Id);
+
+            if (valid == true)
+                return BadRequest("role was in use!");
+
             await _unitOfWork.Roles.InActiveRole(role);
             await _unitOfWork.CompleteAsync();
 

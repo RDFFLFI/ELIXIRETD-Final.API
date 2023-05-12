@@ -33,6 +33,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
 
         Task<bool> ValidateRoleSame(UserRole roles);
 
-
+        Task<bool> ValidateRoleInUse(int role);
     }
 }

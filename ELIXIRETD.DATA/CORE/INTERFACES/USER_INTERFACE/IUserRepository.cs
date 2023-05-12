@@ -34,8 +34,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
        
         Task<bool> ValidationPassword(User user);
 
+        Task<bool> ValidateRoleInUse(int role);
 
-        
+
 
 
 
