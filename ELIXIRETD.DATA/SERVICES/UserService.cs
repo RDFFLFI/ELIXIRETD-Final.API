@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.DATA.SERVICES
 {
@@ -22,6 +23,9 @@ namespace ELIXIRETD.DATA.SERVICES
             _context = context;
             _configuration = configuration;
         }
+        
+      
+
         public AuthenticateResponse Authenticate(AuthenticateRequest request)
         {
             var user = _context.Users.SingleOrDefault(x => x.UserName == request.Username
@@ -32,6 +36,23 @@ namespace ELIXIRETD.DATA.SERVICES
 
             var token = generateJwtToken(user);
             return new AuthenticateResponse(user, token);
+        }
+
+        public  async Task<bool> NewPassword(AutenticateNewPassword newpassword)
+        {
+            var newpass = await _context.Users.Where(x => x.UserName == newpassword.Username &&
+                                                      x.Password != x.Password && x.IsActive == true)
+                                              .FirstOrDefaultAsync();
+
+            if(newpass == null) 
+                return false;
+
+            newpass.Password = newpassword.OldPassword;
+            newpass.Password = newpassword.NewPassword;
+            newpass.Password = newpassword.ConfirmPassword;
+
+            return true;
+
         }
 
         private string generateJwtToken(User user)

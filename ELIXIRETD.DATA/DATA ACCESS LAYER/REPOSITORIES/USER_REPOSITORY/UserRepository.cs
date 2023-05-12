@@ -67,7 +67,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> AddNewUser(User user)
         {
 
-            //user.Password = user.UserName;
+            user.Password = user.UserName;
 
             await _context.Users.AddAsync(user);
             return true;

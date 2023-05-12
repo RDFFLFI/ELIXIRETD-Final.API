@@ -92,8 +92,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                           AddedBy = x.AddedBy,
                                           IsActive = x.IsActive
-                                      }).Where(x => x.SupplierName.ToLower()
-                                        .Contains(search.Trim().ToLower()));
+                                      }).Where(x => x.SupplierName.ToLower().Contains(search.Trim().ToLower())
+                                      || x.SupplierCode.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<SupplierDto>.CreateAsync(supplier, userParams.PageNumber, userParams.PageSize);
         }

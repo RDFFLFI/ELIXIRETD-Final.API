@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ELIXIRETD.DATA.JWT.AUTHENTICATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
 
 namespace ELIXIRETD.API.Controllers.LOGIN_CONTROLLER
 {
-  
+
     public class LoginController : BaseApiController
     {
         private readonly IUserService _userService;
@@ -21,6 +22,7 @@ namespace ELIXIRETD.API.Controllers.LOGIN_CONTROLLER
 
         }
 
+
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest request)
@@ -34,6 +36,43 @@ namespace ELIXIRETD.API.Controllers.LOGIN_CONTROLLER
 
 
         }
+
+        [HttpPost("changepassword")]
+        public IActionResult ChangePassword(AutenticateNewPassword request)
+        {
+            var user = _context.Users.SingleOrDefault(x => x.UserName == request.Username
+                                                        && x.IsActive == true);
+            if (user == null)
+                return BadRequest(new { message = "User or Password is incorrect!" });
+
+            if (request.OldPassword != user.Password)
+                return BadRequest(new { message = "Password is incorrect!" });
+
+            if (request.NewPassword != request.ConfirmPassword)
+                return BadRequest(new { message = "New password and confirm password do not match!" });
+
+            user.Password = request.NewPassword;
+            _context.SaveChanges();
+
+            return Ok(new { message = "Password changed successfully!" });
+        }
+
+
+        //[HttpPut("NewPassword")]
+        //public async Task<IActionResult> UpdateMiscellaneousIssuePKey([FromBody] AutenticateNewPassword newPasswords)
+        //{
+        //    var response = await _userService.();
+
+        //    if (response == null)
+        //        return BadRequest(new { message = " User or Password is incorrect!" });
+
+        //    return Ok(response);
+
+
+        //}
+
+
+
         //public IActionResult Authenticate(AuthenticateRequest request)
         //{
         //    var response = _userService.Authenticate(request);

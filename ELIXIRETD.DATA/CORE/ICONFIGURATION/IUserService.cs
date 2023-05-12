@@ -11,6 +11,7 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
     {
 
         AuthenticateResponse Authenticate(AuthenticateRequest request);
+        Task<bool> NewPassword (AutenticateNewPassword newpassword);
 
     }
 }
