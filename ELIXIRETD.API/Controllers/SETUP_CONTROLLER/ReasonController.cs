@@ -64,7 +64,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
             var validate = await _unitOfWork.Reasons.validateReasonSame(reason);
             if (validate == true)
-                return BadRequest("The uom cannot be changed because you entered the same uom!");
+                return BadRequest("The reason cannot be changed because you entered the same reason!");
 
             var validateReason = await _unitOfWork.Reasons.ValidateReasonEntry(reason);
 

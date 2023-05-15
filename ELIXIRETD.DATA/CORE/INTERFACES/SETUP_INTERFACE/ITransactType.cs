@@ -31,5 +31,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<bool> ValidationTransactName(string transactName);
 
+        Task<bool> validateTransactTypeSame(TransactionType transact);
+
     }
 }
