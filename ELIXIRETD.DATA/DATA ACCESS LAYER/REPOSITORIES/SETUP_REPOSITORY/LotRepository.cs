@@ -17,7 +17,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             _context = context;
         }
 
-        //---------LOT NAME---------------//
+        //---------LOT Section---------------//
 
         public async Task<IReadOnlyList<LotNameDto>> GetAllActiveLotName()
         {
@@ -94,7 +94,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             lotsection.IsActive = true;
 
 
-            var lotnames = await _context.Roles.Where(x => x.Id == lotname.LotNamesId)
+            var lotnames = await _context.Lotnames.Where(x => x.Id == lotname.LotNamesId)
                                                .FirstOrDefaultAsync();
 
 
@@ -148,15 +148,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           IsActive = x.IsActive,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
 
-                                      }).Where(x => x.SectionName.ToLower()
-                                        .Contains(search.Trim().ToLower()));
+                                      }).Where(x => x.SectionName.ToLower().Contains(search.Trim().ToLower())
+                                      || x.LotName.ToLower().Contains(search.Trim().ToLower())
+                                       || x.LotCode.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<LotNameDto>.CreateAsync(lots, userParams.PageNumber, userParams.PageSize);
 
         }
 
 
-        //----------LOT Section----------------//
+        //----------LOT Name----------------//
 
 
         public async Task<IReadOnlyList<LotCategoryDto>> GetAllActiveLotCategories()
@@ -264,8 +265,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         AddedBy = x.AddedBy,
                                         IsActive = x.IsActive,
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
-                                    }).Where(x => x.LotName.ToLower()
-                                      .Contains(search.Trim().ToLower()));
+                                    }).Where(x => x.LotName.ToLower().Contains(search.Trim().ToLower())
+                                     || x.LotCode.ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<LotCategoryDto>.CreateAsync(lots, userParams.PageNumber, userParams.PageSize);
@@ -319,5 +320,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         }
 
+        public async Task<bool> ValidateLotNameSame(LotNames lotname)
+        {
+            var validatelot = await _context.Lotnames.Where(x => x.Id == lotname.Id && x.LotName == lotname.LotName)
+                                                      .FirstOrDefaultAsync();
+
+            if (validatelot == null) 
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> ValidateLotSectionSame(LotSection section)
+        {
+            var validate = await _context.LotSections.Where(x => x.Id == section.Id && x.SectionName == section.SectionName/* && x.LotNamesId == section.LotNamesId*/)
+                                                     .FirstOrDefaultAsync();
+
+            if (validate == null) 
+                return false;
+
+            return true;
+        }
     }
 }

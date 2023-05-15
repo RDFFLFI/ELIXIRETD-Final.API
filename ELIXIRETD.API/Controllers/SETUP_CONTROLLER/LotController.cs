@@ -17,7 +17,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             _unitOfWork = unitOfWork;
         }
 
-        //-------LOT NAME----------------
+        //-------LOT Section----------------
 
 
         [HttpGet]
@@ -65,6 +65,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
             var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotNamesId);
 
+            var validateInUse = await _unitOfWork.Lots.ValidateLotSectionSame(lotname);
+
+            if (validateInUse == true)
+                return BadRequest("The lot name cannot be changed because you entered the same lot name!");
+
             if (categoryId == false)
                 return BadRequest("Lot name doesn't exist, please add data first!");
 
@@ -83,6 +88,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("InActiveLotName")]
         public async Task<IActionResult> InActiveLotName([FromBody] LotSection lotname)
         {
+
+
+
             await _unitOfWork.Lots.InActiveLotName(lotname);
             await _unitOfWork.CompleteAsync();
 
@@ -154,7 +162,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
-        //-------LOT CATEGORY-----------
+        //-------LOT LotName-----------
 
 
         [HttpGet]
@@ -200,9 +208,15 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateLotCategories")]
         public async Task<IActionResult> UpdateLotCategories([FromBody] LotNames category)
         {
+            var validate = await _unitOfWork.Lots.ValidateLotNameSame(category);
+
+            if (validate == true)
+                return BadRequest("The lot name cannot be changed because you entered the same lot name!");
+
             if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
                 return BadRequest("Lot Name already Exist!, Please try something else!");
 
+          
             await _unitOfWork.Lots.UpdateLotCategory(category);
             await _unitOfWork.CompleteAsync();
 

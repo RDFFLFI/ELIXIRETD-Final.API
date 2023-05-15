@@ -47,6 +47,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<bool> ValidateLotInUse(int id);
 
+        Task<bool> ValidateLotNameSame(LotNames lotname);
+
+        Task<bool> ValidateLotSectionSame(LotSection section);
+
 
 
     }

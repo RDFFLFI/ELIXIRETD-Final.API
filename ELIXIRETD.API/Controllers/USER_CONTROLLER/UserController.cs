@@ -85,6 +85,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 return BadRequest("Password must not be equal to the username!");
 
             var validate = await _unitOfWork.Users.ValidationPassword(user);
+
             if (validate == true)
                 return BadRequest("The password cannot be changed because you entered the same password!");
 
@@ -94,8 +95,6 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             return Ok("Successfully updated!");
 
         }
-
-
 
 
         [HttpPut]
