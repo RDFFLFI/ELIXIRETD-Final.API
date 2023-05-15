@@ -23,5 +23,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<bool> ValidateModuleId(int id);
         Task<bool> ValidateReasonEntry(Reason reason);
+
+        Task<bool> validateReasonSame(Reason reason);
     }
 }

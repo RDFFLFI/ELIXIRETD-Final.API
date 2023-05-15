@@ -1,6 +1,7 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -129,8 +130,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                            AddedBy = x.AddedBy,
                                            DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                            IsActive = x.IsActive
-                                       }).Where(x => x.ReasonName.ToLower()
-                                         .Contains(search.Trim().ToLower()));
+                                       }).Where(x => x.ReasonName.ToLower().Contains(search.Trim().ToLower())
+                                          || x.MainMenu.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<ReasonDto>.CreateAsync(reasons, userParams.PageNumber, userParams.PageSize);
         }
@@ -155,5 +156,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return true;
         }
+
+
+        public async Task<bool> validateReasonSame(Reason reason)
+        {
+            var validate = await _context.Reasons.Where(x => x.Id == reason.Id)
+                                               .Where(x => x.ReasonName == reason.ReasonName)
+                                               .FirstOrDefaultAsync();
+
+            if (validate == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

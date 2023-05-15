@@ -93,19 +93,6 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             return Ok("Successfully updated!");
 
-
-            //if (user.Password = _unitOfWork.Users.ValidatePasswordAndUsername(user.UserName))
-            //    return BadRequest("Password must not be equal to the username!");
-
-            //var usersvalidate = await _unitOfWork.Users.ValidatePasswordAndUsername(user);
-            //if (usersvalidate == true)
-            //    return BadRequest("Password must not be equal to the username!");
-
-
-            //await _unitOfWork.Users.UpdateUserInfo(user);
-            //await _unitOfWork.CompleteAsync();
-
-            //return Ok("Successfully updated!");
         }
 
 

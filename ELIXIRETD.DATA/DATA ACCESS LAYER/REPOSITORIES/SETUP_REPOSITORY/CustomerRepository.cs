@@ -126,8 +126,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           IsActive = x.IsActive
 
                                       }).Where(x => x.CustomerName.ToLower().Contains(search.Trim().ToLower())
-                                        || x.CustomerCode.ToLower().Contains(search.Trim().ToLower())
-                                        || x.Id.ToString().ToLower().Contains(search.Trim().ToLower()));
+                                        || x.CustomerCode.ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<CustomerDto>.CreateAsync(customer, userParams.PageNumber, userParams.PageSize);
         }

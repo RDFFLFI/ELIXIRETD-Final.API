@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("GetAllInActiveReasons")]
         public async Task<IActionResult> GetAllInActiveReasons()
         {
-            var reason = await _unitOfWork.Reasons.GetAllActiveReason();
+            var reason = await _unitOfWork.Reasons.GetAllInActiveReason();
 
             return Ok(reason);
         }
@@ -61,6 +62,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateReason")]
         public async Task<IActionResult> UpdateReason([FromBody] Reason reason)
         {
+            var validate = await _unitOfWork.Reasons.validateReasonSame(reason);
+            if (validate == true)
+                return BadRequest("The uom cannot be changed because you entered the same uom!");
+
+            var validateReason = await _unitOfWork.Reasons.ValidateReasonEntry(reason);
+
+            if (validateReason == false)
+                return BadRequest("Menu and reason already exist!");
+
+
             await _unitOfWork.Reasons.UpdateReason(reason);
             await _unitOfWork.CompleteAsync();
 
