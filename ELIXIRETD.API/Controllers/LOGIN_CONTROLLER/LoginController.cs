@@ -38,18 +38,21 @@ namespace ELIXIRETD.API.Controllers.LOGIN_CONTROLLER
         }
 
         [HttpPost("changepassword")]
-        public IActionResult ChangePassword(AutenticateNewPassword request)
+        public  IActionResult ChangePassword(AutenticateNewPassword request)
         {
-            var user = _context.Users.SingleOrDefault(x => x.UserName == request.Username
+            var user =  _context.Users.SingleOrDefault(x => x.UserName == request.Username
                                                         && x.IsActive == true);
             if (user == null)
-                return BadRequest(new { message = "User or Password is incorrect!" });
+                return BadRequest("User or Password is incorrect!" );
 
             if (request.OldPassword != user.Password)
-                return BadRequest(new { message = "Password is incorrect!" });
+                return BadRequest("Password is incorrect!");
+
+            if (request.NewPassword == user.Password && request.ConfirmPassword == user.Password)
+                return BadRequest("New Password is same to the old Password!");
 
             if (request.NewPassword != request.ConfirmPassword)
-                return BadRequest(new { message = "New password and confirm password do not match!" });
+                return BadRequest("New password and confirm password do not match!");
 
             user.Password = request.NewPassword;
             _context.SaveChanges();
@@ -70,7 +73,6 @@ namespace ELIXIRETD.API.Controllers.LOGIN_CONTROLLER
 
 
         //}
-
 
 
         //public IActionResult Authenticate(AuthenticateRequest request)

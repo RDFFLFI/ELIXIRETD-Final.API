@@ -20,7 +20,7 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
 
 
         [Required]
-        [Compare("NewPassword", ErrorMessage = "New password and confirm password do not match!")]
+        //[Compare("NewPassword", ErrorMessage = "New password and confirm password do not match!")]
         public string ConfirmPassword { get; set; }
     }
 }
