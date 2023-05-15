@@ -90,7 +90,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                               .FirstOrDefaultAsync();
 
             
-
+            user.UserName = existingUser.UserName;
             existingUser.Password = user.Password;
             
             return true;
@@ -254,6 +254,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 return false;
             return true;
         }
+
+    
+
+
     }
 }
 

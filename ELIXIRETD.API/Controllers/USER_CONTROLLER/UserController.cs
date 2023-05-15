@@ -77,9 +77,13 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
         [HttpPut]
         [Route("UpdateUserInfo")]
-        public async Task<IActionResult> UpdateUserInfo([FromBody]User user)
+        public async Task<IActionResult> UpdateUserInfo(User user)
         {
-            
+
+         
+            if(user.Password == user.UserName)
+                return BadRequest("Password must not be equal to the username!");
+
             var validate = await _unitOfWork.Users.ValidationPassword(user);
             if (validate == true)
                 return BadRequest("The password cannot be changed because you entered the same password!");
@@ -88,7 +92,24 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             await _unitOfWork.CompleteAsync();
 
             return Ok("Successfully updated!");
+
+
+            //if (user.Password = _unitOfWork.Users.ValidatePasswordAndUsername(user.UserName))
+            //    return BadRequest("Password must not be equal to the username!");
+
+            //var usersvalidate = await _unitOfWork.Users.ValidatePasswordAndUsername(user);
+            //if (usersvalidate == true)
+            //    return BadRequest("Password must not be equal to the username!");
+
+
+            //await _unitOfWork.Users.UpdateUserInfo(user);
+            //await _unitOfWork.CompleteAsync();
+
+            //return Ok("Successfully updated!");
         }
+
+
+
 
         [HttpPut]
         [Route("InactiveUser")]
