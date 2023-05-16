@@ -512,7 +512,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  IssueOut = total.Key.issueOut,
                                  BorrowedDepartment = total.Key.borrow,
                                  ReturnedBorrowed = total.Key.returned,
-                                 TotalPrice = decimal.Round(total.Key.TotalPrice , 2),
+                                 TotalPrice = decimal.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
                                  SuggestedPo = total.Key.sudggest,
