@@ -265,7 +265,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo )
         {
-            var orders = _context.Orders.Where(x => x.OrderDate >= DateTime.Parse(DateFrom) && x.OrderDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
+            var orders = _context.Orders.Where(x => x.CancelDate >= DateTime.Parse(DateFrom) && x.CancelDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
                                         .Select(x => new DtoCancelledReports
                                         {
 
