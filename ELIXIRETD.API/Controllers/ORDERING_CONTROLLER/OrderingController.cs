@@ -74,6 +74,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             PreviousDateNeeded.Add(items);
                         }
+
                         //else if (validateCustomerCode == false)
                         //{
                         //    CustomerCodeNotExist.Add(items);

@@ -126,8 +126,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.IsActive,
                                  x.DateCancelled,
                                 
-
                              })
+
+
                                                  .Select(receive => new CancelledPoDto
                                                  {
                                                      Id = receive.Key.Id,
@@ -189,8 +190,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.QuantityOrdered,
                                  x.IsActive,
 
-
                              })
+
                                                      .Select(receive => new WarehouseReceivingDto
                                                      {
                                                          Id = receive.Key.Id,
@@ -215,6 +216,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
         }
+
 
         public async Task<PagedList<WarehouseReceivingDto>> GetPoSummaryByStatusWithPaginationOrig(UserParams userParams, string search)
         {
@@ -352,7 +354,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                        UOM = receive.Key.UOM,
                                                        QuantityOrdered = receive.Key.QuantityOrdered,
                                                        ActualGood = receive.Sum(x => x.ActualGood),
-                                                       ActualRemaining = ((receive.Key.QuantityOrdered + (receive.Key.QuantityOrdered / 100) * 10) - (receive.Sum(x => x.ActualGood))),
+                                                       ActualRemaining = ((receive.Key.QuantityOrdered + (receive.Key.QuantityOrdered / 100) * 10) - (receive.Sum(x => x.ActualGood))), // formula for 10% allowable
                                                        IsActive = receive.Key.IsActive,
                                                        IsQcReceiveIsActive = receive.Key.IsQcReceiveIsActive
                                                    }).Where(x => x.IsQcReceiveIsActive == true)
@@ -378,6 +380,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             existingInfo.IsActive = true;
             existingInfo.DateCancelled = null;
             existingInfo.Reason = null;
+            existingInfo.IsCancelled = null;
 
             return true;
         }
