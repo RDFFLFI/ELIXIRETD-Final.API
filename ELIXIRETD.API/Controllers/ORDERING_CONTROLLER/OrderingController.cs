@@ -369,6 +369,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
             order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
             order.Department = details.Department;
+
+            order.DepartmentCode = details.DepartmentCode;
+            order.CompanyCode = details.CompanyCode;
+            order.CompanyName = details.CompanyName;    
+            order.LocationCode = details.LocationCode;
+            order.LocationName = details.LocationName;
+            order.AccountTitles = details.AccountTitles;
+            order.AccountCode = details.AccountCode;
+
             order.CustomerName= details.CustomerName;
             order.Customercode = details.CustomerCode;
             order.AddressOrder = details.Address;

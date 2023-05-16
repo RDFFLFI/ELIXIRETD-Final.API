@@ -55,7 +55,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             foreach ( Customer items in customer)
             {
 
-                if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerName == items.CustomerName /*&& x.CompanyName == items.CompanyName*/) > 1)
+                if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerName == items.CustomerName 
+                && x.CompanyCode == items.CompanyCode && x.DepartmentCode == items.DepartmentCode && x.LocationCode == items.LocationCode 
+                && x.AccountCode == items.AccountCode) > 1)
                 {
 
                     duplicateList.Add(items);
@@ -71,12 +73,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                         existingCustomer.CustomerCode = items.CustomerCode;
                         existingCustomer.CustomerName = items.CustomerName;
-                        //existingCustomer.CompanyCode = items.CompanyCode;
-                        //existingCustomer.DepartmentCode =items.DepartmentCode;
-                        //existingCustomer.DepartmentName = items.DepartmentName;
-                        //existingCustomer.LocationCode = items.LocationCode;
-                        //existingCustomer.LocationName = items.LocationName;
-                        //existingCustomer.CompanyName = items.CompanyName;
+
+                        existingCustomer.CompanyCode = items.CompanyCode;
+                        existingCustomer.CompanyName = items.CompanyName;
+                        existingCustomer.DepartmentCode = items.DepartmentCode;
+                        existingCustomer.DepartmentName = items.DepartmentName;
+                        existingCustomer.LocationCode = items.LocationCode;
+                        existingCustomer.LocationName = items.LocationName;
+                        existingCustomer.AccountCode = items.AccountCode;
+                        existingCustomer.AccountTitles = items.AccountTitles;
+
                         existingCustomer.AddedBy = items.AddedBy;
                         existingCustomer.IsActive = items.IsActive;
                         existingCustomer.DateAdded = items.DateAdded;

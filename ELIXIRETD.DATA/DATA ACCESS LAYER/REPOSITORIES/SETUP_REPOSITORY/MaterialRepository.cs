@@ -127,7 +127,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             }
             material.IsActive = true;
 
-
             var subcategory = await _context.SubCategories.Where(x => x.Id == material.SubCategoryId)
                                                            .FirstOrDefaultAsync();
 

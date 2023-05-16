@@ -615,7 +615,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
                     Id = x.Id,
                     OrderNo = x.OrderNoPKey,
+
                     Department = x.Department,
+                    DepartmentCode = x.DepartmentCode,
+                    CompanyName = x.CompanyName,
+                    CompanyCode = x.CompanyCode,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    AccountCode = x.AccountCode,
+                    AccountTitles = x.AccountTitles,
+
                     CustomerName = x.CustomerName,
                     CustomerCode = x.Customercode,
                     Address = x.AddressOrder,
@@ -626,7 +635,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Category = x.Category,
                     OrderDate = x.OrderDate.ToString(),
                     DateNeeded = x.DateNeeded.ToString(),
-                    PrepareDate = x.PreparedDate.ToString()
+                    PrepareDate = x.PreparedDate.ToString(),
+
+
 
                 });
 
@@ -1907,8 +1918,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
         //================================= Validation =============================================================================
-
-
 
         public async Task<bool> ValidateDateNeeded(Ordering orders)
         {
