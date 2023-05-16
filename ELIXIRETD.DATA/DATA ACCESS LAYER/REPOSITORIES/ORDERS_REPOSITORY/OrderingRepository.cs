@@ -374,8 +374,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             Category = x.Category,
                                             Uom = x.Uom,
                                             QuantityOrder = x.QuantityOrdered,
-                                            IsApproved = x.IsApproved != null
-
+                                            IsApproved = x.IsApproved != null,
+                                            Rush = x.Rush
+                                            
                                         });
 
             return await orders.ToListAsync();
@@ -521,7 +522,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             ItemCode = x.ItemCode,
                                             ItemDescription = x.ItemdDescription,
                                             Uom = x.Uom,
-                                            QuantityOrder = x.QuantityOrdered
+                                            QuantityOrder = x.QuantityOrdered,
+                                            Rush = x.Rush
+                                           
 
                                         });
             return await orders.ToListAsync();
@@ -637,7 +640,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     DateNeeded = x.DateNeeded.ToString(),
                     PrepareDate = x.PreparedDate.ToString(),
 
-
+                    Rush = x.Rush
 
                 });
 
@@ -663,7 +666,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 ItemCode = x.ItemCode,
                 ItemDescription = x.ItemDescription,
                 Quantity = x.QuantityOrdered,
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+                Rush = x.Rush
+
 
             });
 
@@ -1143,7 +1148,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 CustomerName = x.CustomerName,
                                                 Address = x.AddressOrder,
                                                 ApprovedDate = x.ApprovedDate.ToString(),
-                                                Quantity = x.QuantityOrdered
+                                                Quantity = x.QuantityOrdered,
+                                                Rush = x.Rush
 
                                             });
 
@@ -1758,6 +1764,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
+
+        // Notification
 
         public async Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotification()
         {

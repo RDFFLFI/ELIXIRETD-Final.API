@@ -20,6 +20,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
         public decimal QuantityOrder { get; set; }
 
 
-
+        public string Rush { get; set; }
     }
 }

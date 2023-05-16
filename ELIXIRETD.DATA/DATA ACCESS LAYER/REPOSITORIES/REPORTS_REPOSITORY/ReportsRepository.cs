@@ -60,7 +60,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          {
 
                              MoveOrderId = x.moveorder.OrderNo,
-                             Department = x.moveorder.Department,
                              CustomerCode = x.moveorder.Customercode,
                              CustomerName = x.moveorder.CustomerName,
                              ItemCode = x.moveorder.ItemCode,
@@ -72,7 +71,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              MoveOrderDate = x.moveorder.PreparedDate.ToString(),
                              TransactedBy = x.transact.PreparedBy,
                              TransactedDate = x.transact.PreparedDate.ToString(),
-                             IsActive = x.transact.IsActive,
+                             IsActive = x.moveorder.IsActive,
                              CompanyCode = x.moveorder.CompanyCode,
                              CompanyName = x.moveorder.CompanyName,
                              DepartmentCode = x.moveorder.DepartmentCode,
@@ -305,7 +304,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var getMoveOrdersOutByDate = _context.MoveOrders.Where(x => x.IsActive == true)
                                                             .Where(x => x.IsPrepared == true)
-                                                            .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo) && x.ApprovedDate != null)
+                                                            .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo) && x.ApprovedDate == null)
                                                             .GroupBy(x => new
                                                             {
 
@@ -724,7 +723,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          ItemCode = total.Key.ItemCode,
                                          ItemDescription = total.Key.ItemDescription,
                                          //ItemCategory = total.Key.ItemCategoryName,
-                                         TotalOut = total.Key.borrowed,
+                                         TotalOut = total.Key.borrowed + total.Key.Moveorder + total.Key.Issue,
                                          TotalIn = total.Key.receipt + total.Key.receiveIn + total.Key.returned,
                                          Ending = (total.Key.receipt + total.Key.receiveIn + total.Key.returned) - (total.Key.Moveorder + total.Key.Issue + total.Key.borrowed),
                                          CurrentStock = total.Key.SOH,

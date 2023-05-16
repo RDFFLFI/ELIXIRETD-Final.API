@@ -388,6 +388,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.Category = details.Category;
             order.IsActive = true;
             order.IsPrepared = true;
+            order.Rush = details.Rush;
+
 
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();
