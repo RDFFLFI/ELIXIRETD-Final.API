@@ -184,7 +184,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.PreparedDate != null)
+                                                    .Where(x => x.IsPrepared == true)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -363,15 +363,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                       {
 
                                           ItemCode = total.Key.ItemCode,
-                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered == null ? x.moveorder.QuantityOrdered : 0)) / 30
+                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)) / 30
 
                                       });
 
             var getReseverUsage = (from warehouse in getWarehouseStock
                                    join ordering in getOrderingReserve
                                    on warehouse.ItemCode equals ordering.ItemCode
-                                   into leftJ1
-                                   from ordering in leftJ1.DefaultIfEmpty()
+                                   into left
+                                   from ordering in left.DefaultIfEmpty()
 
                                    group new
                                    {
@@ -387,7 +387,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                    select new ReserveInventory
                                    {
                                        ItemCode = total.Key.ItemCode,
-                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered != null ? 0 : x.ordering.QuantityOrdered)
+                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered == null ? 0 : x.ordering.QuantityOrdered)
 
                                    });
 
@@ -661,7 +661,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.PreparedDate != null)
+                                                     .Where(x => x.IsPrepared == true)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -842,7 +842,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                       {
 
                                           ItemCode = total.Key.ItemCode,
-                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered == null ? x.moveorder.QuantityOrdered : 0)) / 30
+                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)) / 30
 
                                       });
 
@@ -866,7 +866,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                    select new ReserveInventory
                                    {
                                        ItemCode = total.Key.ItemCode,
-                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered != null ? 0 : x.ordering.QuantityOrdered)
+                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered == null ? 0 : x.ordering.QuantityOrdered)
 
                                    });
 
@@ -1142,7 +1142,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                     .Where(x => x.PreparedDate != null)
+                                                      .Where(x => x.IsPrepared == true)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -1346,7 +1346,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                    select new ReserveInventory
                                    {
                                        ItemCode = total.Key.ItemCode,
-                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered != null ? 0 : x.ordering.QuantityOrdered)
+                                       Reserve = total.Sum(x => x.ordering.QuantityOrdered == null ? 0 : x.ordering.QuantityOrdered)
 
                                    });
 
