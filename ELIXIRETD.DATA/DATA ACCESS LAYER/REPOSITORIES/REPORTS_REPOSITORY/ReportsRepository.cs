@@ -211,14 +211,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            AccountCode = x.receipt.AccountCode,
                            AccountTitles = x.receipt.AccountTitles,
 
-
                        });
 
 
             return await PagedList<DtoMiscIssue>.CreateAsync(issues, userParams.PageNumber, userParams.PageSize);
         }
-
-
 
         public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams ,string DateFrom, string DateTo)
         {
@@ -318,7 +315,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                                 ItemCode = x.Key.ItemCode,
                                                                 QuantityOrdered = x.Sum(x=> x.QuantityOrdered)
-
 
                                                             });
 

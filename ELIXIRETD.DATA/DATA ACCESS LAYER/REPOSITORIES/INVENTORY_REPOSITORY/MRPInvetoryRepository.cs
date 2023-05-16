@@ -322,7 +322,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                               });
 
-            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                                                                      .Where(x => x.IsActive == true)
                                                                       .GroupBy(x => new
                                                                       {
 
@@ -800,7 +801,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                               });
 
-            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                                                                      .Where(x => x.IsActive == true)
                                                                       .GroupBy(x => new
                                                                       {
 
@@ -1279,7 +1281,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                               });
 
-            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                                                                      .Where(x => x.IsActive == true)
                                                                       .GroupBy(x => new
                                                                       {
 
