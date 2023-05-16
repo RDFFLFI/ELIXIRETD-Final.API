@@ -30,14 +30,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  CustomerCode = x.CustomerCode, 
                                                  CustomerName = x.CustomerName,
 
-                                                 CompanyCode = x.CompanyCode,
-                                                 CompanyName = x.CompanyName,
-                                                 DepartmentCode = x.DepartmentCode,
-                                                 DepartmentName = x.DepartmentName,
-                                                 LocationCode = x.LocationCode,
-                                                 LocationName = x.LocationName,
-                                                 AccountCode = x.AccountCode,
-                                                 AccountTitles = x.AccountTitles,
+                                                 //CompanyCode = x.CompanyCode,
+                                                 //CompanyName = x.CompanyName,
+                                                 //DepartmentCode = x.DepartmentCode,
+                                                 //DepartmentName = x.DepartmentName,
+                                                 //LocationCode = x.LocationCode,
+                                                 //LocationName = x.LocationName,
+                                                 //AccountCode = x.AccountCode,
+                                                 //AccountTitles = x.AccountTitles,
 
                                                  AddedBy = x.AddedBy,
                                                  DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -58,14 +58,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                               CustomerCode = x.CustomerCode,
                                               CustomerName = x.CustomerName,
 
-                                              CompanyCode = x.CompanyCode,
-                                              CompanyName = x.CompanyName,
-                                              DepartmentCode = x.DepartmentCode,
-                                              DepartmentName = x.DepartmentName,
-                                              LocationCode = x.LocationCode,
-                                              LocationName = x.LocationName,
-                                              AccountCode = x.AccountCode,
-                                              AccountTitles = x.AccountTitles,
+                                              //CompanyCode = x.CompanyCode,
+                                              //CompanyName = x.CompanyName,
+                                              //DepartmentCode = x.DepartmentCode,
+                                              //DepartmentName = x.DepartmentName,
+                                              //LocationCode = x.LocationCode,
+                                              //LocationName = x.LocationName,
+                                              //AccountCode = x.AccountCode,
+                                              //AccountTitles = x.AccountTitles,
 
                                               AddedBy = x.AddedBy,
                                               DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -93,14 +93,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
 
-                                          CompanyCode = x.CompanyCode,
-                                          CompanyName = x.CompanyName,
-                                          DepartmentCode = x.DepartmentCode,
-                                          DepartmentName = x.DepartmentName,
-                                          LocationCode = x.LocationCode,
-                                          LocationName = x.LocationName,
-                                          AccountCode = x.AccountCode,
-                                          AccountTitles = x.AccountTitles,
+                                          //CompanyCode = x.CompanyCode,
+                                          //CompanyName = x.CompanyName,
+                                          //DepartmentCode = x.DepartmentCode,
+                                          //DepartmentName = x.DepartmentName,
+                                          //LocationCode = x.LocationCode,
+                                          //LocationName = x.LocationName,
+                                          //AccountCode = x.AccountCode,
+                                          //AccountTitles = x.AccountTitles,
 
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -124,14 +124,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
 
-                                          CompanyCode = x.CompanyCode,
-                                          CompanyName = x.CompanyName,
-                                          DepartmentCode = x.DepartmentCode,
-                                          DepartmentName = x.DepartmentName,
-                                          LocationCode = x.LocationCode,
-                                          LocationName = x.LocationName,
-                                          AccountCode = x.AccountCode,
-                                          AccountTitles = x.AccountTitles,
+                                          //CompanyCode = x.CompanyCode,
+                                          //CompanyName = x.CompanyName,
+                                          //DepartmentCode = x.DepartmentCode,
+                                          //DepartmentName = x.DepartmentName,
+                                          //LocationCode = x.LocationCode,
+                                          //LocationName = x.LocationName,
+                                          //AccountCode = x.AccountCode,
+                                          //AccountTitles = x.AccountTitles,
 
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -142,8 +142,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return await PagedList<CustomerDto>.CreateAsync(customer, userParams.PageNumber, userParams.PageSize);
         }
-
-
 
 
         public async Task<bool> CustomerCodeExist(string customer)

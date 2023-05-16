@@ -15,8 +15,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public string LocationCode { get; set; }
         public string LocationName { get; set; }
 
-        public string AccountCode { get; set; }
-        public string AccountTitles { get; set; }
+        //public string AccountCode { get; set; }
+        //public string AccountTitles { get; set; }
         public string CustomerName { get; set; }
         public string Customercode { get; set; }
         public int OrderNo { get; set; }

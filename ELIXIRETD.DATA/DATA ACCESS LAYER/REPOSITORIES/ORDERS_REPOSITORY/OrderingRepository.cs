@@ -622,8 +622,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     CompanyCode = x.CompanyCode,
                     LocationCode = x.LocationCode,
                     LocationName = x.LocationName,
-                    AccountCode = x.AccountCode,
-                    AccountTitles = x.AccountTitles,
+                    //AccountCode = x.AccountCode,
+                    //AccountTitles = x.AccountTitles,
 
                     CustomerName = x.CustomerName,
                     CustomerCode = x.Customercode,
