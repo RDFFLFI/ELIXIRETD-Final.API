@@ -385,13 +385,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ActivateSubCategory(SubCategory category)
         {
-            var update = await _context.SubCategories.Where(x => x.ItemCategoryId == category.Id)
-                                                   .FirstOrDefaultAsync();
+            var update = await _context.SubCategories.Where(x => x.Id == category.Id)
+                                                     .Where(x => x.ItemCategoryId == category.ItemCategoryId)
+                                                     .FirstOrDefaultAsync();
 
 
-            var updateItemCateg = await _context.ItemCategories.Where(x => x.Id == category.Id)
+            var updateItemCateg = await _context.ItemCategories.Where(x => x.Id == category.ItemCategoryId)
                                                                .FirstOrDefaultAsync();
-
 
             if (update == null)
                 return false;
@@ -399,7 +399,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             updateItemCateg.IsActive = category.IsActive = true;
 
             update.IsActive = category.IsActive = true;
-
 
             return true;
         }
