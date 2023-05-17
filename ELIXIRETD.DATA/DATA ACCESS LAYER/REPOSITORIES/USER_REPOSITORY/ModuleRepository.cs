@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
@@ -158,19 +159,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                                DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                AddedBy = x.AddedBy,
                                                IsActive = x.IsActive
-                                           }).Where(x => x.SubMenuName.ToLower().Contains(search.Trim().ToLower())
-                                            || x.MainMenu.ToLower().Contains(search.Trim().ToLower())
-                                            || x.ModuleName.ToLower().Contains(search.Trim().ToLower()));
+                                           });//}).Where(x => x.SubMenuName.ToLower().Contains(search.Trim().ToLower())
+                                              //     || x.MainMenu.ToLower().Contains(search.Trim().ToLower())
+                                              //     || x.ModuleName.ToLower().Contains(search.Trim().ToLower()));
+
+
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.Trim().ToLower();
+                modules = modules.Where(x =>
+                    x.SubMenuName.ToLower().Contains(search) ||
+                    x.MainMenu.ToLower().Contains(search) ||
+                    x.ModuleName.ToLower().Contains(search)
+                );
+
+            }
 
             return await PagedList<ModuleDto>.CreateAsync(modules, userParams.PageNumber, userParams.PageSize);
+
 
         }
 
 
 
-
         //-------------------MAIN MENU
-         
+
 
         public async Task<IReadOnlyList<ModuleDto>> GetAllActiveMainMenu()
         {

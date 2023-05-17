@@ -139,9 +139,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<ActionResult<IEnumerable<ModuleDto>>> GetAllUsersWithPaginationOrig([FromRoute] bool status, [FromQuery] UserParams userParams, [FromQuery] string search)
         {
 
-            if (search == null)
+            //if (search == null)
 
-                return await GetAllModulesWithPagination(status, userParams);
+            //    return await GetAllModulesWithPagination(status, userParams);
 
             var module = await _unitOfWork.Modules.GetModulesByStatusWithPaginationOrig(userParams, status, search);
 

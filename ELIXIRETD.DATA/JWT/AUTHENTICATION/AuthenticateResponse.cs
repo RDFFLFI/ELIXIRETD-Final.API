@@ -1,4 +1,7 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +12,20 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
 {
     public class AuthenticateResponse
     {
-
+  
         public int Id { get; set; }
         public string FullName { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public int Role { get; set; }
+        public string RoleName { get; set; }
+      //  public string RoleName { get; set; }
         public string Token { get; set; }
 
 
         public AuthenticateResponse(User user, string token)
         {
+
             Id = user.Id;
             FullName = user.FullName;
             UserName = user.UserName;
