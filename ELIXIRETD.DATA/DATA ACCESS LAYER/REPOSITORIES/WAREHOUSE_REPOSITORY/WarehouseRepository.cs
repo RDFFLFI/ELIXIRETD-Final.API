@@ -142,8 +142,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                                                  }).OrderBy(x => x.PO_Number)
                                                    .Where(x => x.IsActive == false)
-                                                   .Where(x => Convert.ToString(x.PO_Number).ToLower()
-                                                   .Contains(search.Trim().ToLower()));
+                                                   .Where(x => Convert.ToString(x.PO_Number).ToLower().Contains(search.Trim().ToLower())
+                                                  || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower())
+                                                  || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
+                                                  || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<CancelledPoDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
@@ -279,8 +281,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                   }).OrderBy(x => x.PoNumber)
                                                     .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
                                                     .Where(x => x.IsActive == true)
-                                                    .Where(x => Convert.ToString(x.ItemDescription).ToLower()
-                                                    .Contains(search.Trim().ToLower()));
+                                                    .Where(x => Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
+                                                    ||Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
+                                                    || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower())
+                                                    || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
         }
@@ -420,8 +424,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                    Uom = x.Uom,
                    LotSection = x.LotSection
 
-               }).Where(x => x.ItemCode.ToLower()
-                 .Contains(search.Trim().ToLower()));
+               }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
+               || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
+               || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(warehouseInventory, userParams.PageNumber, userParams.PageSize);
         }
