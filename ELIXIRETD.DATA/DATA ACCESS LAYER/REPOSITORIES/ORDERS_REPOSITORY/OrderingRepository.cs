@@ -342,11 +342,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             //                                         Rush = x.Key.Rush
             //                                     });
 
-            var orders = _context.Orders.OrderBy(x => x.Rush != null ? 0 : 1)
+
+            var orders = _context.Orders
+                                   
+                                      .Where(x => x.IsApproved == null)
+                                      .Where(x => x.PreparedDate != null)
+                                      .OrderBy(x => x.Rush != null ? 0 : 1)
                                       .ThenBy(x => x.Rush)
-                                      //.ThenBy(x => x.PreparedDate)
-                                      //.Where(x => x.IsApproved == null)
-                                      //.Where(x => x.PreparedDate != null)
+                                      .ThenBy(x => x.PreparedDate)
                                       .Where(x => x.IsActive == true)
                                       .GroupBy(x => new
                                       {
@@ -359,9 +362,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.IsApproved,
                                           x.IsActive
 
-                                      }).Where(x => x.Key.IsApproved == null)
-                                          .Where(x => x.Key.PreparedDate != null)
-                                          .Where(x => x.Key.IsActive == true)
+                                      })//}).Where(x => x.Key.IsApproved == null)
+                                      //    .Where(x => x.Key.PreparedDate != null)
+                                      //    .Where(x => x.Key.IsActive == true)
 
             .Select(x => new GetallApproveDto
             {
@@ -609,11 +612,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
             var orders = _context.Orders.GroupBy(x => new
             {
-                x.OrderNoPKey,
-
-
-
-                
+                x.OrderNoPKey,           
                 x.CustomerName,
                 x.Customercode,
                 x.Category,
@@ -1251,15 +1250,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            {
 
                                                x.OrderNo,
-                                               x.Department,
                                                x.CustomerName,
                                                x.Customercode,
-                                               x.AddressOrder,
-                                               x.Category,
-                                               x.IsApprove,
+                                               x.Category,                                            
                                                x.PreparedDate,
-                                               x.ApprovedDate,
-                                               x.IsPrepared,
+                                             
+                                            
 
 
                                            })
@@ -1268,10 +1264,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                               {
 
                                                   OrderNo = x.Key.OrderNo,
-                                                  Department = x.Key.Department,
+                                               
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                  Address = x.Key.AddressOrder,
+                                                 
                                                   Category = x.Key.Category,
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
@@ -1293,15 +1289,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            {
 
                                                x.OrderNo,
-                                               x.Department,
+                                             
                                                x.CustomerName,
                                                x.Customercode,
-                                               x.AddressOrder,
+                                             
                                                x.Category,
-                                               x.IsApprove,
+                                             
                                                x.PreparedDate,
-                                               x.ApprovedDate,
-                                               x.IsPrepared,
+                                              
+                                             
 
 
                                            })
@@ -1310,10 +1306,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                               {
 
                                                   OrderNo = x.Key.OrderNo,
-                                                  Department = x.Key.Department,
+                                                
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                  Address = x.Key.AddressOrder,
+                                                 
                                                   Category = x.Key.Category,
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
@@ -1523,7 +1519,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var existing = await _context.MoveOrders.Where(x => x.OrderNo == moveorder.OrderNo)
                                                     .ToListAsync();
 
-            var existingorders = await _context.Orders.Where(x => x.OrderNoPKey == moveorder.OrderNoPkey)
+            var existingorders = await _context.Orders.Where(x => x.OrderNoPKey == moveorder.OrderNo)
                                                       .ToListAsync();
 
             foreach (var items in existing)
@@ -1544,6 +1540,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = null;
                 items.RejectBy = null;
                 items.Remarks = null;
+                items.RejectedDate = null;
             }
 
             return true;
