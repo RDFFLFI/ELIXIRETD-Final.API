@@ -120,8 +120,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             Remarks = x.Remarks,
                                                             IsActive = x.IsActive
 
-                                                        }).Where(x => (Convert.ToString(x.Id)).ToLower()
-                                                          .Contains(search.Trim().ToLower()));
+                                                        }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
+                                                       || (Convert.ToString(x.SupplierCode)).ToLower().Contains(search.Trim().ToLower())
+                                                         || (Convert.ToString(x.SupplierName)).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<GetAllMReceiptWithPaginationdDto>.CreateAsync(receipt , userParams.PageNumber , userParams.PageSize);
 
@@ -352,8 +353,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         PreparedBy = x.PreparedBy,
                                                         IsActive = x.IsActive
 
-                                                    }).Where(x => (Convert.ToString(x.IssuePKey)).ToLower()
-                                                      .Contains(search.Trim().ToLower()));
+                                                    }).Where(x => (Convert.ToString(x.IssuePKey)).ToLower().Contains(search.Trim().ToLower())
+                                                      || (Convert.ToString(x.Customer)).ToLower().Contains(search.Trim().ToLower())
+                                                        || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<GetAllMIssueWithPaginationDto>.CreateAsync(issue, userParams.PageNumber, userParams.PageSize);
         }

@@ -11,6 +11,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
@@ -228,6 +229,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<bool> GenerateNumber(GenerateOrderNo generate)
         {
+
             await _context.GenerateOrders.AddAsync(generate);
 
             return true;
@@ -238,12 +240,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
             var existingOrder = await _context.Orders.Where(x => x.Id == orders.Id)
                                                      .FirstOrDefaultAsync();
+
+      
+
             if (existingOrder == null)
                 return false;
 
+           
             existingOrder.IsPrepared = true;
             existingOrder.PreparedDate = orders.PreparedDate;
             existingOrder.OrderNoPKey = orders.OrderNoPKey;
+
+            var hasRushOrders = await _context.Orders
+               .AnyAsync(x => x.Id == orders.Id && !string.IsNullOrEmpty(x.Rush));
+
+
+            existingOrder.IsRush = hasRushOrders;
 
             return true;
         }
@@ -440,10 +452,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = true;
                 items.RejectBy = orders.RejectBy;
                 items.IsActive = true;
+                
                 items.Remarks = orders.Remarks;
                 items.RejectedDate = DateTime.Now;
                 items.PreparedDate = null;
                 items.OrderNoPKey = 0;
+                items.IsRush = null;
             }
             return true;
         }

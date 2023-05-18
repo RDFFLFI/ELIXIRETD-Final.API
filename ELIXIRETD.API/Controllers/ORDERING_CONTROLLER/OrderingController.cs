@@ -4,7 +4,9 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using ELIXIRETD.DATA.SERVICES;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 {
@@ -13,9 +15,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
     public class OrderingController : ControllerBase
     {
         private readonly IUnitOfWork _unitofwork;
-        public OrderingController(IUnitOfWork unitOfWork)
+        private readonly StoreContext _context;
+        public OrderingController(IUnitOfWork unitOfWork, StoreContext context)
         {
             _unitofwork= unitOfWork;
+            _context= context;
         }
 
         [HttpPost]
@@ -203,6 +207,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             }
 
             var generate = new GenerateOrderNo();
+           
             generate.IsActive = true;
 
             if (!await _unitofwork.Orders.GenerateNumber(generate))
@@ -212,10 +217,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
+          
 
             foreach (Ordering order in orders)
             {
-
 
 
                 if (!await _unitofwork.Orders.ValidatePrepareDate(order))
@@ -223,13 +228,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     return BadRequest("Date needed must be in the future.");
                 }
 
+
                 order.OrderNoPKey = generate.Id;
 
                 if (!await _unitofwork.Orders.SchedulePreparedDate(order))
                 {
                     return BadRequest("Failed to schedule prepared date");
                 }
-                
+      
+
             }
         
                 await _unitofwork.CompleteAsync();

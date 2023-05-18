@@ -126,6 +126,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             //                                                 QuantityReject = x.Sum(x => x.TotalReject),
             //                                             });
 
+
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)
                                                                 .GroupBy(x => new
