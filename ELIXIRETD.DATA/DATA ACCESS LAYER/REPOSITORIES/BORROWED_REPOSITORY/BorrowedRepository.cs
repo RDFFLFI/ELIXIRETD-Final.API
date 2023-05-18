@@ -246,6 +246,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             existing.BorrowedPKey = borowed.BorrowedPKey;
             existing.IsActive = borowed.IsActive;
+            existing.IsTransact = true;
           
 
             return true;
@@ -340,6 +341,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var items = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                          .Where(x => x.PreparedBy == employee.FullName)
+                                                         .Where(x => x.IsTransact != true)
                                                          .Select(x => new GetAllAvailableBorrowIssueDto
                                                          {
 
@@ -364,9 +366,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            .Where(x => x.IsTransact == true)
                                                            .FirstOrDefaultAsync();
 
-
-            if (items == null)
-                return false;
 
             items.ReturnQuantity = 0;
             
@@ -515,8 +514,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
                                                              .FirstOrDefaultAsync();
 
-            if (borrow == null)
-                return false;
 
             borrow.IsActive = false;
 

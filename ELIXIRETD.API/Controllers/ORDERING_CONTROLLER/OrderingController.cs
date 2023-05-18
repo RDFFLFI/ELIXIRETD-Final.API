@@ -212,8 +212,12 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
+
             foreach (Ordering order in orders)
             {
+
+
+
                 if (!await _unitofwork.Orders.ValidatePrepareDate(order))
                 {
                     return BadRequest("Date needed must be in the future.");
@@ -227,9 +231,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 }
                 
             }
+        
+                await _unitofwork.CompleteAsync();
+                return new JsonResult("Orders scheduled successfully");
 
-            await _unitofwork.CompleteAsync();
-            return new JsonResult("Orders scheduled successfully");
+                          
         }
        
 

@@ -113,18 +113,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                          });
 
 
-            var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                         .Where(x => x.TransactionType == "MiscellaneousReceipt")
-                                                         .GroupBy(x => new
-                                                         {
+            //var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            //                                             .Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                             .GroupBy(x => new
+            //                                             {
 
-                                                             x.ItemCode,
-                                                         }).Select(x => new DtoReceiptOut
-                                                         {
+            //                                                 x.ItemCode,
+            //                                             }).Select(x => new DtoReceiptOut
+            //                                             {
 
-                                                             ItemCode = x.Key.ItemCode,
-                                                             QuantityReject = x.Sum(x => x.TotalReject),
-                                                         });
+            //                                                 ItemCode = x.Key.ItemCode,
+            //                                                 QuantityReject = x.Sum(x => x.TotalReject),
+            //                                             });
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)
@@ -590,18 +590,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                          });
 
 
-            var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                         .Where(x => x.TransactionType == "MiscellaneousReceipt")
-                                                         .GroupBy(x => new
-                                                         {
+            //var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            //                                             .Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                             .GroupBy(x => new
+            //                                             {
 
-                                                             x.ItemCode,
-                                                         }).Select(x => new DtoReceiptOut
-                                                         {
+            //                                                 x.ItemCode,
+            //                                             }).Select(x => new DtoReceiptOut
+            //                                             {
 
-                                                             ItemCode = x.Key.ItemCode,
-                                                             QuantityReject = x.Sum(x => x.TotalReject),
-                                                         });
+            //                                                 ItemCode = x.Key.ItemCode,
+            //                                                 QuantityReject = x.Sum(x => x.TotalReject),
+            //                                             });
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)
@@ -1071,18 +1071,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                          });
 
 
-            var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                         .Where(x => x.TransactionType == "MiscellaneousReceipt")
-                                                         .GroupBy(x => new
-                                                         {
+            //var getReceitOut = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            //                                             .Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                             .GroupBy(x => new
+            //                                             {
 
-                                                             x.ItemCode,
-                                                         }).Select(x => new DtoReceiptOut
-                                                         {
+            //                                                 x.ItemCode,
+            //                                             }).Select(x => new DtoReceiptOut
+            //                                             {
 
-                                                             ItemCode = x.Key.ItemCode,
-                                                             QuantityReject = x.Sum(x => x.TotalReject),
-                                                         });
+            //                                                 ItemCode = x.Key.ItemCode,
+            //                                                 QuantityReject = x.Sum(x => x.TotalReject),
+            //                                             });
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)
