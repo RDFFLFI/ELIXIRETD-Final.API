@@ -8,6 +8,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 {
     public class DtoViewBorrewedReturnedDetails
     {
+
+
+        Id = x.Id,
+                                                           BorrowedPKey = x.BorrowedPKey,
+                                                           Customer = x.CustomerName,
+                                                           CustomerCode = x.CustomerCode,
+
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
 
@@ -18,6 +25,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public decimal ReturnQuantity { get; set; }
 
 
+        public int Id { get; set; }
 
+        public int BorrowedPKey { get; set; }
+
+        public string CustomerCode { get; set; }
+
+        public string Customer { get; set; }
     }
 }

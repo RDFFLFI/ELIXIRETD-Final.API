@@ -571,6 +571,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                      .Where(x => x.IsReturned == true)
                                                        .Select(x => new DtoViewBorrewedReturnedDetails
                                                        {
+
+                                                           Id = x.Id,
+                                                           BorrowedPKey = x.BorrowedPKey,
+                                                           Customer = x.CustomerName,
+                                                           CustomerCode = x.CustomerCode,
+
                                                            ItemCode = x.ItemCode,
                                                            ItemDescription = x.ItemDescription,
                                                            ReturnQuantity = x.ReturnQuantity,
