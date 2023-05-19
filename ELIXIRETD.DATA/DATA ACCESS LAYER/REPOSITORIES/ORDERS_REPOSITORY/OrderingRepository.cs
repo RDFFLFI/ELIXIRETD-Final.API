@@ -254,9 +254,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var hasRushOrders = await _context.Orders
                .AnyAsync(x => x.Id == orders.Id && !string.IsNullOrEmpty(x.Rush));
 
-
             existingOrder.IsRush = hasRushOrders;
 
+            if (hasRushOrders)
+            {
+                var generateOrders = await _context.GenerateOrders.ToListAsync();
+
+                foreach (var generateOrder in generateOrders)
+                {
+                    generateOrder.Rush = true;
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return true;
         }
 

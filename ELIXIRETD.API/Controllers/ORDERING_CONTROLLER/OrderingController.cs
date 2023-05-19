@@ -207,7 +207,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             }
 
             var generate = new GenerateOrderNo();
-           
+            generate.Rush = orders.Count(x => x.IsRush == true) > 0;
+
+
             generate.IsActive = true;
 
             if (!await _unitofwork.Orders.GenerateNumber(generate))
@@ -217,32 +219,26 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
-            bool hasRushOrders = false;
 
             foreach (Ordering order in orders)
             {
+          
+
+                    if (!await _unitofwork.Orders.ValidatePrepareDate(order))
+                    {
+                        return BadRequest("Date needed must be in the future.");
+                    }
 
 
-                if (!await _unitofwork.Orders.ValidatePrepareDate(order))
-                {
-                    return BadRequest("Date needed must be in the future.");
-                }
+                    order.OrderNoPKey = generate.Id;
 
 
-                order.OrderNoPKey = generate.Id;
+                    if (!await _unitofwork.Orders.SchedulePreparedDate(order))
+                    {
+                        return BadRequest("Failed to schedule prepared date");
+                    }
 
-                if (!await _unitofwork.Orders.SchedulePreparedDate(order))
-                {
-                    return BadRequest("Failed to schedule prepared date");
-                }
-
-                if (!string.IsNullOrEmpty(order.Rush))
-                {
-                    hasRushOrders = true;
-                }
-
-                generate.Rush = hasRushOrders;
-
+                
             }
         
                 await _unitofwork.CompleteAsync();

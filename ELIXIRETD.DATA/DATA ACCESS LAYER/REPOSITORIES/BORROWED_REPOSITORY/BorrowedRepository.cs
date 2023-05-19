@@ -580,7 +580,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            ItemDescription = x.ItemDescription,
                                                            ReturnQuantity = x.ReturnQuantity,
                                                            Consume = x.Quantity - x.ReturnQuantity,
-                                                           ReturnedDate = x.ReturnedDate.ToString()
+                                                           ReturnedDate = x.ReturnedDate.ToString(),
+                                                           PreparedBy = x.PreparedBy
+
 
                                                        }).OrderByDescending(x => x.ReturnedDate);
 

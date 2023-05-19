@@ -27,5 +27,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string CustomerCode { get; set; }
 
         public string Customer { get; set; }
+
+        public string PreparedBy { get; set; }
     }
 }
