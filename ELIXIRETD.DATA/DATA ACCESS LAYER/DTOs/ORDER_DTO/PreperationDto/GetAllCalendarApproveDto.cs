@@ -26,7 +26,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 
         public decimal TotalOrders { get; set; }
 
-       
+       public bool Rush { get; set; }
 
        
 

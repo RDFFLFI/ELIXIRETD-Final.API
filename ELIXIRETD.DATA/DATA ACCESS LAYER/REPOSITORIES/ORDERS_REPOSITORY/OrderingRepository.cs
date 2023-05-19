@@ -376,9 +376,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.order.Department,
                     x.order.Customercode,
                     x.order.CustomerName,
-                    x.order.Category,
+                    //x.order.Category,
                     x.order.PreparedDate,
-                    x.order.IsApproved,
+                    //x.order.IsApproved,
                     x.rushgenerate.Rush
                   
 
@@ -391,7 +391,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Department = x.Key.Department,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.Customercode,
-                    Category = x.Key.Category,
+                    //Category = x.Key.Category,
                     TotalOrders = x.Sum(x => x.order.QuantityOrdered),
                     PreparedDate = x.Key.PreparedDate.ToString(),
                     Rush = x.Key.Rush
@@ -632,39 +632,91 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar()
         {
-            var orders = _context.Orders.GroupBy(x => new
-            {
-                x.OrderNoPKey,
-                x.Department,
-                x.CustomerName,
-                x.Category,
-                x.Customercode,
-                x.PreparedDate,
-                x.IsApproved,
-                x.IsMove,
-                x.IsReject,
-                x.Remarks
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                               .GroupBy(x => new
+                                               {
 
-            }).Where(x => x.Key.IsApproved == true)
-              .Where(x => x.Key.PreparedDate != null)
-              .Where(x => x.Key.IsMove == false)
+                                                   x.Id,
+                                                   x.Rush,
 
-              .Select(x => new GetAllCalendarApproveDto
-              {
+                                               }).Select(x => new GetallApproveDto
+                                               {
+                                                   OrderNoPKey = x.Key.Id,
+                                                   Rush = x.Key.Rush
 
-                  Id = x.Key.OrderNoPKey,
-                  Department = x.Key.Department,
-                  CustomerName = x.Key.CustomerName,
-                  CustomerCode = x.Key.Customercode,
-                  Category = x.Key.Category,
-                  TotalOrders = x.Sum(x => x.QuantityOrdered),
-                  PreparedDate = x.Key.PreparedDate.ToString(),
-                  IsMove = x.Key.IsMove,
-                  IsReject = x.Key.IsReject != null,
-                  Remarks = x.Key.Remarks
+                                               });
+
+            var orders = _context.Orders
+                 .GroupJoin(rushorder, order => order.OrderNoPKey, rushgenerate => rushgenerate.OrderNoPKey, (order, rushgenerate) => new { order, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.order, rushgenerate })
+                .Where(x => x.order.IsApproved == true && x.order.PreparedDate != null && x.order.IsMove == false)
+                .GroupBy(x => new
+                {
+                    x.order.OrderNoPKey,
+                    x.order.Department,
+                    x.order.CustomerName,
+                    //x.order.Category,
+                    x.order.Customercode,
+                    x.order.PreparedDate,
+                    x.order.IsApproved,
+                    x.order.IsMove,
+                    x.order.IsReject,
+                    x.order.Remarks,
+                    x.rushgenerate.Rush
 
 
-              });
+                }).OrderByDescending(x => x.Key.Rush)
+                .Select(x => new GetAllCalendarApproveDto
+                {
+
+
+                    Id = x.Key.OrderNoPKey,
+                    Department = x.Key.Department,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    //Category = x.Key.Category,
+                    TotalOrders = x.Sum(x => x.order.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsMove = x.Key.IsMove,
+                    IsReject = x.Key.IsReject != null,
+                    Remarks = x.Key.Remarks,
+                    Rush = x.Key.Rush
+
+                });
+
+            //var orders = _context.Orders.GroupBy(x => new
+            //{
+            //    x.OrderNoPKey,
+            //    x.Department,
+            //    x.CustomerName,
+            //    x.Category,
+            //    x.Customercode,
+            //    x.PreparedDate,
+            //    x.IsApproved,
+            //    x.IsMove,
+            //    x.IsReject,
+            //    x.Remarks
+
+            //}).Where(x => x.Key.IsApproved == true)
+            //  .Where(x => x.Key.PreparedDate != null)
+            //  .Where(x => x.Key.IsMove == false)
+
+            //  .Select(x => new GetAllCalendarApproveDto
+            //  {
+
+            //      Id = x.Key.OrderNoPKey,
+            //      Department = x.Key.Department,
+            //      CustomerName = x.Key.CustomerName,
+            //      CustomerCode = x.Key.Customercode,
+            //      Category = x.Key.Category,
+            //      TotalOrders = x.Sum(x => x.QuantityOrdered),
+            //      PreparedDate = x.Key.PreparedDate.ToString(),
+            //      IsMove = x.Key.IsMove,
+            //      IsReject = x.Key.IsReject != null,
+            //      Remarks = x.Key.Remarks
+
+
+            //  });
 
             return await orders.ToListAsync();
 
@@ -699,7 +751,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.order.OrderNoPKey,
                     x.order.CustomerName,
                     x.order.Customercode,
-                    x.order.Category,
+                    //x.order.Category,
                     x.order.PreparedDate,
                     x.order.IsApproved,
                     x.order.IsMove,
@@ -721,7 +773,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Id = x.Key.OrderNoPKey,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.Customercode,
-                    Category = x.Key.Category,
+                    //Category = x.Key.Category,
                     TotalOrders = x.Sum(x => x.order.QuantityOrdered),
                     PreparedDate = x.Key.PreparedDate.ToString(),
                     IsMove = x.Key.IsMove,
@@ -874,6 +926,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
                                                 });
+
 
             var orders = _context.Orders
                    .Where(x => x.OrderNoPKey == id)
@@ -1371,37 +1424,83 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams)
         {
-            var order = _context.MoveOrders.Where(x => x.IsActive == true)
-                                           .Where(x => x.IsReject == null)
-                                           .Where(x => x.IsApprove == null)
-                                           .Where(x => x.IsPrepared == true)
-                                           .GroupBy(x => new
-                                           {
 
-                                               x.OrderNo,
-                                               x.CustomerName,
-                                               x.Customercode,
-                                               x.Category,                                            
-                                               x.PreparedDate,
-                                             
-                                            
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                               .GroupBy(x => new
+                                               {
+
+                                                   x.Id,
+                                                   x.Rush,
+
+                                               }).Select(x => new GetallApproveDto
+                                               {
+                                                   OrderNoPKey = x.Key.Id,
+                                                   Rush = x.Key.Rush
+
+                                               });
+
+            var order = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApprove == null && x.moveorder.IsReject != null && x.moveorder.IsActive == true && x.moveorder.IsPrepared == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,
+                    x.moveorder.PreparedDate,
+
+                    x.rushgenerate.Rush
 
 
-                                           })
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new ForApprovalMoveOrderPaginationDto
+                {
 
-                                              .Select(x => new ForApprovalMoveOrderPaginationDto
-                                              {
+                    OrderNo = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    Customercode = x.Key.Customercode,
 
-                                                  OrderNo = x.Key.OrderNo,
-                                               
-                                                  CustomerName = x.Key.CustomerName,
-                                                  Customercode = x.Key.Customercode,
-                                                 
-                                                  Category = x.Key.Category,
-                                                  Quantity = x.Sum(x => x.QuantityOrdered),
-                                                  PreparedDate = x.Key.PreparedDate.ToString(),
+      
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    Rush = x.Key.Rush
 
-                                              });
+
+                });
+
+
+
+            //var order = _context.MoveOrders.Where(x => x.IsActive == true)
+            //                               .Where(x => x.IsReject == null)
+            //                               .Where(x => x.IsApprove == null)
+            //                               .Where(x => x.IsPrepared == true)
+            //                               .GroupBy(x => new
+            //                               {
+
+            //                                   x.OrderNo,
+            //                                   x.CustomerName,
+            //                                   x.Customercode,
+            //                                   x.Category,                                            
+            //                                   x.PreparedDate,
+
+
+            //                               })
+
+            //                                  .Select(x => new ForApprovalMoveOrderPaginationDto
+            //                                  {
+
+            //                                      OrderNo = x.Key.OrderNo,
+
+            //                                      CustomerName = x.Key.CustomerName,
+            //                                      Customercode = x.Key.Customercode,
+
+            //                                      Category = x.Key.Category,
+            //                                      Quantity = x.Sum(x => x.QuantityOrdered),
+            //                                      PreparedDate = x.Key.PreparedDate.ToString(),
+
+            //                                  });
 
             return await PagedList<ForApprovalMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
         }
@@ -1410,41 +1509,51 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search)
         {
-            var orders = _context.MoveOrders.Where(x => x.IsActive == true)
-                                           .Where(x => x.IsReject == null)
-                                           .Where(x => x.IsApprove == null)
-                                           .Where(x => x.IsPrepared == true)
-                                           .GroupBy(x => new
-                                           {
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                                .GroupBy(x => new
+                                                {
 
-                                               x.OrderNo,
-                                             
-                                               x.CustomerName,
-                                               x.Customercode,
-                                             
-                                               x.Category,
-                                             
-                                               x.PreparedDate,
-                                              
-                                             
+                                                    x.Id,
+                                                    x.Rush,
+
+                                                }).Select(x => new GetallApproveDto
+                                                {
+                                                    OrderNoPKey = x.Key.Id,
+                                                    Rush = x.Key.Rush
+
+                                                });
+
+            var orders = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApprove == null && x.moveorder.IsReject != null && x.moveorder.IsActive == true && x.moveorder.IsPrepared == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,
+                    x.moveorder.PreparedDate,
+
+                    x.rushgenerate.Rush
 
 
-                                           })
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new ForApprovalMoveOrderPaginationDto
+                {
 
-                                              .Select(x => new ForApprovalMoveOrderPaginationDto
-                                              {
+                    OrderNo = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    Customercode = x.Key.Customercode,
 
-                                                  OrderNo = x.Key.OrderNo,
-                                                
-                                                  CustomerName = x.Key.CustomerName,
-                                                  Customercode = x.Key.Customercode,
-                                                 
-                                                  Category = x.Key.Category,
-                                                  Quantity = x.Sum(x => x.QuantityOrdered),
-                                                  PreparedDate = x.Key.PreparedDate.ToString(),
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    Rush = x.Key.Rush
 
-                                              }).Where(x => Convert.ToString(x.OrderNo).ToLower().Contains(search.Trim().ToLower())
-                                              );
+
+
+                }).Where(x => Convert.ToString(x.OrderNo).ToLower().Contains(search.Trim().ToLower()));
+
 
             return await PagedList<ForApprovalMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
@@ -1453,94 +1562,168 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination(UserParams userParams)
         {
-            var orders = _context.MoveOrders
-                     .GroupBy(x => new
-                     {
-                         x.OrderNo,
-                         x.Department,
-                         x.CustomerName,
-                         x.Customercode,
-                         x.AddressOrder,
-                         x.Category,
-                         x.PreparedDate,
-                         x.IsApprove,
-                         x.IsPrepared,
-                         x.IsReject,
-                         x.ApproveDateTempo,
-                         x.IsPrint,
-                         x.IsTransact,
+
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                           .GroupBy(x => new
+                                           {
+
+                                               x.Id,
+                                               x.Rush,
+
+                                           }).Select(x => new GetallApproveDto
+                                           {
+                                               OrderNoPKey = x.Key.Id,
+                                               Rush = x.Key.Rush
+
+                                           });
+
+            var order = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApprove == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,                
+                    x.moveorder.PreparedDate,
+                    x.moveorder.IsApprove,
+                    x.moveorder.IsPrepared,
+                    x.moveorder.IsReject,
+                    x.moveorder.ApproveDateTempo,
+                    x.moveorder.IsPrint,
+                    x.moveorder.IsTransact,
+
+                    x.rushgenerate.Rush
 
 
-                     }).Where(x => x.Key.IsApprove == true)
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new ApprovedMoveOrderPaginationDto
+                {
+
+                    OrderNo = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    Category = x.Key.Customercode,
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsApprove = x.Key.IsApprove != null,
+                    IsPrepared = x.Key.IsPrepared,
+                    ApprovedDate = x.Key.ApproveDateTempo.ToString(),
+                    IsPrint = x.Key.IsPrint != null,
+                    IsTransact = x.Key.IsTransact,
+                    Rush = x.Key.Rush
 
 
-              .Select(x => new ApprovedMoveOrderPaginationDto
-              {
 
-                  OrderNo = x.Key.OrderNo,
-                  Department = x.Key.Department,
-                  CustomerName = x.Key.CustomerName,
-                  CustomerCode = x.Key.Customercode,
-                  Address = x.Key.AddressOrder,
-                  Category = x.Key.Customercode,
-                  Quantity = x.Sum(x => x.QuantityOrdered),
-                  PreparedDate = x.Key.PreparedDate.ToString(),
-                  IsApprove = x.Key.IsApprove != null,
-                  IsPrepared = x.Key.IsPrepared,
-                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
-                  IsPrint = x.Key.IsPrint != null,
-                  IsTransact = x.Key.IsTransact,
+                });
 
 
-              });
 
-            return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+            //var orders = _context.MoveOrders
+            //         .GroupBy(x => new
+            //         {
+            //             x.OrderNo,
+            //             x.Department,
+            //             x.CustomerName,
+            //             x.Customercode,
+            //             x.AddressOrder,
+            //             x.Category,
+            //             x.PreparedDate,
+            //             x.IsApprove,
+            //             x.IsPrepared,
+            //             x.IsReject,
+            //             x.ApproveDateTempo,
+            //             x.IsPrint,
+            //             x.IsTransact,
+
+
+            //         }).Where(x => x.Key.IsApprove == true)
+
+
+            //  .Select(x => new ApprovedMoveOrderPaginationDto
+            //  {
+
+            //      OrderNo = x.Key.OrderNo,
+            //      Department = x.Key.Department,
+            //      CustomerName = x.Key.CustomerName,
+            //      CustomerCode = x.Key.Customercode,
+            //      Address = x.Key.AddressOrder,
+            //      Category = x.Key.Customercode,
+            //      Quantity = x.Sum(x => x.QuantityOrdered),
+            //      PreparedDate = x.Key.PreparedDate.ToString(),
+            //      IsApprove = x.Key.IsApprove != null,
+            //      IsPrepared = x.Key.IsPrepared,
+            //      ApprovedDate = x.Key.ApproveDateTempo.ToString(),
+            //      IsPrint = x.Key.IsPrint != null,
+            //      IsTransact = x.Key.IsTransact,
+
+
+            //  });
+
+            return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
         }
 
 
 
         public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig(UserParams userParams, string search)
         {
-            var orders = _context.MoveOrders.GroupBy(x => new
-            {
-                x.OrderNo,
-                x.Department,
-                x.CustomerName,
-                x.Customercode,
-                x.AddressOrder,
-                x.Category,
-                x.PreparedDate,
-                x.IsApprove,
-                x.IsPrepared,
-                x.IsReject,
-                x.ApproveDateTempo,
-                x.IsPrint,
-                x.IsTransact,
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                           .GroupBy(x => new
+                                           {
+
+                                               x.Id,
+                                               x.Rush,
+
+                                           }).Select(x => new GetallApproveDto
+                                           {
+                                               OrderNoPKey = x.Key.Id,
+                                               Rush = x.Key.Rush
+
+                                           });
+
+            var order = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApprove == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,
+                    x.moveorder.PreparedDate,
+                    x.moveorder.IsApprove,
+                    x.moveorder.IsPrepared,
+                    x.moveorder.IsReject,
+                    x.moveorder.ApproveDateTempo,
+                    x.moveorder.IsPrint,
+                    x.moveorder.IsTransact,
+
+                    x.rushgenerate.Rush
+
+
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new ApprovedMoveOrderPaginationDto
+                {
+
+                    OrderNo = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    Category = x.Key.Customercode,
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsApprove = x.Key.IsApprove != null,
+                    IsPrepared = x.Key.IsPrepared,
+                    ApprovedDate = x.Key.ApproveDateTempo.ToString(),
+                    IsPrint = x.Key.IsPrint != null,
+                    IsTransact = x.Key.IsTransact,
+                    Rush = x.Key.Rush
 
 
 
-            }).Where(x => x.Key.IsApprove == true)
-
-
-              .Select(x => new ApprovedMoveOrderPaginationDto
-              {
-
-                  OrderNo = x.Key.OrderNo,
-                  Department = x.Key.Department,    
-                  CustomerName = x.Key.CustomerName,
-                  CustomerCode = x.Key.Customercode,
-                  Address = x.Key.AddressOrder,
-                  Category = x.Key.Category,
-                  Quantity = x.Sum(x => x.QuantityOrdered),
-                  PreparedDate = x.Key.PreparedDate.ToString(),
-                  IsApprove = x.Key.IsApprove != null,
-                  IsPrepared = x.Key.IsPrepared,
-                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
-                  IsPrint = x.Key.IsPrint != null,
-                  IsTransact = x.Key.IsTransact,
-
-
-              }).Where(x => Convert.ToString(x.OrderNo).ToLower()
+                }).Where(x => Convert.ToString(x.OrderNo).ToLower()
               .Contains(search.Trim().ToLower()));
 
             return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
