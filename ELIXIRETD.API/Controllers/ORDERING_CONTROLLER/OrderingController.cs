@@ -217,7 +217,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
-          
+            bool hasRushOrders = false;
 
             foreach (Ordering order in orders)
             {
@@ -235,7 +235,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 {
                     return BadRequest("Failed to schedule prepared date");
                 }
-      
+
+                if (!string.IsNullOrEmpty(order.Rush))
+                {
+                    hasRushOrders = true;
+                }
+
+                generate.Rush = hasRushOrders;
 
             }
         

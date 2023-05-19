@@ -10,11 +10,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
     {
 
 
-        Id = x.Id,
-                                                           BorrowedPKey = x.BorrowedPKey,
-                                                           Customer = x.CustomerName,
-                                                           CustomerCode = x.CustomerCode,
-
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
 

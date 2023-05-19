@@ -572,8 +572,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                        .Select(x => new DtoViewBorrewedReturnedDetails
                                                        {
 
-                                                           Id = x.Id,
-                                                           BorrowedPKey = x.BorrowedPKey,
+                                                           Id = x.BorrowedPKey,
                                                            Customer = x.CustomerName,
                                                            CustomerCode = x.CustomerCode,
 
