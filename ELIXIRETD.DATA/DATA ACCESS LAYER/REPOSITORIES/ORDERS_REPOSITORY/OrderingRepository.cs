@@ -1929,7 +1929,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
-                                                x.Category,
+                                               
                                                 x.OrderDate,
                                                 x.PreparedDate,
                                                 x.IsApprove,
@@ -1944,7 +1944,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
-                                                Category = x.Key.Category,
+                                               
                                                 Quantity = x.Sum(x => x.QuantityOrdered),
                                                 OrderDate = x.Key.OrderDate.ToString(),
                                                 PreparedDate = x.Key.PreparedDate.ToString(),
@@ -1968,7 +1968,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
-                                                x.Category,
+                                              
                                                 x.OrderDate,
                                                 x.PreparedDate,
                                                 x.IsApprove,
@@ -1984,7 +1984,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
-                                                Category = x.Key.Category,
+                                              
                                                 Quantity = x.Sum(x => x.QuantityOrdered),
                                                 OrderDate = x.Key.OrderDate.ToString(),
                                                 PreparedDate = x.Key.PreparedDate.ToString(),
@@ -2013,7 +2013,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.Department,
                                                 x.CustomerName,
                                                 x.Customercode,
-                                                x.Category,
+                                               
                                                 x.DateNeeded,
                                                 x.PreparedDate,
                                                 x.IsApprove,
@@ -2027,7 +2027,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 Department= x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
-                                                Category = x.Key.Category,
+                                               
                                                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                                                 DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
                                                 PreparedDate = x.Key.PreparedDate.ToString(),
