@@ -30,6 +30,8 @@
         public bool IsReject { get; set; }  
         public string Remarks { get; set; }
 
+        public bool Rush { get; set; }
+
 
 
     }

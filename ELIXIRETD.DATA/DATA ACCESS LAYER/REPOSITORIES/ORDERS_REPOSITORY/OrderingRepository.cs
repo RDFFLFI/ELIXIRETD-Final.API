@@ -258,9 +258,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             if (hasRushOrders)
             {
-                var generateOrders = await _context.GenerateOrders.ToListAsync();
+                var generateOrder = await _context.GenerateOrders
+                    .FirstOrDefaultAsync(x => x.Id == existingOrder.OrderNoPKey);
 
-                foreach (var generateOrder in generateOrders)
+                if (generateOrder != null)
                 {
                     generateOrder.Rush = true;
                 }
@@ -350,55 +351,87 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
 
 
-            //var rushorder =  _context.Orders.Where(x => x.IsActive == true)
-            //                                     .Where(x => x.IsPrepared)
-            //                                     .GroupBy(x => new
-            //                                     {
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                                 .GroupBy(x => new
+                                                 {
 
-            //                                         x.OrderNoPKey,
-            //                                         x.Rush,
+                                                     x.Id,
+                                                     x.Rush,
 
-            //                                     }).Select(x => new GetallApproveDto
-            //                                     {
-            //                                         OrderNoPKey = x.Key.OrderNoPKey,
-            //                                         Rush = x.Key.Rush
-            //                                     });
+                                                 }).Select(x => new GetallApproveDto
+                                                 {
+                                                     OrderNoPKey = x.Key.Id,
+                                                    Rush = x.Key.Rush
+                              
+                                                 });
 
 
             var orders = _context.Orders
-                                   
-                                      .Where(x => x.IsApproved == null)
-                                      .Where(x => x.PreparedDate != null)
-                                      .OrderBy(x => x.Rush != null ? 0 : 1)
-                                      .ThenBy(x => x.Rush)
-                                      .ThenBy(x => x.PreparedDate)
-                                      .Where(x => x.IsActive == true)
-                                      .GroupBy(x => new
-                                      {
-                                          x.OrderNoPKey,
-                                          x.Department,
-                                          x.CustomerName,
-                                          x.Customercode,
-                                          x.Category,
-                                          x.PreparedDate,
-                                          x.IsApproved,
-                                          x.IsActive
+                .GroupJoin(rushorder, order => order.OrderNoPKey, rushgenerate => rushgenerate.OrderNoPKey, (order, rushgenerate) => new { order, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.order, rushgenerate })
+                .Where(x => x.order.IsApproved == null && x.order.PreparedDate != null && x.order.IsActive == true)
+                .GroupBy(x => new
+                {
+                    x.order.OrderNoPKey,
+                    x.order.Department,
+                    x.order.Customercode,
+                    x.order.CustomerName,
+                    x.order.Category,
+                    x.order.PreparedDate,
+                    x.order.IsApproved,
+                    x.rushgenerate.Rush
+                  
 
-                                      })//}).Where(x => x.Key.IsApproved == null)
-                                      //    .Where(x => x.Key.PreparedDate != null)
-                                      //    .Where(x => x.Key.IsActive == true)
+                })
+                .OrderByDescending(x =>x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new GetallApproveDto
+                {
+                    OrderNoPKey = x.Key.OrderNoPKey,
+                    Department = x.Key.Department,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    Category = x.Key.Category,
+                    TotalOrders = x.Sum(x => x.order.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    Rush = x.Key.Rush
+                    
+                });
+                
+                           
+            //var orders = _context.Orders
 
-            .Select(x => new GetallApproveDto
-            {
-                OrderNoPKey = x.Key.OrderNoPKey,
-                Department = x.Key.Department,
-                CustomerName = x.Key.CustomerName,
-                CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
-                TotalOrders = x.Sum(x => x.QuantityOrdered),
-                PreparedDate = x.Key.PreparedDate.ToString(),
+            //                          .Where(x => x.IsApproved == null)
+            //                          .Where(x => x.PreparedDate != null)
+            //                          .OrderBy(x => x.PreparedDate)
+            //                          .Where(x => x.IsActive == true)
+            //                          .GroupBy(x => new
+            //                          {
+            //                              x.OrderNoPKey,
+            //                              x.Department,
+            //                              x.CustomerName,
+            //                              x.Customercode,
+            //                              x.Category,
+            //                              x.PreparedDate,
+            //                              x.IsApproved,
+            //                              x.IsActive
 
-            });
+            //                          })//}).Where(x => x.Key.IsApproved == null)
+            //                            //    .Where(x => x.Key.PreparedDate != null)
+            //                            //    .Where(x => x.Key.IsActive == true)
+
+            //.Select(x => new GetallApproveDto
+            //{
+            //    OrderNoPKey = x.Key.OrderNoPKey,
+            //    Department = x.Key.Department,
+            //    CustomerName = x.Key.CustomerName,
+            //    CustomerCode = x.Key.Customercode,
+            //    Category = x.Key.Category,
+            //    TotalOrders = x.Sum(x => x.QuantityOrdered),
+            //    PreparedDate = x.Key.PreparedDate.ToString(),
+
+            //});
+
 
             return await orders.ToListAsync();
 
@@ -469,6 +502,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.OrderNoPKey = 0;
                 items.IsRush = null;
             }
+
+            var orderPkey = await _context.GenerateOrders.Where(x => x.Id == orders.OrderNoPKey)
+                                            .FirstOrDefaultAsync();
+
+            orderPkey.IsActive = false;
+
+
+
             return true;
         }
 
@@ -634,49 +675,113 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername)
         {
-            var orders = _context.Orders.GroupBy(x => new
-            {
-                x.OrderNoPKey,           
-                x.CustomerName,
-                x.Customercode,
-                x.Category,
-                x.PreparedDate,
-                x.IsApproved,
-                x.IsMove,
-                x.IsReject,
 
-                x.Department,
-                 x.DepartmentCode,
-                 x.CompanyName,
-                 x.CompanyCode,
-                 x.LocationCode,
-                x.LocationName,
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                               .GroupBy(x => new
+                                               {
+
+                                                   x.Id,
+                                                   x.Rush,
+
+                                               }).Select(x => new GetallApproveDto
+                                               {
+                                                   OrderNoPKey = x.Key.Id,
+                                                   Rush = x.Key.Rush
+
+                                               });
+
+            var orders = _context.Orders
+                 .GroupJoin(rushorder, order => order.OrderNoPKey, rushgenerate => rushgenerate.OrderNoPKey, (order, rushgenerate) => new { order, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.order, rushgenerate })
+                .Where(x => x.order.CustomerName == customername && x.order.PreparedDate != null && x.order.IsMove == false && x.order.IsApproved == true)
+                .GroupBy(x => new
+                {
+                    x.order.OrderNoPKey,
+                    x.order.CustomerName,
+                    x.order.Customercode,
+                    x.order.Category,
+                    x.order.PreparedDate,
+                    x.order.IsApproved,
+                    x.order.IsMove,
+                    x.order.IsReject,
+
+                    x.order.Department,
+                    x.order.DepartmentCode,
+                    x.order.CompanyName,
+                    x.order.CompanyCode,
+                    x.order.LocationCode,
+                    x.order.LocationName,
+                    x.rushgenerate.Rush
 
 
-            }).Where(x => x.Key.CustomerName == customername)
-              .Where(x => x.Key.IsApproved == true)
-              .Where(x => x.Key.PreparedDate != null)
-              .Where(x => x.Key.IsMove == false)
+                }).OrderByDescending(x => x.Key.Rush)
+                  .ThenByDescending(x => x.Key.IsApproved)
+                .Select(x => new TotalListOfApprovedPreparedDateDto
+                {
+                    Id = x.Key.OrderNoPKey,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    Category = x.Key.Category,
+                    TotalOrders = x.Sum(x => x.order.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsMove = x.Key.IsMove,
+                    IsReject = x.Key.IsReject != null,
 
-              .Select(x => new TotalListOfApprovedPreparedDateDto
-              {
-                  Id = x.Key.OrderNoPKey,
-                  CustomerName = x.Key.CustomerName,
-                  CustomerCode = x.Key.Customercode,
-                  Category = x.Key.Category,
-                  TotalOrders = x.Sum(x => x.QuantityOrdered),
-                  PreparedDate = x.Key.PreparedDate.ToString(),
-                  IsMove = x.Key.IsMove,
-                  IsReject = x.Key.IsReject != null,
+                    Department = x.Key.Department,
+                    DepartmentCode = x.Key.DepartmentCode,
+                    CompanyName = x.Key.CompanyName,
+                    CompanyCode = x.Key.CompanyCode,
+                    LocationCode = x.Key.LocationCode,
+                    LocationName = x.Key.LocationName,
+                    Rush = x.Key.Rush
 
-                  Department = x.Key.Department,
-                  DepartmentCode = x.Key.DepartmentCode,
-                  CompanyName = x.Key.CompanyName,
-                  CompanyCode = x.Key.CompanyCode,
-                  LocationCode = x.Key.LocationCode,
-                  LocationName = x.Key.LocationName,
+                });
 
-              });
+
+            //var orders = _context.Orders.GroupBy(x => new
+            //{
+            //    x.OrderNoPKey,
+            //    x.CustomerName,
+            //    x.Customercode,
+            //    x.Category,
+            //    x.PreparedDate,
+            //    x.IsApproved,
+            //    x.IsMove,
+            //    x.IsReject,
+
+            //    x.Department,
+            //    x.DepartmentCode,
+            //    x.CompanyName,
+            //    x.CompanyCode,
+            //    x.LocationCode,
+            //    x.LocationName,
+
+
+            //}).Where(x => x.Key.CustomerName == customername)
+            //.Where(x => x.Key.IsApproved == true)
+            //.Where(x => x.Key.PreparedDate != null)
+            //.Where(x => x.Key.IsMove == false)
+
+            //.Select(x => new TotalListOfApprovedPreparedDateDto
+            //{
+            //    Id = x.Key.OrderNoPKey,
+            //    CustomerName = x.Key.CustomerName,
+            //    CustomerCode = x.Key.Customercode,
+            //    Category = x.Key.Category,
+            //    TotalOrders = x.Sum(x => x.QuantityOrdered),
+            //    PreparedDate = x.Key.PreparedDate.ToString(),
+            //    IsMove = x.Key.IsMove,
+            //    IsReject = x.Key.IsReject != null,
+
+            //    Department = x.Key.Department,
+            //    DepartmentCode = x.Key.DepartmentCode,
+            //    CompanyName = x.Key.CompanyName,
+            //    CompanyCode = x.Key.CompanyCode,
+            //    LocationCode = x.Key.LocationCode,
+            //    LocationName = x.Key.LocationName,
+
+            //});
+
 
             return await orders.ToListAsync();
 

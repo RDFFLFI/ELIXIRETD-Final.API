@@ -9,7 +9,7 @@
         public string Category { get; set; }
         public decimal TotalOrders { get; set; }
         public string PreparedDate { get; set; }
-        public string Rush { get; set; }
+        public bool Rush { get; set; }
 
     }
 
