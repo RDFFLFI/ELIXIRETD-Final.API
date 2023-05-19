@@ -569,7 +569,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
                                                      .Where(x => x.IsActive == true)
                                                      .Where(x => x.IsReturned == true)
-                                                       .Select(x => new DtoViewBorrewedReturnedDetails
+                                                       .Select(x => new DtoViewBorrewedReturnedDetailsUpda
                                                        {
 
                                                            Id = x.BorrowedPKey,
