@@ -304,34 +304,75 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<IReadOnlyList<GetAllDetailsInBorrowedIssueDto>> GetAllDetailsInBorrowedIssue(int id)
         {
+
+            var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                               .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                               {
+                                                   Id = x.Id,
+                                                   Customer = x.CustomerName,
+                                                   CustomerCode = x.CustomerCode,
+                                                   
+                                               });
+
             var warehouse = _context.BorrowedIssueDetails
+                .GroupJoin(issueBorrowed, borrowed => borrowed.BorrowedPKey, issues => issues.Id, (borrowed, issues) => new { borrowed, issues })
+                .SelectMany(x => x.issues.DefaultIfEmpty(), (x, issues) => new { x.borrowed, issues })
+                .OrderBy(x => x.borrowed.WarehouseId)
+              .ThenBy(x => x.borrowed.PreparedDate)
+              .ThenBy(x => x.borrowed.ItemCode)
+              .ThenBy(x => x.borrowed.CustomerName)
+              .Where(x => x.borrowed.BorrowedPKey == id)
+              .Where(x => x.borrowed.IsTransact == true)
+              .Where(x => x.borrowed.IsReturned == null)
+              .Where(x => x.borrowed.IsActive == true)
+              .Select(x => new GetAllDetailsInBorrowedIssueDto
+              {
 
-              .OrderBy(x => x.WarehouseId)
-              .ThenBy(x => x.PreparedDate)
-              .ThenBy(x => x.ItemCode)
-              .ThenBy(x => x.CustomerName)
-              .Where(x => x.BorrowedPKey == id)
-              .Where(x => x.IsTransact == true)
-              .Where(x => x.IsReturned == null)
-              .Where(x => x.IsActive == true)
-               .Select(x => new GetAllDetailsInBorrowedIssueDto
-               {
+                  Id = x.borrowed.Id,
+                  WarehouseId = x.borrowed.WarehouseId,
+                  BorrowedPKey = x.borrowed.BorrowedPKey,
+                  Customer = x.issues.Customer,
+                  CustomerCode = x.issues.CustomerCode,
+                  PreparedDate = x.borrowed.PreparedDate.ToString(),
+                  ItemCode = x.borrowed.ItemCode,
+                  ItemDescription = x.borrowed.ItemDescription,
+                  Quantity = x.borrowed.Quantity,
+                  Consumes = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
+                  ReturnQuantity = x.borrowed.ReturnQuantity != null ? x.borrowed.ReturnQuantity : 0,
+                  Remarks = x.borrowed.Remarks,
+                  PreparedBy = x.borrowed.PreparedBy,
 
-                   Id = x.Id,
-                   WarehouseId = x.WarehouseId,
-                   BorrowedPKey = x.BorrowedPKey,
-                   Customer = x.CustomerName,
-                   CustomerCode = x.CustomerCode,
-                   PreparedDate = x.PreparedDate.ToString(),
-                   ItemCode = x.ItemCode,
-                   ItemDescription = x.ItemDescription,
-                   Quantity = x.Quantity,
-                   Consumes = x.Quantity - x.ReturnQuantity,
-                   ReturnQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
-                   Remarks = x.Remarks,
-                   PreparedBy = x.PreparedBy,
+              });
 
-               });
+
+            //var warehouse = _context.BorrowedIssueDetails
+
+            //  .OrderBy(x => x.WarehouseId)
+            //  .ThenBy(x => x.PreparedDate)
+            //  .ThenBy(x => x.ItemCode)
+            //  .ThenBy(x => x.CustomerName)
+            //  .Where(x => x.BorrowedPKey == id)
+            //  .Where(x => x.IsTransact == true)
+            //  .Where(x => x.IsReturned == null)
+            //  .Where(x => x.IsActive == true)
+            //   .Select(x => new GetAllDetailsInBorrowedIssueDto
+            //   {
+
+            //       Id = x.Id,
+            //       WarehouseId = x.WarehouseId,
+            //       BorrowedPKey = x.BorrowedPKey,
+            //       Customer = x.CustomerName,
+            //       CustomerCode = x.CustomerCode,
+            //       PreparedDate = x.PreparedDate.ToString(),
+            //       ItemCode = x.ItemCode,
+            //       ItemDescription = x.ItemDescription,
+            //       Quantity = x.Quantity,
+            //       Consumes = x.Quantity - x.ReturnQuantity,
+            //       ReturnQuantity = x.ReturnQuantity != null ? x.ReturnQuantity : 0,
+            //       Remarks = x.Remarks,
+            //       PreparedBy = x.PreparedBy,
+
+            //   });
 
             return await warehouse.ToListAsync();
         }
@@ -574,25 +615,62 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
         {
-            var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
-                                                     .Where(x => x.IsActive == true)
-                                                     .Where(x => x.IsReturned == true)
-                                                       .Select(x => new DtoViewBorrewedReturnedDetails
-                                                       {
-
-                                                           Id = x.BorrowedPKey,
-                                                           Customer = x.CustomerName,
-                                                           CustomerCode = x.CustomerCode,
-
-                                                           ItemCode = x.ItemCode,
-                                                           ItemDescription = x.ItemDescription,
-                                                           ReturnQuantity = x.ReturnQuantity,
-                                                           Consume = x.Quantity - x.ReturnQuantity,
-                                                           ReturnedDate = x.ReturnedDate.ToString(),
-                                                           PreparedBy = x.PreparedBy
 
 
-                                                       }).OrderByDescending(x => x.ReturnedDate);
+
+
+            var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                              .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                              {
+                                                  Id = x.Id,
+                                                  Customer = x.CustomerName,
+                                                  CustomerCode = x.CustomerCode,
+
+                                              });
+
+            var borrow = _context.BorrowedIssueDetails
+                .GroupJoin(issueBorrowed, borrowed => borrowed.BorrowedPKey, issues => issues.Id, (borrowed, issues) => new { borrowed, issues })
+                .SelectMany(x => x.issues.DefaultIfEmpty(), (x, issues) => new { x.borrowed, issues })
+              .Where(x => x.borrowed.BorrowedPKey == id)
+              .Where(x => x.borrowed.IsReturned == true)
+              .Where(x => x.borrowed.IsActive == true)
+              .Select(x => new DtoViewBorrewedReturnedDetails
+              {
+
+                  Id = x.borrowed.BorrowedPKey,
+                  Customer = x.issues.Customer,
+                  CustomerCode = x.issues.CustomerCode,
+
+                  ItemCode = x.borrowed.ItemCode,
+                  ItemDescription = x.borrowed.ItemDescription,
+                  ReturnQuantity = x.borrowed.ReturnQuantity,
+                  Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
+                  ReturnedDate = x.borrowed.ReturnedDate.ToString(),
+                  PreparedBy = x.borrowed.PreparedBy
+
+              });
+
+
+
+            //var borrow = _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == id)
+            //                                         .Where(x => x.IsActive == true)
+            //                                         .Where(x => x.IsReturned == true)
+            //                                           .Select(x => new DtoViewBorrewedReturnedDetails
+            //                                           {
+
+            //                                               Id = x.BorrowedPKey,
+            //                                               Customer = x.CustomerName,
+            //                                               CustomerCode = x.CustomerCode,
+
+            //                                               ItemCode = x.ItemCode,
+            //                                               ItemDescription = x.ItemDescription,
+            //                                               ReturnQuantity = x.ReturnQuantity,
+            //                                               Consume = x.Quantity - x.ReturnQuantity,
+            //                                               ReturnedDate = x.ReturnedDate.ToString(),
+            //                                               PreparedBy = x.PreparedBy
+
+
+            //                                           }).OrderByDescending(x => x.ReturnedDate);
 
 
             return await borrow.ToListAsync();

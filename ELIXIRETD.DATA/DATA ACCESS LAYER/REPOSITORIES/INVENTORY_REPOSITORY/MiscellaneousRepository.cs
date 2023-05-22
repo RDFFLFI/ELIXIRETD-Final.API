@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
@@ -7,6 +8,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
+using System.IO.IsolatedStorage;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
@@ -406,22 +408,54 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
           public async Task<IReadOnlyList<GetAllDetailsInMiscellaneousIssueDto>> GetAllDetailsInMiscellaneousIssue(int id)
         {
 
-            var warehouse = _context.MiscellaneousIssueDetail.Where(x => x.IssuePKey == id)
-                                                             .Select(x => new GetAllDetailsInMiscellaneousIssueDto
-                                                             {
-                                                                 IssuePKey = x.IssuePKey,
-                                                                 Customer = x.Customer,
-                                                                 CustomerCode = x.CustomerCode,
-                                                                 PreparedDate = x.PreparedDate.ToString(),
-                                                                 PreparedBy = x.PreparedBy,
-                                                                 ItemCode = x.ItemCode,
-                                                                 ItemDescription = x.ItemDescription,
-                                                                 TotalQuantity = x.Quantity,
-                                                                 Remarks = x.Remarks
 
-                                                             });
+            var issues = _context.MiscellaneousIssues.Where(x => x.IsActive == true)
+                                             .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                             {
+                                                 Id = x.Id,
+                                                 Customer = x.Customer,
+                                                 CustomerCode = x.Customercode,
+
+                                             });
+
+
+            var warehouse = _context.MiscellaneousIssueDetail
+                .GroupJoin(issues, misc => misc.IssuePKey , issue => issue.Id, (misc, issue) => new { misc, issue })
+                .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.misc, issue })
+                .Where(x => x.misc.IssuePKey == id)
+                .Select(x => new GetAllDetailsInMiscellaneousIssueDto
+                {
+                    IssuePKey = x.misc.IssuePKey,
+                    Customer = x.issue.Customer,
+                    CustomerCode = x.issue.CustomerCode,
+                    PreparedDate = x.misc.PreparedDate.ToString(),
+                    PreparedBy = x.misc.PreparedBy,
+                    ItemCode = x.misc.ItemCode,
+                    ItemDescription = x.misc.ItemDescription,
+                    TotalQuantity = x.misc.Quantity,
+                    Remarks = x.misc.Remarks
+
+                });
 
             return await warehouse.ToListAsync();
+
+
+            //var warehouse = _context.MiscellaneousIssueDetail.Where(x => x.IssuePKey == id)
+            //                                                 .Select(x => new GetAllDetailsInMiscellaneousIssueDto
+            //                                                 {
+            //                                                     IssuePKey = x.IssuePKey,
+            //                                                     Customer = x.Customer,
+            //                                                     CustomerCode = x.CustomerCode,
+            //                                                     PreparedDate = x.PreparedDate.ToString(),
+            //                                                     PreparedBy = x.PreparedBy,
+            //                                                     ItemCode = x.ItemCode,
+            //                                                     ItemDescription = x.ItemDescription,
+            //                                                     TotalQuantity = x.Quantity,
+            //                                                     Remarks = x.Remarks
+
+            //                                                 });
+            //return await warehouse.ToListAsync();
+
         }
 
 
