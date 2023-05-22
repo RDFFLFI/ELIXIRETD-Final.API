@@ -397,18 +397,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-
         public async Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed)
         {
             var returned = await _context.BorrowedIssues
                 .Where(x => x.Id == borrowed.Id)
                 .FirstOrDefaultAsync();
 
+
             var returnedDetails = await _context.BorrowedIssueDetails
                 .Where(x => x.BorrowedPKey == borrowed.Id)
                 .ToListAsync();
 
-
+            returned.DepartmentName = borrowed.DepartmentName;
+            returned.CompanyCode = borrowed.CompanyCode;
+            returned.CompanyName = borrowed.CompanyName;
+            returned.DepartmentCode = borrowed.DepartmentCode;
+            returned.DepartmentName = borrowed.DepartmentName;
+            returned.LocationCode = borrowed.LocationCode;
+            returned.LocationName = borrowed.LocationName;
+            returned.AccountCode = borrowed.AccountCode;
+            returned.AccountTitles = borrowed.AccountTitles;
 
             foreach (var item in returnedDetails)
             {

@@ -22,6 +22,9 @@
         public string DeliveryStatus { get; set; }
         public string TransactionType { get; set; }
 
+
+        public string Rush { get; set; }
+
         
     }
 }

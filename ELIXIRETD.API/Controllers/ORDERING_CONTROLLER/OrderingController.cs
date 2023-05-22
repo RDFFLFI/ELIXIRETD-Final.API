@@ -805,8 +805,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
                     return BadRequest("no order exist");
 
-             
             }
+
             await _unitofwork.CompleteAsync();
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +27,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
 
         public string PreparedDate { get; set; }
 
-        public bool IsApproved { get; set; }    
+        public bool IsApproved { get; set; }   
+        
+        public bool Rush { get; set; }
 
     }
 }
