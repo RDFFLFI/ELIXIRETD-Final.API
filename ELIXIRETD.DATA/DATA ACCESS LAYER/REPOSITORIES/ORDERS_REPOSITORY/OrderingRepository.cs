@@ -984,24 +984,65 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPagination(UserParams userParams)
         {
+
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                              .GroupBy(x => new
+                                              {
+
+                                                  x.Id,
+                                                  x.Rush,
+
+                                              }).Select(x => new GetallApproveDto
+                                              {
+                                                  OrderNoPKey = x.Key.Id,
+                                                  Rush = x.Key.Rush
+
+                                              });
+
+
             var orders = _context.Orders
-                                 .GroupBy(x => new
-                                 {
-                                     x.CustomerName,
-                                     x.IsActive,
-                                     x.IsApproved,
-                                     x.IsMove
+           .GroupJoin(rushorder, order => order.OrderNoPKey, rushgenerate => rushgenerate.OrderNoPKey, (order, rushgenerate) => new { order, rushgenerate })
+              .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.order, rushgenerate })
+              .Where(x => x.order.IsActive == true && x.order.IsApproved == true && x.order.IsMove == false)
+              .GroupBy(x => new
+              {
+                  x.order.CustomerName,
+                  x.order.IsActive,
+                  x.order.IsApproved,
+                  x.order.IsMove,
+                  x.rushgenerate.Rush
 
-                                 }).Where(x => x.Key.IsActive == true)
-                                   .Where(x => x.Key.IsApproved == true)
-                                    .Where(x => x.Key.IsMove == false)
-                                   .Select(x => new GetAllListForMoveOrderPaginationDto
-                                   {
-                                       CustomerName = x.Key.CustomerName,
-                                       IsActive = x.Key.IsActive,
-                                       IsApproved = x.Key.IsApproved != null
 
-                                   });
+              }).Select(x => new GetAllListForMoveOrderPaginationDto
+              {
+                  CustomerName = x.Key.CustomerName,
+                  IsActive = x.Key.IsActive,
+                  IsApproved = x.Key.IsApproved != null,
+                  Rush = x.Key.Rush
+                  
+
+              });
+
+
+
+            //var orders = _context.Orders
+            //                     .GroupBy(x => new
+            //                     {
+            //                         x.CustomerName,
+            //                         x.IsActive,
+            //                         x.IsApproved,
+            //                         x.IsMove
+
+            //                     }).Where(x => x.Key.IsActive == true)
+            //                       .Where(x => x.Key.IsApproved == true)
+            //                        .Where(x => x.Key.IsMove == false)
+            //                       .Select(x => new GetAllListForMoveOrderPaginationDto
+            //                       {
+            //                           CustomerName = x.Key.CustomerName,
+            //                           IsActive = x.Key.IsActive,
+            //                           IsApproved = x.Key.IsApproved != null
+
+            //                       });
 
             return await PagedList<GetAllListForMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
