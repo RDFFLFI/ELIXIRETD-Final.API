@@ -761,7 +761,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.order.IsApproved,
                     //x.order.IsMove,
                     //x.order.IsReject,
-
                     x.order.Department,
                     x.order.DepartmentCode,
                     x.order.CompanyName,
@@ -783,7 +782,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     PreparedDate = x.Key.PreparedDate.ToString(),
                     //IsMove = x.Key.IsMove,
                     //IsReject = x.Key.IsReject != null,
-
                     Department = x.Key.Department,
                     DepartmentCode = x.Key.DepartmentCode,
                     CompanyName = x.Key.CompanyName,
@@ -794,6 +792,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                 });
 
+
+            return await orders.ToListAsync();
 
             //var orders = _context.Orders.GroupBy(x => new
             //{
@@ -838,9 +838,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             //    LocationName = x.Key.LocationName,
 
             //});
-
-
-            return await orders.ToListAsync();
 
         }
 
@@ -955,6 +952,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.ItemCode,
                        x.ordering.ItemdDescription,
                        x.ordering.Uom,
+                       x.ordering.Rush
                        //x.ordering.IsApproved,
 
                    }).Select(total => new ListOfOrdersForMoveOrderDto
@@ -973,6 +971,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
                        //IsApproved = total.Key.IsApproved != null,
                        PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
+                       Rush = total.Key.Rush    
+
 
                    });
 
@@ -991,6 +991,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      x.IsActive,
                                      x.IsApproved,
                                      x.IsMove
+
                                  }).Where(x => x.Key.IsActive == true)
                                    .Where(x => x.Key.IsApproved == true)
                                     .Where(x => x.Key.IsMove == false)
@@ -1023,6 +1024,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                RecievingDate = x.Key.ReceivingDate.ToString()
                                                            });
 
+
             var getMoveOrder = _context.MoveOrders.Where(x => x.IsActive == true)
                                                   .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
@@ -1051,6 +1053,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             //                                                    warehouseId = x.Key.Id,
             //                                                    ItemCode = x.Key.ItemCode,
             //                                                });
+
 
             var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                 .Where(x => x.IsTransact == true)
@@ -1632,6 +1635,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 });
 
 
+            return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
 
             //var orders = _context.MoveOrders
             //         .GroupBy(x => new
@@ -1674,7 +1678,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             //  });
 
-            return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
+
         }
 
 
