@@ -441,7 +441,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int Id)
         {
-            var orders = _context.Orders.OrderBy(x => x.PreparedDate)
+            var orders = _context.Orders.OrderBy(x => x.Rush == null)
+                                        .ThenBy(x => x.Rush)
+                                        .ThenBy(x => x.PreparedDate)
                                         .Where(x => x.OrderNoPKey == Id)
                                         .Where(x => x.IsApproved == null)
                                         .Select(x => new GetallOrderfroScheduleApproveDto
@@ -608,7 +610,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<DetailedListofOrdersDto>> DetailedListOfOrders(string customer)
         {
-            var orders = _context.Orders.Where(x => x.CustomerName == customer)
+            var orders = _context.Orders.OrderBy(x => x.Rush == null)
+                                         .ThenBy(x => x.Rush)
+                                          .Where(x => x.CustomerName == customer)
                                         .Select(x => new DetailedListofOrdersDto
                                         {
                                             OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
@@ -845,6 +849,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
         {
             var orders = _context.Orders.Where(x => x.IsMove == false)
+                .OrderBy(x => x.Rush == null)
+                 .ThenBy(x => x.Rush)
                 .Select(x => new GetMoveOrderDetailsForMoveOrderDto
                 {
                     Id = x.Id,
@@ -892,7 +898,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<ListOfPreparedItemsForMoveOrderDto>> ListOfPreparedItemsForMoveOrder(int id)
         {
-            var orders = _context.MoveOrders.Select(x => new ListOfPreparedItemsForMoveOrderDto
+            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
+                 .ThenBy(x => x.Rush)
+                 .Select(x => new ListOfPreparedItemsForMoveOrderDto
             {
                 Id = x.Id,
                 OrderNo = x.OrderNo,
@@ -1377,7 +1385,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id)
         {
-            var orders = _context.MoveOrders.Where(x => x.IsActive == true)
+            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
+                 .ThenBy(x => x.Rush)
+                 .Where(x => x.IsActive == true)
                                             .Select(x => new ViewMoveOrderForApprovalDto
                                             {
                                                 Id = x.Id,
@@ -1736,6 +1746,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<GetAllApprovedMoveOrderDto> GetAllApprovedMoveOrder(int id)
         {
+
+
             var orders = _context.MoveOrders.Where(x => x.OrderNoPkey == id)
                                             .GroupBy(x => new
                                             {
@@ -1756,6 +1768,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.ApproveDateTempo,
                                                 x.IsPrint,
                                                 x.IsTransact,
+                                                x.Rush
+
 
 
                                             }).Where(x => x.Key.IsApprove == true)
@@ -1778,7 +1792,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  IsPrepared = x.Key.IsPrepared,
                                                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
                                                  IsPrint = x.Key.IsPrint != null,
-                                                 IsTransact = x.Key.IsTransact
+                                                 IsTransact = x.Key.IsTransact,
+                                                 Rush = x.Key.Rush
 
                                              });
 
@@ -2139,7 +2154,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             //    });
 
-            var orders = _context.MoveOrders.Where(x => x.IsActive == true)
+            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
+                                            .ThenBy(x => x.Rush)
+                                            .Where(x => x.IsActive == true)
                                            .Where(x => x.IsApprove == true)
 
                                            .Select(x => new ListOfMoveOrdersForTransactDto
