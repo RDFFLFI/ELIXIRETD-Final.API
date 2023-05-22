@@ -44,6 +44,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> AddNewUser(User user)
         {
 
+
             var getRoleId = await _unitOfWork.Users.ValidateRoleId(user.UserRoleId);
             var validateuserRolemodules = await _unitOfWork.Users.ValidateUserRolesModule(user);
 

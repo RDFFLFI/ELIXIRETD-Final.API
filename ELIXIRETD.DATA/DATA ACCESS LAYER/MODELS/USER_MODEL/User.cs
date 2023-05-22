@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL
 {
-    public  class User : BaseEntity
+    public class User : BaseEntity
     {
         public string EmpId { get; set; }
         public string FullName { get; set; }
@@ -21,6 +21,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL
         public string Reason { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? DateModified { get; set; }
+
+
 
 
     }

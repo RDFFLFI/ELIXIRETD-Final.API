@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using EFCore.BulkExtensions;
 using Microsoft.Data.SqlClient;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.USER_REPOSITORY.Excemption;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 {
@@ -66,12 +67,29 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> AddNewUser(User user)
         {
-
+         
             user.Password = user.UserName;
-
+          
             await _context.Users.AddAsync(user);
+
+            //await UpdateUserRoleName(user);
+      
             return true;
         }
+
+
+        //public async Task UpdateUserRoleName(User userRole)
+        //{
+
+        //    var userrole = await _context.Users.FirstOrDefaultAsync(x => x.UserRoleId == userRole.UserRoleId);
+
+        //    var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == userRole.UserRoleId);
+
+        //    userRole.UserRoleName = role.RoleName;
+        //    await _context.SaveChangesAsync();
+            
+        //}
+
 
         public async Task<bool> ChangePassword(User user)
         {
@@ -255,9 +273,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
-    
-
-
+       
     }
 }
 

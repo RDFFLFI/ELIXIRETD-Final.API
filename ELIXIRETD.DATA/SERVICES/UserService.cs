@@ -35,7 +35,7 @@ namespace ELIXIRETD.DATA.SERVICES
                 return null;
 
             var token = generateJwtToken(user);
-            return new AuthenticateResponse(user, token);
+            return new AuthenticateResponse(user, token , _context);
         }
 
         public  async Task<bool> NewPassword(AutenticateNewPassword newpassword)

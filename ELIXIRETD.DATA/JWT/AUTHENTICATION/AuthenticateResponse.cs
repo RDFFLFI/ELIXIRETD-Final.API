@@ -10,9 +10,19 @@ using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
 {
+    
+
     public class AuthenticateResponse
     {
-  
+
+        private readonly StoreContext _context;
+
+        public AuthenticateResponse(StoreContext context)
+        {
+            _context = context;
+        }
+
+
         public int Id { get; set; }
         public string FullName { get; set; }
         public string UserName { get; set; }
@@ -23,8 +33,10 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
         public string Token { get; set; }
 
 
-        public AuthenticateResponse(User user, string token)
+        public AuthenticateResponse(User user, string token , StoreContext context)
         {
+            _context = context;
+          
 
             Id = user.Id;
             FullName = user.FullName;
@@ -32,6 +44,13 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
             Password = user.Password;
             Role = user.UserRoleId;
             Token = token;
+
+            var role = _context.Roles.FirstOrDefault(r => r.Id == Role);
+            if (role != null)
+            {
+                RoleName = role.RoleName;
+            }
+
         }
 
 
