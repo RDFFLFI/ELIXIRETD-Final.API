@@ -232,7 +232,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 }).Where(x => x.RemainingStocks != 0)
                                    .Where(x => x.ItemCode == itemcode);
 
-            return await getAvailable.ToListAsync();
+                                   return await getAvailable.ToListAsync();
 
         }
 

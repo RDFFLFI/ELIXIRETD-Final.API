@@ -1,4 +1,5 @@
-﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
+﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
@@ -66,6 +67,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public int HelpdeskNo { get; set; }
         public string Rush { get; set; }
         public bool ? IsRush { get; set; }
+
+        public string CustomerType { get; set; }
 
     }
 }

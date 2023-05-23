@@ -68,7 +68,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> AddNewUser(User user)
         {
          
-            user.Password = user.UserName;
+            //user.Password = user.UserName;
           
             await _context.Users.AddAsync(user);
 
@@ -108,7 +108,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                               .FirstOrDefaultAsync();
 
             
-            user.UserName = existingUser.UserName;
+            //user.UserName = existingUser.UserName;
+            existingUser.UserName = user.UserName;
             existingUser.Password = user.Password;
             
             return true;
@@ -273,7 +274,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
-       
+        public async Task<bool> ValidateEmpIdAndFullName(string empId, string fullName)
+        {
+            return await _context.Users.AnyAsync(x => x.EmpId == empId && x.FullName == fullName);
+        }
     }
 }
 

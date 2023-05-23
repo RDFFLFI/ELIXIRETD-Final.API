@@ -2420,7 +2420,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                       x.CustomerName,
                                       x.IsActive,
                                       x.IsApproved,
-                                      x.IsMove
+                                      x.IsMove,
+                                      x.Rush
 
                                   }).Where(x => x.Key.IsActive == true)
                                     .Where(x => x.Key.IsApproved == true)
@@ -2429,7 +2430,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                     {
                                         CustomerName = x.Key.CustomerName,
                                         IsActive = x.Key.IsActive,
-                                        IsApproved = x.Key.IsApproved != null
+                                        IsApproved = x.Key.IsApproved != null,
+                                        Rush = x.Key.Rush
                                     });
 
             return await orders.ToListAsync();
@@ -2450,6 +2452,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                  x.PreparedDate,
                  x.IsApprove,
                  x.IsTransact,
+                 x.Rush
 
              }).Where(x => x.Key.IsApprove == true)
 
@@ -2462,7 +2465,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             OrderDate = x.Key.OrderDate.ToString("MM/dd/yyyy"),
             DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
             PrepareDate = x.Key.PreparedDate.ToString(),
-            IsApproved = x.Key.IsApprove != null
+            IsApproved = x.Key.IsApprove != null,
+            Rush = x.Key.Rush
+            
 
         });
 
@@ -2482,7 +2487,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.OrderDate,
                 x.PreparedDate,
                 x.IsApprove,
-                x.IsPrepared
+                x.IsPrepared,
+                x.Rush
 
             }).Where(x => x.Key.IsApprove != true)
               .Where(x => x.Key.IsPrepared == true)
@@ -2495,6 +2501,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
            Quantity = x.Sum(x => x.QuantityOrdered),
            OrderDate = x.Key.OrderDate.ToString(),
            PreparedDate = x.Key.PreparedDate.ToString(),
+           Rush = x.Key.Rush
 
        });
 
@@ -2516,7 +2523,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                x.IsApprove,
                x.IsReject,
                x.RejectedDateTempo,
-               x.Remarks
+               x.Remarks,
+               x.Rush
 
            })
          
@@ -2531,7 +2539,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
            PreparedDate = x.Key.PreparedDate.ToString(),
            IsReject = x.Key.IsReject != null,
            RejectedDate = x.Key.RejectedDateTempo.ToString(),
-           Remarks = x.Key.Remarks
+           Remarks = x.Key.Remarks,
+           Rush = x.Key.Rush
 
        });
 
@@ -2565,6 +2574,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                     .Where(x => x.Customercode == customercode)
                                                     .Where(x => x.CustomerName == customername)
                                                     .Where(x => x.ItemCode == ItemCode)
+                                                    //.Where(x => x.CustomerType == CustomerType)
                                                     .Where(x => x.ItemdDescription  == itemdescription)
                                                     .FirstOrDefaultAsync();
 

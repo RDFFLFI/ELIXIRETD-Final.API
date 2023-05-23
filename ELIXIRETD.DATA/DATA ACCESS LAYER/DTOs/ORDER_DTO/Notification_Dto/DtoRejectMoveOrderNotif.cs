@@ -20,5 +20,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto
         public  string RejectedDate { get; set; }
         public string Remarks { get; set; }
 
+        public string Rush { get; set; }
+
     }
 }

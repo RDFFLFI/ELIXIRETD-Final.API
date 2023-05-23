@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     //    QuantityInValid.Add(items);
                     //
 
-                    if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.CustomerName == items.CustomerName) > 1)
+                    if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.CustomerName == items.CustomerName && x.CustomerType == items.CustomerType) > 1)
                     {
                         DuplicateList.Add(items);
                         continue;

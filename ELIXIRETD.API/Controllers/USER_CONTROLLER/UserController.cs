@@ -49,12 +49,15 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             var validateuserRolemodules = await _unitOfWork.Users.ValidateUserRolesModule(user);
 
 
+            if (await _unitOfWork.Users.ValidateEmpIdAndFullName(user.EmpId , user.FullName))
+                return BadRequest("User already exist, Please try something else");
+
             if (await _unitOfWork.Users.ValidateUserExist(user.UserName))
                 return BadRequest("Username already exist, Please try something else!");
 
             if (getRoleId == false)
                 return BadRequest("Role doesn't exist, Please input data first!");
-
+            
             if (validateuserRolemodules == true)
                 return BadRequest("No Role modules has been tag!");
 
@@ -82,13 +85,16 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         {
 
          
-            if(user.Password == user.UserName)
-                return BadRequest("Password must not be equal to the username!");
+            //if(user.Password == user.UserName)
+            //    return BadRequest("Password must not be equal to the username!");
 
-            var validate = await _unitOfWork.Users.ValidationPassword(user);
+            //var validate = await _unitOfWork.Users.ValidationPassword(user);
 
-            if (validate == true)
-                return BadRequest("The password cannot be changed because you entered the same password!");
+            if (await _unitOfWork.Users.ValidateUserExist(user.UserName))
+                return BadRequest("Username already exist, Please try something else!");
+
+            //if (validate == true)
+            //    return BadRequest("The password cannot be changed because you entered the same password!");
 
             await _unitOfWork.Users.UpdateUserInfo(user);
             await _unitOfWork.CompleteAsync();
