@@ -70,26 +70,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
          
             //user.Password = user.UserName;
           
+
             await _context.Users.AddAsync(user);
 
-            //await UpdateUserRoleName(user);
       
             return true;
         }
 
 
-        //public async Task UpdateUserRoleName(User userRole)
-        //{
-
-        //    var userrole = await _context.Users.FirstOrDefaultAsync(x => x.UserRoleId == userRole.UserRoleId);
-
-        //    var role = await _context.Roles.FirstOrDefaultAsync(x => x.Id == userRole.UserRoleId);
-
-        //    userRole.UserRoleName = role.RoleName;
-        //    await _context.SaveChangesAsync();
-            
-        //}
-
+      
 
         public async Task<bool> ChangePassword(User user)
         {
@@ -109,7 +98,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             
             //user.UserName = existingUser.UserName;
-            existingUser.UserName = user.UserName;
+            existingUser.UserRoleId = user.UserRoleId;
             existingUser.Password = user.Password;
             
             return true;

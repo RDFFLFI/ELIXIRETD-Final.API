@@ -36,7 +36,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
 
         //Task UpdateUserRoleName( userRoleId);
 
-        Task<bool> ValidateEmpIdAndFullName (string empId, string fullName);
+        Task<bool> ValidateEmpIdAndFullName(string empId, string fullName);
+
+        
 
 
 

@@ -53,9 +53,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             if (existingMaterialsAndItemCode == true)
                 return BadRequest("Item code and item description already exist!");
-              
-           
-                if (uomId == false)
+
+            if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription, material.SubCategoryId))
+                return BadRequest("Item description , item category and sub category already exist!");
+
+            if (uomId == false)
                     return BadRequest("UOM doesn't exist");
 
                 if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
@@ -72,9 +74,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
-            var updated = await _unitOfWork.Materials.UpdateMaterial(material);
-            if (!updated)
-                return BadRequest("The material cannot be updated because a material with the same description already exists!");
+            //var updated = await _unitOfWork.Materials.UpdateMaterial(material);
+            //if (!updated)
+            //    return BadRequest("The material cannot be updated because a material with the same description already exists!");
+
+            if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription , material.SubCategoryId))
+                return BadRequest("Item description , item category and sub category already exist!");
+
 
             await _unitOfWork.CompleteAsync();
             return Ok(material);
@@ -197,9 +203,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateItemCategories([FromBody] ItemCategory category)
         {
 
-            var validate = await _unitOfWork.Materials.ValidateItemCategorySame(category);
-            if (validate == true)
-                return BadRequest("The item category cannot be changed because you entered the same item category!");
+            //var validate = await _unitOfWork.Materials.ValidateItemCategorySame(category);
+            //if (validate == true)
+            //    return BadRequest("The item category cannot be changed because you entered the same item category!");
 
             if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
                 return BadRequest("Item category already exist!");
@@ -327,9 +333,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateSubCategory (SubCategory category)
         {
 
-            var validate = await _unitOfWork.Materials.ValidateSubCategorySame(category);
-            if (validate == true)
-                return BadRequest("The sub category cannot be changed because you entered the same sub category!");
+            //var validate = await _unitOfWork.Materials.ValidateSubCategorySame(category);
+            //if (validate == true)
+            //    return BadRequest("The sub category cannot be changed because you entered the same sub category!");
 
             var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
             if (existingSubCategAndItemCateg == true)

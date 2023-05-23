@@ -63,9 +63,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateUom([FromBody] Uom uom)
         {
 
-            var validate = await _unitOfWork.Uoms.validateItemUse(uom);
-            if (validate == true)
-                return BadRequest("The uom cannot be changed because you entered the same uom!");
+            //var validate = await _unitOfWork.Uoms.validateItemUse(uom);
+            //if (validate == true)
+            //    return BadRequest("The uom cannot be changed because you entered the same uom!");
 
             if (await _unitOfWork.Uoms.UomDescriptionExist(uom.UomDescription))
                 return BadRequest("Uom code description already exist, please try something else!");

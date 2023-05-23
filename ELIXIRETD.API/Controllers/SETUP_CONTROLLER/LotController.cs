@@ -65,10 +65,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
             var categoryId = await _unitOfWork.Lots.ValidateLotCategoryId(lotname.LotNamesId);
 
-            var validateInUse = await _unitOfWork.Lots.ValidateLotSectionSame(lotname);
+            //var validateInUse = await _unitOfWork.Lots.ValidateLotSectionSame(lotname);
 
-            if (validateInUse == true)
-                return BadRequest("The lot name cannot be changed because you entered the same lot name!");
+            //if (validateInUse == true)
+            //    return BadRequest("The lot name cannot be changed because you entered the same lot name!");
 
             if (categoryId == false)
                 return BadRequest("Lot name doesn't exist, please add data first!");
@@ -210,8 +210,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
             var validate = await _unitOfWork.Lots.ValidateLotNameSame(category);
 
-            if (validate == true)
-                return BadRequest("The lot name cannot be changed because you entered the same lot name!");
+            //if (validate == true)
+            //    return BadRequest("The lot name cannot be changed because you entered the same lot name!");
 
             if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
                 return BadRequest("Lot Name already Exist!, Please try something else!");

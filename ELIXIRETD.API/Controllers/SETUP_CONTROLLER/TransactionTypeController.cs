@@ -60,9 +60,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateTransactionType (TransactionType transactionType)
         {
 
-            var validation = await _unitofwork.TransactType.validateTransactTypeSame(transactionType);
-            if (validation == true)
-                return BadRequest("The transaction name cannot be changed because you entered the same transaction name!");
+            //var validation = await _unitofwork.TransactType.validateTransactTypeSame(transactionType);
+            //if (validation == true)
+            //    return BadRequest("The transaction name cannot be changed because you entered the same transaction name!");
 
             if (await _unitofwork.TransactType.ValidationTransactName(transactionType.TransactionName))
                 return BadRequest("Transaction name already exist!");

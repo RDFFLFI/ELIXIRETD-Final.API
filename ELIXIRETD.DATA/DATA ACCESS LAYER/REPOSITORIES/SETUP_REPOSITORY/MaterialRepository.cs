@@ -670,5 +670,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return true;
         }
+
+        public async Task<bool> ValidateMaterialAndSubAndItem(string material, int Subcateg)
+        {
+            return await _context.Materials.AnyAsync(x => x.ItemDescription == material && x.SubCategoryId == Subcateg);
+        }
     }
 }

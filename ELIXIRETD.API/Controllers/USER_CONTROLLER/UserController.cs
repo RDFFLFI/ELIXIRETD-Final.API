@@ -90,9 +90,6 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             //var validate = await _unitOfWork.Users.ValidationPassword(user);
 
-            if (await _unitOfWork.Users.ValidateUserExist(user.UserName))
-                return BadRequest("Username already exist, Please try something else!");
-
             //if (validate == true)
             //    return BadRequest("The password cannot be changed because you entered the same password!");
 

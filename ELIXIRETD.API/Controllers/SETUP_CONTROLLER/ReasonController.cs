@@ -62,9 +62,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateReason")]
         public async Task<IActionResult> UpdateReason([FromBody] Reason reason)
         {
-            var validate = await _unitOfWork.Reasons.validateReasonSame(reason);
-            if (validate == true)
-                return BadRequest("The reason cannot be changed because you entered the same reason!");
+            //var validate = await _unitOfWork.Reasons.validateReasonSame(reason);
+            //if (validate == true)
+            //    return BadRequest("The reason cannot be changed because you entered the same reason!");
 
             var validateReason = await _unitOfWork.Reasons.ValidateReasonEntry(reason);
 
