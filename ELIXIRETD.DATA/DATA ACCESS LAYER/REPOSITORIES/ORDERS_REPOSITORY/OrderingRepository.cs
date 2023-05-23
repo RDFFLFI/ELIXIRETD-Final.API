@@ -49,13 +49,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams)
         {
-            var orders = _context.Orders.OrderBy(x => x.OrderDate)
+            var orders = _context.Orders.OrderBy(x => x.Rush == null)
+                                          .ThenBy(x => x.Rush)
+                                          .ThenBy(x => x.OrderDate)
                                         .GroupBy(x => new
                                         {
                                             x.CustomerName,
                                             x.IsActive,
-                                            x.PreparedDate
-                                        }).Where(x => x.Key.IsActive == true)
+                                            x.PreparedDate,
+                          
+
+                                        })
+                                          .Where(x => x.Key.IsActive == true)
                                           .Where(x => x.Key.PreparedDate == null)
 
                                           .Select(x => new GetAllListofOrdersPaginationDto
