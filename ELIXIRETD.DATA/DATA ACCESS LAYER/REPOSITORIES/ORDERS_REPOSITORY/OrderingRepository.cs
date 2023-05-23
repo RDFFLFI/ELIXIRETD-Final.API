@@ -955,7 +955,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.Rush
                        //x.ordering.IsApproved,
 
-                   }).Select(total => new ListOfOrdersForMoveOrderDto
+                   }).OrderBy(x => x.Key.Rush == null)
+                    .ThenBy(x => x.Key.Rush)
+                   .Select(total => new ListOfOrdersForMoveOrderDto
                    {
                        Id = total.Key.Id,
                        OrderNo = total.Key.OrderNoPKey,
@@ -1984,39 +1986,96 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPagination(UserParams userParams)
         {
-            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
-                                            .GroupBy(x => new
-                                            {
 
-                                                x.OrderNo,
-                                                x.Department,
-                                                x.CustomerName,
-                                                x.Customercode,
-                                               
-                                                x.OrderDate,
-                                                x.PreparedDate,
-                                                x.IsApprove,
-                                                x.IsReject,
-                                                x.RejectedDateTempo,
-                                                //x.Remarks,
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                         .GroupBy(x => new
+                                         {
 
+                                             x.Id,
+                                             x.Rush,
 
-                                            }).Select(x => new RejectedMoveOrderPaginationDto
-                                            {
-                                                OrderNo = x.Key.OrderNo,
-                                                Department = x.Key.Department,
-                                                CustomerName = x.Key.CustomerName,
-                                                CustomerCode = x.Key.Customercode,
-                                               
-                                                Quantity = x.Sum(x => x.QuantityOrdered),
-                                                OrderDate = x.Key.OrderDate.ToString(),
-                                                PreparedDate = x.Key.PreparedDate.ToString(),
-                                                IsReject = x.Key.IsReject != null,
-                                                RejectedDate = x.Key.RejectedDateTempo.ToString(),
-                                                //Remarks = x.Key.Remarks,
+                                         }).Select(x => new GetallApproveDto
+                                         {
+                                             OrderNoPKey = x.Key.Id,
+                                             Rush = x.Key.Rush
+
+                                         });
 
 
-                                            });
+            var orders = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApproveReject == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.Department,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,
+
+                    x.moveorder.OrderDate,
+                    x.moveorder.PreparedDate,
+                    x.moveorder.IsApprove,
+                    x.moveorder.IsReject,
+                    x.moveorder.RejectedDateTempo,
+                    //x.Remarks,
+
+                    x.rushgenerate.Rush
+
+
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new RejectedMoveOrderPaginationDto
+                {
+                    OrderNo = x.Key.OrderNo,
+                    Department = x.Key.Department,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    OrderDate = x.Key.OrderDate.ToString(),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsReject = x.Key.IsReject != null,
+                    RejectedDate = x.Key.RejectedDateTempo.ToString(),
+                    Rush = x.Key.Rush
+
+                });
+
+
+
+            //var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
+            //                                .GroupBy(x => new
+            //                                {
+
+            //                                    x.OrderNo,
+            //                                    x.Department,
+            //                                    x.CustomerName,
+            //                                    x.Customercode,
+
+            //                                    x.OrderDate,
+            //                                    x.PreparedDate,
+            //                                    x.IsApprove,
+            //                                    x.IsReject,
+            //                                    x.RejectedDateTempo,
+            //                                    //x.Remarks,
+
+
+            //                                }).Select(x => new RejectedMoveOrderPaginationDto
+            //                                {
+            //                                    OrderNo = x.Key.OrderNo,
+            //                                    Department = x.Key.Department,
+            //                                    CustomerName = x.Key.CustomerName,
+            //                                    CustomerCode = x.Key.Customercode,
+
+            //                                    Quantity = x.Sum(x => x.QuantityOrdered),
+            //                                    OrderDate = x.Key.OrderDate.ToString(),
+            //                                    PreparedDate = x.Key.PreparedDate.ToString(),
+            //                                    IsReject = x.Key.IsReject != null,
+            //                                    RejectedDate = x.Key.RejectedDateTempo.ToString(),
+            //                                    //Remarks = x.Key.Remarks,
+
+
+            //                                });
 
             return await PagedList<RejectedMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
@@ -2025,42 +2084,59 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search)
         {
 
+            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
+                                        .GroupBy(x => new
+                                        {
+
+                                            x.Id,
+                                            x.Rush,
+
+                                        }).Select(x => new GetallApproveDto
+                                        {
+                                            OrderNoPKey = x.Key.Id,
+                                            Rush = x.Key.Rush
+
+                                        });
 
 
+            var orders = _context.MoveOrders
+                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
+                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
+                .Where(x => x.moveorder.IsApproveReject == true)
+                .GroupBy(x => new
+                {
+                    x.moveorder.OrderNo,
+                    x.moveorder.Department,
+                    x.moveorder.CustomerName,
+                    x.moveorder.Customercode,
 
-            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
-                                            .GroupBy(x => new
-                                            {
-                                                x.OrderNo,
-                                                x.Department,
-                                                x.CustomerName,
-                                                x.Customercode,
-                                              
-                                                x.OrderDate,
-                                                x.PreparedDate,
-                                                x.IsApprove,
-                                                x.IsReject,
-                                                x.RejectedDateTempo,
-                                                //x.Remarks,
+                    x.moveorder.OrderDate,
+                    x.moveorder.PreparedDate,
+                    x.moveorder.IsApprove,
+                    x.moveorder.IsReject,
+                    x.moveorder.RejectedDateTempo,
+                    //x.Remarks,
 
-
-
-                                            }).Select(x => new RejectedMoveOrderPaginationDto
-                                            {
-                                                OrderNo = x.Key.OrderNo,
-                                                Department = x.Key.Department,
-                                                CustomerName = x.Key.CustomerName,
-                                                CustomerCode = x.Key.Customercode,
-                                              
-                                                Quantity = x.Sum(x => x.QuantityOrdered),
-                                                OrderDate = x.Key.OrderDate.ToString(),
-                                                PreparedDate = x.Key.PreparedDate.ToString(),
-                                                IsReject = x.Key.IsReject != null,
-                                                RejectedDate = x.Key.RejectedDateTempo.Value.ToString(),
-                                                //Remarks = x.Key.Remarks,
+                    x.rushgenerate.Rush
 
 
-                                            }).Where(x => Convert.ToString(x.OrderNo).ToLower().Contains(search.Trim().ToLower())
+                }).OrderByDescending(x => x.Key.Rush)
+                .ThenBy(x => x.Key.PreparedDate)
+                .Select(x => new RejectedMoveOrderPaginationDto
+                {
+                    OrderNo = x.Key.OrderNo,
+                    Department = x.Key.Department,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+
+                    Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
+                    OrderDate = x.Key.OrderDate.ToString(),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsReject = x.Key.IsReject != null,
+                    RejectedDate = x.Key.RejectedDateTempo.ToString(),
+                    Rush = x.Key.Rush
+
+                }).Where(x => Convert.ToString(x.OrderNo).ToLower().Contains(search.Trim().ToLower())
                                             || Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
                                             || Convert.ToString(x.CustomerCode).ToLower().Contains(search.Trim().ToLower()));
 
@@ -2094,14 +2170,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .GroupBy(x => new
                 {
                     x.moveorder.OrderNo,
-                    x.moveorder.Department,
+                    //x.moveorder.Department,
                     x.moveorder.CustomerName,
                     x.moveorder.Customercode,
 
-                    x.moveorder.DateNeeded,
+                    //x.moveorder.DateNeeded,
                     x.moveorder.PreparedDate,
                     x.moveorder.IsApprove,
-                    x.moveorder.IsTransact,
+                    //x.moveorder.IsTransact,
 
                     x.rushgenerate.Rush
 
@@ -2113,12 +2189,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
                     OrderNo = x.Key.OrderNo,
-                    Department = x.Key.Department,
+                    //Department = x.Key.Department,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.Customercode,
 
                     TotalOrders = x.Sum(x => x.moveorder.QuantityOrdered),
-                    DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
+                    //DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
                     PreparedDate = x.Key.PreparedDate.ToString(),
                     IsApproved = x.Key.IsApprove != null,
 
