@@ -451,15 +451,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .Where(x => x.BorrowedPKey == borrowed.Id)
                 .ToListAsync();
 
-            returned.DepartmentName = borrowed.DepartmentName;
-            returned.CompanyCode = borrowed.CompanyCode;
-            returned.CompanyName = borrowed.CompanyName;
-            returned.DepartmentCode = borrowed.DepartmentCode;
-            returned.DepartmentName = borrowed.DepartmentName;
-            returned.LocationCode = borrowed.LocationCode;
-            returned.LocationName = borrowed.LocationName;
-            returned.AccountCode = borrowed.AccountCode;
-            returned.AccountTitles = borrowed.AccountTitles;
+            //returned.DepartmentName = borrowed.DepartmentName;
+            //returned.CompanyCode = borrowed.CompanyCode;
+            //returned.CompanyName = borrowed.CompanyName;
+            //returned.DepartmentCode = borrowed.DepartmentCode;
+            //returned.DepartmentName = borrowed.DepartmentName;
+            //returned.LocationCode = borrowed.LocationCode;
+            //returned.LocationName = borrowed.LocationName;
+            //returned.AccountCode = borrowed.AccountCode;
+            //returned.AccountTitles = borrowed.AccountTitles;
 
             foreach (var item in returnedDetails)
             {
