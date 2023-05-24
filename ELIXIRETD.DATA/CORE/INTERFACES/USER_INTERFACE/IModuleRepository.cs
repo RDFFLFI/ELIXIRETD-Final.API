@@ -16,7 +16,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> AddNewModule(Module module);
         Task<bool> UpdateModule(Module module);
         Task<bool> CheckMainMenu(int id);
-        Task<bool> SubMenuNameExist(string module);
+        Task<bool> SubMenuNameExist(string module , int mainmenu);
         Task<bool> ModuleNameExist(string module);
         Task<bool> InActiveModule(Module module);
         Task<bool> ActivateModule(Module module);
@@ -42,6 +42,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ValidateMenuSame(MainMenu menu);
 
         Task<bool> ValidateModuleSame(Module module);
+
+
+
+        Task<bool> ValidateModuleAndMenuPath(int module , string path);
 
 
     }

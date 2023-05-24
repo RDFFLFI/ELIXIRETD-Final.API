@@ -95,9 +95,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             return true;
         }
 
-        public async Task<bool> SubMenuNameExist(string module)
+        public async Task<bool> SubMenuNameExist(string module , int mainmenu)
         {
-            return await _context.Modules.AnyAsync(x => x.SubMenuName == module);
+            return await _context.Modules.AnyAsync(x => x.SubMenuName == module && x.MainMenuId == mainmenu);
         }
 
         public async Task<bool> ModuleNameExist(string module)
@@ -359,6 +359,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 return false;
 
             return true;
+        }
+
+        public async Task<bool> ValidateModuleAndMenuPath(int module, string path)
+        {
+            return await _context.Modules.AnyAsync(x => x.MainMenuId == module && x.ModuleName == path);
         }
     }
 }
