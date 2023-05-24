@@ -29,6 +29,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  Id = x.Id, 
                                                  CustomerCode = x.CustomerCode, 
                                                  CustomerName = x.CustomerName,
+                                                 CustomerType = x.CustomerType,
+
+
+                                                 ModifyBy = x.ModifyBy,
+                                                 ModifyDate = x.ModifyDate.ToString(),
 
                                                  //CompanyCode = x.CompanyCode,
                                                  //CompanyName = x.CompanyName,
@@ -40,6 +45,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  //AccountTitles = x.AccountTitles,
 
                                                  AddedBy = x.AddedBy,
+                                                 
                                                  DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                  IsActive = x.IsActive 
 
@@ -57,6 +63,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                               Id = x.Id,
                                               CustomerCode = x.CustomerCode,
                                               CustomerName = x.CustomerName,
+                                              CustomerType = x.CustomerType,
+
+
+                                              ModifyBy = x.ModifyBy,
+                                              ModifyDate = x.ModifyDate.ToString(),
 
                                               //CompanyCode = x.CompanyCode,
                                               //CompanyName = x.CompanyName,
@@ -92,6 +103,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
+                                          CustomerType = x.CustomerType,
+
+
+                                          ModifyBy = x.ModifyBy,
+                                          ModifyDate = x.ModifyDate.ToString(),
 
                                           //CompanyCode = x.CompanyCode,
                                           //CompanyName = x.CompanyName,
@@ -123,6 +139,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           CustomerCode = x.CustomerCode,
                                           CustomerName = x.CustomerName,
+                                          CustomerType = x.CustomerType,
+                                          
+
+                                          ModifyBy = x.ModifyBy,
+                                          ModifyDate = x.ModifyDate.ToString(),
 
                                           //CompanyCode = x.CompanyCode,
                                           //CompanyName = x.CompanyName,
@@ -138,7 +159,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           IsActive = x.IsActive
 
                                       }).Where(x => x.CustomerName.ToLower().Contains(search.Trim().ToLower())
-                                        || x.CustomerCode.ToLower().Contains(search.Trim().ToLower()));
+                                        || x.CustomerCode.ToLower().Contains(search.Trim().ToLower())
+                                        );
 
             return await PagedList<CustomerDto>.CreateAsync(customer, userParams.PageNumber, userParams.PageSize);
         }

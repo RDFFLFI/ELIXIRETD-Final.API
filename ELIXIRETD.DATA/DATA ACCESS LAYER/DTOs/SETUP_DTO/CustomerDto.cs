@@ -11,6 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public int Id { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
+        public string CustomerType { get; set; }
 
         //public string CompanyCode { get; set; }
         //public string CompanyName { get; set; }
@@ -25,6 +26,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         //public string Address { get; set; }
         public string DateAdded { get; set; }
         public string AddedBy { get; set; }
+
+        public string ModifyDate { get; set; }
+        public string ModifyBy { get; set; }
+
         public bool IsActive { get; set; }
 
     }

@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             foreach (Supplier items in supplier)
             {
 
-                if (supplier.Count(x => x.SupplierCode == items.SupplierCode && x.SupplierName == items.SupplierName && x.SupplierAddress == items.SupplierAddress) > 1)
+                if (supplier.Count(x => x.SupplierCode == items.SupplierCode && x.SupplierName == items.SupplierName/* && x.SupplierAddress == items.SupplierAddress*/) > 1)
                 {
 
                     duplicateList.Add(items);
@@ -60,24 +60,44 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                 else
                 {
-                    var existingSuppliers = await _unitOfWork.Suppliers.GetById(items.Supplier_No);
+                    var existingSuppliers = await _unitOfWork.Suppliers.GetBySupplierNo(items.Supplier_No);
 
                     if (existingSuppliers != null)
                     {
 
-                        existingSuppliers.SupplierCode = items.SupplierCode;
-                        existingSuppliers.SupplierName = items.SupplierName;
-                        existingSuppliers.SupplierAddress = items.SupplierAddress;
-                        existingSuppliers.AddedBy = items.AddedBy;
-                        existingSuppliers.IsActive = items.IsActive;
-                        existingSuppliers.DateAdded = items.DateAdded;
+                        bool hasChanged = false;
 
+                        if (existingSuppliers.SupplierCode != items.SupplierCode)
+                        {
+                            existingSuppliers.SupplierCode = items.SupplierCode;
+                            hasChanged = true;
+                        }
 
-                        await _unitOfWork.Suppliers.Update(existingSuppliers);
+                        if (existingSuppliers.SupplierName != items.SupplierName)
+                        {
+                            existingSuppliers.SupplierName = items.SupplierName;
+                            hasChanged = true;
+                        }
+
+                        if(hasChanged)
+                        {
+                            existingSuppliers.SupplierCode = items.SupplierCode;
+                            existingSuppliers.SupplierName = items.SupplierName;
+                            //existingSuppliers.SupplierAddress = items.SupplierAddress;
+                            //existingSuppliers.AddedBy = items.AddedBy;
+                            existingSuppliers.IsActive = items.IsActive;
+                            existingSuppliers.ModifyBy = items.ModifyBy;
+                            existingSuppliers.ModifyDate = DateTime.Now;
+                            //existingSuppliers.DateAdded = items.DateAdded;
+
+                            await _unitOfWork.Suppliers.Update(existingSuppliers);
+                        }
+
                     }
-                    else if (await _unitOfWork.Suppliers.GetBySupplierNo(items.Supplier_No) == null)
+                    else 
                     {
-
+                        
+                        existingSuppliers.DateAdded = DateTime.Now;
                         availableImport.Add(items);
                         await _unitOfWork.Suppliers.AddSupplier(items);
                     }

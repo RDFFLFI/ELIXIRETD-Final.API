@@ -15,7 +15,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public bool IsActive { get; set; }
         public string DateAdded { get; set; }
         public string AddedBy { get; set; }
-     
+
+        public string ModifyDate { get; set; }
+        public string ModifyBy { get; set; }
+
     }
 
 }
