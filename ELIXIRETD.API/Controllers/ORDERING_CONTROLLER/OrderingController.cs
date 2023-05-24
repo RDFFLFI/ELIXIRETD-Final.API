@@ -252,6 +252,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         [Route("EditOrderQuantity")]
         public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
         {
+
+            
+                
+
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
             return new JsonResult("Successfully edit Order Quantity");

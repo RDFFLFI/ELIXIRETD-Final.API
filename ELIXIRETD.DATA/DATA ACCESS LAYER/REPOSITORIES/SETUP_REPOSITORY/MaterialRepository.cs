@@ -332,6 +332,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  {
                                                      Id = x.Id,
                                                      SubcategoryName = x.SubCategoryName,
+                                                     ItemCategoryId = x.ItemCategoryId,
                                                      ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                      AddedBy = x.AddedBy,
                                                      DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -349,6 +350,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  {
                                                      Id = x.Id,
                                                      SubcategoryName = x.SubCategoryName,
+                                                     ItemCategoryId = x.ItemCategoryId,
                                                      ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                      AddedBy = x.AddedBy,
                                                      DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -426,6 +428,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                     {
                                                         Id = x.Id,
                                                         SubcategoryName = x.SubCategoryName,
+                                                        ItemCategoryId = x.ItemCategoryId,
                                                         ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                         AddedBy = x.AddedBy,
                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -448,6 +451,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                      {
                                                          Id = x.Id,
                                                          SubcategoryName = x.SubCategoryName,
+                                                         ItemCategoryId = x.ItemCategoryId,
                                                          ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                          AddedBy = x.AddedBy,
                                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),

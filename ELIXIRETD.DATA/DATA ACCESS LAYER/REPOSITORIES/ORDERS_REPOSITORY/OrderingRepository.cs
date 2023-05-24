@@ -9,6 +9,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -49,9 +50,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams)
         {
-            var orders = _context.Orders.OrderBy(x => x.Rush == null)
-                                          .ThenBy(x => x.Rush)
-                                          .ThenBy(x => x.OrderDate)
+                   var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
+            //                              //.ThenBy(x => x.Rush)
+                                          .OrderBy(x => x.OrderDate)
                                         .GroupBy(x => new
                                         {
                                             x.CustomerName,
@@ -62,7 +63,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         })
                                           .Where(x => x.Key.IsActive == true)
                                           .Where(x => x.Key.PreparedDate == null)
-
+                                           .OrderByDescending(x => x.Any(o => !string.IsNullOrEmpty(o.Rush)))
                                           .Select(x => new GetAllListofOrdersPaginationDto
                                           {
                                               CustomerName = x.Key.CustomerName,
@@ -282,11 +283,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                      .FirstOrDefaultAsync();
 
             if (existingOrder == null)
+            {
                 return false;
+            }
 
-            existingOrder.QuantityOrdered = orders.QuantityOrdered;
+            //else if (existingOrder.QuantityOrdered < orders.QuantityOrdered && existingOrder.QuantityOrdered <= 0)
+            //{
+            //    return false;
+            //}
+        
+                existingOrder.QuantityOrdered = orders.QuantityOrdered;
+                return true;
 
-            return true;
+               
+
         }
 
 

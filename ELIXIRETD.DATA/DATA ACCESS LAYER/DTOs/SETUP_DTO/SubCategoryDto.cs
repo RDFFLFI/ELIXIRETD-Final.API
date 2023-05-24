@@ -15,6 +15,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public string DateAdded { get; set; }
         public bool IsActive { get; set; }
 
+        public int ItemCategoryId { get; set; }
+
 
     }
 }
