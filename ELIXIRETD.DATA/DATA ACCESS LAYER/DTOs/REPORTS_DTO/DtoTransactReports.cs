@@ -23,6 +23,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string TransactedDate { get; set; }
         public string DeliveryDate { get; set; }
 
+        public string CustomerType { get; set; }
+
 
     }
 }

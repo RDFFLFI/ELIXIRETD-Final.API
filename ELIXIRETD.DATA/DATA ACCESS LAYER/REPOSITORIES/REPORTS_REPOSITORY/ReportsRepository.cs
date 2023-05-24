@@ -126,7 +126,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactionDate = transact.PreparedDate.ToString(),
                               DeliveryDate = transact.DeliveryDate.ToString(),
                               transact.IsActive,
-                              customer.CustomerType
+
+                              customer.CustomerType,
 
                           } into total
 
@@ -144,7 +145,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactedBy = total.Key.PreparedBy,
                               TransactionType = total.Key.IsActive,
                               TransactedDate = total.Key.TransactionDate,
-                              DeliveryDate = total.Key.DeliveryDate
+                              DeliveryDate = total.Key.DeliveryDate,
+
+                              CustomerType = total.Key.CustomerType
+                              
+                              
 
                           });
 
@@ -176,8 +181,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 Category = receipt.LotSection,
                                 Quantity = receipt.ActualGood,
                                 TransactBy = receiptHeader.PreparedBy,
-                                TransactDate = receipt.ReceivingDate.ToString(),
-                               
+                                TransactDate = receiptHeader.TransactionDate.ToString(),
+                                ReceivingDate = receipt.ReceivingDate.ToString(),
+
+                                CompanyCode = receiptHeader.CompanyCode,
+                                CompanyName = receiptHeader.CompanyName,
+                                DepartmentCode = receiptHeader.DepartmentCode,
+                                DepartmentName = receiptHeader.DepartmentName,
+                                LocationCode = receiptHeader.LocationCode,
+                                LocationName = receiptHeader.LocationName,
+                                AccountCode = receiptHeader.AccountCode,
+                                AccountTitles = receiptHeader.AccountTitles,
+
 
                             });
 

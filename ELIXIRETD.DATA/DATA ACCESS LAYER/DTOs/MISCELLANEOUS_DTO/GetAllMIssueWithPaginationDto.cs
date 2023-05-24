@@ -22,6 +22,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO
 
         public bool IsActive { get; set; }
 
+        public string TransactionDate { get; set; }
+
 
     }
 }

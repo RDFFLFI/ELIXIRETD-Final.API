@@ -38,6 +38,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsActive = x.IsActive,
                                                       Remarks = x.Remarks,
                                                       BorrowedDate = x.PreparedDate.ToString(),
+                                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                                   });
 
@@ -63,6 +64,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsActive = x.IsActive,
                                                       Remarks = x.Remarks,
                                                       BorrowedDate = x.PreparedDate.ToString(),
+                                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                                   })
                                                   .Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())

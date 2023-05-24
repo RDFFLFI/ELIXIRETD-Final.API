@@ -1,4 +1,6 @@
-﻿namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
+﻿using Microsoft.Identity.Client;
+
+namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
 {
     public class GetAllMReceiptWithPaginationdDto
     {
@@ -18,6 +20,8 @@
         public string PreparedBy { get; set; }
 
         public bool IsActive { get; set; }
+
+        public string TransactionDate { get; set; }
 
 
     }

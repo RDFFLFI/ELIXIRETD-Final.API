@@ -38,7 +38,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 SOH = inventory.Sum(x => x.ActualGood),
                 ReceiveIn = inventory.Sum(x => x.ActualGood),
                 RejectOrder= inventory.Sum(x => x.TotalReject),
-                IsWarehouseReceived = inventory.Key.IsWarehouseReceived
+                IsWarehouseReceived = inventory.Key.IsWarehouseReceived,
+                
 
             }).OrderBy(x => x.ItemCode)
             .Where(x => x.IsWarehouseReceived == true)

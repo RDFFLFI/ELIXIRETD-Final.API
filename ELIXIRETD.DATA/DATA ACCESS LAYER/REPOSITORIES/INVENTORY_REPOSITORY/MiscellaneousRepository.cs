@@ -97,6 +97,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             PreparedBy = x.PreparedBy,
                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                             //TransactionType = x.TransactionType,
+
+                                                            TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+
                                                             Remarks = x.Remarks,
                                                             IsActive= x.IsActive
                                                             
@@ -119,6 +122,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             PreparedBy = x.PreparedBy,
                                                             PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                             //TransactionType = x.TransactionType,
+
+                                                            TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+
                                                             Remarks = x.Remarks,
                                                             IsActive = x.IsActive
 
@@ -151,6 +157,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           PreparedDate = x.receiptparents.PreparedBy,
                           Remarks = x.receiptparents.Remarks,
                           //TransactionType = x.receiptparents.TransactionType,
+
 
                       });
 
@@ -332,6 +339,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         Remarks = x.Remarks,
                                                         PreparedBy = x.PreparedBy,
                                                         IsActive = x.IsActive,
+                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
                                                     
 
                                                     });
@@ -353,7 +361,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                         Remarks = x.Remarks,
                                                         PreparedBy = x.PreparedBy,
-                                                        IsActive = x.IsActive
+                                                        IsActive = x.IsActive,
+                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
 
                                                     }).Where(x => (Convert.ToString(x.IssuePKey)).ToLower().Contains(search.Trim().ToLower())
                                                       || (Convert.ToString(x.Customer)).ToLower().Contains(search.Trim().ToLower())

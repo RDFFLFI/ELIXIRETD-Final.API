@@ -14,13 +14,31 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string SupplierName { get; set; }
         public string Details { get; set; }
         public string ItemCode { get; set; }
-        public string ItemDescription { get; set; } 
+        public string ItemDescription { get; set; }
         public string Uom { get; set; }
         public string Category { get; set; }
-        public decimal Quantity { get; set; } 
+        public decimal Quantity { get; set; }
         public string TransactBy { get; set; }
         public string TransactDate { get; set; }
-        
+
+        public string ReceivingDate { get; set; }
+
+
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string DepartmentCode { get; set; }
+        public string DepartmentName { get; set; }
+
+        public string LocationCode { get; set; }
+        public string LocationName { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
+
+
+
+
 
 
 
