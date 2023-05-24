@@ -21,7 +21,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
         public string TransactionType { get; set; }
 
 
-
+        public DateTime TransactionDate { get; set; }
 
 
     }

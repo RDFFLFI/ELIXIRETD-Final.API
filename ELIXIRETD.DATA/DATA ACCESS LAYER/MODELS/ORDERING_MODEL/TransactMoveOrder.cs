@@ -25,6 +25,8 @@
 
         public string Rush { get; set; }
 
+        public string CustomerType { get; set; }
+
         
     }
 }

@@ -80,6 +80,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              LocationName = x.moveorder.LocationName,
                              AccountCode = x.moveorder.AccountCode,
                              AccountTitles = x.moveorder.AccountTitles,
+                             CustomerType = x.moveorder.CustomerType
+
 
 
                          });
@@ -123,7 +125,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               transact.PreparedBy,
                               TransactionDate = transact.PreparedDate.ToString(),
                               DeliveryDate = transact.DeliveryDate.ToString(),
-                              transact.IsActive
+                              transact.IsActive,
+                              customer.CustomerType
 
                           } into total
 

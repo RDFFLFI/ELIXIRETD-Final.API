@@ -61,7 +61,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
                         //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
-                        var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName);
+                        var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName , items.CustomerType);
                         var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription);
                         //var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
@@ -253,9 +253,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
         {
 
-            
-                
-
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
             return new JsonResult("Successfully edit Order Quantity");
@@ -408,6 +405,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.IsActive = true;
             order.IsPrepared = true;
             order.Rush = details.Rush;
+
+            order.CustomerType = details.CustomerType;
 
 
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);

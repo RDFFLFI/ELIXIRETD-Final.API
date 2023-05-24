@@ -63,7 +63,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         })
                                           .Where(x => x.Key.IsActive == true)
                                           .Where(x => x.Key.PreparedDate == null)
-                                           .OrderByDescending(x => x.Any(o => !string.IsNullOrEmpty(o.Rush)))
+                                           .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
                                           .Select(x => new GetAllListofOrdersPaginationDto
                                           {
                                               CustomerName = x.Key.CustomerName,
@@ -888,6 +888,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     OrderDate = x.OrderDate.ToString(),
                     DateNeeded = x.DateNeeded.ToString(),
                     PrepareDate = x.PreparedDate.ToString(),
+
+                    CustomerType = x.CustomerType,
 
                     Rush = x.Rush
 

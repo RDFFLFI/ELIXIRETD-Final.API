@@ -43,6 +43,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string AccountTitles { get; set; }
 
 
-
+        public DateTime TransactionDate { get; set; }
     }
 }

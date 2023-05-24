@@ -45,6 +45,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public string PrepareDate { get; set; }
         public string Address { get; set; }
 
+        public string CustomerType { get; set; }
 
         public string Rush { get; set; }
 
