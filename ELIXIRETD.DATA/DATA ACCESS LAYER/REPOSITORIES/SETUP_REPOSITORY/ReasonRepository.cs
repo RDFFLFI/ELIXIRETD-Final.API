@@ -70,6 +70,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 .FirstOrDefaultAsync();
 
             reasons.ReasonName = reason.ReasonName;
+            reasons.MainMenuId = reason.MainMenuId;
 
             return true;
         }

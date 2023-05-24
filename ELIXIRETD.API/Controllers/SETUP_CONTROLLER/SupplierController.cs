@@ -69,14 +69,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                         if (existingSuppliers.SupplierCode != items.SupplierCode)
                         {
-                            existingSuppliers.SyncDate = DateTime.Now;
+                            items.SyncDate = DateTime.Now;
                             existingSuppliers.SupplierCode = items.SupplierCode;
                             hasChanged = true;
                         }
 
                         if (existingSuppliers.SupplierName != items.SupplierName)
                         {
-                            existingSuppliers.SyncDate = DateTime.Now;
+                            items.SyncDate = DateTime.Now;
                             existingSuppliers.SupplierName = items.SupplierName;
                             hasChanged = true;
                         }
@@ -97,11 +97,17 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             await _unitOfWork.Suppliers.Update(existingSuppliers);
                         }
 
+                        if (!hasChanged)
+                        {
+                            existingSuppliers.SyncDate = DateTime.Now;
+                        }
+
+
                     }
                     else 
                     {
-                        existingSuppliers.SyncDate = DateTime.Now;
-                        existingSuppliers.DateAdded = DateTime.Now;
+                        items.SyncDate = DateTime.Now;
+                         items.DateAdded = DateTime.Now;
                         availableImport.Add(items);
                         await _unitOfWork.Suppliers.AddSupplier(items);
                     }

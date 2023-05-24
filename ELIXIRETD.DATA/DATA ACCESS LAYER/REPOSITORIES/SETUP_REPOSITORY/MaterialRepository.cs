@@ -83,15 +83,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> UpdateMaterial(Material materials)
         {
 
-          
-
-            var existingMaterial = await _context.Materials.Where(x => x.Id == materials.Id).FirstOrDefaultAsync();
+            var existingMaterial = await _context.Materials.Where(x => x.Id == materials.Id)
+                                                           .FirstOrDefaultAsync();
 
             // Check if the updated Uom already exists in the database
-            var materialExists = await ValidateMaterialExist(materials.ItemDescription) && existingMaterial.ItemDescription != materials.ItemDescription;
+            //var materialExists = await ValidateMaterialExist(materials.ItemDescription) && existingMaterial.ItemDescription != materials.ItemDescription;
 
-            if (materialExists)
-                return false;
+            //if (materialExists)
+            //    return false;
 
             existingMaterial.ItemDescription = materials.ItemDescription;
             existingMaterial.SubCategoryId = materials.SubCategoryId;

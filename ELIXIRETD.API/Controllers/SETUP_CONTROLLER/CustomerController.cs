@@ -73,21 +73,21 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                         if (existingCustomer.CustomerCode != items.CustomerCode)
                         {
-                            existingCustomer.SyncDate = DateTime.Now;
+                            items.SyncDate = DateTime.Now;
                             existingCustomer.CustomerCode = items.CustomerCode;
                             hasChanged = true;
                         }
 
                         if (existingCustomer.CustomerName != items.CustomerName)
                         {
-                            existingCustomer.SyncDate = DateTime.Now;
+                            items.SyncDate = DateTime.Now;
                             existingCustomer.CustomerName = items.CustomerName;
                             hasChanged = true;
                         }
 
                         if (existingCustomer.CustomerType != items.CustomerType)
                         {
-                            existingCustomer.SyncDate = DateTime.Now;
+                            items.SyncDate = DateTime.Now;
                             existingCustomer.CustomerType = items.CustomerType;
                             hasChanged = true;
                         }
@@ -119,12 +119,17 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             await _unitOfWork.Customers.Update(existingCustomer);
                         }
 
+                        if(!hasChanged)
+                        {
+                            existingCustomer.SyncDate = DateTime.Now;
+                        }
+
                        
                     }
                     else 
                     {
-                        existingCustomer.SyncDate = DateTime.Now;
-                        existingCustomer.DateAdded = DateTime.Now;
+                        items.SyncDate = DateTime.Now;
+                        items.DateAdded = DateTime.Now;
                         availableImport.Add(items);
                         await _unitOfWork.Customers.AddCustomer(items);
                     }
@@ -143,7 +148,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (duplicateList.Count == 0)
             {
                 await _unitOfWork.CompleteAsync();
-                return Ok("Successfully added!");
+                return Ok("Successfully updated and added!");
             }
             else
             {

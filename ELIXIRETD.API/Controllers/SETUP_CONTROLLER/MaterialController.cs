@@ -82,9 +82,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest("Item description , item category and sub category already exist!");
 
 
+            await _unitOfWork.Materials.UpdateMaterial(material);
             await _unitOfWork.CompleteAsync();
             return Ok(material);
         }
+
 
         [HttpPut]
         [Route("InActiveMaterial")]
