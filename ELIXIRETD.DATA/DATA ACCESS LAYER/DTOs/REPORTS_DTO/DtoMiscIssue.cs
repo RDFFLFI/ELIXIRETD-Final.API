@@ -35,6 +35,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string AddressOrder { get; set; }
 
+        public string PreparedDate { get; set; }
+
+
+
 
 
 

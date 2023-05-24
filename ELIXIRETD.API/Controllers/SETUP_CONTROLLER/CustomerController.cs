@@ -73,18 +73,21 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                         if (existingCustomer.CustomerCode != items.CustomerCode)
                         {
+                            existingCustomer.SyncDate = DateTime.Now;
                             existingCustomer.CustomerCode = items.CustomerCode;
                             hasChanged = true;
                         }
 
                         if (existingCustomer.CustomerName != items.CustomerName)
                         {
+                            existingCustomer.SyncDate = DateTime.Now;
                             existingCustomer.CustomerName = items.CustomerName;
                             hasChanged = true;
                         }
 
                         if (existingCustomer.CustomerType != items.CustomerType)
                         {
+                            existingCustomer.SyncDate = DateTime.Now;
                             existingCustomer.CustomerType = items.CustomerType;
                             hasChanged = true;
                         }
@@ -106,9 +109,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                             //existingCustomer.AddedBy = items.AddedBy;
                             existingCustomer.IsActive = items.IsActive;
+                            
                             //existingCustomer.DateAdded = items.DateAdded;
                             existingCustomer.ModifyBy = items.ModifyBy;
                             existingCustomer.ModifyDate = DateTime.Now;
+
+                            existingCustomer.SyncDate = DateTime.Now;
+
                             await _unitOfWork.Customers.Update(existingCustomer);
                         }
 
@@ -116,8 +123,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     }
                     else 
                     {
-
-                        items.DateAdded = DateTime.Now;
+                        existingCustomer.SyncDate = DateTime.Now;
+                        existingCustomer.DateAdded = DateTime.Now;
                         availableImport.Add(items);
                         await _unitOfWork.Customers.AddCustomer(items);
                     }

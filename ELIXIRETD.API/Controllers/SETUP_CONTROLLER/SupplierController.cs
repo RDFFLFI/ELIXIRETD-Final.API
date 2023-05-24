@@ -83,6 +83,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         {
                             existingSuppliers.SupplierCode = items.SupplierCode;
                             existingSuppliers.SupplierName = items.SupplierName;
+
+                            existingSuppliers.SupplierName = DateTime.Now;
                             //existingSuppliers.SupplierAddress = items.SupplierAddress;
                             //existingSuppliers.AddedBy = items.AddedBy;
                             existingSuppliers.IsActive = items.IsActive;

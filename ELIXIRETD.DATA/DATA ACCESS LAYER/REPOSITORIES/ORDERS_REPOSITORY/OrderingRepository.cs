@@ -1524,6 +1524,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.moveorder.Customercode,
                     x.moveorder.PreparedDate,
 
+                    x.moveorder.CompanyCode,
+                    x.moveorder.CompanyName,
+                    x.moveorder.DepartmentCode,
+                    x.moveorder.DepartmentName,
+                    x.moveorder.LocationCode,
+                    x.moveorder.LocationName,
+                    x.moveorder.AccountCode,
+                    x.moveorder.AccountTitles,
+
                     x.rushgenerate.Rush
 
 
@@ -1536,7 +1545,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     CustomerName = x.Key.CustomerName,
                     Customercode = x.Key.Customercode,
 
-      
+                    CompanyCode = x.Key.CompanyCode,
+                    CompanyName = x.Key.CompanyName,
+                    DepartmentCode = x.Key.DepartmentCode,
+                    DepartmentName = x.Key.DepartmentName,
+                    LocationCode = x.Key.LocationCode,
+                    LocationName = x.Key.LocationName,
+                    AccountCode = x.Key.AccountCode,
+                    AccountTitles = x.Key.AccountTitles,
+
+
+
                     Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
                     PreparedDate = x.Key.PreparedDate.ToString(),
                     Rush = x.Key.Rush
@@ -1608,6 +1627,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.moveorder.Customercode,
                     x.moveorder.PreparedDate,
 
+                    x.moveorder.CompanyCode,
+                    x.moveorder.CompanyName,
+                    x.moveorder.DepartmentCode,
+                    x.moveorder.DepartmentName,
+                    x.moveorder.LocationCode,
+                    x.moveorder.LocationName,
+                    x.moveorder.AccountCode,
+                    x.moveorder.AccountTitles,
+
                     x.rushgenerate.Rush
 
 
@@ -1619,6 +1647,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     OrderNo = x.Key.OrderNo,
                     CustomerName = x.Key.CustomerName,
                     Customercode = x.Key.Customercode,
+
+                    CompanyCode = x.Key.CompanyCode,
+                    CompanyName = x.Key.CompanyName,
+                    DepartmentCode = x.Key.DepartmentCode,
+                    DepartmentName = x.Key.DepartmentName,
+                    LocationCode = x.Key.LocationCode,
+                    LocationName = x.Key.LocationName,
+                    AccountCode = x.Key.AccountCode,
+                    AccountTitles = x.Key.AccountTitles,
 
                     Quantity = x.Sum(x => x.moveorder.QuantityOrdered),
                     PreparedDate = x.Key.PreparedDate.ToString(),

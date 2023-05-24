@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> AddCustomer(Customer customer)
         {
+
             customer.Id = 0;
             await _context.Customers.AddAsync(customer);
 
@@ -184,6 +186,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task Update(Customer Customer)
         {
+   
             //Customer.ModifyDate = DateTime.Now;
             _context.Customers.Update(Customer);
             await Task.CompletedTask;

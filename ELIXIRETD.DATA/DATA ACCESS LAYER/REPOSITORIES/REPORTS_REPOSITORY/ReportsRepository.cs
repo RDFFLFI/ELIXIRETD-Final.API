@@ -127,7 +127,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               DeliveryDate = transact.DeliveryDate.ToString(),
                               transact.IsActive,
 
+                             moveorder.CompanyCode,
+                             moveorder.CompanyName,
+                             moveorder.DepartmentCode,
+                             moveorder.DepartmentName,
+                             moveorder.LocationCode,
+                             moveorder.LocationName,
+                             moveorder.AccountCode,
+                             moveorder.AccountTitles,
+
                               customer.CustomerType,
+
+
 
                           } into total
 
@@ -147,9 +158,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactedDate = total.Key.TransactionDate,
                               DeliveryDate = total.Key.DeliveryDate,
 
-                              CustomerType = total.Key.CustomerType
-                              
-                              
+
+                              CustomerType = total.Key.CustomerType,
+
+                               CompanyCode = total.Key.CompanyCode,
+                              CompanyName = total.Key.CompanyName,
+                              DepartmentCode = total.Key.DepartmentCode,
+                              DepartmentName = total.Key.DepartmentName,
+                              LocationCode = total.Key.LocationCode,
+                              LocationName = total.Key.LocationName,
+                              AccountCode = total.Key.AccountCode,
+                              AccountTitles = total.Key.AccountTitles,
+
 
                           });
 
@@ -219,6 +239,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            Quantity = x.issue != null ? x.issue.Quantity : 0,
                            TransactBy = x.receipt.PreparedBy ,
                            TransactDate = x.issue.PreparedDate.ToString() ,
+
+                           PreparedDate = x.issue.PreparedDate.ToString(),
+
                            CompanyCode = x.receipt.CompanyCode,
                            CompanyName = x.receipt.CompanyName,
                            DepartmentCode = x.receipt.DepartmentCode,
