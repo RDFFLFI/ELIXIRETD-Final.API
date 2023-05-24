@@ -2583,11 +2583,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<bool> ValidateExistOrderandItemCode(int TransactId, string ItemCode, string customername , string itemdescription , string customercode)
+        public async Task<bool> ValidateExistOrderandItemCode(int TransactId, string ItemCode, string customertype , string itemdescription , string customercode)
         {
             var validate = await _context.Orders.Where(x => x.TrasactId == TransactId)
                                                     .Where(x => x.Customercode == customercode)
-                                                    .Where(x => x.CustomerName == customername)
+                                                    .Where(x => x.CustomerType == customertype)
                                                     .Where(x => x.ItemCode == ItemCode)
                                                     //.Where(x => x.CustomerType == CustomerType)
                                                     .Where(x => x.ItemdDescription  == itemdescription)
@@ -2650,10 +2650,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateCustomerName(string Customer , string CustomerName )
+        public async Task<bool> ValidateCustomerName(string Customer , string CustomerName , string CustomerType)
         {
             var validate = await _context.Customers.Where(x => x.CustomerCode == Customer)
                                                  .Where(x => x.CustomerName == CustomerName)
+                                                 .Where(x => x.CustomerType == CustomerType)
                                                  .Where(x => x.IsActive == true)
                                                  .FirstOrDefaultAsync();
 

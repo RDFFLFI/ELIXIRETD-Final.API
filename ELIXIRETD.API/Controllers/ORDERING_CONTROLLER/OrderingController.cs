@@ -51,14 +51,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     //    QuantityInValid.Add(items);
                     //
 
-                    if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.CustomerName == items.CustomerName && x.CustomerType == items.CustomerType) > 1)
+                    if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.Customercode == items.Customercode && x.CustomerType == items.CustomerType) > 1)
                     {
                         DuplicateList.Add(items);
                         continue;
 
                     }
                  
-                        var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerName , items.ItemdDescription , items.Customercode);
+                        var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
                         //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName);
