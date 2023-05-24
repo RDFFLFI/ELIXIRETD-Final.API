@@ -27,6 +27,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
         Task<Customer> GetByCustomerNo(int customerNo);
+        //Task<Customer> GetByCustomerNoAndCustomerType(int customerNo, string customerType);
         Task<Customer> GetById(int id);
         Task Update(Customer Customer);
 

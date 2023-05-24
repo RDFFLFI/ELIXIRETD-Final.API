@@ -52,12 +52,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             List<Customer> duplicateList = new List<Customer>();
             List<Customer> availableImport = new List<Customer>();
 
-            foreach ( Customer items in customer)
+            foreach (Customer items in customer)
             {
 
-                if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerName == items.CustomerName
-                //&& x.CompanyCode == items.CompanyCode && x.DepartmentCode == items.DepartmentCode && x.LocationCode == items.LocationCode 
-               /* && x.AccountCode == items.AccountCode*/) > 1)
+                if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerType == items.CustomerType) > 1)
                 {
 
                     duplicateList.Add(items);
@@ -66,33 +64,60 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 else
                 {
 
-                    var existingCustomer = await _unitOfWork.Customers.GetById(items.Customer_No);
+                    var existingCustomer = await _unitOfWork.Customers.GetByCustomerNo(items.Customer_No);
 
                     if (existingCustomer != null)
-                    { 
-
-                        existingCustomer.CustomerCode = items.CustomerCode;
-                        existingCustomer.CustomerName = items.CustomerName;
-
-                        //existingCustomer.CompanyCode = items.CompanyCode;
-                        //existingCustomer.CompanyName = items.CompanyName;
-                        //existingCustomer.DepartmentCode = items.DepartmentCode;
-                        //existingCustomer.DepartmentName = items.DepartmentName;
-                        //existingCustomer.LocationCode = items.LocationCode;
-                        //existingCustomer.LocationName = items.LocationName;
-                        //existingCustomer.AccountCode = items.AccountCode;
-                        //existingCustomer.AccountTitles = items.AccountTitles;
-
-                        existingCustomer.AddedBy = items.AddedBy;
-                        existingCustomer.IsActive = items.IsActive;
-                        existingCustomer.DateAdded = items.DateAdded;
+                    {
+                        bool hasChanged = false;
 
 
-                        await _unitOfWork.Customers.Update(existingCustomer);
+                        if (existingCustomer.CustomerCode != items.CustomerCode)
+                        {
+                            existingCustomer.CustomerCode = items.CustomerCode;
+                            hasChanged = true;
+                        }
+
+                        if (existingCustomer.CustomerName != items.CustomerName)
+                        {
+                            existingCustomer.CustomerName = items.CustomerName;
+                            hasChanged = true;
+                        }
+
+                        if (existingCustomer.CustomerType != items.CustomerType)
+                        {
+                            existingCustomer.CustomerType = items.CustomerType;
+                            hasChanged = true;
+                        }
+
+                        if(hasChanged)
+                        {
+
+                            existingCustomer.CustomerCode = items.CustomerCode;
+                            existingCustomer.CustomerName = items.CustomerName;
+                            existingCustomer.CustomerType = items.CustomerType;
+                            existingCustomer.CompanyCode = items.CompanyCode;
+                            existingCustomer.CompanyName = items.CompanyName;
+                            existingCustomer.DepartmentCode = items.DepartmentCode;
+                            existingCustomer.DepartmentName = items.DepartmentName;
+                            existingCustomer.LocationCode = items.LocationCode;
+                            existingCustomer.LocationName = items.LocationName;
+                            //existingCustomer.AccountCode = items.AccountCode;
+                            //existingCustomer.AccountTitles = items.AccountTitles;
+
+                            //existingCustomer.AddedBy = items.AddedBy;
+                            existingCustomer.IsActive = items.IsActive;
+                            //existingCustomer.DateAdded = items.DateAdded;
+                            existingCustomer.ModifyBy = items.ModifyBy;
+                            existingCustomer.ModifyDate = DateTime.Now;
+                            await _unitOfWork.Customers.Update(existingCustomer);
+                        }
+
+                       
                     }
-                    else if (await _unitOfWork.Customers.GetByCustomerNo(items.Customer_No) == null)
+                    else 
                     {
 
+                        items.DateAdded = DateTime.Now;
                         availableImport.Add(items);
                         await _unitOfWork.Customers.AddCustomer(items);
                     }
@@ -118,6 +143,89 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest(resultlist);
             }
         }
+
+
+
+
+        //[HttpPut]
+        //[Route("AddNewCustomer")]
+        //public async Task<IActionResult> AddNewCustomer([FromBody] Customer[] customer)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return new JsonResult("Something went wrong!") { StatusCode = 500 };
+        //    }
+
+        //    List<Customer> duplicateList = new List<Customer>();
+        //    List<Customer> availableImport = new List<Customer>();
+
+        //    foreach ( Customer items in customer)
+        //    {
+
+        //        if (customer.Count(x => x.CustomerCode == items.CustomerCode && x.CustomerType == items.CustomerType
+        //        //&& x.CompanyCode == items.CompanyCode && x.DepartmentCode == items.DepartmentCode && x.LocationCode == items.LocationCode
+        //       /* && x.AccountCode == items.AccountCode*/) > 1)
+        //        {
+
+        //            duplicateList.Add(items);
+        //        }
+
+        //        else
+        //        {
+
+        //            var existingCustomer = await _unitOfWork.Customers.GetById(items.Customer_No);
+
+        //            if (existingCustomer != null)
+        //            { 
+
+        //                existingCustomer.CustomerCode = items.CustomerCode;
+        //                existingCustomer.CustomerName = items.CustomerName;
+        //                existingCustomer.CustomerType = items.CustomerType;
+        //                existingCustomer.CompanyCode = items.CompanyCode;
+        //                existingCustomer.CompanyName = items.CompanyName;
+        //                existingCustomer.DepartmentCode = items.DepartmentCode;
+        //                existingCustomer.DepartmentName = items.DepartmentName;
+        //                existingCustomer.LocationCode = items.LocationCode;
+        //                existingCustomer.LocationName = items.LocationName;
+        //                //existingCustomer.AccountCode = items.AccountCode;
+        //                //existingCustomer.AccountTitles = items.AccountTitles;
+
+        //                existingCustomer.AddedBy = items.AddedBy;
+        //                existingCustomer.IsActive = items.IsActive;
+        //                //existingCustomer.DateAdded = items.DateAdded;
+
+
+        //                await _unitOfWork.Customers.Update(existingCustomer);
+        //            }
+        //            else if (await _unitOfWork.Customers.GetByCustomerNo(items.Customer_No) == null)
+        //            {
+
+        //                items.DateAdded = DateTime.Now;
+        //                availableImport.Add(items);
+        //                await _unitOfWork.Customers.AddCustomer(items);
+        //            }
+
+        //        }
+
+        //    }
+
+        //    var resultlist = new
+        //    {
+        //        AvailableImport = availableImport,
+        //        DuplicateList = duplicateList,
+        //    };
+
+        //    if (duplicateList.Count == 0)
+        //    {
+        //        await _unitOfWork.CompleteAsync();
+        //        return Ok("Successfully added!");
+        //    }
+        //    else
+        //    {
+
+        //        return BadRequest(resultlist);
+        //    }
+        //}
 
 
 

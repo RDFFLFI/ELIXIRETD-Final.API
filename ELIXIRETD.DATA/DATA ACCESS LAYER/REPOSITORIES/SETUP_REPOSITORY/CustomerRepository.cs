@@ -162,13 +162,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task Update(Customer Customer)
         {
+            //Customer.ModifyDate = DateTime.Now;
             _context.Customers.Update(Customer);
             await Task.CompletedTask;
         }
 
-
-
-
-
+        
     }
 }

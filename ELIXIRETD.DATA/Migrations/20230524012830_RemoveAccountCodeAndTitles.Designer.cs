@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20230524012830_RemoveAccountCodeAndTitles")]
+    partial class RemoveAccountCodeAndTitles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -812,8 +814,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ModifyBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ModifyDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("ModifyDate")
+                        .HasColumnType("Date");
 
                     b.HasKey("Id");
 
