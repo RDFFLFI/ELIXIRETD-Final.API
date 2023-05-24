@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
 
             }
 
-            return Ok("SuccessfullyAd new miscellaneous receipt in wareouse!");
+            return Ok("Successfully Add new miscellaneous receipt in wareouse!");
 
         }
 

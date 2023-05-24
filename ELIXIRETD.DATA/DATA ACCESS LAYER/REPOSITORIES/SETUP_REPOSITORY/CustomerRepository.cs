@@ -35,6 +35,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                                  ModifyBy = x.ModifyBy,
                                                  ModifyDate = x.ModifyDate.ToString(),
+                                                 SyncDate = x.SyncDate.ToString(),
 
                                                  CompanyCode = x.CompanyCode,
                                                  CompanyName = x.CompanyName,
@@ -69,6 +70,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                               ModifyBy = x.ModifyBy,
                                               ModifyDate = x.ModifyDate.ToString(),
+
+                                              SyncDate = x.SyncDate.ToString(),
 
                                               CompanyCode = x.CompanyCode,
                                               CompanyName = x.CompanyName,
@@ -111,6 +114,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           ModifyBy = x.ModifyBy,
                                           ModifyDate = x.ModifyDate.ToString(),
 
+                                          SyncDate = x.SyncDate.ToString(),
+
                                           CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,
                                           DepartmentCode = x.DepartmentCode,
@@ -146,6 +151,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                           ModifyBy = x.ModifyBy,
                                           ModifyDate = x.ModifyDate.ToString(),
+
+                                          SyncDate = x.SyncDate.ToString(),
+
+
 
                                           CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,

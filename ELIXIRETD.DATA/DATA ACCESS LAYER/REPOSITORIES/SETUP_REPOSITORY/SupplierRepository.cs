@@ -28,7 +28,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                                  ModifyBy = x.ModifyBy,
                                                  ModifyDate = x.ModifyDate.ToString(),
-            
+
+                                                 SyncDate = x.SyncDate.ToString(),
+
                                                  DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                  AddedBy = x.AddedBy,
                                                  IsActive = x.IsActive
@@ -48,6 +50,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                SupplierName = x.SupplierName,
                                                ModifyBy = x.ModifyBy,
                                                ModifyDate = x.ModifyDate.ToString(),
+
+                                               SyncDate = x.SyncDate.ToString(),
 
                                                DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                AddedBy = x.AddedBy,
@@ -74,6 +78,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              Id = x.Id,
                                              SupplierCode = x.SupplierCode,
                                              SupplierName = x.SupplierName,
+
+                                             SyncDate = x.SyncDate.ToString(),
+
                                              ModifyBy = x.ModifyBy,
                                              ModifyDate = x.ModifyDate.ToString(),
                                              DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -94,6 +101,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           Id = x.Id,
                                           SupplierCode = x.SupplierCode,
                                           SupplierName = x.SupplierName,
+
+                                          SyncDate = x.SyncDate.ToString(),
+
                                           ModifyBy = x.ModifyBy,
                                           ModifyDate = x.ModifyDate.ToString(),
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
