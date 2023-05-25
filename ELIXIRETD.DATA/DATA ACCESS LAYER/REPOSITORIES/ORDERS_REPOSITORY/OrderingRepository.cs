@@ -39,6 +39,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             Orders.IsActive = true;
+            Orders.StandartQuantity = Orders.QuantityOrdered;
 
 
             await _context.Orders.AddAsync(Orders);
@@ -1035,14 +1036,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   x.rushgenerate.Rush
 
 
-              }).Select(x => new GetAllListForMoveOrderPaginationDto
+              }).OrderByDescending(x => x.Key.Rush)
+              .Select(x => new GetAllListForMoveOrderPaginationDto
               {
                   CustomerName = x.Key.CustomerName,
                   IsActive = x.Key.IsActive,
                   IsApproved = x.Key.IsApproved != null,
                   Rush = x.Key.Rush
-                  
-
+                 
               });
 
 

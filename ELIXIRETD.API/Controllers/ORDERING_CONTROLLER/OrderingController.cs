@@ -122,6 +122,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         else
                         {
 
+                        
                         AvailableImport.Add(items);
                         await _unitofwork.Orders.AddNewOrders(items);
 
@@ -256,6 +257,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
             //if (editquantity == false)
             //    return BadRequest("Invalid request!, Quantity cannot be zero or exceed actual quantity");
+
 
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
