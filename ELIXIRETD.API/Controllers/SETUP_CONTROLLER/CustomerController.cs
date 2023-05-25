@@ -127,8 +127,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingCustomer.SyncDate = DateTime.Now;
                             existingCustomer.StatusSync = "No new update";
                         }
-
-                       
+              
                     }
                     else 
                     {

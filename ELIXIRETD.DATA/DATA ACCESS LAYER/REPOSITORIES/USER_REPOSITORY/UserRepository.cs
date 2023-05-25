@@ -109,20 +109,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         {
 
             var Users = await _context.Users.Where(x => x.Id == user.Id)
-                                            .Where(x => x.UserRoleId == user.UserRoleId)
+                                            //.Where(x => x.UserRoleId == user.UserRoleId)
                                             .FirstOrDefaultAsync();
 
-            if( Users == null)
-            {
-                return false;
-            }
+            //if( Users == null)
+            //{
+            //    return false;
+            //}
 
             Users.IsActive = true;
 
-            var Role = await _context.Roles.Where(x => x.Id == user.UserRoleId)                                             
-                                           .FirstOrDefaultAsync();
+            //var Role = await _context.Roles.Where(x => x.Id == user.UserRoleId)                                             
+            //                               .FirstOrDefaultAsync();
 
-            Role.IsActive = true;
+            //Role.IsActive = true;
             
             return true;
            

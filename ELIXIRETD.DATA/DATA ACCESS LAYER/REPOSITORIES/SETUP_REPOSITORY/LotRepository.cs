@@ -75,32 +75,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ActivateLotName(LotSection lotname)
         {
-            //var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
-            //                                  .FirstOrDefaultAsync();
+            var lots = await _context.LotSections.Where(x => x.Id == lotname.Id)
+                                              .FirstOrDefaultAsync();
 
-            //lots.IsActive = true;
-
-            //return true;
-
-
-            var lotsection = await _context.LotSections.Where(x => x.Id == lotname.Id)
-                                         .Where(x => x.LotNamesId == lotname.LotNamesId)
-                                         .FirstOrDefaultAsync();
-
-            if (lotsection == null)
-            {
-                return false;
-            }
-            lotsection.IsActive = true;
-
-
-            var lotnames = await _context.Lotnames.Where(x => x.Id == lotname.LotNamesId)
-                                               .FirstOrDefaultAsync();
-
-
-            lotnames.IsActive = true;
+            lots.IsActive = true;
 
             return true;
+
+
+            //var lotsection = await _context.LotSections.Where(x => x.Id == lotname.Id)
+            //                             .Where(x => x.LotNamesId == lotname.LotNamesId)
+            //                             .FirstOrDefaultAsync();
+
+            //if (lotsection == null)
+            //{
+            //    return false;
+            //}
+            //lotsection.IsActive = true;
+
+
+            //var lotnames = await _context.Lotnames.Where(x => x.Id == lotname.LotNamesId)
+            //                                   .FirstOrDefaultAsync();
+
+
+            //lotnames.IsActive = true;
+
+            //return true;
 
         }
 

@@ -116,25 +116,25 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             //return true;
 
             var material = await _context.Materials.Where(x => x.Id == materials.Id)
-                                          .Where(x => x.SubCategoryId == materials.SubCategoryId)
-                                          .Where(x => x.UomId == materials.UomId)
+                                          //.Where(x => x.SubCategoryId == materials.SubCategoryId)
+                                          //.Where(x => x.UomId == materials.UomId)
                                           .FirstOrDefaultAsync();
 
-            if (material == null)
-            {
-                return false;
-            }
+            //if (material == null)
+            //{
+            //    return false;
+            //}
             material.IsActive = true;
 
-            var subcategory = await _context.SubCategories.Where(x => x.Id == material.SubCategoryId)
-                                                           .FirstOrDefaultAsync();
+            //var subcategory = await _context.SubCategories.Where(x => x.Id == material.SubCategoryId)
+            //                                               .FirstOrDefaultAsync();
 
-            subcategory.IsActive = true;
+            //subcategory.IsActive = true;
 
-            var uom = await _context.Uoms.Where(x => x.Id == material.UomId)
-                                                          .FirstOrDefaultAsync();
+            //var uom = await _context.Uoms.Where(x => x.Id == material.UomId)
+            //                                              .FirstOrDefaultAsync();
 
-            uom.IsActive = true;
+            //uom.IsActive = true;
 
             return true;
 
@@ -386,17 +386,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> ActivateSubCategory(SubCategory category)
         {
             var update = await _context.SubCategories.Where(x => x.Id == category.Id)
-                                                     .Where(x => x.ItemCategoryId == category.ItemCategoryId)
+                                                     //.Where(x => x.ItemCategoryId == category.ItemCategoryId)
                                                      .FirstOrDefaultAsync();
 
 
-            var updateItemCateg = await _context.ItemCategories.Where(x => x.Id == category.ItemCategoryId)
-                                                               .FirstOrDefaultAsync();
+            //var updateItemCateg = await _context.ItemCategories.Where(x => x.Id == category.ItemCategoryId)
+            //                                                   .FirstOrDefaultAsync();
 
             if (update == null)
                 return false;
 
-            updateItemCateg.IsActive = category.IsActive = true;
+            //updateItemCateg.IsActive = category.IsActive = true;
 
             update.IsActive = category.IsActive = true;
 
