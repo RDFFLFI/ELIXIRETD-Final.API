@@ -15,12 +15,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO
 
         public string PreparedBy { get; set; }
 
-        public string ItemCode { get; set; }    
+        public string ItemCode { get; set; }
 
         public string ItemDescription { get; set; }
 
         public decimal TotalQuantity { get; set; }
 
-        public string Remarks { get; set; } 
+        public string Remarks { get; set; }
+
+        public string TransactionDate { get; set; }
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string DepartmentCode { get; set; }
+        public string DepartmentName { get; set; }
+
+        public string LocationCode { get; set; }
+        public string LocationName { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
+
     }
+
 }

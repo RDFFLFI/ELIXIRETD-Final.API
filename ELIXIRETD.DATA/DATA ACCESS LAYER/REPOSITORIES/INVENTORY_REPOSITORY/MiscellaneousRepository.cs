@@ -156,6 +156,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           SupplierName = x.receiptparents.supplier,
                           PreparedDate = x.receiptparents.PreparedBy,
                           Remarks = x.receiptparents.Remarks,
+
+                          TransactionDate =x.receiptparents.TransactionDate.ToString(),
+                          CompanyCode = x.receiptparents.CompanyCode,
+                          CompanyName = x.receiptparents.CompanyName,
+                          DepartmentCode = x.receiptparents.DepartmentCode,
+                          DepartmentName = x.receiptparents.DepartmentName,
+                          LocationCode = x.receiptparents.LocationCode,
+                          LocationName = x.receiptparents.LocationName,
+                          AccountCode = x.receiptparents.AccountCode,
+                          AccountTitles = x.receiptparents.AccountTitles,
+
+
                           //TransactionType = x.receiptparents.TransactionType,
 
 
@@ -426,6 +438,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                  Customer = x.Customer,
                                                  CustomerCode = x.Customercode,
 
+                                                 TransactionDate = x.TransactionDate.ToString(),
+                                                 CompanyCode = x.CompanyCode,
+                                                 CompanyName = x.CompanyName,
+                                                 DepartmentCode = x.DepartmentCode,
+                                                 DepartmentName = x.DepartmentName,
+                                                 LocationCode = x.LocationCode,
+                                                 LocationName = x.LocationName,
+                                                 AccountCode = x.AccountCode,
+                                                 AccountTitles = x.AccountTitles,
+
                                              });
 
 
@@ -443,7 +465,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     ItemCode = x.misc.ItemCode,
                     ItemDescription = x.misc.ItemDescription,
                     TotalQuantity = x.misc.Quantity,
-                    Remarks = x.misc.Remarks
+                    Remarks = x.misc.Remarks,
+
+                    TransactionDate = x.issue.TransactionDate.ToString(),
+                    CompanyCode = x.issue.CompanyCode,
+                    CompanyName = x.issue.CompanyName,
+                    DepartmentCode = x.issue.DepartmentCode,
+                    DepartmentName = x.issue.DepartmentName,
+                    LocationCode = x.issue.LocationCode,
+                    LocationName = x.issue.LocationName,
+                    AccountCode = x.issue.AccountCode,
+                    AccountTitles = x.issue.AccountTitles,
+
+
+
 
                 });
 

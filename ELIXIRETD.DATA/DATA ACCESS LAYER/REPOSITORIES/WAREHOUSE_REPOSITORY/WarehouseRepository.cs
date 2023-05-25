@@ -83,7 +83,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                                                 }).OrderBy(x => x.PO_Number)
+                                                 }).OrderByDescending(x => x.PO_Number)
                                                    .Where(x => x.IsActive == false);
 
 
@@ -140,7 +140,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                                                 }).OrderBy(x => x.PO_Number)
+                                                 }).OrderByDescending(x => x.PO_Number)
                                                    .Where(x => x.IsActive == false)
                                                    .Where(x => Convert.ToString(x.PO_Number).ToLower().Contains(search.Trim().ToLower())
                                                   || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower())
@@ -212,7 +212,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          IsActive = receive.Key.IsActive,
                                                         
                                                      })
-                                                     .OrderBy(x => x.PoNumber)
+                                                     .OrderByDescending(x => x.PoNumber)
                                                      .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
                                                      .Where(x => x.IsActive == true);
 
@@ -278,7 +278,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                       TotalReject = receive.Sum(x => x.TotalReject),
 
 
-                                                  }).OrderBy(x => x.PoNumber)
+                                                  }).OrderByDescending(x => x.PoNumber)
                                                     .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
                                                     .Where(x => x.IsActive == true)
                                                     .Where(x => Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
@@ -392,7 +392,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         public async Task<PagedList<WarehouseReceivingDto>> ListOfWarehouseReceivingIdWithPagination(UserParams userParams)
         {
 
-            var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
+            var warehouseInventory = _context.WarehouseReceived.OrderByDescending(x => x.ActualReceivingDate)
                 .Select(x => new WarehouseReceivingDto
                 {
 
@@ -412,7 +412,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
         public async Task<PagedList<WarehouseReceivingDto>> ListOfWarehouseReceivingIdWithPaginationOrig(UserParams userParams, string search)
         {
-            var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
+            var warehouseInventory = _context.WarehouseReceived.OrderByDescending(x => x.ActualReceivingDate)
                .Select(x => new WarehouseReceivingDto
                {
                    Id = x.Id,

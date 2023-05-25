@@ -313,7 +313,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Id = x.Id,
                                                    Customer = x.CustomerName,
                                                    CustomerCode = x.CustomerCode,
-                                                   
+
+                                                   TransactionDate = x.TransactionDate.ToString(),
+                                                   CompanyCode = x.CompanyCode,
+                                                   CompanyName = x.CompanyName,
+                                                   DepartmentCode = x.DepartmentCode,
+                                                   DepartmentName = x.DepartmentName,
+                                                   LocationCode = x.LocationCode,
+                                                   LocationName = x.LocationName,
+                                                   AccountCode = x.AccountCode,
+                                                   AccountTitles = x.AccountTitles,
+
+
                                                });
 
             var warehouse = _context.BorrowedIssueDetails
@@ -343,6 +354,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ReturnQuantity = x.borrowed.ReturnQuantity != null ? x.borrowed.ReturnQuantity : 0,
                   Remarks = x.borrowed.Remarks,
                   PreparedBy = x.borrowed.PreparedBy,
+
+                  TransactionDate = x.issues.TransactionDate.ToString(),
+                  CompanyCode = x.issues.CompanyCode,
+                  CompanyName = x.issues.CompanyName,
+                  DepartmentCode = x.issues.DepartmentCode,
+                  DepartmentName = x.issues.DepartmentName,
+                  LocationCode = x.issues.LocationCode,
+                  LocationName = x.issues.LocationName,
+                  AccountCode = x.issues.AccountCode,
+                  AccountTitles = x.issues.AccountTitles,
 
               });
 
