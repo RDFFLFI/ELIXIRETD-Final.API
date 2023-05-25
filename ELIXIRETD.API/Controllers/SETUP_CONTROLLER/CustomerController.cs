@@ -116,12 +116,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                             existingCustomer.SyncDate = DateTime.Now;
 
+                            existingCustomer.StatusSync = "New update";
+
                             await _unitOfWork.Customers.Update(existingCustomer);
+
                         }
 
                         if(!hasChanged)
                         {
                             existingCustomer.SyncDate = DateTime.Now;
+                            existingCustomer.StatusSync = "No new update";
                         }
 
                        
@@ -130,6 +134,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     {
                         items.SyncDate = DateTime.Now;
                         items.DateAdded = DateTime.Now;
+                        items.StatusSync = "New Added";
                         availableImport.Add(items);
                         await _unitOfWork.Customers.AddCustomer(items);
                     }

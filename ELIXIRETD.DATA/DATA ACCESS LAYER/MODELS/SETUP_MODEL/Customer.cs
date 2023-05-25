@@ -16,10 +16,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
         public string CustomerName { get; set; }
         public string CustomerType { get; set; }
         public string ModifyBy { get; set; }
-
  
         public DateTime ? ModifyDate { get; set; }
-
 
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
@@ -36,6 +34,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
         public string AddedBy { get; set; }
 
         public DateTime SyncDate { get; set; }
+
+        public string StatusSync { get; set; }
 
 
     }

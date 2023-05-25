@@ -1462,6 +1462,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 ItemCode = x.ItemCode,
                                                 ItemDescription = x.ItemDescription,
                                                 Uom = x.Uom,
+                                                Customercode = x.Customercode,
                                                 CustomerName = x.CustomerName,
                                                 Address = x.AddressOrder,
                                                 ApprovedDate = x.ApprovedDate.ToString(),

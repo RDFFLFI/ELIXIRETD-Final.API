@@ -92,6 +92,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingSuppliers.IsActive = items.IsActive;
                             existingSuppliers.ModifyBy = items.ModifyBy;
                             existingSuppliers.ModifyDate = DateTime.Now;
+                            existingSuppliers.StatusSync = "New update";
                             //existingSuppliers.DateAdded = items.DateAdded;
 
                             await _unitOfWork.Suppliers.Update(existingSuppliers);
@@ -100,6 +101,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         if (!hasChanged)
                         {
                             existingSuppliers.SyncDate = DateTime.Now;
+                            existingSuppliers.StatusSync =  "No new update";
                         }
 
 
@@ -108,6 +110,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     {
                         items.SyncDate = DateTime.Now;
                          items.DateAdded = DateTime.Now;
+                        items.StatusSync = "New Added";
                         availableImport.Add(items);
                         await _unitOfWork.Suppliers.AddSupplier(items);
                     }
