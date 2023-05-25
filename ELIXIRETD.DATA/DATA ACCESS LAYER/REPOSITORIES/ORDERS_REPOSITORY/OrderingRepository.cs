@@ -207,6 +207,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.IsActive,
                     x.ordering.IsPrepared,
                     x.ordering.Rush,
+                    x.ordering.StandartQuantity,
+
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0  
 
                 }).OrderBy(x => x.Key.Rush == null)
@@ -228,7 +230,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     IsActive = total.Key.IsActive,
                     IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0 ,
-                    Rush = total.Key.Rush
+                    Rush = total.Key.Rush,
+                    StandardQuantity = total.Key.StandartQuantity
 
                 });
 
