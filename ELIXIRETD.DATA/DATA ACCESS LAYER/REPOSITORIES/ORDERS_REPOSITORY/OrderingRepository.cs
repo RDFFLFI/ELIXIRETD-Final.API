@@ -289,15 +289,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 return false;
             }
 
-            else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
-            {
-                return false;
-            }
-            
-            {
+            //else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
+            //{
+            //    return false;
+            //}
+     
                 existingOrder.QuantityOrdered = orders.QuantityOrdered;
                 return true;
-            }
+      
 
        
 

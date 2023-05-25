@@ -154,8 +154,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           TotalQuantity = x.warehouse.ActualGood,
                           SupplierCode = x.receiptparents.SupplierCode,
                           SupplierName = x.receiptparents.supplier,
-                          PreparedDate = x.receiptparents.PreparedBy,
+                          PreparedDate = x.receiptparents.PreparedDate.ToString(),
                           Remarks = x.receiptparents.Remarks,
+                          PreparedBy = x.receiptparents.PreparedBy,
 
                           TransactionDate =x.receiptparents.TransactionDate.ToString(),
                           CompanyCode = x.receiptparents.CompanyCode,
