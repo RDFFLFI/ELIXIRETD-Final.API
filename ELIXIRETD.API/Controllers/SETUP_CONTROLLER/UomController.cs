@@ -45,10 +45,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
 
             if (await _unitOfWork.Uoms.UomCodeExist(uoms.UomCode))
-                return BadRequest("Uom code already exist, please try something else!");
+                return BadRequest("Uom code already exist, Please try something else!");
 
             if (await _unitOfWork.Uoms.UomDescriptionExist(uoms.UomDescription))
-                return BadRequest("Uom code description already exist, please try something else!");
+                return BadRequest("Uom code description already exist, Please try something else!");
 
             await _unitOfWork.Uoms.AddNewUom(uoms);
             await _unitOfWork.CompleteAsync();
@@ -68,7 +68,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //    return BadRequest("The uom cannot be changed because you entered the same uom!");
 
             if (await _unitOfWork.Uoms.UomDescriptionExist(uom.UomDescription))
-                return BadRequest("Uom code description already exist, please try something else!");
+                return BadRequest("Uom code description already exist, Please try something else!");
 
             await _unitOfWork.Uoms.UpdateUom(uom);
             await _unitOfWork.CompleteAsync();

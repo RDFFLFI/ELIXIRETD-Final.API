@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 var validate = await _unitOfWork.Lots.ValidateLotNameAndSection(lotname);
 
                 if (validate == true)
-                    return BadRequest("Lotname and section already exist!");
+                    return BadRequest("Lotname and section already exist, Please try something else!");
 
                 await _unitOfWork.Lots.AddLotName(lotname);
                 await _unitOfWork.CompleteAsync();
@@ -76,7 +76,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validate = await _unitOfWork.Lots.ValidateLotNameAndSection(lotname);
 
             if (validate == true)
-                return BadRequest("Lotname and section already exist!");
+                return BadRequest("Lotname and section already exist, Please try something else!");
 
             await _unitOfWork.Lots.UpdateLotName(lotname);
             await _unitOfWork.CompleteAsync();
@@ -189,11 +189,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
 
                  if(await _unitOfWork.Lots.ValidateLotCode(category.LotCode))
-                return BadRequest(" Lot Code Already Exist");
+                return BadRequest(" Lot Code Already Exist, Please try something else!");
 
 
                 if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
-                    return BadRequest("Lot name already Exist!, Please try something else!");
+                    return BadRequest("Lot name already Exist, Please try something else!");
 
                 await _unitOfWork.Lots.AddLotCategory(category);
                 await _unitOfWork.CompleteAsync();
@@ -214,7 +214,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //    return BadRequest("The lot name cannot be changed because you entered the same lot name!");
 
             if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
-                return BadRequest("Lot Name already Exist!, Please try something else!");
+                return BadRequest("Lot Name already Exist, Please try something else!");
 
           
             await _unitOfWork.Lots.UpdateLotCategory(category);

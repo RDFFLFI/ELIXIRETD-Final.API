@@ -47,7 +47,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 //    return BadRequest("MainMenu doesn't exist");
 
                 if (await _unitOfWork.Modules.SubMenuNameExist(module.SubMenuName , module.MainMenuId))
-                    return BadRequest("SubMenu and mainmenu already exist!");
+                    return BadRequest("SubMenu and mainmenu already exist, Please try something else!");
 
                 //if (await _unitOfWork.Modules.ModuleNameExist(module.ModuleName))
                 //    return BadRequest("ModuleName already exist!");
@@ -72,7 +72,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 return BadRequest("MainMenu doesn't exist");
 
             if (await _unitOfWork.Modules.ValidateModuleAndMenuPath(module.MainMenuId, module.ModuleName))
-                return BadRequest("SubMenu and mainmenu already exist!");
+                return BadRequest("SubMenu and mainmenu already exist, Please try something else!");
 
             //if (await _unitOfWork.Modules.ModuleNameExist(module.ModuleName))
             //    return BadRequest("ModuleName already exist!");
@@ -190,7 +190,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         {
 
             if (await _unitOfWork.Modules.MenuAlreadyExist(menu.ModuleName))
-                return BadRequest("Menu already exist!");
+                return BadRequest("Menu already exist!, Please try something else!");
 
             await _unitOfWork.Modules.AddNewMainMenu(menu);
             await _unitOfWork.CompleteAsync();
@@ -210,7 +210,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             //    return BadRequest("The menu cannot be changed because you entered the same menu!");
 
             if (await _unitOfWork.Modules.MenuAlreadyExist(menu.ModuleName))
-                return BadRequest("Menu already exist!");
+                return BadRequest("Menu already exist, Please try something else!");
 
             await _unitOfWork.Modules.UpdateMainMenu(menu);
             await _unitOfWork.CompleteAsync();
@@ -223,7 +223,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UpdateMenuOrder([FromBody] MainMenu menu)
         {
             if (await _unitOfWork.Modules.MenuAlreadyExist(menu.ModuleName))
-                return BadRequest("Menu already exist!");
+                return BadRequest("Menu already exist, Please try something else!");
 
             await _unitOfWork.Modules.UpdateMenuOrder(menu);
             await _unitOfWork.CompleteAsync();

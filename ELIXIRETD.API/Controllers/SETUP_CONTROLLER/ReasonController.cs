@@ -47,7 +47,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validate = await _unitOfWork.Reasons.ValidateReasonEntry(reason);
 
             if (validate == false)
-                return BadRequest("Menu and reason already exist!");
+                return BadRequest("Menu and reason already exist, Please try something else!");
 
             if (moduleId == false)
                 return BadRequest("Module doesn't exist, Please add data first!");
@@ -69,7 +69,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validateReason = await _unitOfWork.Reasons.ValidateReasonEntry(reason);
 
             if (validateReason == false)
-                return BadRequest("Menu and reason already exist!");
+                return BadRequest("Menu and reason already exist, Please try something else!");
 
 
             await _unitOfWork.Reasons.UpdateReason(reason);

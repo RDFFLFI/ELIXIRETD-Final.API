@@ -67,7 +67,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           .Select(x => new GetAllListofOrdersPaginationDto
                                           {
                                               CustomerName = x.Key.CustomerName,
-                                              IsActive = x.Key.IsActive
+                                              IsActive = x.Key.IsActive,
+                                              
+                                              
                                           });
 
             return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -287,15 +289,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 return false;
             }
 
-            //else if (existingOrder.QuantityOrdered < orders.QuantityOrdered && existingOrder.QuantityOrdered <= 0)
-            //{
-            //    return false;
-            //}
-        
+            else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
+            {
+                return false;
+            }
+            
+            {
                 existingOrder.QuantityOrdered = orders.QuantityOrdered;
                 return true;
+            }
 
-               
+       
 
         }
 

@@ -25,7 +25,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         {
 
             if (await _unitofwork.TransactType.ValidationTransactName(transactionType.TransactionName))
-                return BadRequest("Transaction name already exist!");
+                return BadRequest("Transaction name already exist, Please try something else!");
 
             await _unitofwork.TransactType.AddnewTransactType(transactionType);
             await _unitofwork.CompleteAsync();
@@ -65,7 +65,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //    return BadRequest("The transaction name cannot be changed because you entered the same transaction name!");
 
             if (await _unitofwork.TransactType.ValidationTransactName(transactionType.TransactionName))
-                return BadRequest("Transaction name already exist!");
+                return BadRequest("Transaction name already exist, Please try something else!");
 
             await _unitofwork.TransactType.UpdateTransactionType(transactionType);
             await _unitofwork.CompleteAsync();

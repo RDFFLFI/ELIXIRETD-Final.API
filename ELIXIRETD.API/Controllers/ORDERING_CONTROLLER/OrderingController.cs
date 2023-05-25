@@ -253,6 +253,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
         {
 
+            //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
+            //if (editquantity == false)
+            //    return BadRequest("Invalid request!, Quantity cannot be zero or exceed actual quantity");
+
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
             return new JsonResult("Successfully edit Order Quantity");
@@ -552,7 +556,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         [Route("ViewMoveOrderForApproval")]
         public async Task<IActionResult> ViewMoveOrderForApproval([FromQuery] int id)
         {
-            var orders = await _unitofwork.Orders.ViewMoveOrderForApproval(id);
+            var orders = await _unitofwork.Orders.ViewMoveOrderForApproval
+                (id);
             return Ok(orders);
         }
 
