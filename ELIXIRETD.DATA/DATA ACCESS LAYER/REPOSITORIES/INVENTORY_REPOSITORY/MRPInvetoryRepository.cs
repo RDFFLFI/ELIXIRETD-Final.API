@@ -335,7 +335,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                       {
 
                                                                           ItemCode = x.Key.ItemCode,
-                                                                          Quantity = x.Sum(x => x.Quantity),
+                                                                          Quantity = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),
 
                                                                       });
 
@@ -814,7 +814,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                       {
 
                                                                           ItemCode = x.Key.ItemCode,
-                                                                          Quantity = x.Sum(x => x.Quantity),
+                                                                          Quantity = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),
 
                                                                       });
 
@@ -1294,7 +1294,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                       {
 
                                                                           ItemCode = x.Key.ItemCode,
-                                                                          Quantity = x.Sum(x => x.Quantity),
+                                                                          Quantity = x.Sum(x => x.Quantity) - x.Sum(x => x.ReturnQuantity),
 
                                                                       });
 

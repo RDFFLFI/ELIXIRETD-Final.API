@@ -65,6 +65,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         }
 
+
+
         public async Task<bool> ActivateMiscellaenousReceipt(MiscellaneousReceipt receipt)
         {
             var existing = await _context.MiscellaneousReceipts.Where(x => x.Id == receipt.Id)
@@ -84,6 +86,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             }
             return true;    
         }
+
+
+
 
         public async Task<PagedList<GetAllMReceiptWithPaginationdDto>> GetAllMReceiptWithPaginationd(UserParams userParams, bool status)
         {

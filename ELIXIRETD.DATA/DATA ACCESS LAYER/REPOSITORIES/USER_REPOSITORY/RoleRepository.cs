@@ -280,15 +280,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> ValidateRoleInUse(int role)
         {
-        
-                var valid = await _context.Roles.Where(x => x.Id == role)
-                                                       .Where(x => x.IsActive == true)
-                                                       .FirstOrDefaultAsync();
-                if (valid == null)
-                    return false;
-                return true;
 
-          
+            return await _context.Users.AnyAsync(x => x.UserRoleId == role && x.IsActive == true);
+
+
         }
     }
 }

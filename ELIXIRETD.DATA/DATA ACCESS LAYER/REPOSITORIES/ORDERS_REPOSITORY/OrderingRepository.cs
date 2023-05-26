@@ -288,10 +288,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var existingOrder = await _context.Orders.Where(x => x.Id == orders.Id)
                                                      .FirstOrDefaultAsync();
 
-            if (existingOrder == null)
-            {
-                return false;
-            }
+            //if (existingOrder == null)
+            //{
+            //    return false;
+            //}
 
             //else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
             //{
@@ -299,11 +299,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             //}
      
                 existingOrder.QuantityOrdered = orders.QuantityOrdered;
+
+
+
                 return true;
-      
-
-       
-
         }
 
 
