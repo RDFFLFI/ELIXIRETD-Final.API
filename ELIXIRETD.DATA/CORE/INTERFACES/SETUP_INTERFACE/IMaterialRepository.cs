@@ -81,8 +81,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ValidateMaterialAndSubAndItem(string material, int Subcateg);
 
 
-
-
         Task<IReadOnlyList<DtoItemcategDropdown>> GetAllSubCategmaterial();
 
     }

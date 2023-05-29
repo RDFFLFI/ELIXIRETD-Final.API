@@ -69,7 +69,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
 
 
 
-
+        public string ApproveBy { get; set; }
+        public string ApprovedReturnedBy { get; set; }
+        public string RejectBy { get; set; }
 
 
 

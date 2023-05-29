@@ -41,16 +41,25 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed);
 
-        // Updated Borrowed
+
+
+        // =========================================================== Updated Borrowed =======================================================================
 
 
         Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status);
 
         Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
 
+        Task<IReadOnlyList<GetAllForApprovalDetailsInBorrowed>> GetAllForApprovalDetailsInBorrowed(int id);
+
+        Task<bool> ApprovedForBorrowed (BorrowedIssue borrowed); 
+
+        Task<bool> RejectForBorrowed (BorrowedIssue borrowed);
 
 
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams, bool status);
 
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
 
 
     }

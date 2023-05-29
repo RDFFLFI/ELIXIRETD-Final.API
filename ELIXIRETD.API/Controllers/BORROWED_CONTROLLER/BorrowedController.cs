@@ -367,6 +367,104 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         }
 
+        [HttpGet]
+        [Route("GetAllForApprovalDetailsInBorrowed")]
+        public async Task<IActionResult> GetAllForApprovalDetailsInBorrowed([FromQuery] int id)
+        {
+
+            var borrow = await _unitofwork.Borrowed.GetAllForApprovalDetailsInBorrowed(id);
+
+            return Ok(borrow);
+        }
+
+
+        [HttpPut]
+        [Route("ApprovedForBorrowed")]
+        public async Task<IActionResult> ApprovedForBorrowed([FromBody] BorrowedIssue[] borrowed)
+        {
+
+            foreach (BorrowedIssue items in borrowed)
+            {
+                await _unitofwork.Borrowed.ApprovedForBorrowed(items);
+                await _unitofwork.CompleteAsync();
+
+            }
+
+            return Ok(borrowed);
+
+        }
+
+
+        [HttpPut]
+        [Route("RejectForBorrowed")]
+        public async Task<IActionResult> RejectForBorrowed([FromBody] BorrowedIssue[] borrowed)
+        {
+
+            foreach (BorrowedIssue items in borrowed)
+            {
+                await _unitofwork.Borrowed.RejectForBorrowed(items);
+                await _unitofwork.CompleteAsync();
+
+            }
+
+            return Ok(borrowed);
+
+        }
+
+
+        [HttpGet]
+        [Route("GetAllRejectBorrowedWithPagination")]
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllRejectBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        {
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPagination(userParams, status);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+        [HttpGet]
+        [Route("GetAllRejectBorrowedWithPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllRejectBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        {
+            if (search == null)
+
+                return await GetAllRejectBorrowedWithPagination(userParams, status);
+
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPaginationOrig(userParams, search, status);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+
 
 
     }
