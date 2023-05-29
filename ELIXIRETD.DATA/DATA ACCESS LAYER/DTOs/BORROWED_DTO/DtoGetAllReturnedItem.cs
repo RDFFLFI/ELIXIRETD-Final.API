@@ -20,9 +20,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string ReturnBy { get; set; }
 
         public bool IsApproveReturn { get; set; }
-      
-      
-        
+
+
+        public string ApproveReturnDate { get; set; }
 
     }
 }

@@ -518,7 +518,38 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpPut]
+        [Route("ApproveForReturned")]
+        public async Task<IActionResult> ApproveForReturned([FromBody] BorrowedIssue[] borrowed)
+        {
 
+            foreach (BorrowedIssue items in borrowed)
+            {
+                await _unitofwork.Borrowed.ApproveForReturned(items);
+                await _unitofwork.CompleteAsync();
+
+            }
+
+            return Ok(borrowed);
+
+        }
+
+
+        [HttpPut]
+        [Route("CancelForReturned")]
+        public async Task<IActionResult> CancelForReturned([FromBody] BorrowedIssue[] borrowed)
+        {
+
+            foreach (BorrowedIssue items in borrowed)
+            {
+                await _unitofwork.Borrowed.CancelForReturned(items);
+                await _unitofwork.CompleteAsync();
+
+            }
+
+            return Ok(borrowed);
+
+        }
 
 
 

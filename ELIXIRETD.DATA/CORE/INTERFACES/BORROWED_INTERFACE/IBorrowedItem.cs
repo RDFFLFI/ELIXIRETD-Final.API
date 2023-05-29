@@ -69,6 +69,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams);
         Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search);
 
+        Task<bool> ApproveForReturned (BorrowedIssue borrowed);
+
+        Task<bool> CancelForReturned (BorrowedIssue borrowed);  
+
 
 
 
