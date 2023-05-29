@@ -51,7 +51,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         [Column(TypeName = "Date")]
         public DateTime? ReturnedDate { get; set; }
 
-       
+
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsApprovedDate { get; set; }
+        public bool IsApproved { get; set; }
+
+        public bool? IsReject { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsRejectDate { get; set; }
+
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsApprovedReturnedDate { get; set; }
+        public bool IsApprovedReturned { get; set; }
+
+
 
 
 

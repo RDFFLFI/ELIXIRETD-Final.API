@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20230529022535_addApprovedInBorrowedinIssue")]
+    partial class addApprovedInBorrowedinIssue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,12 +36,6 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AccountTitles")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ApproveBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ApprovedReturnedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyCode")
@@ -78,12 +74,6 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<DateTime?>("IsApprovedReturnedDate")
                         .HasColumnType("Date");
 
-                    b.Property<bool?>("IsReject")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("IsRejectDate")
-                        .HasColumnType("Date");
-
                     b.Property<bool?>("IsReturned")
                         .HasColumnType("bit");
 
@@ -101,9 +91,6 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<DateTime>("PreparedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("RejectBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -155,12 +142,6 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("IsApprovedReturnedDate")
-                        .HasColumnType("Date");
-
-                    b.Property<bool?>("IsReject")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("IsRejectDate")
                         .HasColumnType("Date");
 
                     b.Property<bool?>("IsReturned")

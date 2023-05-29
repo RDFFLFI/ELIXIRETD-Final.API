@@ -26,6 +26,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
                                                   .Where(x => x.IsReturned == null)
+                                                  .Where(x => x.IsReject == null)
                                                   .Where(x => x.IsActive == status)                                              
                                                   .Select(x => new GetAllBorrowedReceiptWithPaginationDto
                                                   {
@@ -36,6 +37,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       TotalQuantity = x.TotalQuantity,
                                                       PreparedBy =  x.PreparedBy,
                                                       IsActive = x.IsActive,
+                                                      IsApproved  = x.IsApproved,
                                                       Remarks = x.Remarks,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
@@ -46,12 +48,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedIssuetWithPaginationOrig(UserParams userParams, string search, bool status)
         {
 
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
                                                   .Where(x => x.IsReturned == null)
+                                                  .Where(x => x.IsReject == null)
                                                   .Where(x => x.IsActive == status)
                                                   .Select(x => new GetAllBorrowedReceiptWithPaginationDto
                                                   {
@@ -61,6 +63,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       CustomerCode = x.CustomerCode,
                                                       TotalQuantity = x.TotalQuantity,
                                                       PreparedBy = x.PreparedBy,
+                                                      IsApproved = x.IsApproved,
                                                       IsActive = x.IsActive,
                                                       Remarks = x.Remarks,
                                                       BorrowedDate = x.PreparedDate.ToString(),
@@ -76,6 +79,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<bool> AddBorrowedIssue(BorrowedIssue borrowed)
         {
+
             await _context.BorrowedIssues.AddAsync(borrowed);
 
             return true;
@@ -485,7 +489,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             foreach (var item in returnedDetails)
             {
 
-
                 item.IsReturned = true;
                 item.IsActive = true;
                 item.ReturnedDate = DateTime.Now;
@@ -712,6 +715,37 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-      
+
+        // Updated Borrowed 
+
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status)
+        {
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
+                                               .Where(x => x.IsReturned == null)
+                                               .Where(x => x.IsReject == null)
+                                               .Where(x => x.IsActive == status)
+                                               .Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                                               {
+
+                                                   BorrowedPKey = x.Id,
+                                                   CustomerName = x.CustomerName,
+                                                   CustomerCode = x.CustomerCode,
+                                                   TotalQuantity = x.TotalQuantity,
+                                                   PreparedBy = x.PreparedBy,
+                                                   IsActive = x.IsActive,
+                                                   IsApproved = x.IsApproved,
+                                                   Remarks = x.Remarks,
+                                                   BorrowedDate = x.PreparedDate.ToString(),
+                                                   TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                               });
+
+            return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> UpdateIssuePKey(BorrowedIssueDetails borowed);
 
-        Task<bool> InActiveBorrowedIssues (BorrowedIssue borrowed);
+        Task<bool> InActiveBorrowedIssues(BorrowedIssue borrowed);
 
         Task<bool> ActiveBorrowedIssues(BorrowedIssue borrowed);
 
@@ -33,16 +33,22 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<bool> CancelIssuePerItemCode(BorrowedIssueDetails borrowed);
 
         Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed);
-        Task<bool> SaveReturnedQuantity (BorrowedIssue borrowed);
+        Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed);
         Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams , string search);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search);
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id);
 
         Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed);
 
-        
- 
+        // Updated Borrowed
+
+
+        Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status);
+
+        Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
+
+
 
 
 

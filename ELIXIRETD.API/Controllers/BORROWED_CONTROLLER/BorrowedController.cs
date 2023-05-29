@@ -79,6 +79,8 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             borrowed.PreparedDate= DateTime.Now;
             borrowed.IsTransact = true;
 
+            borrowed.IsApproved = false; // new Borrowed
+
             await _unitofwork.Borrowed.AddBorrowedIssue(borrowed);
             await _unitofwork.CompleteAsync();
 
@@ -93,7 +95,8 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             borrowed.IsActive= true;
             borrowed.PreparedDate= DateTime.Now;
             borrowed.BorrowedDate= DateTime.Now;
-  
+
+            borrowed.IsApproved = false; // new Borrowed
 
             await _unitofwork.Borrowed.AddBorrowedIssueDetails(borrowed);
             await _unitofwork.CompleteAsync();
@@ -310,7 +313,59 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        // New Update Borrowed
 
+
+        [HttpGet]
+        [Route("GetAllForApprovalBorrowedWithPagination")]
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        {
+            var issue = await _unitofwork.Borrowed.GetAllForApprovalBorrowedWithPagination(userParams, status);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+        [HttpGet]
+        [Route("GetAllForApprovalBorrowedWithPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        {
+            if (search == null)
+
+                return await GetAllForApprovalBorrowedWithPagination(userParams, status);
+
+            var issue = await _unitofwork.Borrowed.GetAllForApprovalBorrowedWithPaginationOrig(userParams, search, status);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
 
 
 

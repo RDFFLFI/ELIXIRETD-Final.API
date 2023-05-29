@@ -43,6 +43,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string AccountTitles { get; set; }
 
 
+        // Update Borrowed
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsApprovedDate { get; set; }
+        public bool IsApproved { get; set; }
+
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsApprovedReturnedDate { get; set; }
+        public bool IsApprovedReturned { get; set; }
+
+        public bool ? IsReject { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime? IsRejectDate { get; set; }
+
+
+        public string ApproveBy { get; set; }
+        public string ApprovedReturnedBy { get; set; }
+        public string RejectBy { get; set; }
+
         public DateTime TransactionDate { get; set; }
     }
 }
