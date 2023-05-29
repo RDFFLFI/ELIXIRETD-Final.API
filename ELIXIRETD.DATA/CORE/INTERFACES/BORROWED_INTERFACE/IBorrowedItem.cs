@@ -62,5 +62,15 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
 
 
+        //Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPagination(UserParams userParams, bool status);
+
+        //Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
+
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search);
+
+
+
+
     }
 }

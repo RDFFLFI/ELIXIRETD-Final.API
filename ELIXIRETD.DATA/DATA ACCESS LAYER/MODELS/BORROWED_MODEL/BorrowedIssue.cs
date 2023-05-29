@@ -64,6 +64,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string ApprovedReturnedBy { get; set; }
         public string RejectBy { get; set; }
 
+        public int AgingDays { get; set; }
+
+        public string ReturnBy { get; set; }
+
         public DateTime TransactionDate { get; set; }
     }
 }

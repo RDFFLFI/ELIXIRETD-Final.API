@@ -318,7 +318,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllForApprovalBorrowedWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllForApprovalBorrowedPaginationDTO>>> GetAllForApprovalBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
         {
             var issue = await _unitofwork.Borrowed.GetAllForApprovalBorrowedWithPagination(userParams, status);
 
@@ -342,7 +342,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllForApprovalBorrowedWithPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllForApprovalBorrowedPaginationDTO>>> GetAllForApprovalBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
         {
             if (search == null)
 
@@ -414,7 +414,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllRejectBorrowedWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllRejectBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
         {
             var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPagination(userParams, status);
 
@@ -438,7 +438,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllRejectBorrowedWithPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllRejectBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
         {
             if (search == null)
 
@@ -462,6 +462,62 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             return Ok(issueResult);
 
         }
+
+
+
+        [HttpGet]
+        [Route("GetAllForApproveReturnedItem")]
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItem([FromQuery] UserParams userParams)
+        {
+            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItem(userParams);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+
+        [HttpGet]
+        [Route("GetAllForApproveReturnedItemOrig")]
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItemOrig([FromQuery] UserParams userParams, [FromQuery] string search)
+        {
+            if (search == null)
+
+                return await GetAllForApproveReturnedItem(userParams);
+
+            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItemOrig(userParams, search);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
 
 
 
