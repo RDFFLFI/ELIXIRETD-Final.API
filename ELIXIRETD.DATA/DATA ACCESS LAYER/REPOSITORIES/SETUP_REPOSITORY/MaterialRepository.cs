@@ -698,6 +698,48 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
         }
+
+        public async Task<IReadOnlyList<MaterialDto>> GetAllMaterial()
+        {
+
+            var materials = _context.Materials.Select(x => new MaterialDto
+            {
+                Id = x.Id,
+                ItemCode = x.ItemCode,
+                ItemCategoryId = x.SubCategory.ItemCategoryId,
+                ItemCategoryName = x.SubCategory.ItemCategory.ItemCategoryName,
+                ItemDescription = x.ItemDescription,
+                SubCategoryId = x.SubCategoryId,
+                SubCategoryName = x.SubCategory.SubCategoryName,
+                BufferLevel = x.BufferLevel,
+                Uom = x.Uom.UomCode,
+                UomId = x.UomId,
+                DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                AddedBy = x.AddedBy,
+                IsActive = x.IsActive
+
+            });
+
+
+            return await materials.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<ItemCategoryDto>> GetAllItemCategory()
+        {
+            var categories = _context.ItemCategories
+                                       .Select(x => new ItemCategoryDto
+                                       {
+                                           Id = x.Id,
+                                           ItemCategoryName = x.ItemCategoryName,
+                                           AddedBy = x.AddedBy,
+                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                           IsActive = x.IsActive
+
+
+                                       });
+
+            return await categories.ToListAsync();
+        }
     }
  
 }

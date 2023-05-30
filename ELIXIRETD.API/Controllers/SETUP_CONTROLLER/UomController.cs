@@ -161,5 +161,17 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
+        [HttpGet]
+        [Route("GetAllUom")]
+        public async Task<IActionResult> GetAllUom()
+        {
+            var uom = await _unitOfWork.Uoms.GetAllUom();
+
+            return Ok(uom);
+
+        }
+
+
+
     }
 }

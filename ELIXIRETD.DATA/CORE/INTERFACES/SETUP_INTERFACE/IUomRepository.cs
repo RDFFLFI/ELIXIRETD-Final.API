@@ -31,5 +31,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> validateItemUse(Uom uom);
 
 
+
+        Task<IReadOnlyList<UomDto>> GetAllUom();
+
+
     }
 }

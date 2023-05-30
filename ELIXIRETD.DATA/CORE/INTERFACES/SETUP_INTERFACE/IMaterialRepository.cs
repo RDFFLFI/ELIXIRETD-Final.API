@@ -83,5 +83,14 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<IReadOnlyList<DtoItemcategDropdown>> GetAllSubCategmaterial();
 
+
+
+
+        Task<IReadOnlyList<MaterialDto>> GetAllMaterial ();
+
+        Task<IReadOnlyList<ItemCategoryDto>> GetAllItemCategory();
+
+       
+
     }
 }

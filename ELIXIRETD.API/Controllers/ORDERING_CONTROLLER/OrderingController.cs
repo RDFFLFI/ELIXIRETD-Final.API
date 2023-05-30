@@ -826,7 +826,40 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
 
+        //=================================================================== MIR Ordering =======================================================
 
+
+        [HttpGet]
+        [Route("GetAllListofOrdersPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPaginationOrig([FromQuery] UserParams userParams , string search)
+        {
+
+
+            if (search == null)
+
+                return await GetAlllistofOrdersPagination(userParams);
+
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPaginationOrig(userParams, search);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
+        }
+
+
+
+        
 
 
 

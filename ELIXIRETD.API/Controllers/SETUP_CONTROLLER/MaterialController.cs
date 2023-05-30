@@ -469,6 +469,26 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("GetAllMaterial")]
+        public async Task<IActionResult> GetAllMaterial()
+        {
+            var categ = await _unitOfWork.Materials.GetAllMaterial();
+
+            return Ok(categ);
+        }
+
+
+        [HttpGet]
+        [Route("GetAllItemCategory")]
+        public async Task<IActionResult> GetAllItemCategory()
+        {
+            var categ = await _unitOfWork.Materials.GetAllItemCategory();
+
+            return Ok(categ);
+        }
+
+
 
     }
 }

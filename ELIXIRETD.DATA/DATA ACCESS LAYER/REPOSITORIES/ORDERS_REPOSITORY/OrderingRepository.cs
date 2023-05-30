@@ -1229,11 +1229,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var TotalBorrowIssue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
                                                                       .Where(x => x.IsActive == true)
+                                                                      .Where(x => x.IsApproved == true)
                                                                       .SumAsync(x => x.Quantity);
 
             var TotalBorrowReturned = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
                                                                       .Where(x => x.IsActive == true)
                                                                       .Where(x => x.IsReturned == true)
+                                                                      .Where(x => x.IsApprovedReturned == true)
                                                                       .SumAsync(x => x.ReturnQuantity);
 
 
@@ -1306,6 +1308,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1323,6 +1326,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                             .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
                                                             .GroupBy(x => new
                                                             {
                                                                 x.ItemCode,
@@ -2840,8 +2844,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search)
         {
-            throw new NotImplementedException();
+
+            var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
+                                   //                              //.ThenBy(x => x.Rush)
+                                   .OrderBy(x => x.OrderDate)
+                                 .GroupBy(x => new
+                                 {
+                                     x.CustomerName,
+                                     x.IsActive,
+                                     x.PreparedDate,
+
+
+                                 })
+                                   .Where(x => x.Key.IsActive == true)
+                                   .Where(x => x.Key.PreparedDate == null)
+                                    .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
+                                   .Select(x => new GetAllListofOrdersPaginationDto
+                                   {
+                                       CustomerName = x.Key.CustomerName,
+                                       IsActive = x.Key.IsActive,
+
+
+                                   }).Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower()));
+
+            return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
         }
+
+
+
+
+
+
 
       
     }

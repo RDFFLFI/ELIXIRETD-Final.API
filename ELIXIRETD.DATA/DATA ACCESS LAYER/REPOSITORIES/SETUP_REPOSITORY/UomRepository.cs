@@ -176,8 +176,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
+        public async Task<IReadOnlyList<UomDto>> GetAllUom()
+        {
+            var uoms = _context.Uoms
+                                    .Select(x => new UomDto
+                                    {
+                                        Id = x.Id,
+                                        UomCode = x.UomCode,
+                                        UomDescription = x.UomDescription,
+                                        IsActive = x.IsActive,
+                                        DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
+                                        AddedBy = x.AddedBy
+                                    });
 
-
-
+            return await uoms.ToListAsync();
+        }
     }
 }

@@ -118,7 +118,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         //====================================================== Update Orders ==================================================================
 
-         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search);
+         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search);
+
+        //Task<IReadOnlyList<GetAllListOfMirDto>>
 
 
 
