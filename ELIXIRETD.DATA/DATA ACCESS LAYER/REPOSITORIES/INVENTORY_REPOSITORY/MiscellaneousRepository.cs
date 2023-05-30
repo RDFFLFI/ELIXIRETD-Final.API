@@ -165,6 +165,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           Remarks = x.receiptparents.Remarks,
                           PreparedBy = x.receiptparents.PreparedBy,
 
+                          Uom = x.warehouse.Uom,
+
                           TransactionDate =x.receiptparents.TransactionDate.ToString(),
                           CompanyCode = x.receiptparents.CompanyCode,
                           CompanyName = x.receiptparents.CompanyName,
@@ -264,6 +266,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             });
 
             var borrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                           .Where(x => x.IsApproved == true)
                                                            .GroupBy(x => new
                                                            {
 
@@ -280,6 +283,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
+                                                             .Where(x => x.IsApprovedReturned == true)
                                                              .GroupBy(x => new
                                                              {
                                                                  x.ItemCode,
@@ -474,6 +478,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     ItemDescription = x.misc.ItemDescription,
                     TotalQuantity = x.misc.Quantity,
                     Remarks = x.misc.Remarks,
+
+                    Uom = x.misc.Uom,
 
                     TransactionDate = x.issue.TransactionDate.ToString(),
                     CompanyCode = x.issue.CompanyCode,

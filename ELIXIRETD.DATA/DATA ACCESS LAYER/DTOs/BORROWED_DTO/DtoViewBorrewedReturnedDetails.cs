@@ -26,5 +26,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public int BorrowedPKey { get; set; }
 
         public string PreparedBy { get; set; }
+
+
+        public string Uom { get; set; }
+
+
     }
 }

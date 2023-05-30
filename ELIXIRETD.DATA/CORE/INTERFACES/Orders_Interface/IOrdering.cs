@@ -116,6 +116,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         //Task<bool> ValidateLocation(string locationcode, string locationname);
 
 
+        //====================================================== Update Orders ==================================================================
+
+         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search);
+
+
 
 
 

@@ -134,6 +134,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -148,6 +149,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                             .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
                                                             .GroupBy(x => new
                                                             {
                                                                 x.ItemCode,
@@ -1137,6 +1139,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1154,6 +1157,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var getBorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                                  .Where(x => x.IsReturned == true)
+                                                                 .Where(x => x.IsApprovedReturned == true)
                                                                   .GroupBy(x => new
                                                                   {
 
@@ -2757,6 +2761,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
+
         //public async Task<bool> ValidateDepartment(string departmentname)
         //{
         //    var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
@@ -2792,5 +2797,52 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         //    return true;
         //}
+
+
+        // ==========  //public async Task<bool> ValidateDepartment(string departmentname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
+        //                                         .Where(x => x.IsActive == true)
+        //                                        .FirstOrDefaultAsync();
+
+        //    if (validate == null)
+        //        return false;
+
+        //    return true;
+        //}
+
+        //public async Task<bool> ValidateCompany(string companycode, string companyname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
+        //                                        .Where(x => x.CompanyName == companyname)
+        //                                        .Where(x => x.IsActive == true)
+        //                                       .FirstOrDefaultAsync();
+        //    if (validate == null)
+        //        return false;
+
+        //    return true;
+        //}
+
+        //public async Task<bool> ValidateLocation(string locationcode, string locationname)
+        //{
+        //    var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
+        //                                       .Where(x => x.LocationName == locationname)
+        //                                       .Where(x => x.IsActive == true)
+        //                                      .FirstOrDefaultAsync();
+        //    if (validate == null)
+        //        return false;
+
+        //    return true;
+        //}
+    
+    
+    //=========================================== MIR Update In Ordering ============================================================
+
+        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search)
+        {
+            throw new NotImplementedException();
+        }
+
+      
     }
 }

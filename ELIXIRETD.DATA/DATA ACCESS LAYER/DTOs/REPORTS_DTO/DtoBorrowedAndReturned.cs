@@ -50,6 +50,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
 
 
+        public bool IsApprove { get; set; }
+
+        public string IsApproveDate { get; set; }
+
+        public string IsApproveBy { get; set; }
+
+
+        public bool IsApproveReturned { get; set; } 
+
+        public string IsApproveReturnDate { get; set; }
+
+        public string IsApproveReturnedBy { get; set; }
+
+
+
+
+
 
     }
 }

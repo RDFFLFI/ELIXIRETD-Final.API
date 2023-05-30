@@ -170,7 +170,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               AccountCode = total.Key.AccountCode,
                               AccountTitles = total.Key.AccountTitles,
 
-
                           });
 
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -283,6 +282,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                Uom = returned.Uom,
                                TransactedBy = borrowed.PreparedBy,
                                BorrowedDate = borrowed.PreparedDate.ToString(),
+
+                               IsApprove = borrowed.IsApproved,
+                               IsApproveDate = borrowed.IsApprovedDate.ToString(),
+                               IsApproveBy = borrowed.ApproveBy,
+                               IsApproveReturned = borrowed.IsApprovedReturned,
+                               IsApproveReturnDate = borrowed.IsApprovedReturnedDate.ToString(),
+                               IsApproveReturnedBy = borrowed.ApprovedReturnedBy,
+
                                CompanyCode = borrowed.CompanyCode,
                                CompanyName = borrowed.CompanyName,
                                DepartmentCode = borrowed.DepartmentCode,

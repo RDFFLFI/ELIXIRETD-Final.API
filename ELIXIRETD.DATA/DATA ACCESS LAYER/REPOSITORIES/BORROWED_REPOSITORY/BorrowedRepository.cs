@@ -157,6 +157,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             });
 
             var BorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                           .Where(x => x.IsApproved == true)
                                                            .GroupBy(x => new
                                                            {
                                                                x.ItemCode,
@@ -173,6 +174,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
+                                                             .Where(x => x.IsApprovedReturned == true)
                                                              .GroupBy(x => new
                                                              {
                                                                  x.ItemCode,
@@ -365,6 +367,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ReturnQuantity = x.borrowed.ReturnQuantity != null ? x.borrowed.ReturnQuantity : 0,
                   Remarks = x.borrowed.Remarks,
                   PreparedBy = x.borrowed.PreparedBy,
+
+                  Uom = x.borrowed.Uom,
 
                   TransactionDate = x.issues.TransactionDate.ToString(),
                   CompanyCode = x.issues.CompanyCode,
@@ -699,7 +703,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ReturnQuantity = x.borrowed.ReturnQuantity,
                   Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
                   ReturnedDate = x.borrowed.ReturnedDate.ToString(),
-                  PreparedBy = x.borrowed.PreparedBy
+                  PreparedBy = x.borrowed.PreparedBy,
+
+                  Uom = x.borrowed.Uom
 
               });
 
@@ -844,6 +850,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ItemDescription = x.borrowed.ItemDescription,
                   Quantity = x.borrowed.Quantity,
                   PreparedBy = x.borrowed.PreparedBy,
+
+                  Uom = x.borrowed.Uom,
 
                   TransactionDate = x.issues.TransactionDate.ToString(),
                   CompanyCode = x.issues.CompanyCode,

@@ -46,6 +46,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
 
+                             orderby posummary.ImportDate 
+
                              select new CancelledPoDto
                              {
                                  Id = posummary.Id,
@@ -59,6 +61,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  ActualRemaining = 0,
                                  TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
                                  ActualGood = receive.ActualDelivered ,
+                                 
 
                              }).GroupBy(x => new
                              {
@@ -83,7 +86,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                                                 }).OrderByDescending(x => x.PO_Number)
+                                                 })
                                                    .Where(x => x.IsActive == false);
 
 
@@ -100,6 +103,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              join warehouse in _context.WarehouseReceived
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
+
+                             orderby posummary.ImportDate
 
                              select new CancelledPoDto
                              {
@@ -140,7 +145,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                                                 }).OrderByDescending(x => x.PO_Number)
+                                                 })/*.OrderByDescending(x => x.PO_Number)*/
                                                    .Where(x => x.IsActive == false)
                                                    .Where(x => Convert.ToString(x.PO_Number).ToLower().Contains(search.Trim().ToLower())
                                                   || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower())
@@ -392,7 +397,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         public async Task<PagedList<WarehouseReceivingDto>> ListOfWarehouseReceivingIdWithPagination(UserParams userParams)
         {
 
-            var warehouseInventory = _context.WarehouseReceived.OrderByDescending(x => x.ActualReceivingDate)
+            var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
                 .Select(x => new WarehouseReceivingDto
                 {
 
@@ -412,7 +417,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
         public async Task<PagedList<WarehouseReceivingDto>> ListOfWarehouseReceivingIdWithPaginationOrig(UserParams userParams, string search)
         {
-            var warehouseInventory = _context.WarehouseReceived.OrderByDescending(x => x.ActualReceivingDate)
+            var warehouseInventory = _context.WarehouseReceived.OrderBy(x => x.ActualReceivingDate)
                .Select(x => new WarehouseReceivingDto
                {
                    Id = x.Id,
@@ -464,7 +469,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                         
+                                                         .Where(x => x.IsApproved == true)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,
@@ -479,8 +484,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          });
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                              
                                                               .Where(x => x.IsReturned == true)
+                                                              .Where(x => x.IsApprovedReturned == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,
@@ -573,6 +578,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                         .Where(x => x.IsApproved == true)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,
@@ -584,24 +590,24 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                              Out = x.Sum(x => x.Quantity),
                                                              warehouseId = x.Key.WarehouseId
 
-            
                                                          });
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                             .Where(x => x.IsReturned == true)
-                                                             .GroupBy(x => new
-                                                             {
-                                                                 x.ItemCode,
-                                                                 x.WarehouseId,
+                                                              .Where(x => x.IsReturned == true)
+                                                              .Where(x => x.IsApprovedReturned == true)
+                                                              .GroupBy(x => new
+                                                              {
+                                                                  x.ItemCode,
+                                                                  x.WarehouseId,
 
-                                                             }).Select(x => new ItemStocksDto
-                                                             {
+                                                              }).Select(x => new ItemStocksDto
+                                                              {
 
-                                                                 ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.ReturnQuantity),
-                                                                 warehouseId = x.Key.WarehouseId,
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  In = x.Sum(x => x.ReturnQuantity),
+                                                                  warehouseId = x.Key.WarehouseId,
 
-                                                             });
+                                                              });
 
 
             var warehouseInventory = _context.WarehouseReceived

@@ -34,5 +34,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
+
+        public string Uom { get; set; }
+
     }
 }
