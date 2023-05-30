@@ -26,11 +26,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string PreparedBy { get; set; }
         public bool IsActive { get; set; }  
 
-        public bool IsPrepared { get; set; }
+        //public bool IsPrepared { get; set; }
 
         public string TransactionDate { get; set; }
 
         public bool IsApproved { get; set; }
+
+
+        public string ApproveDate { get; set; }
 
 
 
