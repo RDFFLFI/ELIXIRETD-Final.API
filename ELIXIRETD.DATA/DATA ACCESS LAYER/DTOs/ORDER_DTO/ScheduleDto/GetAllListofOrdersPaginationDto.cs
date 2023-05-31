@@ -11,5 +11,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
         public string CustomerName { get; set; }
         public bool IsActive { get; set; }
 
+        public bool Rush { get; set; }
+
+        public int MIRId { get; set; }
+
     }
 }

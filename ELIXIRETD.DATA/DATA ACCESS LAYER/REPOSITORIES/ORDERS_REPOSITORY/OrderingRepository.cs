@@ -49,31 +49,58 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         // ========================================== Schedule Prepare ===========================================================
 
-        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams)
+        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/)
         {
-                   var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
-            //                              //.ThenBy(x => x.Rush)
-                                          .OrderBy(x => x.OrderDate)
-                                        .GroupBy(x => new
-                                        {
-                                            x.CustomerName,
-                                            x.IsActive,
-                                            x.PreparedDate,
-                          
 
-                                        })
-                                          .Where(x => x.Key.IsActive == true)
-                                          .Where(x => x.Key.PreparedDate == null)
-                                           .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
-                                          .Select(x => new GetAllListofOrdersPaginationDto
-                                          {
-                                              CustomerName = x.Key.CustomerName,
-                                              IsActive = x.Key.IsActive,
-                                              
-                                              
-                                          });
+            var orders = _context.Orders.OrderBy(x => x.OrderDate)
+                                       
+                     .GroupBy(x => new
+                     {
+                         x.CustomerName,
+                         x.IsActive,
+                         x.PreparedDate,
+                         x.TrasactId,
+                         //x.Rush,
 
-            return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
+                     })
+                       .Where(x => x.Key.IsActive == true)
+                       .Where(x => x.Key.PreparedDate == null)
+                       .Select(x => new GetAllListofOrdersPaginationDto
+                       {
+                           CustomerName = x.Key.CustomerName,
+                           IsActive = x.Key.IsActive,
+                           //Rush = x.Key.Rush != null ? true : false,
+                           MIRId = x.Key.TrasactId
+
+                       })/*.Where(x => x.Rush == status)*/;
+
+
+                         return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
+            //       var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
+            ////                              //.ThenBy(x => x.Rush)
+            //                              .OrderBy(x => x.OrderDate)
+            //                            .GroupBy(x => new
+            //                            {
+            //                                x.CustomerName,
+            //                                x.IsActive,
+            //                                x.PreparedDate,
+
+
+            //                            })
+            //                              .Where(x => x.Key.IsActive == true)
+            //                              .Where(x => x.Key.PreparedDate == null)
+            //                               .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
+            //                              .Select(x => new GetAllListofOrdersPaginationDto
+            //                              {
+            //                                  CustomerName = x.Key.CustomerName,
+            //                                  IsActive = x.Key.IsActive,
+
+
+            //                              });
+
+            //return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
 
 
@@ -2842,41 +2869,77 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
     
     //=========================================== MIR Update In Ordering ============================================================
 
-        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search)
+        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search /*, bool status*/)
         {
 
             var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
                                    //                              //.ThenBy(x => x.Rush)
                                    .OrderBy(x => x.OrderDate)
+                                     
+
                                  .GroupBy(x => new
                                  {
                                      x.CustomerName,
                                      x.IsActive,
                                      x.PreparedDate,
-
+                                     x.TrasactId,
+                                     //x.Rush,
 
                                  })
                                    .Where(x => x.Key.IsActive == true)
                                    .Where(x => x.Key.PreparedDate == null)
-                                    .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
+
                                    .Select(x => new GetAllListofOrdersPaginationDto
                                    {
                                        CustomerName = x.Key.CustomerName,
                                        IsActive = x.Key.IsActive,
+                                       //Rush = x.Key.Rush != null ? true : false,
+                                       MIRId = x.Key.TrasactId
 
-
-                                   }).Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower()));
+                                    })/*.Where(x => x.Rush == status)*/
+                                    .Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
+        }
+
+        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer , bool status)
+        {
+            var orders = _context.Orders.Where(x => x.CustomerName == Customer)
+                                        .Where(x => x.IsActive == true)
+                                        .Where(x => x.IsPrepared != true)
+                                        .GroupBy(x => new
+                                        {
+
+                                            x.Customercode,
+                                            x.CustomerName,
+                                            x.CustomerType,
+                                            x.TrasactId,
+                                            x.DateNeeded,
+                                            x.OrderDate,
+                                            x.Rush,
+                                         
+                                        }).Select(x => new GetAllListOfMirDto
+                                        {
+
+                                            MIRId = x.Key.TrasactId,
+                                            CustomerCode = x.Key.Customercode,
+                                            CustomerName = x.Key.CustomerName,
+                                            CustomerType = x.Key.CustomerType,
+                                            TotalQuantity = x.Sum(x => x.QuantityOrdered),
+                                            DateNeeded = x.Key.DateNeeded.ToString(),
+                                            OrderedDate = x.Key.OrderDate.ToString(),
+                                           Rush = x.Key.Rush != null ? true : false,
+
+                                        }).Where(x => x.Rush == status);
+
+
+            return await orders.ToListAsync();
 
         }
 
 
 
 
-
-
-
-      
     }
 }

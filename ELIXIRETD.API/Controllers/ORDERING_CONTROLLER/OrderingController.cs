@@ -122,7 +122,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         else
                         {
 
-                        
+                        items.SyncDate = DateTime.Now;
                         AvailableImport.Add(items);
                         await _unitofwork.Orders.AddNewOrders(items);
 
@@ -168,9 +168,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListofOrdersPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams)
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams/*, bool status*/)
         {
-            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams);
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams /*, status*/);
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize , orders.TotalCount , orders.TotalPages, orders.HasNextPage , orders.HasPreviousPage );
 
@@ -831,15 +831,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListofOrdersPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPaginationOrig([FromQuery] UserParams userParams , string search)
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPaginationOrig([FromQuery] UserParams userParams , string search, bool status)
         {
 
 
             if (search == null)
 
-                return await GetAlllistofOrdersPagination(userParams);
+                return await GetAlllistofOrdersPagination(userParams/*, status*/);
 
-            var orders = await _unitofwork.Orders.GetAllListofOrdersPaginationOrig(userParams, search);
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPaginationOrig(userParams, search/* , status*/);
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
 
@@ -858,8 +858,16 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("GetAllListOfMir")]
+        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, bool status)
+        {
 
-        
+            var orders = await _unitofwork.Orders.GetAllListOfMir(customer, status);
+
+            return Ok(orders);
+        }
+
 
 
 

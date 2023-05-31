@@ -11,5 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public bool IsActive { get; set; }
         public bool  Rush  { get; set; }
 
+
+
     }
 }
