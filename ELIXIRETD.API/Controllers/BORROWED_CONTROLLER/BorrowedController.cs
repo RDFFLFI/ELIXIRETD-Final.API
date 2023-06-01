@@ -21,9 +21,9 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllBorrowedIssueWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPagination([FromQuery] UserParams userParams , [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status, [FromQuery] int empid)
         {
-            var issue = await _unitofwork.Borrowed.GetAllBorrowedReceiptWithPagination(userParams, status);
+            var issue = await _unitofwork.Borrowed.GetAllBorrowedReceiptWithPagination(userParams, status, empid);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -39,19 +39,19 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             };
 
             return Ok(issueResult);
-            
+
         }
 
 
         [HttpGet]
         [Route("GetAllBorrowedIssueWithPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPaginationOrig ([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status, [FromQuery] int empid)
         {
             if (search == null)
 
-                return await GetAllBorrowedIssueWithPagination(userParams, status);
+                return await GetAllBorrowedIssueWithPagination(userParams, status, empid);
 
-            var issue = await _unitofwork.Borrowed.GetAllBorrowedIssuetWithPaginationOrig(userParams, search, status);
+            var issue = await _unitofwork.Borrowed.GetAllBorrowedIssuetWithPaginationOrig(userParams, search, status , empid);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -411,12 +411,66 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         }
 
+        [HttpGet]
+        [Route("GetAllRejectBorrowedWithPaginationCustomer")]
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPaginationCustomer([FromQuery] UserParams userParams,[FromQuery] int empid)
+        {
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPaginationCustomer(userParams, empid);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+        [HttpGet]
+        [Route("GetAllRejectBorrowedWithPaginationCustomerOrig")]
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPaginationCustomerOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] int empid)
+        {
+            if (search == null)
+
+                return await GetAllRejectBorrowedWithPaginationCustomer(userParams, empid);
+
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPaginationCustomerOrig(userParams, search, empid);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+
+
 
         [HttpGet]
         [Route("GetAllRejectBorrowedWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPagination([FromQuery] UserParams userParams)
         {
-            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPagination(userParams, status);
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPagination(userParams);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -438,13 +492,13 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllRejectBorrowedWithPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetRejectBorrowedPagination>>> GetAllRejectBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search)
         {
             if (search == null)
 
-                return await GetAllRejectBorrowedWithPagination(userParams, status);
+                return await GetAllRejectBorrowedWithPagination(userParams);
 
-            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPaginationOrig(userParams, search, status);
+            var issue = await _unitofwork.Borrowed.GetAllRejectBorrowedWithPaginationOrig(userParams, search);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -467,9 +521,9 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllForApproveReturnedItem")]
-        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItem([FromQuery] UserParams userParams)
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItem([FromQuery] UserParams userParams,[FromQuery] bool status)
         {
-            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItem(userParams);
+            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItem(userParams , status);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -492,13 +546,13 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllForApproveReturnedItemOrig")]
-        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItemOrig([FromQuery] UserParams userParams, [FromQuery] string search)
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllForApproveReturnedItemOrig([FromQuery] UserParams userParams, [FromQuery] string search,[FromQuery] bool status)
         {
             if (search == null)
 
-                return await GetAllForApproveReturnedItem(userParams);
+                return await GetAllForApproveReturnedItem(userParams, status);
 
-            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItemOrig(userParams, search);
+            var issue = await _unitofwork.Borrowed.GetAllForApproveReturnedItemOrig(userParams, search, status);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 

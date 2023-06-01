@@ -17,9 +17,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<IReadOnlyList<GetAvailableStocksForBorrowedIssue_Dto>> GetAvailableStocksForBorrowedIssue(string itemcode);
         Task<bool> AddBorrowedIssue(BorrowedIssue borrowed);
         Task<bool> AddBorrowedIssueDetails(BorrowedIssueDetails borrowed);
-        Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status);
+        Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status , int empid);
 
-        Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedIssuetWithPaginationOrig(UserParams userParams, string search, bool status);
+        Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedIssuetWithPaginationOrig(UserParams userParams, string search, bool status, int empid);
 
         Task<bool> UpdateIssuePKey(BorrowedIssueDetails borowed);
 
@@ -57,17 +57,21 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<bool> RejectForBorrowed (BorrowedIssue borrowed);
 
 
-        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams, bool status);
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams);
 
-        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search);
+
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomer(UserParams userParams, int empid);
+
+        Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomerOrig(UserParams userParams, string search, int empid);
 
 
         //Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPagination(UserParams userParams, bool status);
 
         //Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPaginationOrig(UserParams userParams, string search, bool status);
 
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status);
 
         Task<bool> ApproveForReturned (BorrowedIssue borrowed);
 

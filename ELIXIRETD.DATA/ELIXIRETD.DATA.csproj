@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CORE\INTERFACES\BORROWED_INTERFACE\IBorrowedItem.cs~RF1c1a56f.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\ORDERING_MODEL\Ordering.cs~RF45e8aa.TMP" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\BORROWED_REPOSITORY\iwffkyel.vzn~" />

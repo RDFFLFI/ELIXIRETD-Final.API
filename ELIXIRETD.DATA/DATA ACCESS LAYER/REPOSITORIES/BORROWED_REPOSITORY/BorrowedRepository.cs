@@ -8,6 +8,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
 using System.Security.Principal;
@@ -23,14 +24,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             _context = context;
         }
 
-        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status)
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status , int empid)
         {
+
+           var employee = _context.Users.Where(x => x.Id == empid)
+                                        .FirstOrDefault();
+
+
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
                                                   .ThenByDescending(x => x.PreparedDate)
+                                                  .Where(x => x.PreparedBy == employee.FullName)
                                                   .Where(x => x.IsReturned == null)
+                                                  .Where(x => x.IsApproved == status)
                                                   //.Where(x => x.IsApproved == false)
                                                   .Where(x => x.IsReject == null)
-                                                  .Where(x => x.IsActive == status)
+                                                  .Where(x => x.IsActive == true)
                                                   .Select(x => new GetAllBorrowedReceiptWithPaginationDto
                                                   {
 
@@ -52,15 +60,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedIssuetWithPaginationOrig(UserParams userParams, string search, bool status)
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedIssuetWithPaginationOrig(UserParams userParams, string search, bool status , int empid)
         {
+
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                      .FirstOrDefault();
+
 
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
                                                   .ThenByDescending(x => x.PreparedDate)
+                                                  .Where(x => x.PreparedBy == employee.FullName)
+                                                   .Where(x => x.IsApproved == status)
                                                   .Where(x => x.IsReturned == null)
                                                   //.Where(x => x.IsApproved == false)
                                                   .Where(x => x.IsReject == null)
-                                                  .Where(x => x.IsActive == status)
+                                                  .Where(x => x.IsActive == true)
                                                   .Select(x => new GetAllBorrowedReceiptWithPaginationDto
                                                   {
 
@@ -77,9 +91,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       ApproveDate = x.IsApprovedDate.ToString()
 
                                                   })
-                                                  .Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
-                                                    || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
-                                                      || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
+                                                  .Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
@@ -351,6 +363,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .Where(x => x.borrowed.IsReturned == null)
               .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsActive == true)
+
               .Select(x => new GetAllDetailsInBorrowedIssueDto
               {
 
@@ -541,8 +554,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsApproveReturn = x.Key.IsApprovedReturned,
                                                       ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString()
                                                       
-
-
                                                   });
 
 
@@ -781,8 +792,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
                                             .Where(x => x.IsReturned == null)
                                             .Where(x => x.IsReject == null)
-                                            .Where(x => x.IsApproved == false)
-                                            .Where(x => x.IsActive == status)
+                                            .Where(x => x.IsApproved == status)
+                                            .Where(x => x.IsActive == true)
                                             .Select(x => new GetAllForApprovalBorrowedPaginationDTO
                                             {
 
@@ -833,6 +844,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .ThenBy(x => x.borrowed.ItemCode)
               .ThenBy(x => x.borrowed.CustomerName)
               .Where(x => x.borrowed.BorrowedPKey == id)
+              .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsTransact == true)
               .Where(x => x.borrowed.IsApproved == false)
               .Where(x => x.borrowed.IsReturned == null)
@@ -933,12 +945,80 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams, bool status)
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomer(UserParams userParams, int empid)
+        {
+
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                        .FirstOrDefault();
+
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                         .Where(x => x.PreparedBy == employee.FullName)
+                                        .Where(x => x.IsRejectDate != null)
+                                        .Where(x => x.IsReturned == null)
+                                        .Where(x => x.IsReject == true)
+                                        .Where(x => x.IsApproved == false)
+                                        .Select(x => new GetRejectBorrowedPagination
+                                        {
+
+                                            BorrowedPKey = x.Id,
+                                            CustomerName = x.CustomerName,
+                                            CustomerCode = x.CustomerCode,
+                                            TotalQuantity = x.TotalQuantity,
+                                            //PreparedBy = x.PreparedBy,
+                                            RejectDate = x.IsRejectDate.ToString(),
+                                            Remarks = x.Remarks,
+                                            RejectBy = x.RejectBy,
+                                            //BorrowedDate = x.PreparedDate.ToString(),
+                                            TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                        });
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+
+
+        }
+
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomerOrig(UserParams userParams, string search, int empid)
+        {
+
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                     .FirstOrDefault();
+
+
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                 .Where(x => x.PreparedBy == employee.FullName)
+                                 .Where(x => x.IsRejectDate != null)
+                                 .Where(x => x.IsReturned == null)
+                                 .Where(x => x.IsReject == true)
+                                 .Where(x => x.IsApproved == false)
+                                 .Select(x => new GetRejectBorrowedPagination
+                                 {
+
+                                     BorrowedPKey = x.Id,
+                                     CustomerName = x.CustomerName,
+                                     CustomerCode = x.CustomerCode,
+                                     TotalQuantity = x.TotalQuantity,
+                                     //PreparedBy = x.PreparedBy,
+                                     RejectDate = x.IsRejectDate.ToString(),
+                                     Remarks = x.Remarks,
+                                     RejectBy = x.RejectBy,
+                                     //BorrowedDate = x.PreparedDate.ToString(),
+                                     TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams)
         {
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
                                              .Where(x => x.IsRejectDate != null)
                                              .Where(x => x.IsReturned == null)
-                                             .Where(x => x.IsReject == status)
+                                             .Where(x => x.IsReject == true)
                                              .Where(x => x.IsApproved == false)
                                              .Select(x => new GetRejectBorrowedPagination
                                              {
@@ -959,12 +1039,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search)
         {
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
                                            .Where(x => x.IsRejectDate != null)
                                            .Where(x => x.IsReturned == null)
-                                           .Where(x => x.IsReject == status)
+                                           .Where(x => x.IsReject == true)
                                            .Where(x => x.IsApproved == false)
                                            .Select(x => new GetRejectBorrowedPagination
                                            {
@@ -990,10 +1070,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams)
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status)
         {
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == false)
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == status)
                                                   .GroupBy(x => new
                                                   {
 
@@ -1054,10 +1134,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search)
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status)
         {
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == false)
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == status)
                                                 .GroupBy(x => new
                                                 {
 
@@ -1169,23 +1249,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.IsReturned = null;   
                 item.ReturnedDate = null;
                 item.IsApprovedReturned = false;
+                item.ReturnQuantity = 0;
             }
 
             issue.IsReturned = null;
             issue.IsApprovedReturned = false;
+            issue.Remarks = borrowed.Remarks;
 
             return true;
 
         }
 
-
-
-
-       
-
-
-
-
+      
     }
     
 }
