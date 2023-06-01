@@ -756,8 +756,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
                                                .Where(x => x.IsReturned == null)
                                                .Where(x => x.IsReject == null)
-                                               .Where(x => x.IsApproved == false)
-                                               .Where(x => x.IsActive == status)
+                                               .Where(x => x.IsApproved == status)
+                                               .Where(x => x.IsActive == true)
                                                .Select(x => new GetAllForApprovalBorrowedPaginationDTO
                                                {
 
@@ -1181,42 +1181,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
-        //public async Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPagination(UserParams userParams, bool status)
-        //{
-
-        //    var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
-        //                                      .Where(x => x.IsReturned == null)
-        //                                      .Where(x => x.IsReject == null)
-        //                                      .Where(x => x.IsApproved == false)
-        //                                      .Where(x => x.IsActive == status)
-        //                                      .Select(x => new GetAllForApprovalBorrowedPaginationDTO
-        //                                      {
-
-        //                                          BorrowedPKey = x.Id,
-        //                                          CustomerName = x.CustomerName,
-        //                                          CustomerCode = x.CustomerCode,
-        //                                          TotalQuantity = x.TotalQuantity,
-        //                                          PreparedBy = x.PreparedBy,
-        //                                          Remarks = x.Remarks,
-        //                                          BorrowedDate = x.PreparedDate.ToString(),
-        //                                          TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
-
-        //                                      });
-
-        //    return await PagedList<GetAllForApprovalBorrowedPaginationDTO>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
-
-        //}
-
-        //public Task<PagedList<GetRejectBorrowedPagination>> GetAllApprovedBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-
-
-
-
-
+       
 
 
 

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
@@ -60,7 +61,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                          x.IsActive,
                          x.PreparedDate,
                          x.TrasactId,
-                         //x.Rush,
+                         x.Rush,
 
 
                      })
@@ -70,7 +71,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        {
                            CustomerName = x.Key.CustomerName,
                            IsActive = x.Key.IsActive,
-                           //Rush = x.Key.Rush != null ? true : false,
+                           Rush = x.Key.Rush != null ? true : false,
                            MIRId = x.Key.TrasactId
 
                        })/*.Where(x => x.Rush == status)*/;
@@ -2869,6 +2870,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
     
     //=========================================== MIR Update In Ordering ============================================================
 
+        //Customer
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search /*, bool status*/)
         {
 
@@ -2883,7 +2885,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                      x.IsActive,
                                      x.PreparedDate,
                                      x.TrasactId,
-                                     //x.Rush,
+                                     x.Rush,
 
                                  })
                                    .Where(x => x.Key.IsActive == true)
@@ -2893,7 +2895,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                    {
                                        CustomerName = x.Key.CustomerName,
                                        IsActive = x.Key.IsActive,
-                                       //Rush = x.Key.Rush != null ? true : false,
+                                       Rush = x.Key.Rush != null ? true : false,
                                        MIRId = x.Key.TrasactId
 
                                     })/*.Where(x => x.Rush == status)*/
@@ -2903,8 +2905,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer , bool status)
+
+        //Viewing
+        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer , string IsRush)
         {
+            bool status;
+
+             if(IsRush != null)
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+
             var orders = _context.Orders.Where(x => x.CustomerName == Customer)
                                         .Where(x => x.IsActive == true)
                                         .Where(x => x.IsPrepared != true)
@@ -2933,13 +2948,72 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                         }).Where(x => x.Rush == status);
 
-
             return await orders.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer)
+        {
+
+            return await _context.Orders.Where(x => x.CustomerName == Customer)
+                                        .Where(x => x.IsActive == true)
+                                        .Where(x => x.IsPrepared != true)
+                                        .GroupBy(x => new
+                                        {
+
+                                            x.Customercode,
+                                            x.CustomerName,
+                                            x.CustomerType,
+                                            x.TrasactId,
+                                            x.DateNeeded,
+                                            x.OrderDate,
+                                            x.Rush,
+
+                                        }).Select(x => new GetAllListOfMirDto
+                                        {
+
+                                            MIRId = x.Key.TrasactId,
+                                            CustomerCode = x.Key.Customercode,
+                                            CustomerName = x.Key.CustomerName,
+                                            CustomerType = x.Key.CustomerType,
+                                            TotalQuantity = x.Sum(x => x.QuantityOrdered),
+                                            DateNeeded = x.Key.DateNeeded.ToString(),
+                                            OrderedDate = x.Key.OrderDate.ToString(),
+                                            Rush = x.Key.Rush != null ? true : false,
+
+                                        }).ToListAsync();
 
         }
 
+        public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
+        {
 
+            var result = new List<AllOrdersPerMIRIDsDTO>();
 
+            var orders = _context.Orders.Where(x => x.CustomerName == customerName)
+                                        .Where(x => x.IsActive == true)
+                                        .Where(x => x.IsPrepared != true)
+                                        .Where(x => listofMirIds.Contains(x.TrasactId) )
+                                        .GroupBy(x => new
+                                        {
+                                            x.ItemCode,
+                                            x.ItemdDescription,
+                                            x.Uom,
+                                            x.Category,
 
+                                        }).Select(x => new AllOrdersPerMIRIDsDTO
+                                        {
+                                            ItemCode = x.Key.ItemCode,
+                                            ItemDescription = x.Key.ItemdDescription,
+                                            Uom = x.Key.Uom,
+                                            Category = x.Key.Category
+                                            
+
+                                        }).ToList();
+
+                result.AddRange(orders);
+
+            return result;
+            
+        }
     }
 }

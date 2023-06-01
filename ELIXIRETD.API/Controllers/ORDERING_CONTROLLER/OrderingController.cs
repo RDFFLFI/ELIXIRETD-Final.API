@@ -1,10 +1,12 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using ELIXIRETD.DATA.Migrations;
 using ELIXIRETD.DATA.SERVICES;
 using Microsoft.EntityFrameworkCore;
 
@@ -831,7 +833,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListofOrdersPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPaginationOrig([FromQuery] UserParams userParams , string search, bool status)
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPaginationOrig([FromQuery] UserParams userParams , string search)
         {
 
 
@@ -860,7 +862,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMir")]
-        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, bool status)
+        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, string status)
         {
 
             var orders = await _unitofwork.Orders.GetAllListOfMir(customer, status);
@@ -868,11 +870,19 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
+        [HttpGet("GetAllListOfMirOrders")]
+        public async Task<IActionResult> GetAllListOfMirOrders(string customer)
+        {
+            var orders = await _unitofwork.Orders.GetAllListOfMirOrders(customer);
+            return Ok(orders);
+        }
 
-
-
-
-
+        [HttpGet("GetAllListOfMirOrdersByMirIds")]
+        public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds, [FromQuery] string customerName)
+        {
+            var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds, customerName);
+            return Ok(orders);
+        }
 
     }
 }

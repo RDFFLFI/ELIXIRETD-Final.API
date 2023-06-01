@@ -13,7 +13,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
     public interface IOrdering
     {
         Task<bool> AddNewOrders(Ordering Orders);
-        Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams, bool status);
+        Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/);
         Task<IReadOnlyList<GetAllListofOrdersDto>> GetAllListofOrders(string Customer);
         Task<IReadOnlyList<OrderSummaryDto>> OrderSummary(string DateFrom, string DateTo);
         Task<bool> SchedulePreparedDate(Ordering orders);
@@ -118,15 +118,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         //====================================================== Update Orders ==================================================================
 
-         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search , bool status);
+         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search/* , bool status*/);
 
-        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer, bool status);
-
-
-
-
-
-
-
+        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer, string IsRush);
+        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer);
+        Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName);
     }
 }
