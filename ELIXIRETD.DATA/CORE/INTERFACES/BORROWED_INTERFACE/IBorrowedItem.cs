@@ -34,8 +34,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed);
         Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams, bool status , int empid);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search , bool status , int empid);
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id);
 

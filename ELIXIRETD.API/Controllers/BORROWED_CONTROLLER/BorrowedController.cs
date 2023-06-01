@@ -252,9 +252,9 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllReturnedItem")]
-        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllReturnedItem([FromQuery] UserParams userParams)
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllReturnedItem([FromQuery] UserParams userParams, [FromQuery]bool status,[FromQuery] int empid)
         {
-            var issue = await _unitofwork.Borrowed.GetAllReturnedItem(userParams);
+            var issue = await _unitofwork.Borrowed.GetAllReturnedItem(userParams, status, empid);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -276,13 +276,13 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllReturnedItemOrig")]
-        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllReturnedItemOrig([FromQuery] UserParams userParams, [FromQuery] string search)
+        public async Task<ActionResult<IEnumerable<DtoGetAllReturnedItem>>> GetAllReturnedItemOrig([FromQuery] UserParams userParams, [FromQuery] string search, bool status, int empid)
         {
             if (search == null)
 
-                return await GetAllReturnedItem(userParams);
+                return await GetAllReturnedItem(userParams, status , empid);
 
-            var issue = await _unitofwork.Borrowed.GetAllReturnedItemOrig(userParams, search);
+            var issue = await _unitofwork.Borrowed.GetAllReturnedItemOrig(userParams, search , status , empid);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 

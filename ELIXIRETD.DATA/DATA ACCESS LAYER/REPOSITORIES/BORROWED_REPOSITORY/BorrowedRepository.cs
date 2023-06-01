@@ -531,11 +531,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams)
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams, bool status, int empid)
         {
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                     .FirstOrDefault();
 
-
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
+            var borrowed = _context.BorrowedIssues.Where(x => x.PreparedBy == employee.FullName)
+                                                  .Where(x => x.IsReturned == true && x.IsActive == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -621,10 +623,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search)
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search, bool status, int empid)
         {
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                   .FirstOrDefault();
+
+            var borrowed = _context.BorrowedIssues.Where(x => x.PreparedBy == employee.FullName)
+                                              .Where(x => x.IsReturned == true && x.IsActive == true)
                                               .GroupBy(x => new
                                               {
 
