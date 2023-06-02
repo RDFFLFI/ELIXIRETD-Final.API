@@ -606,6 +606,58 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("GetAllDetailsBorrowedTransaction")]
+        public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransaction([FromQuery] UserParams userParams)
+        {
+            var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransaction(userParams);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
+
+
+        [HttpGet]
+        [Route("GetAllDetailsBorrowedTransactionOrig")]
+        public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransactionOrig([FromQuery] UserParams userParams, [FromQuery] string search)
+        {
+            if (search == null)
+
+                return await GetAllDetailsBorrowedTransaction(userParams);
+
+            var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransactionOrig(userParams, search);
+
+            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+
+            var issueResult = new
+            {
+                issue,
+                issue.CurrentPage,
+                issue.PageSize,
+                issue.TotalCount,
+                issue.TotalPages,
+                issue.HasNextPage,
+                issue.HasPreviousPage
+            };
+
+            return Ok(issueResult);
+
+        }
+
 
 
     }
