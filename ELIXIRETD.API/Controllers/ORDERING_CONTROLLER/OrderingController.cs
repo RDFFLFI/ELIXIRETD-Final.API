@@ -877,12 +877,17 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
+
         [HttpGet("GetAllListOfMirOrdersByMirIds")]
         public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds, [FromQuery] string customerName)
         {
             var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds, customerName);
             return Ok(orders);
         }
+
+
+
+
 
     }
 }

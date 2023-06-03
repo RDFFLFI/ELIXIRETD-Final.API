@@ -2984,36 +2984,232 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
+
+        //public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
+        //{
+
+        //var result = new List<AllOrdersPerMIRIDsDTO>();
+
+        //    var orders = _context.Orders.Where(x => x.CustomerName == customerName)
+        //                                .Where(x => x.IsActive == true)
+        //                                .Where(x => x.IsPrepared != true)
+        //                                .Where(x => listofMirIds.Contains(x.TrasactId))
+        //                                .GroupBy(x => new
+        //                                {
+        //                                    x.ItemCode,
+        //                                    x.ItemdDescription,
+        //                                    x.Uom,
+        //                                    x.Category,
+
+        //                                }).Select(x => new AllOrdersPerMIRIDsDTO
+        //                                {
+        //                                    ItemCode = x.Key.ItemCode,
+        //                                    ItemDescription = x.Key.ItemdDescription,
+        //                                    Uom = x.Key.Uom,
+        //                                    Category = x.Key.Category
+
+
+        //                                }).ToList();
+
+        //    result.AddRange(orders);
+
+        //    return result;
+
+
+        //}
+
+        private static Dictionary<string, decimal> stockOnHandDict = new Dictionary<string, decimal>();
+
+
         public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
         {
-
             var result = new List<AllOrdersPerMIRIDsDTO>();
 
-            var orders = _context.Orders.Where(x => x.CustomerName == customerName)
-                                        .Where(x => x.IsActive == true)
-                                        .Where(x => x.IsPrepared != true)
-                                        .Where(x => listofMirIds.Contains(x.TrasactId) )
-                                        .GroupBy(x => new
-                                        {
-                                            x.ItemCode,
-                                            x.ItemdDescription,
-                                            x.Uom,
-                                            x.Category,
+            var datenow = DateTime.Now;
 
-                                        }).Select(x => new AllOrdersPerMIRIDsDTO
-                                        {
-                                            ItemCode = x.Key.ItemCode,
-                                            ItemDescription = x.Key.ItemdDescription,
-                                            Uom = x.Key.Uom,
-                                            Category = x.Key.Category
-                                            
+            var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                              .GroupBy(x => new
+                                                              {
+                                                                  x.ItemCode,
 
-                                        }).ToList();
+                                                              }).Select(x => new WarehouseInventory
+                                                              {
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  ActualGood = x.Sum(x => x.ActualGood)
+                                                              });
 
-                result.AddRange(orders);
+
+            var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
+                                                    .Where(x => x.PreparedDate != null)
+            .GroupBy(x => new
+            {
+                x.ItemCode,
+
+            }).Select(x => new OrderingInventory
+            {
+                ItemCode = x.Key.ItemCode,
+                QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+            });
+
+
+            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+                                                               .Where(x => x.IsTransact == true)
+                                                               .GroupBy(x => new
+                                                               {
+                                                                   x.ItemCode,
+
+                                                               }).Select(x => new IssueInventoryDto
+                                                               {
+
+                                                                   ItemCode = x.Key.ItemCode,
+                                                                   Quantity = x.Sum(x => x.Quantity)
+                                                               });
+
+            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
+                                                                .GroupBy(x => new
+                                                                {
+
+                                                                    x.ItemCode,
+                                                                }).Select(x => new IssueInventoryDto
+                                                                {
+
+                                                                    ItemCode = x.Key.ItemCode,
+                                                                    Quantity = x.Sum(x => x.Quantity)
+
+                                                                });
+
+            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
+                                                            .GroupBy(x => new
+                                                            {
+                                                                x.ItemCode,
+
+                                                            }).Select(x => new ItemStocksDto
+                                                            {
+
+                                                                ItemCode = x.Key.ItemCode,
+                                                                In = x.Sum(x => x.ReturnQuantity),
+
+                                                            });
+
+            var getReserve = getWarehouseStock
+              .GroupJoin(getOrderingReserve, warehouse => warehouse.ItemCode, ordering => ordering.ItemCode, (warehouse, ordering) => new { warehouse, ordering })
+              .SelectMany(x => x.ordering.DefaultIfEmpty(), (x, ordering) => new { x.warehouse, ordering })
+              .GroupJoin(getIssueOut, warehouse => warehouse.warehouse.ItemCode, issue => issue.ItemCode, (warehouse, issue) => new { warehouse, issue })
+              .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
+              .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.ItemCode, returned => returned.ItemCode, (warehouse, returned) => new { warehouse, returned })
+              .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
+              .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.warehouse.ItemCode, borrowed => borrowed.ItemCode, (warehouse, borrowed) => new { warehouse, borrowed })
+              .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
+              //.GroupJoin(getIssueReceipt, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode, receipts => receipts.ItemCode , (warehouse, receipts) => new {warehouse,receipts} )
+              //.SelectMany(x => x.receipts.DefaultIfEmpty() , (x, receipts) => new {x.warehouse , receipts})
+              .GroupBy(x => x.warehouse.warehouse.warehouse.warehouse.ItemCode)
+              .Select(total => new ReserveInventory
+              {
+
+                  ItemCode = total.Key,
+                  Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood != null ? x.warehouse.warehouse.warehouse.warehouse.ActualGood : 0) +
+                            total.Sum(x => x.warehouse.returned.In != null ? x.warehouse.returned.In : 0) /*+*/
+                           /*  total.Sum(x => x.receipts.Quantity != null ? x.receipts.Quantity : 0)*/ -
+                             total.Sum(x => x.warehouse.warehouse.issue.Quantity != null ? x.warehouse.warehouse.issue.Quantity : 0) -
+                              total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.ordering.QuantityOrdered : 0) -
+                             total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0),
+
+              });
+
+
+            var itemCodes = new HashSet<string>(listofMirIds.Select(id => id.ToString()));
+            var stockOnHandDict = new Dictionary<string, decimal>();
+
+            var orders = _context.Orders
+                .Where(ordering => ordering.CustomerName == customerName && ordering.PreparedDate == null && ordering.IsActive == true)
+                .Where(x => listofMirIds.Contains(x.TrasactId))
+                .GroupJoin(getReserve, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
+                .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
+                .GroupBy(x => new
+                {
+                   x.ordering.Id,
+                   x.ordering.TrasactId,
+                    x.ordering.ItemCode,
+                    x.ordering.ItemdDescription,
+                    x.ordering.Uom,
+                    //x.ordering.IsActive,
+                    //x.ordering.IsPrepared,
+                    x.ordering.StandartQuantity,
+
+                    Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
+
+                })
+                .Select(total => new AllOrdersPerMIRIDsDTO
+                {
+                 
+                    Id = total.Key.Id,
+                    MIRId = total.Key.TrasactId,
+                    ItemCode = total.Key.ItemCode,
+                    ItemDescription = total.Key.ItemdDescription,
+                    Uom = total.Key.Uom,
+                    QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
+                    //IsActive = total.Key.IsActive,
+                    ////IsPrepared = total.Key.IsPrepared,
+                    StockOnHand =  total.Key.Reserve != null ? total.Key.Reserve : 0,
+                    StandardQuantity = total.Key.StandartQuantity
+
+                }).ToList();
+
+            //foreach (var order in orders)
+            //{
+            //    if (!stockOnHandDict.ContainsKey(order.ItemCode))
+            //    {
+            //        stockOnHandDict[order.ItemCode] = order.StockOnHand;
+            //    }
+
+            //    if (listofMirIds.Contains(order.MIRId))
+            //    {
+            //        stockOnHandDict[order.ItemCode] -= order.QuantityOrder;
+            //    }
+
+            //    order.StockOnHand = stockOnHandDict[order.ItemCode];
+            //}
+
+            foreach (var order in orders)
+            {
+                if (!stockOnHandDict.ContainsKey(order.ItemCode))
+                {
+                    stockOnHandDict[order.ItemCode] = order.StockOnHand;
+                }
+
+                if (listofMirIds.Contains(order.MIRId))
+                {
+                    stockOnHandDict[order.ItemCode] -= order.QuantityOrder;
+                }
+
+                order.StockOnHand = stockOnHandDict[order.ItemCode];
+            }
+
+
+            var itemCodess = orders.Select(o => o.ItemCode).Distinct();
+            foreach (var itemCode in itemCodess)
+            {
+                var stockOnHand = stockOnHandDict[itemCode];
+                foreach (var order in orders.Where(o => o.ItemCode == itemCode))
+                {
+                    order.StockOnHand = stockOnHand;
+                }
+            }
+
+
+
+            result.AddRange(orders);
 
             return result;
-            
+
         }
+
+       
+
+
+
     }
 }

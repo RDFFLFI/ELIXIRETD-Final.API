@@ -162,6 +162,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                               (from posummary in _context.PoSummaries
                                where posummary.IsActive == true
+
+
+                               orderby posummary.ImportDate
+
                                join warehouse in _context.WarehouseReceived
                                on posummary.Id equals warehouse.PoSummaryId into leftJ
                                from receive in leftJ.DefaultIfEmpty()
@@ -217,7 +221,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          IsActive = receive.Key.IsActive,
                                                         
                                                      })
-                                                     .OrderByDescending(x => x.PoNumber)
+                                                  
                                                      .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
                                                      .Where(x => x.IsActive == true);
 
@@ -229,6 +233,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         {
             var poSummary = (from posummary in _context.PoSummaries
                              where posummary.IsActive == true
+
+                             
+                             orderby posummary.ImportDate
+
                              join warehouse in _context.WarehouseReceived
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()

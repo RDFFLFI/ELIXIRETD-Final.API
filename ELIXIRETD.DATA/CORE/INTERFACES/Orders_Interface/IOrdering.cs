@@ -122,6 +122,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer, string IsRush);
         Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer);
+
+
+        //Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName);
+
+
         Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName);
     }
 }
