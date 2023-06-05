@@ -1,4 +1,6 @@
-﻿using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
+﻿using Azure;
+using ELIXIRETD.DATA.CORE.API_RESPONSE;
+using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
@@ -50,59 +52,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         // ========================================== Schedule Prepare ===========================================================
 
-        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/)
-        {
 
-            var orders = _context.Orders.OrderBy(x => x.OrderDate)
-                                       
-                     .GroupBy(x => new
-                     {
-                         x.CustomerName,
-                         x.IsActive,
-                         x.PreparedDate,
-                         x.TrasactId,
-                         x.Rush,
-
-
-                     })
-                       .Where(x => x.Key.IsActive == true)
-                       .Where(x => x.Key.PreparedDate == null)
-                       .Select(x => new GetAllListofOrdersPaginationDto
-                       {
-                           CustomerName = x.Key.CustomerName,
-                           IsActive = x.Key.IsActive,
-                           Rush = x.Key.Rush != null ? true : false,
-                           MIRId = x.Key.TrasactId
-
-                       })/*.Where(x => x.Rush == status)*/;
-
-
-                         return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
-
-            //       var orders = _context.Orders   /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
-            ////                              //.ThenBy(x => x.Rush)
-            //                              .OrderBy(x => x.OrderDate)
-            //                            .GroupBy(x => new
-            //                            {
-            //                                x.CustomerName,
-            //                                x.IsActive,
-            //                                x.PreparedDate,
-
-
-            //                            })
-            //                              .Where(x => x.Key.IsActive == true)
-            //                              .Where(x => x.Key.PreparedDate == null)
-            //                               .OrderByDescending(x => x.Any(x => !string.IsNullOrEmpty(x.Rush)))
-            //                              .Select(x => new GetAllListofOrdersPaginationDto
-            //                              {
-            //                                  CustomerName = x.Key.CustomerName,
-            //                                  IsActive = x.Key.IsActive,
-
-
-            //                              });
-
-            //return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
-        }
 
 
         public async Task<IReadOnlyList<GetAllListofOrdersDto>> GetAllListofOrders(string Customer)
@@ -313,47 +263,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> EditQuantityOrder(Ordering orders)
-        {
-            var existingOrder = await _context.Orders.Where(x => x.Id == orders.Id)
-                                                     .FirstOrDefaultAsync();
-
-            //if (existingOrder == null)
-            //{
-            //    return false;
-            //}
-
-            //else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
-            //{
-            //    return false;
-            //}
-     
-                existingOrder.QuantityOrdered = orders.QuantityOrdered;
-
-
-
-                return true;
-        }
-
-
-        public async Task<bool> CancelOrders(Ordering orders)
-        {
-            var existing = await _context.Orders.Where(x => x.Id == orders.Id)
-                                                 .Where(x => x.IsActive == true)
-                                                 .FirstOrDefaultAsync();
-
-            if (existing == null)
-                return false;
-
-            existing.IsActive = false;
-            existing.IsCancelBy = orders.IsCancelBy;
-            existing.IsCancel = true;
-            existing.CancelDate = DateTime.Now;
-            existing.Remarks = orders.Remarks;
-
-            return true;
-        }
-
+ 
         public async Task<IReadOnlyList<GetAllListCancelOrdersDto>> GetAllListOfCancelOrders()
         {
             var cancelled = _context.Orders.Where(x => x.CancelDate != null)
@@ -398,98 +308,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-        public async Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule()
-        {
-
-
-            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
-                                                 .GroupBy(x => new
-                                                 {
-
-                                                     x.Id,
-                                                     x.Rush,
-
-                                                 }).Select(x => new GetallApproveDto
-                                                 {
-                                                     OrderNoPKey = x.Key.Id,
-                                                    Rush = x.Key.Rush
-                              
-                                                 });
-
-
-            var orders = _context.Orders
-                .GroupJoin(rushorder, order => order.OrderNoPKey, rushgenerate => rushgenerate.OrderNoPKey, (order, rushgenerate) => new { order, rushgenerate })
-                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.order, rushgenerate })
-                .Where(x => x.order.IsApproved == null && x.order.PreparedDate != null && x.order.IsActive == true)
-                .GroupBy(x => new
-                {
-                    x.order.OrderNoPKey,
-                    x.order.Department,
-                    x.order.Customercode,
-                    x.order.CustomerName,
-                    //x.order.Category,
-                    x.order.PreparedDate,
-                    //x.order.IsApproved,
-                    x.rushgenerate.Rush
-                  
-
-                })
-                .OrderByDescending(x =>x.Key.Rush)
-                .ThenBy(x => x.Key.PreparedDate)
-                .Select(x => new GetallApproveDto
-                {
-                    OrderNoPKey = x.Key.OrderNoPKey,
-                    Department = x.Key.Department,
-                    CustomerName = x.Key.CustomerName,
-                    CustomerCode = x.Key.Customercode,
-                    //Category = x.Key.Category,
-                    TotalOrders = x.Sum(x => x.order.QuantityOrdered),
-                    PreparedDate = x.Key.PreparedDate.ToString(),
-                    Rush = x.Key.Rush
-                    
-                });
-                
-                           
-            //var orders = _context.Orders
-
-            //                          .Where(x => x.IsApproved == null)
-            //                          .Where(x => x.PreparedDate != null)
-            //                          .OrderBy(x => x.PreparedDate)
-            //                          .Where(x => x.IsActive == true)
-            //                          .GroupBy(x => new
-            //                          {
-            //                              x.OrderNoPKey,
-            //                              x.Department,
-            //                              x.CustomerName,
-            //                              x.Customercode,
-            //                              x.Category,
-            //                              x.PreparedDate,
-            //                              x.IsApproved,
-            //                              x.IsActive
-
-            //                          })//}).Where(x => x.Key.IsApproved == null)
-            //                            //    .Where(x => x.Key.PreparedDate != null)
-            //                            //    .Where(x => x.Key.IsActive == true)
-
-            //.Select(x => new GetallApproveDto
-            //{
-            //    OrderNoPKey = x.Key.OrderNoPKey,
-            //    Department = x.Key.Department,
-            //    CustomerName = x.Key.CustomerName,
-            //    CustomerCode = x.Key.Customercode,
-            //    Category = x.Key.Category,
-            //    TotalOrders = x.Sum(x => x.QuantityOrdered),
-            //    PreparedDate = x.Key.PreparedDate.ToString(),
-
-            //});
-
-
-            return await orders.ToListAsync();
-
-        }
-
-
-
+    
         public async Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int Id)
         {
             var orders = _context.Orders.OrderBy(x => x.Rush == null)
@@ -2794,83 +2613,44 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
-        //public async Task<bool> ValidateDepartment(string departmentname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
-        //                                         .Where(x => x.IsActive == true)
-        //                                        .FirstOrDefaultAsync();
-
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
-
-        //public async Task<bool> ValidateCompany(string companycode, string companyname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
-        //                                        .Where(x => x.CompanyName == companyname)
-        //                                        .Where(x => x.IsActive == true)
-        //                                       .FirstOrDefaultAsync();
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
-
-        //public async Task<bool> ValidateLocation(string locationcode, string locationname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
-        //                                       .Where(x => x.LocationName == locationname)
-        //                                       .Where(x => x.IsActive == true)
-        //                                      .FirstOrDefaultAsync();
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
 
 
-        // ==========  //public async Task<bool> ValidateDepartment(string departmentname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.DepartmentName == departmentname)
-        //                                         .Where(x => x.IsActive == true)
-        //                                        .FirstOrDefaultAsync();
-
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
-
-        //public async Task<bool> ValidateCompany(string companycode, string companyname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.CompanyCode == companycode)
-        //                                        .Where(x => x.CompanyName == companyname)
-        //                                        .Where(x => x.IsActive == true)
-        //                                       .FirstOrDefaultAsync();
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
-
-        //public async Task<bool> ValidateLocation(string locationcode, string locationname)
-        //{
-        //    var validate = await _context.Customers.Where(x => x.LocationCode == locationcode)
-        //                                       .Where(x => x.LocationName == locationname)
-        //                                       .Where(x => x.IsActive == true)
-        //                                      .FirstOrDefaultAsync();
-        //    if (validate == null)
-        //        return false;
-
-        //    return true;
-        //}
-    
-    
-    //=========================================== MIR Update In Ordering ============================================================
+        //=========================================== MIR Update In Ordering Preparation Schedule============================================================
 
         //Customer
+
+        public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/)
+        {
+
+            var orders = _context.Orders.OrderBy(x => x.OrderDate)
+
+                     .GroupBy(x => new
+                     {
+                         x.CustomerName,
+                         x.IsActive,
+                         x.PreparedDate,
+                         x.TrasactId,
+                         x.Rush,
+
+
+                     })
+                       .Where(x => x.Key.IsActive == true)
+                       .Where(x => x.Key.PreparedDate == null)
+                       .Select(x => new GetAllListofOrdersPaginationDto
+                       {
+                           CustomerName = x.Key.CustomerName,
+                           IsActive = x.Key.IsActive,
+                           Rush = x.Key.Rush != null ? true : false,
+                           MIRId = x.Key.TrasactId
+
+                       })/*.Where(x => x.Rush == status)*/;
+
+            return await PagedList<GetAllListofOrdersPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+
+
+        }
+
+
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search /*, bool status*/)
         {
 
@@ -2985,38 +2765,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
-        //public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
-        //{
-
-        //var result = new List<AllOrdersPerMIRIDsDTO>();
-
-        //    var orders = _context.Orders.Where(x => x.CustomerName == customerName)
-        //                                .Where(x => x.IsActive == true)
-        //                                .Where(x => x.IsPrepared != true)
-        //                                .Where(x => listofMirIds.Contains(x.TrasactId))
-        //                                .GroupBy(x => new
-        //                                {
-        //                                    x.ItemCode,
-        //                                    x.ItemdDescription,
-        //                                    x.Uom,
-        //                                    x.Category,
-
-        //                                }).Select(x => new AllOrdersPerMIRIDsDTO
-        //                                {
-        //                                    ItemCode = x.Key.ItemCode,
-        //                                    ItemDescription = x.Key.ItemdDescription,
-        //                                    Uom = x.Key.Uom,
-        //                                    Category = x.Key.Category
-
-
-        //                                }).ToList();
-
-        //    result.AddRange(orders);
-
-        //    return result;
-
-
-        //}
 
         private static Dictionary<string, decimal> stockOnHandDict = new Dictionary<string, decimal>();
 
@@ -3103,16 +2851,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
               .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
               .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.warehouse.ItemCode, borrowed => borrowed.ItemCode, (warehouse, borrowed) => new { warehouse, borrowed })
               .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
-              //.GroupJoin(getIssueReceipt, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode, receipts => receipts.ItemCode , (warehouse, receipts) => new {warehouse,receipts} )
-              //.SelectMany(x => x.receipts.DefaultIfEmpty() , (x, receipts) => new {x.warehouse , receipts})
+
               .GroupBy(x => x.warehouse.warehouse.warehouse.warehouse.ItemCode)
               .Select(total => new ReserveInventory
               {
 
                   ItemCode = total.Key,
                   Reserve = total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood != null ? x.warehouse.warehouse.warehouse.warehouse.ActualGood : 0) +
-                            total.Sum(x => x.warehouse.returned.In != null ? x.warehouse.returned.In : 0) /*+*/
-                           /*  total.Sum(x => x.receipts.Quantity != null ? x.receipts.Quantity : 0)*/ -
+                            total.Sum(x => x.warehouse.returned.In != null ? x.warehouse.returned.In : 0)  -
                              total.Sum(x => x.warehouse.warehouse.issue.Quantity != null ? x.warehouse.warehouse.issue.Quantity : 0) -
                               total.Sum(x => x.warehouse.warehouse.warehouse.ordering.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.ordering.QuantityOrdered : 0) -
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0),
@@ -3158,21 +2904,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                 }).ToList();
 
-            //foreach (var order in orders)
-            //{
-            //    if (!stockOnHandDict.ContainsKey(order.ItemCode))
-            //    {
-            //        stockOnHandDict[order.ItemCode] = order.StockOnHand;
-            //    }
-
-            //    if (listofMirIds.Contains(order.MIRId))
-            //    {
-            //        stockOnHandDict[order.ItemCode] -= order.QuantityOrder;
-            //    }
-
-            //    order.StockOnHand = stockOnHandDict[order.ItemCode];
-            //}
-
+         
             foreach (var order in orders)
             {
                 if (!stockOnHandDict.ContainsKey(order.ItemCode))
@@ -3207,7 +2939,110 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-       
+        public async Task<bool> PreparationOfSchedule(Ordering orders)
+        {
+
+            var order = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
+                                             .ToListAsync();
+
+
+            foreach(var items in order)
+            {
+
+                items.IsPrepared = true;
+                items.PreparedDate = orders.PreparedDate;
+            }
+
+
+            return true;
+        }
+
+        public async Task<bool> EditQuantityOrder(Ordering orders)
+        {
+            var existingOrder = await _context.Orders.Where(x => x.Id == orders.Id)
+                                                     .FirstOrDefaultAsync();
+
+            //if (existingOrder == null)
+            //{
+            //    return false;
+            //}
+
+            //else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
+            //{
+            //    return false;
+            //}
+
+            existingOrder.QuantityOrdered = orders.QuantityOrdered;
+
+            return true;
+        }
+
+         public async Task<bool> CancelOrders(Ordering orders)
+        {
+            var existing = await _context.Orders.Where(x => x.Id == orders.Id)
+                                                 .Where(x => x.IsActive == true)
+                                                 .FirstOrDefaultAsync();
+
+            if (existing == null)
+                return false;
+
+            existing.IsActive = false;
+            existing.IsCancelBy = orders.IsCancelBy;
+            existing.IsCancel = true;
+            existing.CancelDate = DateTime.Now;
+            existing.Remarks = orders.Remarks;
+
+            return true;
+        }
+
+
+        //=============================================== MIR Update In Ordering For Approval =======================================================================
+
+
+        public async Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule()
+        {
+
+            var orders = _context.Orders
+
+                                      .Where(x => x.IsApproved == null)
+                                      .Where(x => x.PreparedDate != null)
+                                      .OrderBy(x => x.PreparedDate)
+                                      .Where(x => x.IsActive == true)
+                                      .GroupBy(x => new
+                                      {
+                                          x.OrderNoPKey,
+                                          x.Department,
+                                          x.CustomerName,
+                                          x.Customercode,
+                                          x.Category,
+                                          x.PreparedDate,
+                                          x.IsApproved,
+                                          x.IsActive
+
+                                      })//}).Where(x => x.Key.IsApproved == null)
+                                        //    .Where(x => x.Key.PreparedDate != null)
+                                        //    .Where(x => x.Key.IsActive == true)
+
+            .Select(x => new GetallApproveDto
+            {
+                OrderNoPKey = x.Key.OrderNoPKey,
+                Department = x.Key.Department,
+                CustomerName = x.Key.CustomerName,
+                CustomerCode = x.Key.Customercode,
+                Category = x.Key.Category,
+                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                PreparedDate = x.Key.PreparedDate.ToString(),
+
+            });
+
+
+            return await orders.ToListAsync();
+
+        }
+
+
+
+
 
 
 

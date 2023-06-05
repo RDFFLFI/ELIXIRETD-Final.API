@@ -1,4 +1,5 @@
-﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
+﻿using ELIXIRETD.DATA.CORE.API_RESPONSE;
+using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
@@ -168,27 +169,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         // ===================================== Prepared Schedule ============================================================
 
-        [HttpGet]
-        [Route("GetAllListofOrdersPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams/*, bool status*/)
-        {
-            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams /*, status*/);
-
-            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize , orders.TotalCount , orders.TotalPages, orders.HasNextPage , orders.HasPreviousPage );
-
-            var orderResult = new
-            {
-                orders, 
-                orders.CurrentPage,
-                orders.PageSize,
-                orders.TotalCount,
-                orders.TotalPages,
-                orders.HasNextPage,
-                orders.HasPreviousPage
-            };
-            
-            return Ok(orderResult);
-        }
+       
 
         [HttpGet]
         [Route("GetAllListofOrders")]
@@ -251,20 +232,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
        
 
-        [HttpPut]
-        [Route("EditOrderQuantity")]
-        public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
-        {
-
-            //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
-            //if (editquantity == false)
-            //    return BadRequest("Invalid request!, Quantity cannot be zero or exceed actual quantity");
-
-
-            await _unitofwork.Orders.EditQuantityOrder(order);
-            await _unitofwork.CompleteAsync();
-            return new JsonResult("Successfully edit Order Quantity");
-        }
+      
 
         [HttpPut]
         [Route("CancelOrders")]
@@ -828,7 +796,30 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
 
-        //=================================================================== MIR Ordering =======================================================
+        //=================================================================== MIR Ordering Preparation Schedule =======================================================
+
+        [HttpGet]
+        [Route("GetAllListofOrdersPagination")]
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams/*, bool status*/)
+        {
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams /*, status*/);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
+        }
+
 
 
         [HttpGet]
@@ -884,6 +875,52 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds, customerName);
             return Ok(orders);
         }
+
+        [HttpPut]
+        [Route("PreparationOfSchedule")]
+        public async Task<IActionResult> PreparationOfSchedule(Ordering[] Orders)
+        {
+
+
+            foreach (Ordering items in Orders)
+            {
+                ///*  var result =*/ await _unitofwork.Orders.PreparationOfSchedule(items);
+                //if (!result.Success)
+                //{
+                //    return BadRequest(result.Message);
+                //}
+
+                if (!await _unitofwork.Orders.ValidatePrepareDate(items))
+                {
+                    return BadRequest("Date needed must be in the future.");
+                }
+
+
+                await _unitofwork.Orders.PreparationOfSchedule(items);
+            }
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok(Orders);
+            
+        }
+
+        [HttpPut]
+        [Route("EditOrderQuantity")]
+        public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
+        {
+
+            //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
+            //if (editquantity == false)
+            //    return BadRequest("Invalid request!, Quantity cannot be zero or exceed actual quantity");
+
+            await _unitofwork.Orders.EditQuantityOrder(order);
+            await _unitofwork.CompleteAsync();
+            return new JsonResult("Successfully edit Order Quantity");
+        }
+
+
+
 
 
 
