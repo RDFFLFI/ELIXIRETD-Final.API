@@ -827,6 +827,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 Customer = x.CustomerName,
                                                 CustomerCode = x.CustomerCode,
 
+                                                Remarks = x.Remarks,
+
+                                                
                                                 TransactionDate = x.TransactionDate.ToString(),
                                                 CompanyCode = x.CompanyCode,
                                                 CompanyName = x.CompanyName,
@@ -866,6 +869,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ItemDescription = x.borrowed.ItemDescription,
                   Quantity = x.borrowed.Quantity,
                   PreparedBy = x.borrowed.PreparedBy,
+
+                  Remarks = x.borrowed.Remarks,
 
                   Uom = x.borrowed.Uom,
 

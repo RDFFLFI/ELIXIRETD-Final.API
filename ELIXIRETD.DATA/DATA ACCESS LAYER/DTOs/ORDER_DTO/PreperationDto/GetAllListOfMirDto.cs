@@ -23,7 +23,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 
         public string OrderedDate { get; set; }
 
-        public bool Rush { get; set; }
+        public bool IsRush { get; set; }
+
+        public string Rush { get; set; }
         
     }
 }

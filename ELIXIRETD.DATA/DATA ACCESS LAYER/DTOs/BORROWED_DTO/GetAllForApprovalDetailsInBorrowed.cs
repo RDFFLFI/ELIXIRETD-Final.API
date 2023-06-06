@@ -19,6 +19,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
 
+        public string Remarks { get; set; }
+
         public decimal Quantity { get; set; }
 
         public string TransactionDate { get; set; }

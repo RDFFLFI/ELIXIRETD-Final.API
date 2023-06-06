@@ -8,7 +8,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 {
     public class GetAllCalendarApproveDto
     {
-        public int Id { get; set; }
+        public int MIRId { get; set; }
 
         public string Department { get; set; }
         public string CustomerName { get; set; }
@@ -26,9 +26,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 
         public decimal TotalOrders { get; set; }
 
-       public bool Rush { get; set; }
+        public bool IsRush { get; set; }
 
-       
+        public string Rush { get; set; }
+
+
+
+
 
 
     }

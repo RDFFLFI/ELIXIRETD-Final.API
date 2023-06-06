@@ -8,7 +8,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 {
     public class GetallOrderfroScheduleApproveDto
     {
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
         public string DateNeeded { get; set; }
 
         public string OrderDate { get; set; }
@@ -28,7 +28,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
 
         public bool IsApproved { get; set; }
 
-        public string Rush { get; set; }
+        //public string Rush { get; set; }
 
 
 

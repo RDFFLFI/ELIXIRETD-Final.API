@@ -2,14 +2,16 @@
 {
     public class GetallApproveDto
     {
-        public int OrderNoPKey { get; set; }
+        public int MIRId { get; set; }
         public string Department { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
         public string Category { get; set; }
         public decimal TotalOrders { get; set; }
         public string PreparedDate { get; set; }
-        public bool Rush { get; set; }
+        public bool IsRush { get; set; }
+
+        public string Rush { get; set; }
 
     }
 

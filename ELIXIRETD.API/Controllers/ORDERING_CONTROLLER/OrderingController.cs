@@ -231,24 +231,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                           
         }
        
-
-      
-
-        [HttpPut]
-        [Route("CancelOrders")]
-        public async Task<IActionResult> Cancelorders([FromBody] Ordering orders)
-        {
-
-            var existing = await _unitofwork.Orders.CancelOrders(orders);
-
-            if (existing == false)
-                return BadRequest("Order Id is not existing");
-
-
-            await _unitofwork.CompleteAsync();
-            return Ok("successfully cancel orders");
-        }
-
         [HttpPut]
         [Route("ReturnCancelledOrders")]
         public async Task<IActionResult> ReturnCancelledOrders([FromBody] Ordering orders)
@@ -270,47 +252,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
         
-        //============================= Prepared Ordering ===============================================================================
+ //============================================== Prepared Ordering ===============================================================================
 
-
-        [HttpGet]
-        [Route("GetAllListForApprovalOfSchedule")]
-        public async Task<IActionResult> GetAllListforApprovalOfSchedule()  
-        {
-            var orders = await _unitofwork.Orders.GetAllListForApprovalOfSchedule();
-            return Ok(orders);
-        }
-
-        [HttpGet]
-        [Route("GetAllOrdersForScheduleApproval")]
-
-        public async Task<IActionResult> GetallOrdersForScheduleApproval ([FromQuery]int id)
-        {
-            var orders = await _unitofwork.Orders.GetAllOrdersForScheduleApproval(id);
-
-            return Ok(orders);
-
-        }
-
-        [HttpPut]
-        [Route("ApprovePreparedDate")]
-        public async Task<IActionResult> ApprovedpreparedDate (Ordering orders)
-        {
-            await _unitofwork.Orders.ApprovePreparedDate(orders);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully approved date!");
-        }
-
-        [HttpPut]
-        [Route("RejectPreparedDate")]
-        public async Task<IActionResult> Rejectdate(Ordering orders)
-        {
-            await _unitofwork.Orders.RejectPreparedDate(orders);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully reject prepared date!");
-        }
 
         [HttpGet]
         [Route("DetailedListOfOrders")]
@@ -338,14 +281,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         }
 
-        [HttpGet]
-        [Route("GetAllApprovedOrdersForCalendar")]
-        public async Task<IActionResult> GetallApprovedOrdersforCalendar ()
-        {
-            var orders = await _unitofwork.Orders.GetAllApprovedOrdersForCalendar();
-            return Ok(orders);
-        }
-
+     
         // =============================================== MoveOrder =====================================================================
 
         [HttpPost]
@@ -853,7 +789,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMir")]
-        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, string status)
+        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, bool status)
         {
 
             var orders = await _unitofwork.Orders.GetAllListOfMir(customer, status);
@@ -920,8 +856,72 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
 
+        [HttpPut]
+        [Route("CancelOrders")]
+        public async Task<IActionResult> Cancelorders([FromBody] Ordering orders)
+        {
+
+            var existing = await _unitofwork.Orders.CancelOrders(orders);
+
+            if (existing == false)
+                return BadRequest("Order Id is not existing");
 
 
+            await _unitofwork.CompleteAsync();
+            return Ok("successfully cancel orders");
+        }
+
+        //=================================================================== MIR Ordering For Approval =======================================================
+
+        [HttpGet]
+        [Route("GetAllListForApprovalOfSchedule")]
+        public async Task<IActionResult> GetAllListforApprovalOfSchedule(bool status)
+        {
+            var orders = await _unitofwork.Orders.GetAllListForApprovalOfSchedule(status);
+            return Ok(orders);
+        }
+
+        [HttpGet]
+        [Route("GetAllOrdersForScheduleApproval")]
+
+        public async Task<IActionResult> GetallOrdersForScheduleApproval([FromQuery] int id)
+        {
+            var orders = await _unitofwork.Orders.GetAllOrdersForScheduleApproval(id);
+
+            return Ok(orders);
+
+        }
+
+        [HttpPut]
+        [Route("ApprovePreparedDate")]
+        public async Task<IActionResult> ApprovedpreparedDate(Ordering orders)
+        {
+            await _unitofwork.Orders.ApprovePreparedDate(orders);
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully approved date!");
+        }
+
+        [HttpPut]
+        [Route("RejectPreparedDate")]
+        public async Task<IActionResult> Rejectdate(Ordering orders)
+        {
+            await _unitofwork.Orders.RejectPreparedDate(orders);
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully reject prepared date!");
+        }
+
+        [HttpGet]
+        [Route("GetAllApprovedOrdersForCalendar")]
+        public async Task<IActionResult> GetallApprovedOrdersforCalendar()
+        {
+            var orders = await _unitofwork.Orders.GetAllApprovedOrdersForCalendar();
+            return Ok(orders);
+        }
+
+
+        //=================================================================== MIR MoveOrder For Preparation =======================================================
 
 
 
