@@ -935,7 +935,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             issue.IsReject = true;
             issue.IsApprovedDate = null;
             issue.RejectBy = borrowed.RejectBy;
-            issue.Remarks = borrowed.Remarks;
+            issue.Reason = borrowed.Reason;
             issue.IsRejectDate = DateTime.Now;
 
 
@@ -975,7 +975,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                             TotalQuantity = x.TotalQuantity,
                                             //PreparedBy = x.PreparedBy,
                                             RejectDate = x.IsRejectDate.ToString(),
-                                            Remarks = x.Remarks,
+                                            Remarks = x.Reason,
                                             RejectBy = x.RejectBy,
                                             //BorrowedDate = x.PreparedDate.ToString(),
                                             TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
@@ -1009,7 +1009,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                      TotalQuantity = x.TotalQuantity,
                                      //PreparedBy = x.PreparedBy,
                                      RejectDate = x.IsRejectDate.ToString(),
-                                     Remarks = x.Remarks,
+                                     Remarks = x.Reason,
                                      RejectBy = x.RejectBy,
                                      //BorrowedDate = x.PreparedDate.ToString(),
                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
@@ -1038,7 +1038,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                  TotalQuantity = x.TotalQuantity,
                                                  //PreparedBy = x.PreparedBy,
                                                  RejectDate = x.IsRejectDate.ToString(),
-                                                 Remarks = x.Remarks,
+                                                 Remarks = x.Reason,
                                                  RejectBy = x.RejectBy,
                                                  //BorrowedDate = x.PreparedDate.ToString(),
                                                  TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
@@ -1263,7 +1263,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             issue.IsReturned = null;
             issue.IsApprovedReturned = false;
-            issue.Remarks = borrowed.Remarks;
+            issue.Reason = borrowed.Reason;
 
             return true;
 
