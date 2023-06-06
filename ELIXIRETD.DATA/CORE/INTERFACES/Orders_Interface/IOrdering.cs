@@ -34,10 +34,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<IReadOnlyList<ListOfPreparedItemsForMoveOrderDto>> ListOfPreparedItemsForMoveOrder(int id);
         Task<IReadOnlyList<ListOfOrdersForMoveOrderDto>> ListOfOrdersForMoveOrder(int id);
 
-        Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPagination(UserParams userParams);
+      
 
-        Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername);
-
+      
         Task<ItemStocksDto> GetFirstNeeded(string itemCode);
 
         Task<ItemStocksDto> GetActualItemQuantityInWarehouse(int id, string itemcode);
@@ -135,6 +134,16 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> PreparationOfSchedule ( Ordering orders);
 
         Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule(bool status);
+
+
+
+
+
+        Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPagination(UserParams userParams);
+        Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPaginatioOrig(UserParams userParams, string search);
+
+        Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername, bool status);
+
 
     }
 }

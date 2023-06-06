@@ -327,28 +327,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(order);
         }
 
-        [HttpGet]
-        [Route("GetAllListForMoveOrderPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllListForMoveOrderPaginationDto>>> GetAllListForMoveOrderPagination([FromQuery] UserParams userParams )
-        {
-            var orders = await _unitofwork.Orders.GetAllListForMoveOrderPagination(userParams);
-
-            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
-
-            var orderResult = new
-            {
-                orders,
-                orders.CurrentPage,
-                orders.PageSize,
-                orders.TotalCount,
-                orders.TotalPages,
-                orders.HasNextPage,
-                orders.HasPreviousPage
-            };
-
-            return Ok(orderResult);
-
-        }
+       
 
         [HttpGet]
         [Route("ListOfPreparedItemsForMoveOrder")]
@@ -369,14 +348,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
-        [HttpGet]
-        [Route ("GetAllListOfApprovedPreparedforMoveOrder")]
-        public async Task<IActionResult> GetAllListOfApprovedPreparedforMoveOrder([FromQuery] string customername)
-        {
-            var order = await _unitofwork.Orders.TotalListOfApprovedPreparedDate(customername);
-
-                return Ok(order);
-        }
+        
 
         [HttpGet]
         [Route("GetAvailableStockFromWarehouse")]
@@ -922,6 +894,71 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         //=================================================================== MIR MoveOrder For Preparation =======================================================
+
+        [HttpGet]
+        [Route("GetAllListForMoveOrderPagination")]
+        public async Task<ActionResult<IEnumerable<GetAllListForMoveOrderPaginationDto>>> GetAllListForMoveOrderPagination([FromQuery] UserParams userParams)
+        {
+            var orders = await _unitofwork.Orders.GetAllListForMoveOrderPagination(userParams);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
+
+        }
+
+        [HttpGet]
+        [Route("GetAllListForMoveOrderPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<GetAllListForMoveOrderPaginationDto>>> GetAllListForMoveOrderPaginationOrig([FromQuery] UserParams userParams, string search)
+        {
+
+
+            if (search == null)
+
+                return await GetAllListForMoveOrderPagination(userParams/*, status*/);
+
+            var orders = await _unitofwork.Orders.GetAllListForMoveOrderPaginatioOrig(userParams, search/* , status*/);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
+        }
+
+
+
+        [HttpGet]
+        [Route("GetAllListOfApprovedPreparedforMoveOrder")]
+        public async Task<IActionResult> GetAllListOfApprovedPreparedforMoveOrder([FromQuery] string customername , bool status)
+        {
+            var order = await _unitofwork.Orders.TotalListOfApprovedPreparedDate(customername, status);
+
+            return Ok(order);
+        }
+
+
+
 
 
 

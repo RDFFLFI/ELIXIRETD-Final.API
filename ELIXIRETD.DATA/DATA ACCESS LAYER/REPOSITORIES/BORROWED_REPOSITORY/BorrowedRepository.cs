@@ -1311,7 +1311,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                    ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
                    IsReject = x.Key.IsReject ,
                    IsRejectDate = x.Key.IsRejectDate.ToString(),
-                   Remarks = x.Key.Remarks
+                   Remarks = x.Key.Remarks,
+                   
 
 
                });
