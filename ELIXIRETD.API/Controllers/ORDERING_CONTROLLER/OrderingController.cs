@@ -284,124 +284,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
      
         // =============================================== MoveOrder =====================================================================
 
-        [HttpPost]
-        [Route("PrepareItemForMoveOrder")]
-        public async Task<IActionResult> PrepareItemforMoveOrder([FromBody] MoveOrder order)
-        {
-            var details = await _unitofwork.Orders.GetMoveOrderDetailsForMoveOrder(order.OrderNoPkey);
-
-           
-
-            order.OrderNoPkey = details.Id;
-            order.OrderNo = details.OrderNo;
-            order.OrderDate = Convert.ToDateTime(details.OrderDate);
-            order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
-            order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
-            order.DepartmentName = details.Department;
-
-            order.DepartmentCode = details.DepartmentCode;
-            order.CompanyCode = details.CompanyCode;
-            order.CompanyName = details.CompanyName;    
-            order.LocationCode = details.LocationCode;
-            order.LocationName = details.LocationName;
-            //order.AccountTitles = details.AccountTitles;
-            //order.AccountCode = details.AccountCode;
-
-            order.CustomerName= details.CustomerName;
-            order.Customercode = details.CustomerCode;
-            order.AddressOrder = details.Address;
-            order.ItemCode = details.ItemCode;
-            order.ItemDescription = details.ItemDescription;
-            order.Uom = details.Uom;
-            order.Category = details.Category;
-            order.IsActive = true;
-            order.IsPrepared = true;
-            order.Rush = details.Rush;
-
-            order.CustomerType = details.CustomerType;
-
-
-            await _unitofwork.Orders.PrepareItemForMoveOrder(order);
-            await _unitofwork.CompleteAsync();
-
-            return Ok(order);
-        }
+     
 
        
 
-        [HttpGet]
-        [Route("ListOfPreparedItemsForMoveOrder")]
-        public async Task<IActionResult> ListOfPreparedItemsForMoveOrder([FromQuery] int id)
-        {
+       
 
-            var orders = await _unitofwork.Orders.ListOfPreparedItemsForMoveOrder(id);
-
-            return Ok(orders);
-
-        }
-
-        [HttpGet]
-        [Route("GetAllListOfOrdersForMoveOrder")]
-        public async Task<IActionResult> GetAllListOfOrdersForMoveOrder([FromQuery] int id)
-        {
-            var orders = await _unitofwork.Orders.ListOfOrdersForMoveOrder(id);
-            return Ok(orders);
-        }
-
-        
-
-        [HttpGet]
-        [Route("GetAvailableStockFromWarehouse")]
-        public async Task <IActionResult> GetAvailableStockFromWarehouse([FromQuery] int id, [FromQuery] string itemcode)
-        {
-            var orders = await _unitofwork.Orders.GetActualItemQuantityInWarehouse(id, itemcode);
-            
-            var getFirstrecieve = await _unitofwork.Orders.GetFirstNeeded(itemcode);
-
-            var validate = _unitofwork.Orders.ValidateWarehouseId(id , itemcode);
-
-            if (!await validate)
-                return BadRequest("No id or itemcode existing");
-    
-
-            var resultList = new
-            {
-                orders,
-                getFirstrecieve.warehouseId
-
-            };
-
-            return Ok(resultList);
-        }
-
-
-
-        [HttpGet]
-        [Route("GetAllOutOfStockByItemCodeAndOrderDate")]
-        public async Task<IActionResult> GetAllOutOfStockByItemCodeAndOrderDate([FromQuery] string itemcode, [FromQuery] string orderdate)
-        {
-            var orders = await _unitofwork.Orders.GetAllOutOfStockByItemCodeAndOrderDate(itemcode, orderdate);
-
-            return Ok(orders);
-
-        }
-
-        [HttpPut]
-        [Route("CancelPreparedItems")]
-        public async Task<IActionResult> CancelPreparedItems([FromBody] MoveOrder moveorder)
-        {
-            var order = await _unitofwork.Orders.CancelMoveOrder(moveorder);
-
-            if (order == false)
-                return BadRequest("No existing Prepared Items");
-
-           
-            await _unitofwork.CompleteAsync();
-            return new JsonResult("Successfully cancel prepared moverorder date!");
-        
-
-        }
-
+      
         [HttpPut]
         [Route("UpdatePrintStatus")]
         public async Task<IActionResult> UpdatePrintStatus([FromBody] MoveOrder moveorder)
@@ -413,21 +302,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(moveorder);
         }
 
-        [HttpPut]
-        [Route("AddSavePreparedMoveOrder")]
-        public async Task<IActionResult> AddSavePreparedMoveOrder([FromBody] MoveOrder[] orders )
-        {
-
-            foreach (MoveOrder items in orders)
-            {
-                if (!await _unitofwork.Orders.SavePreparedMoveOrder(items))
-                    return BadRequest("No order no exist");
-                    
-            }
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully added!");
-        }
+       
 
 
         //============================================= Move Order Preparation ===================================================
@@ -562,18 +437,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
-        [HttpPut]
-        [Route("CancelOrdersInMoveOrder")]
-        public async Task<IActionResult> CancelOrdersInMoveOrder([FromBody] Ordering order)
-        {
-
-            await _unitofwork.Orders.CancelControlInMoveOrder(order);
-
-            await _unitofwork.CompleteAsync();
-
-            return Ok("Successfully cancel orders");
-
-        }
+      
 
         [HttpPut]
         [Route("ReturnMoveOrderForApproval")]
@@ -955,6 +819,154 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             var order = await _unitofwork.Orders.TotalListOfApprovedPreparedDate(customername, status);
 
             return Ok(order);
+        }
+
+
+        [HttpGet]
+        [Route("GetAllListOfOrdersForMoveOrder")]
+        public async Task<IActionResult> GetAllListOfOrdersForMoveOrder([FromQuery] int id)
+        {
+            var orders = await _unitofwork.Orders.ListOfOrdersForMoveOrder(id);
+            return Ok(orders);
+        }
+
+
+
+        [HttpGet]
+        [Route("GetAvailableStockFromWarehouse")]
+        public async Task<IActionResult> GetAvailableStockFromWarehouse([FromQuery] int id, [FromQuery] string itemcode)
+        {
+            var orders = await _unitofwork.Orders.GetActualItemQuantityInWarehouse(id, itemcode);
+
+            var getFirstrecieve = await _unitofwork.Orders.GetFirstNeeded(itemcode);
+
+            var validate = _unitofwork.Orders.ValidateWarehouseId(id, itemcode);
+
+            if (!await validate)
+                return BadRequest("No id or itemcode existing");
+
+
+            var resultList = new
+            {
+                orders,
+                getFirstrecieve.warehouseId
+
+            };
+
+            return Ok(resultList);
+        }
+
+
+        [HttpGet]
+        [Route("GetAllOutOfStockByItemCodeAndOrderDate")]
+        public async Task<IActionResult> GetAllOutOfStockByItemCodeAndOrderDate([FromQuery] string itemcode, [FromQuery] string orderdate)
+        {
+            var orders = await _unitofwork.Orders.GetAllOutOfStockByItemCodeAndOrderDate(itemcode, orderdate);
+
+            return Ok(orders);
+
+        }
+
+
+        [HttpPost]
+        [Route("PrepareItemForMoveOrder")]
+        public async Task<IActionResult> PrepareItemforMoveOrder([FromBody] MoveOrder order)
+        {
+            var details = await _unitofwork.Orders.GetMoveOrderDetailsForMoveOrder(order.OrderNoPkey);
+
+
+            order.OrderNoPkey = details.Id;
+            order.OrderNo = details.MIRId;
+            order.OrderDate = Convert.ToDateTime(details.OrderDate);
+            order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
+            order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
+            order.DepartmentName = details.Department;
+
+            order.DepartmentCode = details.DepartmentCode;
+            order.CompanyCode = details.CompanyCode;
+            order.CompanyName = details.CompanyName;
+            order.LocationCode = details.LocationCode;
+            order.LocationName = details.LocationName;
+            //order.AccountTitles = details.AccountTitles;
+            //order.AccountCode = details.AccountCode;
+
+            order.CustomerName = details.CustomerName;
+            order.Customercode = details.CustomerCode;
+            order.AddressOrder = details.Address;
+            order.ItemCode = details.ItemCode;
+            order.ItemDescription = details.ItemDescription;
+            order.Uom = details.Uom;
+            order.Category = details.Category;
+            order.IsActive = true;
+            order.IsPrepared = true;
+            order.Rush = details.Rush;
+
+            order.CustomerType = details.CustomerType;
+
+            await _unitofwork.Orders.PrepareItemForMoveOrder(order);
+            await _unitofwork.CompleteAsync();
+
+            return Ok(order);
+        }
+
+
+        [HttpPut]
+        [Route("CancelOrdersInMoveOrder")]
+        public async Task<IActionResult> CancelOrdersInMoveOrder([FromBody] Ordering order)
+        {
+
+            await _unitofwork.Orders.CancelControlInMoveOrder(order);
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully cancel orders");
+
+        }
+
+
+        [HttpGet]
+        [Route("ListOfPreparedItemsForMoveOrder")]
+        public async Task<IActionResult> ListOfPreparedItemsForMoveOrder([FromQuery] int id)
+        {
+
+            var orders = await _unitofwork.Orders.ListOfPreparedItemsForMoveOrder(id);
+
+            return Ok(orders);
+
+        }
+
+
+        [HttpPut]
+        [Route("AddSavePreparedMoveOrder")]
+        public async Task<IActionResult> AddSavePreparedMoveOrder([FromBody] MoveOrder[] orders)
+        {
+
+            foreach (MoveOrder items in orders)
+            {
+                if (!await _unitofwork.Orders.SavePreparedMoveOrder(items))
+                    return BadRequest("No order no exist");
+
+            }
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully added!");
+        }
+
+
+        [HttpPut]
+        [Route("CancelPreparedItems")]
+        public async Task<IActionResult> CancelPreparedItems([FromBody] MoveOrder moveorder)
+        {
+            var order = await _unitofwork.Orders.CancelMoveOrder(moveorder);
+
+            if (order == false)
+                return BadRequest("No existing Prepared Items");
+
+
+            await _unitofwork.CompleteAsync();
+            return new JsonResult("Successfully cancel prepared moverorder date!");
+
+
         }
 
 

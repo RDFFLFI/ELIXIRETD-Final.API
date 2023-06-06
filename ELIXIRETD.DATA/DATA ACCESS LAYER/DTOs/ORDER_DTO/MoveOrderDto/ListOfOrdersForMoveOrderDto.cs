@@ -9,13 +9,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
     public class ListOfOrdersForMoveOrderDto
     {
         public int Id { get; set; }
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
 
         public string OrderDate { get; set; }
         public string DateNeeded { get; set; }
-        public string Department { get; set; }
-        public string CustomerName { get; set; }
-        public string CustomerCode { get; set; }
+        //public string Department { get; set; }
+        //public string CustomerName { get; set; }
+        //public string CustomerCode { get; set; }
         public string Category { get; set; }
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
@@ -27,7 +27,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public bool IsApproved { get; set; }
 
         public decimal PreparedQuantity { get; set; }
-        public string Rush { get; set; }
+        //public string Rush { get; set; }
 
 
 

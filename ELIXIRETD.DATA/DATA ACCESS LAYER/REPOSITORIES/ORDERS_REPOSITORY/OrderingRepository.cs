@@ -430,528 +430,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
        
 
 
-        public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
-        {
-            var orders = _context.Orders.Where(x => x.IsMove == false)
-                .OrderBy(x => x.Rush == null)
-                 .ThenBy(x => x.Rush)
-                .Select(x => new GetMoveOrderDetailsForMoveOrderDto
-                {
-                    Id = x.Id,
-                    OrderNo = x.OrderNoPKey,
-
-                    Department = x.Department,
-                    DepartmentCode = x.DepartmentCode,
-                    CompanyName = x.CompanyName,
-                    CompanyCode = x.CompanyCode,
-                    LocationCode = x.LocationCode,
-                    LocationName = x.LocationName,
-                    //AccountCode = x.AccountCode,
-                    //AccountTitles = x.AccountTitles,
-
-                    CustomerName = x.CustomerName,
-                    CustomerCode = x.Customercode,
-                    //Address = x.AddressOrder,
-                    ItemCode = x.ItemCode,
-                    ItemDescription = x.ItemdDescription,
-                    Uom = x.Uom,
-                    QuantityOrder = x.QuantityOrdered,
-                    Category = x.Category,
-                    OrderDate = x.OrderDate.ToString(),
-                    DateNeeded = x.DateNeeded.ToString(),
-                    PrepareDate = x.PreparedDate.ToString(),
-
-                    CustomerType = x.CustomerType,
-
-                    Rush = x.Rush
-
-                });
-
-            return await orders.Where(x => x.Id == orderId)
-                               .FirstOrDefaultAsync();
-
-        }
-
-
-
-        public async Task<bool> PrepareItemForMoveOrder(MoveOrder orders)
-        {
-            await _context.MoveOrders.AddAsync(orders);
-            return true;
-
-        }
-
-
-        public async Task<IReadOnlyList<ListOfPreparedItemsForMoveOrderDto>> ListOfPreparedItemsForMoveOrder(int id)
-        {
-            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
-                 .ThenBy(x => x.Rush)
-                 .Select(x => new ListOfPreparedItemsForMoveOrderDto
-                 {
-                     Id = x.Id,
-                     OrderNo = x.OrderNo,
-                     BarCodes = x.WarehouseId,
-                     ItemCode = x.ItemCode,
-                     ItemDescription = x.ItemDescription,
-                     Quantity = x.QuantityOrdered,
-                     IsActive = x.IsActive,
-                     Rush = x.Rush
-
-
-                 });
-
-            return await orders.Where(x => x.OrderNo == id)
-                               .Where(x => x.IsActive == true)
-                               .ToListAsync();
-        }
-
-
-        public async Task<IReadOnlyList<ListOfOrdersForMoveOrderDto>> ListOfOrdersForMoveOrder(int id)
-        {
-            var moveorders = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                .GroupBy(x => new
-                                                {
-                                                    x.OrderNo,
-                                                    x.OrderNoPkey
-                                                }).Select(x => new MoveOrderItemDto
-                                                {
-                                                    OrderNo = x.Key.OrderNo,
-                                                    OrderPKey = x.Key.OrderNoPkey,
-                                                    QuantityPrepared = x.Sum(x => x.QuantityOrdered),
-
-
-                                                });
-
-
-            var orders = _context.Orders
-                   .Where(x => x.OrderNoPKey == id)
-                   .Where(x => x.IsMove == false)
-                   .GroupJoin(moveorders, ordering => ordering.Id, moveorder => moveorder.OrderPKey, (ordering, moveorder) => new { ordering, moveorder })
-                   .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
-                   .GroupBy(x => new
-                   {
-                       x.ordering.Id,
-                       x.ordering.OrderNoPKey,
-                       x.ordering.OrderDate,
-                       x.ordering.DateNeeded,
-                       x.ordering.Department,
-                       x.ordering.CustomerName,
-                       x.ordering.Customercode,
-                       //x.ordering.Category,
-                       x.ordering.ItemCode,
-                       x.ordering.ItemdDescription,
-                       x.ordering.Uom,
-                       x.ordering.Rush
-                       //x.ordering.IsApproved,
-
-                   }).OrderBy(x => x.Key.Rush == null)
-                    .ThenBy(x => x.Key.Rush)
-                   .Select(total => new ListOfOrdersForMoveOrderDto
-                   {
-                       Id = total.Key.Id,
-                       OrderNo = total.Key.OrderNoPKey,
-                       OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
-                       DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
-                       Department = total.Key.Department,
-                       CustomerName = total.Key.CustomerName,
-                       CustomerCode = total.Key.Customercode,
-                       //Category = total.Key.Category,
-                       ItemCode = total.Key.ItemCode,
-                       ItemDescription = total.Key.ItemdDescription,
-                       Uom = total.Key.Uom,
-                       QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
-                       //IsApproved = total.Key.IsApproved != null,
-                       PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
-                       Rush = total.Key.Rush
-
-
-                   });
-
-            return await orders.ToListAsync();
-
-        }
-
-
-
-        public async Task<ItemStocksDto> GetFirstNeeded(string itemCode)
-        {
-            var getwarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                           .GroupBy(x => new
-                                                           {
-                                                               x.Id,
-                                                               x.ItemCode,
-                                                               x.ReceivingDate,
-                                                           }).Select(x => new WarehouseInventory
-                                                           {
-                                                               WarehouseId = x.Key.Id,
-                                                               ItemCode = x.Key.ItemCode,
-                                                               ActualGood = x.Sum(x => x.ActualGood),
-                                                               RecievingDate = x.Key.ReceivingDate.ToString()
-                                                           });
-
-
-            var getMoveOrder = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsPrepared == true)
-                                                  .GroupBy(x => new
-                                                  {
-                                                      x.ItemCode,
-                                                      x.WarehouseId
-
-                                                  }).Select(x => new ItemStocksDto
-                                                  {
-                                                      ItemCode = x.Key.ItemCode,
-                                                      Remaining = x.Sum(x => x.QuantityOrdered),
-                                                      warehouseId = x.Key.WarehouseId
-
-                                                  });
-
-            //var getMiscReceipts = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
-            //                                                .Where(x => x.IsWarehouseReceived == true)
-            //                                                .Where(x => x.IsActive == true)
-            //                                                .GroupBy(x => new
-            //                                                {
-            //                                                    x.Id,
-            //                                                    x.ItemCode,
-
-            //                                                }).Select(x => new ItemStocksDto
-            //                                                {
-            //                                                    warehouseId = x.Key.Id,
-            //                                                    ItemCode = x.Key.ItemCode,
-            //                                                });
-
-
-            var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsTransact == true)
-                                                                .GroupBy(x => new
-                                                                {
-                                                                    x.ItemCode,
-                                                                    x.WarehouseId,
-
-                                                                }).Select(x => new ItemStocksDto
-                                                                {
-                                                                    ItemCode = x.Key.ItemCode,
-                                                                    Remaining = x.Sum(x => x.Quantity),
-                                                                    warehouseId = x.Key.WarehouseId,
-
-                                                                });
-
-            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == true)
-                                                                .GroupBy(x => new
-                                                                {
-
-                                                                    x.ItemCode,
-                                                                    x.WarehouseId,
-
-                                                                }).Select(x => new ItemStocksDto
-                                                                {
-
-                                                                    ItemCode = x.Key.ItemCode,
-                                                                    Remaining = x.Sum(x => x.Quantity),
-                                                                    warehouseId = x.Key.WarehouseId,
-
-                                                                });
-
-            var getBorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                 .Where(x => x.IsReturned == true)
-                                                                 .Where(x => x.IsApprovedReturned == true)
-                                                                  .GroupBy(x => new
-                                                                  {
-
-                                                                      x.ItemCode,
-                                                                      x.WarehouseId,
-
-                                                                  }).Select(x => new ItemStocksDto
-                                                                  {
-                                                                      ItemCode = x.Key.ItemCode,
-                                                                      Remaining = x.Sum(x => x.ReturnQuantity),
-                                                                      warehouseId = x.Key.WarehouseId
-
-                                                                  });
-
-
-
-            var totalremaining = getwarehouseIn
-                              .OrderBy(x => x.RecievingDate)
-                              .ThenBy(x => x.ItemCode)
-                              .GroupJoin(getMoveOrder, warehouse => warehouse.WarehouseId, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
-                              .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.warehouse, moveorder })
-                              .GroupJoin(getMiscIssue, warehouse => warehouse.warehouse.WarehouseId, issue => issue.warehouseId, (warehouse, issue) => new { warehouse, issue })
-                              .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
-                              .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.WarehouseId, borrow => borrow.warehouseId, (warehouse, borrow) => new { warehouse, borrow })
-                              .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.warehouse, borrow })
-                              .GroupJoin(getBorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.WarehouseId, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
-                              .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
-                              .GroupBy(x => new
-                              {
-                                  x.warehouse.warehouse.warehouse.warehouse.WarehouseId,
-                                  x.warehouse.warehouse.warehouse.warehouse.ItemCode,
-                                  x.warehouse.warehouse.warehouse.warehouse.RecievingDate
-
-                              })
-                              .Select(x => new ItemStocksDto
-                              {
-                                  warehouseId = x.Key.WarehouseId,
-                                  ItemCode = x.Key.ItemCode,
-                                  DateReceived = x.Key.RecievingDate.ToString(),
-                                  Remaining = x.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ActualGood) +
-                                              x.Sum(x => x.returned.Remaining == null ? 0 : x.returned.Remaining) -
-                                              x.Sum(x => x.warehouse.warehouse.warehouse.moveorder.Remaining == null ? 0 : x.warehouse.warehouse.warehouse.moveorder.Remaining) -
-                                              x.Sum(x => x.warehouse.warehouse.issue.Remaining == null ? 0 : x.warehouse.warehouse.issue.Remaining) -
-                                              x.Sum(x => x.warehouse.borrow.Remaining == null ? 0 : x.warehouse.borrow.Remaining)
-
-                              });
-
-
-            return await totalremaining.Where(x => x.Remaining != 0)
-                                       .Where(x => x.ItemCode == itemCode)
-                                       .FirstOrDefaultAsync();
-
-
-        }
-
-
-        public async Task<ItemStocksDto> GetActualItemQuantityInWarehouse(int id, string itemcode)
-        {
-            var TotaloutMoveOrder = await _context.MoveOrders.Where(x => x.WarehouseId == id)
-                                                             .Where(x => x.IsActive == true)
-                                                             .Where(x => x.IsPrepared == true)
-                                                             .Where(x => x.ItemCode == itemcode)
-                                                             .SumAsync(x => x.QuantityOrdered);
-
-            var TotalIssue = await _context.MiscellaneousIssueDetail.Where(x => x.WarehouseId == id)
-                                                                    .Where(x => x.IsActive == true)
-                                                                    .Where(x => x.IsTransact == true)
-                                                                    .SumAsync(x => x.Quantity);
-
-            var TotalBorrowIssue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
-                                                                      .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == true)
-                                                                      .SumAsync(x => x.Quantity);
-
-            var TotalBorrowReturned = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
-                                                                      .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsReturned == true)
-                                                                      .Where(x => x.IsApprovedReturned == true)
-                                                                      .SumAsync(x => x.ReturnQuantity);
-
-
-
-            var totalRemaining = _context.WarehouseReceived
-                              .OrderBy(x => x.ReceivingDate)
-                              .Where(totalin => totalin.Id == id && totalin.ItemCode == itemcode && totalin.IsActive == true)
-                              .GroupBy(x => new
-                              {
-                                  x.Id,
-                                  x.ItemCode,
-                                  x.ItemDescription,
-                                  x.ActualDelivered,
-                                  x.ReceivingDate
-
-                              }).Select(total => new ItemStocksDto
-                              {
-                                  warehouseId = total.Key.Id,
-                                  ItemCode = total.Key.ItemCode,
-                                  ItemDescription = total.Key.ItemDescription,
-                                  ActualGood = total.Key.ActualDelivered,
-                                  DateReceived = total.Key.ReceivingDate.ToString("MM/dd/yyyy"),
-                                  Remaining = total.Key.ActualDelivered + TotalBorrowReturned - TotaloutMoveOrder - TotalIssue - TotalBorrowIssue
-                              });
-
-            return await totalRemaining.Where(x => x.Remaining != 0)
-                                       .FirstOrDefaultAsync();
-
-        }
-
-
-
-        public async Task<IReadOnlyList<GetAllOutOfStockByItemCodeAndOrderDateDto>> GetAllOutOfStockByItemCodeAndOrderDate(string itemcode, string orderdate)
-        {
-
-            CultureInfo usCulture = new CultureInfo("en-US");
-            CultureInfo.CurrentCulture = usCulture;
-
-            DateTime.ParseExact(orderdate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
-
-
-            var moveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                 .Where(x => x.IsPrepared == true)
-                                                 .GroupBy(x => new
-                                                 {
-                                                     x.ItemCode,
-                                                     x.WarehouseId,
-
-                                                 }).Select(x => new OrderingInventory
-                                                 {
-                                                     ItemCode = x.Key.ItemCode,
-                                                     QuantityOrdered = x.Sum(x => x.QuantityOrdered),
-                                                     warehouseId = x.Key.WarehouseId
-
-                                                 });
-
-            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                               .Where(x => x.IsTransact == true)
-                                                               .GroupBy(x => new
-                                                               {
-                                                                   x.ItemCode,
-                                                                   x.WarehouseId
-
-                                                               }).Select(x => new IssueInventoryDto
-                                                               {
-
-                                                                   ItemCode = x.Key.ItemCode,
-                                                                   Quantity = x.Sum(x => x.Quantity),
-                                                                   warehouseId = x.Key.WarehouseId
-                                                               });
-
-            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == true)
-                                                                .GroupBy(x => new
-                                                                {
-
-                                                                    x.ItemCode,
-                                                                    x.WarehouseId,
-
-                                                                }).Select(x => new IssueInventoryDto
-                                                                {
-
-                                                                    ItemCode = x.Key.ItemCode,
-                                                                    Quantity = x.Sum(x => x.Quantity),
-                                                                    warehouseId = x.Key.WarehouseId
-
-                                                                });
-
-            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsReturned == true)
-                                                            .Where(x => x.IsApprovedReturned == true)
-                                                            .GroupBy(x => new
-                                                            {
-                                                                x.ItemCode,
-                                                                x.WarehouseId,
-
-                                                            }).Select(x => new ItemStocksDto
-                                                            {
-
-                                                                ItemCode = x.Key.ItemCode,
-                                                                In = x.Sum(x => x.ReturnQuantity),
-                                                                warehouseId = x.Key.WarehouseId
-
-                                                            });
-
-
-            var totalRemaining = _context.WarehouseReceived
-                           .GroupJoin(moveOrderOut, warehouse => warehouse.Id, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
-                           .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.warehouse, moveorder })
-                           .GroupJoin(getIssueOut, warehouse => warehouse.warehouse.Id, issue => issue.warehouseId, (warehouse, issue) => new { warehouse, issue })
-                           .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
-                           .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.Id, borrow => borrow.warehouseId, (warehouse, borrow) => new { warehouse, borrow })
-                           .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.warehouse, borrow })
-                           .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.Id, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
-                           .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
-                           .GroupBy(x => new
-                           {
-                               x.warehouse.warehouse.warehouse.warehouse.Id,
-                               x.warehouse.warehouse.warehouse.warehouse.ItemCode,
-                               x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
-                               x.warehouse.warehouse.warehouse.warehouse.ReceivingDate,
-                               x.warehouse.warehouse.warehouse.warehouse.ActualGood,
-
-                           }).OrderBy(x => x.Key.ReceivingDate)
-                           .Select(total => new ItemStocksDto
-                           {
-                               warehouseId = total.Key.Id,
-                               ItemCode = total.Key.ItemCode,
-                               ItemDescription = total.Key.ItemDescription,
-                               DateReceived = total.Key.ReceivingDate.ToString(),
-                               Remaining = total.Key.ActualGood + total.Sum(x => x.returned.In) - total.Sum(x => x.warehouse.warehouse.warehouse.moveorder.QuantityOrdered) - total.Sum(x => x.warehouse.warehouse.issue.Quantity) - total.Sum(x => x.warehouse.borrow.Quantity),
-
-                           });
-
-            var totalOrders = _context.Orders
-                      .GroupBy(x => new
-                      {
-                          x.ItemCode,
-                          x.IsPrepared,
-                          x.IsActive
-
-                      }).Select(x => new GetAllOutOfStockByItemCodeAndOrderDateDto
-                      {
-
-                          ItemCode = x.Key.ItemCode,
-                          TotalOrders = x.Sum(x => x.QuantityOrdered),
-                          IsPrepared = x.Key.IsPrepared
-
-                      }).Where(x => x.IsPrepared == false);
-
-
-            var orders = _context.Orders
-                .Where(ordering => ordering.ItemCode == itemcode)
-                 .Where(x => x.OrderDate == DateTime.Parse(orderdate))
-                  .GroupJoin(totalRemaining, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
-                  .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
-                  .GroupBy(x => new
-                  {
-                      x.ordering.Id,
-                      x.ordering.OrderDate,
-                      x.ordering.DateNeeded,
-                      x.ordering.Department,
-                      x.ordering.CustomerName,
-                      x.ordering.Customercode,
-                      x.ordering.Category,
-                      x.ordering.ItemCode,
-                      x.ordering.ItemdDescription,
-                      x.ordering.Uom,
-                      x.ordering.IsActive,
-                      x.ordering.IsPrepared,
-                      x.ordering.PreparedDate,
-                      x.ordering.IsApproved
-
-                  }).Select(total => new GetAllOutOfStockByItemCodeAndOrderDateDto
-                  {
-
-                      Id = total.Key.Id,
-                      OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
-                      DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
-                      Department = total.Key.Department,
-                      CustomerName = total.Key.CustomerName,
-                      CustomerCode = total.Key.Customercode,
-                      Category = total.Key.Category,
-                      ItemCode = total.Key.ItemCode,
-                      ItemDescription = total.Key.ItemdDescription,
-                      Uom = total.Key.Uom,
-                      QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
-                      IsActive = total.Key.IsActive,
-                      IsPrepared = total.Key.IsPrepared,
-                      StockOnHand = total.Sum(x => x.warehouse.Remaining),
-                      Difference = total.Sum(x => x.warehouse.Remaining) - total.Sum(x => x.ordering.QuantityOrdered),
-                      PreparedDate = total.Key.PreparedDate.ToString(),
-                      IsApproved = total.Key.IsApproved != null
-
-                  });
-
-            return await orders.ToListAsync();
-
-        }
-
-
-
-        public async Task<bool> CancelMoveOrder(MoveOrder moveOrder)
-        {
-            var existing = await _context.MoveOrders.Where(x => x.Id == moveOrder.Id)
-                                                    .FirstOrDefaultAsync();
-
-            if (existing == null)
-            {
-                return false;
-            }
-
-            existing.IsActive = false;
-            existing.CancelledDate = DateTime.Now;
-
-            return true;
-
-        }
-
 
 
 
@@ -1442,31 +920,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<bool> CancelControlInMoveOrder(Ordering orders)
-        {
-            var cancelorder = await _context.Orders.Where(x => x.OrderNoPKey == orders.OrderNoPKey)
-                                                   .ToListAsync();
-
-            var existMOveOrders = await _context.MoveOrders.Where(x => x.OrderNo == orders.OrderNoPKey)
-                                                            .ToListAsync();
-
-            foreach (var items in cancelorder)
-            {
-                items.IsApproved = null;
-                items.ApprovedDate = null;
-
-            }
-
-            if (existMOveOrders != null)
-            {
-                foreach (var items in existMOveOrders)
-                {
-                    items.IsActive = false;
-                }
-            }
-            return true;
-
-        }
+       
 
         public async Task<bool> ReturnMoveOrderForApproval(MoveOrder moveorder)
         {
@@ -1923,45 +1377,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<bool> SavePreparedMoveOrder(MoveOrder order)
-        {
-            var existing = await _context.Orders.Where(x => x.OrderNoPKey == order.OrderNo)
-                                                .ToListAsync();
-
-            var existingsMoveOrders = await _context.MoveOrders.Where(x => x.OrderNo == order.OrderNo)
-                                                              .Where(x => x.IsPrepared == true)
-                                                              .ToListAsync();
-
-            if (!existingsMoveOrders.Any())
-                return false;
-
-            foreach (var x in existing)
-            {
-                x.IsMove = true;
-
-            }
-
-            foreach (var x in existingsMoveOrders)
-            {
-                x.Department = order.Department;
-                x.CompanyCode = order.CompanyCode;
-                x.CompanyName = order.CompanyName;
-                x.DepartmentCode = order.DepartmentCode;
-                x.DepartmentName = order.DepartmentName;
-                x.LocationCode = order.LocationCode;
-                x.LocationName = order.LocationName;
-                x.AccountCode = order.AccountCode;
-                x.AccountTitles = order.AccountTitles;
-                x.RejectBy = null;
-                x.RejectedDate = null;
-                x.RejectedDateTempo = null;
-                x.IsReject = null;
-
-            }
-
-            return true;
-
-        }
+      
 
 
         // Notification
@@ -2926,7 +2342,608 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-      
+
+        public async Task<IReadOnlyList<ListOfOrdersForMoveOrderDto>> ListOfOrdersForMoveOrder(int id)
+        {
+            var moveorders = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                .GroupBy(x => new
+                                                {
+                                                    x.OrderNo,
+                                                    x.OrderNoPkey
+                                                }).Select(x => new MoveOrderItemDto
+                                                {
+                                                    OrderNo = x.Key.OrderNo,
+                                                    OrderPKey = x.Key.OrderNoPkey,
+                                                    QuantityPrepared = x.Sum(x => x.QuantityOrdered),
+
+
+                                                });
+
+
+            var orders = _context.Orders
+                   .Where(x => x.TrasactId == id)
+                   .Where(x => x.IsMove == false)
+                   .GroupJoin(moveorders, ordering => ordering.Id, moveorder => moveorder.OrderPKey, (ordering, moveorder) => new { ordering, moveorder })
+                   .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
+                   .GroupBy(x => new
+                   {
+                       x.ordering.Id,
+                       x.ordering.TrasactId,
+                       x.ordering.OrderDate,
+                       x.ordering.DateNeeded,
+                       x.ordering.Department,
+                       x.ordering.CustomerName,
+                       x.ordering.Customercode,
+                       //x.ordering.Category,
+                       x.ordering.ItemCode,
+                       x.ordering.ItemdDescription,
+                       x.ordering.Uom,
+                       //x.ordering.Rush
+                       //x.ordering.IsApproved,
+
+                   })
+                   //}).OrderBy(x => x.Key.Rush == null)
+                   // .ThenBy(x => x.Key.Rush)
+                   .Select(total => new ListOfOrdersForMoveOrderDto
+                   {
+                       Id = total.Key.Id,
+                       MIRId = total.Key.TrasactId,
+                       OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
+                       DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
+
+                       //Department = total.Key.Department,
+                       //CustomerName = total.Key.CustomerName,
+                       //CustomerCode = total.Key.Customercode,
+                       //Category = total.Key.Category,
+
+                       ItemCode = total.Key.ItemCode,
+                       ItemDescription = total.Key.ItemdDescription,
+                       Uom = total.Key.Uom,
+                       QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
+
+                       //IsApproved = total.Key.IsApproved != null,
+
+                       PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
+                       //Rush = total.Key.Rush
+
+
+                   });
+
+            return await orders.ToListAsync();
+
+
+        }
+
+        public async Task<ItemStocksDto> GetActualItemQuantityInWarehouse(int id, string itemcode)
+        {
+            var TotaloutMoveOrder = await _context.MoveOrders.Where(x => x.WarehouseId == id)
+                                                             .Where(x => x.IsActive == true)
+                                                             .Where(x => x.IsPrepared == true)
+                                                             .Where(x => x.ItemCode == itemcode)
+                                                             .SumAsync(x => x.QuantityOrdered);
+
+            var TotalIssue = await _context.MiscellaneousIssueDetail.Where(x => x.WarehouseId == id)
+                                                                    .Where(x => x.IsActive == true)
+                                                                    .Where(x => x.IsTransact == true)
+                                                                    .SumAsync(x => x.Quantity);
+
+            var TotalBorrowIssue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
+                                                                      .Where(x => x.IsActive == true)
+                                                                      .Where(x => x.IsApproved == true)
+                                                                      .SumAsync(x => x.Quantity);
+
+            var TotalBorrowReturned = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
+                                                                      .Where(x => x.IsActive == true)
+                                                                      .Where(x => x.IsReturned == true)
+                                                                      .Where(x => x.IsApprovedReturned == true)
+                                                                      .SumAsync(x => x.ReturnQuantity);
+
+
+
+            var totalRemaining = _context.WarehouseReceived
+                              .OrderBy(x => x.ReceivingDate)
+                              .Where(totalin => totalin.Id == id && totalin.ItemCode == itemcode && totalin.IsActive == true)
+                              .GroupBy(x => new
+                              {
+                                  x.Id,
+                                  x.ItemCode,
+                                  x.ItemDescription,
+                                  x.ActualDelivered,
+                                  x.ReceivingDate
+
+                              }).Select(total => new ItemStocksDto
+                              {
+                                  warehouseId = total.Key.Id,
+                                  ItemCode = total.Key.ItemCode,
+                                  ItemDescription = total.Key.ItemDescription,
+                                  ActualGood = total.Key.ActualDelivered,
+                                  DateReceived = total.Key.ReceivingDate.ToString("MM/dd/yyyy"),
+                                  Remaining = total.Key.ActualDelivered + TotalBorrowReturned - TotaloutMoveOrder - TotalIssue - TotalBorrowIssue
+                              });
+
+            return await totalRemaining.Where(x => x.Remaining != 0)
+                                       .FirstOrDefaultAsync();
+
+        }
+
+
+        public async Task<ItemStocksDto> GetFirstNeeded(string itemCode)
+        {
+            var getwarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                           .GroupBy(x => new
+                                                           {
+                                                               x.Id,
+                                                               x.ItemCode,
+                                                               x.ReceivingDate,
+                                                           }).Select(x => new WarehouseInventory
+                                                           {
+                                                               WarehouseId = x.Key.Id,
+                                                               ItemCode = x.Key.ItemCode,
+                                                               ActualGood = x.Sum(x => x.ActualGood),
+                                                               RecievingDate = x.Key.ReceivingDate.ToString()
+                                                           });
+
+
+            var getMoveOrder = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                  .Where(x => x.IsPrepared == true)
+                                                  .GroupBy(x => new
+                                                  {
+                                                      x.ItemCode,
+                                                      x.WarehouseId
+
+                                                  }).Select(x => new ItemStocksDto
+                                                  {
+                                                      ItemCode = x.Key.ItemCode,
+                                                      Remaining = x.Sum(x => x.QuantityOrdered),
+                                                      warehouseId = x.Key.WarehouseId
+
+                                                  });
+
+            //var getMiscReceipts = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
+            //                                                .Where(x => x.IsWarehouseReceived == true)
+            //                                                .Where(x => x.IsActive == true)
+            //                                                .GroupBy(x => new
+            //                                                {
+            //                                                    x.Id,
+            //                                                    x.ItemCode,
+
+            //                                                }).Select(x => new ItemStocksDto
+            //                                                {
+            //                                                    warehouseId = x.Key.Id,
+            //                                                    ItemCode = x.Key.ItemCode,
+            //                                                });
+
+
+            var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsTransact == true)
+                                                                .GroupBy(x => new
+                                                                {
+                                                                    x.ItemCode,
+                                                                    x.WarehouseId,
+
+                                                                }).Select(x => new ItemStocksDto
+                                                                {
+                                                                    ItemCode = x.Key.ItemCode,
+                                                                    Remaining = x.Sum(x => x.Quantity),
+                                                                    warehouseId = x.Key.WarehouseId,
+
+                                                                });
+
+            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
+                                                                .GroupBy(x => new
+                                                                {
+
+                                                                    x.ItemCode,
+                                                                    x.WarehouseId,
+
+                                                                }).Select(x => new ItemStocksDto
+                                                                {
+
+                                                                    ItemCode = x.Key.ItemCode,
+                                                                    Remaining = x.Sum(x => x.Quantity),
+                                                                    warehouseId = x.Key.WarehouseId,
+
+                                                                });
+
+            var getBorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                 .Where(x => x.IsReturned == true)
+                                                                 .Where(x => x.IsApprovedReturned == true)
+                                                                  .GroupBy(x => new
+                                                                  {
+
+                                                                      x.ItemCode,
+                                                                      x.WarehouseId,
+
+                                                                  }).Select(x => new ItemStocksDto
+                                                                  {
+                                                                      ItemCode = x.Key.ItemCode,
+                                                                      Remaining = x.Sum(x => x.ReturnQuantity),
+                                                                      warehouseId = x.Key.WarehouseId
+
+                                                                  });
+
+
+
+            var totalremaining = getwarehouseIn
+                              .OrderBy(x => x.RecievingDate)
+                              .ThenBy(x => x.ItemCode)
+                              .GroupJoin(getMoveOrder, warehouse => warehouse.WarehouseId, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
+                              .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.warehouse, moveorder })
+                              .GroupJoin(getMiscIssue, warehouse => warehouse.warehouse.WarehouseId, issue => issue.warehouseId, (warehouse, issue) => new { warehouse, issue })
+                              .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
+                              .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.WarehouseId, borrow => borrow.warehouseId, (warehouse, borrow) => new { warehouse, borrow })
+                              .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.warehouse, borrow })
+                              .GroupJoin(getBorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.WarehouseId, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
+                              .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
+                              .GroupBy(x => new
+                              {
+                                  x.warehouse.warehouse.warehouse.warehouse.WarehouseId,
+                                  x.warehouse.warehouse.warehouse.warehouse.ItemCode,
+                                  x.warehouse.warehouse.warehouse.warehouse.RecievingDate
+
+                              })
+                              .Select(x => new ItemStocksDto
+                              {
+                                  warehouseId = x.Key.WarehouseId,
+                                  ItemCode = x.Key.ItemCode,
+                                  DateReceived = x.Key.RecievingDate.ToString(),
+                                  Remaining = x.Sum(x => x.warehouse.warehouse.warehouse.warehouse.ActualGood == null ? 0 : x.warehouse.warehouse.warehouse.warehouse.ActualGood) +
+                                              x.Sum(x => x.returned.Remaining == null ? 0 : x.returned.Remaining) -
+                                              x.Sum(x => x.warehouse.warehouse.warehouse.moveorder.Remaining == null ? 0 : x.warehouse.warehouse.warehouse.moveorder.Remaining) -
+                                              x.Sum(x => x.warehouse.warehouse.issue.Remaining == null ? 0 : x.warehouse.warehouse.issue.Remaining) -
+                                              x.Sum(x => x.warehouse.borrow.Remaining == null ? 0 : x.warehouse.borrow.Remaining)
+
+                              });
+
+
+            return await totalremaining.Where(x => x.Remaining != 0)
+                                       .Where(x => x.ItemCode == itemCode)
+                                       .FirstOrDefaultAsync();
+
+
+        }
+
+
+        public async Task<IReadOnlyList<GetAllOutOfStockByItemCodeAndOrderDateDto>> GetAllOutOfStockByItemCodeAndOrderDate(string itemcode, string orderdate)
+        {
+
+            CultureInfo usCulture = new CultureInfo("en-US");
+            CultureInfo.CurrentCulture = usCulture;
+
+            DateTime.ParseExact(orderdate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+
+            var moveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
+                                                 .Where(x => x.IsPrepared == true)
+                                                 .GroupBy(x => new
+                                                 {
+                                                     x.ItemCode,
+                                                     x.WarehouseId,
+
+                                                 }).Select(x => new OrderingInventory
+                                                 {
+                                                     ItemCode = x.Key.ItemCode,
+                                                     QuantityOrdered = x.Sum(x => x.QuantityOrdered),
+                                                     warehouseId = x.Key.WarehouseId
+
+                                                 });
+
+            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+                                                               .Where(x => x.IsTransact == true)
+                                                               .GroupBy(x => new
+                                                               {
+                                                                   x.ItemCode,
+                                                                   x.WarehouseId
+
+                                                               }).Select(x => new IssueInventoryDto
+                                                               {
+
+                                                                   ItemCode = x.Key.ItemCode,
+                                                                   Quantity = x.Sum(x => x.Quantity),
+                                                                   warehouseId = x.Key.WarehouseId
+                                                               });
+
+            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                .Where(x => x.IsApproved == true)
+                                                                .GroupBy(x => new
+                                                                {
+
+                                                                    x.ItemCode,
+                                                                    x.WarehouseId,
+
+                                                                }).Select(x => new IssueInventoryDto
+                                                                {
+
+                                                                    ItemCode = x.Key.ItemCode,
+                                                                    Quantity = x.Sum(x => x.Quantity),
+                                                                    warehouseId = x.Key.WarehouseId
+
+                                                                });
+
+            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
+                                                            .GroupBy(x => new
+                                                            {
+                                                                x.ItemCode,
+                                                                x.WarehouseId,
+
+                                                            }).Select(x => new ItemStocksDto
+                                                            {
+
+                                                                ItemCode = x.Key.ItemCode,
+                                                                In = x.Sum(x => x.ReturnQuantity),
+                                                                warehouseId = x.Key.WarehouseId
+
+                                                            });
+
+
+            var totalRemaining = _context.WarehouseReceived
+                           .GroupJoin(moveOrderOut, warehouse => warehouse.Id, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
+                           .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.warehouse, moveorder })
+                           .GroupJoin(getIssueOut, warehouse => warehouse.warehouse.Id, issue => issue.warehouseId, (warehouse, issue) => new { warehouse, issue })
+                           .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
+                           .GroupJoin(getBorrowedIssue, warehouse => warehouse.warehouse.warehouse.Id, borrow => borrow.warehouseId, (warehouse, borrow) => new { warehouse, borrow })
+                           .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.warehouse, borrow })
+                           .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.Id, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
+                           .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
+                           .GroupBy(x => new
+                           {
+                               x.warehouse.warehouse.warehouse.warehouse.Id,
+                               x.warehouse.warehouse.warehouse.warehouse.ItemCode,
+                               x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
+                               x.warehouse.warehouse.warehouse.warehouse.ReceivingDate,
+                               x.warehouse.warehouse.warehouse.warehouse.ActualGood,
+
+                           }).OrderBy(x => x.Key.ReceivingDate)
+                           .Select(total => new ItemStocksDto
+                           {
+                               warehouseId = total.Key.Id,
+                               ItemCode = total.Key.ItemCode,
+                               ItemDescription = total.Key.ItemDescription,
+                               DateReceived = total.Key.ReceivingDate.ToString(),
+                               Remaining = total.Key.ActualGood + total.Sum(x => x.returned.In) - total.Sum(x => x.warehouse.warehouse.warehouse.moveorder.QuantityOrdered) - total.Sum(x => x.warehouse.warehouse.issue.Quantity) - total.Sum(x => x.warehouse.borrow.Quantity),
+
+                           });
+
+            var totalOrders = _context.Orders
+                      .GroupBy(x => new
+                      {
+                          x.ItemCode,
+                          x.IsPrepared,
+                          x.IsActive
+
+                      }).Select(x => new GetAllOutOfStockByItemCodeAndOrderDateDto
+                      {
+
+                          ItemCode = x.Key.ItemCode,
+                          TotalOrders = x.Sum(x => x.QuantityOrdered),
+                          IsPrepared = x.Key.IsPrepared
+
+                      }).Where(x => x.IsPrepared == false);
+
+
+            var orders = _context.Orders
+                .Where(ordering => ordering.ItemCode == itemcode)
+                 .Where(x => x.OrderDate == DateTime.Parse(orderdate))
+                  .GroupJoin(totalRemaining, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
+                  .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
+                  .GroupBy(x => new
+                  {
+                      x.ordering.Id,
+                      x.ordering.OrderDate,
+                      x.ordering.DateNeeded,
+                      x.ordering.Department,
+                      x.ordering.CustomerName,
+                      x.ordering.Customercode,
+                      x.ordering.Category,
+                      x.ordering.ItemCode,
+                      x.ordering.ItemdDescription,
+                      x.ordering.Uom,
+                      x.ordering.IsActive,
+                      x.ordering.IsPrepared,
+                      x.ordering.PreparedDate,
+                      x.ordering.IsApproved
+
+                  }).Select(total => new GetAllOutOfStockByItemCodeAndOrderDateDto
+                  {
+
+                      Id = total.Key.Id,
+                      OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
+                      DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
+                      Department = total.Key.Department,
+                      CustomerName = total.Key.CustomerName,
+                      CustomerCode = total.Key.Customercode,
+                      Category = total.Key.Category,
+                      ItemCode = total.Key.ItemCode,
+                      ItemDescription = total.Key.ItemdDescription,
+                      Uom = total.Key.Uom,
+                      QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
+                      IsActive = total.Key.IsActive,
+                      IsPrepared = total.Key.IsPrepared,
+                      StockOnHand = total.Sum(x => x.warehouse.Remaining),
+                      Difference = total.Sum(x => x.warehouse.Remaining) - total.Sum(x => x.ordering.QuantityOrdered),
+                      PreparedDate = total.Key.PreparedDate.ToString(),
+                      IsApproved = total.Key.IsApproved != null
+
+                  });
+
+            return await orders.ToListAsync();
+
+        }
+
+
+
+        public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
+        {
+            var orders = _context.Orders.Where(x => x.IsMove == false)
+                //.OrderBy(x => x.Rush == null)
+                // .ThenBy(x => x.Rush)
+                .Select(x => new GetMoveOrderDetailsForMoveOrderDto
+                {
+                    Id = x.Id,
+                    MIRId = x.TrasactId,
+
+                    Department = x.Department,
+                    DepartmentCode = x.DepartmentCode,
+                    CompanyName = x.CompanyName,
+                    CompanyCode = x.CompanyCode,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    //AccountCode = x.AccountCode,
+                    //AccountTitles = x.AccountTitles,
+
+                    CustomerName = x.CustomerName,
+                    CustomerCode = x.Customercode,
+                    //Address = x.AddressOrder,
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemdDescription,
+                    Uom = x.Uom,
+                    QuantityOrder = x.QuantityOrdered,
+                    Category = x.Category,
+                    OrderDate = x.OrderDate.ToString(),
+                    DateNeeded = x.DateNeeded.ToString(),
+                    PrepareDate = x.PreparedDate.ToString(),
+
+                    CustomerType = x.CustomerType,
+                    Rush = x.Rush
+
+                });
+
+            return await orders.Where(x => x.Id == orderId)
+                               .FirstOrDefaultAsync();
+
+        }
+
+
+
+        public async Task<bool> PrepareItemForMoveOrder(MoveOrder orders)
+        {
+            await _context.MoveOrders.AddAsync(orders);
+            return true;
+
+        }
+
+
+        public async Task<bool> CancelControlInMoveOrder(Ordering orders)
+        {
+            var cancelorder = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
+                                                   .ToListAsync();
+
+            var existMOveOrders = await _context.MoveOrders.Where(x => x.OrderNo == orders.TrasactId)
+                                                            .ToListAsync();
+
+            foreach (var items in cancelorder)
+            {
+                items.IsApproved = null;
+                items.ApprovedDate = null;
+
+            }
+
+            if (existMOveOrders != null)
+            {
+                foreach (var items in existMOveOrders)
+                {
+                    items.IsActive = false;
+                }
+            }
+            return true;
+
+        }
+
+
+
+        public async Task<IReadOnlyList<ListOfPreparedItemsForMoveOrderDto>> ListOfPreparedItemsForMoveOrder(int id)
+        {
+            var orders = _context.MoveOrders
+                //.OrderBy(x => x.Rush == null)
+                // .ThenBy(x => x.Rush)
+                 .Select(x => new ListOfPreparedItemsForMoveOrderDto
+                 {
+                     Id = x.Id,
+                     OrderNo = x.OrderNo,
+                     BarCodes = x.WarehouseId,
+                     ItemCode = x.ItemCode,
+                     ItemDescription = x.ItemDescription,
+                     Quantity = x.QuantityOrdered,
+                     IsActive = x.IsActive,
+                     Rush = x.Rush
+
+
+                 });
+
+            return await orders.Where(x => x.OrderNo == id)
+                               .Where(x => x.IsActive == true)
+                               .ToListAsync();
+        }
+
+
+
+        public async Task<bool> SavePreparedMoveOrder(MoveOrder order)
+        {
+            var existing = await _context.Orders.Where(x => x.TrasactId == order.OrderNo)
+                                                .ToListAsync();
+
+            var existingsMoveOrders = await _context.MoveOrders.Where(x => x.OrderNo == order.OrderNo)
+                                                              .Where(x => x.IsPrepared == true)
+                                                              .ToListAsync();
+
+            if (!existingsMoveOrders.Any())
+                return false;
+
+            foreach (var x in existing)
+            {
+                x.IsMove = true;
+
+            }
+
+            foreach (var x in existingsMoveOrders)
+            {
+                x.Department = order.Department;
+                x.CompanyCode = order.CompanyCode;
+                x.CompanyName = order.CompanyName;
+                x.DepartmentCode = order.DepartmentCode;
+                x.DepartmentName = order.DepartmentName;
+                x.LocationCode = order.LocationCode;
+                x.LocationName = order.LocationName;
+                x.AccountCode = order.AccountCode;
+                x.AccountTitles = order.AccountTitles;
+                x.RejectBy = null;
+                x.RejectedDate = null;
+                x.RejectedDateTempo = null;
+                x.IsReject = null;
+
+            }
+
+            return true;
+
+        }
+
+
+
+
+
+
+        public async Task<bool> CancelMoveOrder(MoveOrder moveOrder)
+        {
+            var existing = await _context.MoveOrders.Where(x => x.Id == moveOrder.Id)
+                                                    .FirstOrDefaultAsync();
+
+            if (existing == null)
+            {
+                return false;
+            }
+
+            existing.IsActive = false;
+            existing.CancelledDate = DateTime.Now;
+
+            return true;
+
+        }
+
+
+
 
 
 
