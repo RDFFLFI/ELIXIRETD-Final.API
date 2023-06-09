@@ -32,6 +32,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public bool IsApproved { get; set; }
 
+        public string Reason { get; set; }
 
         public string ApproveDate { get; set; }
 

@@ -30,6 +30,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public string Uom { get; set; }
 
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string DepartmentCode { get; set; }
+        public string DepartmentName { get; set; }
+
+        public string LocationCode { get; set; }
+        public string LocationName { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
+
+        public string Remarks { get; set; }
+
+        public string TransactionDate { get; set; }
+
+        public string Reason { get; set; }
+
+
+
+
 
     }
 }

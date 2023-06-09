@@ -50,6 +50,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsActive = x.IsActive,
                                                       IsApproved = x.IsApproved,
                                                       Remarks = x.Remarks,
+                                                      Reason = x.Reason,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                       ApproveDate = x.IsApprovedDate.ToString()
@@ -86,6 +87,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsApproved = x.IsApproved,
                                                       IsActive = x.IsActive,
                                                       Remarks = x.Remarks,
+                                                      Reason = x.Reason,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                       ApproveDate = x.IsApprovedDate.ToString()
@@ -339,6 +341,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Customer = x.CustomerName,
                                                    CustomerCode = x.CustomerCode,
                                                    TransactionDate = x.TransactionDate.ToString(),
+
                                                    CompanyCode = x.CompanyCode,
                                                    CompanyName = x.CompanyName,
                                                    DepartmentCode = x.DepartmentCode,
@@ -536,7 +539,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var employee = _context.Users.Where(x => x.Id == empid)
                                      .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.PreparedBy == employee.FullName)
+            var borrowed = _context.BorrowedIssues
                                                   .Where(x => x.IsReturned == true && x.IsActive == true)
                                                   .GroupBy(x => new
                                                   {
@@ -545,7 +548,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       x.CustomerCode,
                                                       x.CustomerName,
                                                       x.IsApprovedReturned,
-                                                      x.IsApprovedReturnedDate
+                                                      x.IsApprovedReturnedDate,
+                                                      x.PreparedBy,
 
                                                   }).Select(x => new DtoGetAllReturnedItem
                                                   {
@@ -554,7 +558,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       CustomerCode = x.Key.CustomerCode,
                                                       CustomerName = x.Key.CustomerName,
                                                       IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                      ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString()
+                                                      ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                                      PreparedBy = x.Key.PreparedBy
 
                                                   });
 
@@ -562,7 +567,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var BorrowIssue = _context.BorrowedIssueDetails
                 .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true)
+                .Where(x => x.borrowissue.PreparedBy == employee.FullName)
+                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
                 .GroupBy(x => new
                 {
                     x.borrowissue.Id,
@@ -570,7 +576,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
-                    x.borrowissue.IsApproveReturn,
+                    x.borrowdetails.IsApprovedReturned,
                     x.borrowissue.ApproveReturnDate,
                     x.borrowdetails.IsApprovedReturnedDate,
 
@@ -585,7 +591,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
-                    IsApproveReturn = x.Key.IsApproveReturn,
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
                     ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString()
 
 
@@ -629,7 +635,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var employee = _context.Users.Where(x => x.Id == empid)
                                    .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.PreparedBy == employee.FullName)
+            var borrowed = _context.BorrowedIssues
                                               .Where(x => x.IsReturned == true && x.IsActive == true)
                                               .GroupBy(x => new
                                               {
@@ -638,6 +644,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   x.CustomerCode,
                                                   x.CustomerName,
                                                   x.IsApprovedReturned,
+                                                  x.IsApprovedReturnedDate,
+                                                  x.PreparedBy,
+
+
+                                                  //x.IsApprovedReturned,
 
                                               }).Select(x => new DtoGetAllReturnedItem
                                               {
@@ -645,7 +656,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   Id = x.Key.Id,
                                                   CustomerCode = x.Key.CustomerCode,
                                                   CustomerName = x.Key.CustomerName,
+                                                  //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
                                                   IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                                  PreparedBy = x.Key.PreparedBy
+
 
                                               });
 
@@ -653,7 +668,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var BorrowIssue = _context.BorrowedIssueDetails
                 .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true)
+                .Where(x => x.borrowissue.PreparedBy == employee.FullName)
+                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
                 .GroupBy(x => new
                 {
                     x.borrowissue.Id,
@@ -661,7 +677,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
-                    x.borrowissue.IsApproveReturn,
+                    x.borrowdetails.IsApprovedReturned,
                     x.borrowdetails.IsApprovedReturnedDate,
 
 
@@ -675,7 +691,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
-                    IsApproveReturn = x.Key.IsApproveReturn,
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
                     ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString()
 
 
@@ -697,6 +713,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   Customer = x.CustomerName,
                                                   CustomerCode = x.CustomerCode,
 
+                                                  Remarks = x.Remarks,
+
+                                                  TransactionDate = x.TransactionDate.ToString(),
+
+                                                  CompanyCode = x.CompanyCode,
+                                                  CompanyName = x.CompanyName,
+                                                  DepartmentCode = x.DepartmentCode,
+                                                  DepartmentName = x.DepartmentName,
+                                                  LocationCode = x.LocationCode,
+                                                  LocationName = x.LocationName,
+                                                  AccountCode = x.AccountCode,
+                                                  AccountTitles = x.AccountTitles,
+
                                               });
 
 
@@ -708,8 +737,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .Where(x => x.borrowed.IsActive == true)
               .Select(x => new DtoViewBorrewedReturnedDetails
               {
-
-                  Id = x.borrowed.BorrowedPKey,
+                  BorrowedPKey = x.borrowed.BorrowedPKey,
+                  Id = x.borrowed.Id,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
 
@@ -719,6 +748,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
                   ReturnedDate = x.borrowed.ReturnedDate.ToString(),
                   PreparedBy = x.borrowed.PreparedBy,
+
+                  Remarks = x.issues.Remarks,
+
+                  TransactionDate = x.issues.TransactionDate.ToString(),
+                  CompanyCode = x.issues.CompanyCode,
+                  CompanyName = x.issues.CompanyName,
+                  DepartmentCode = x.issues.DepartmentCode,
+                  DepartmentName = x.issues.DepartmentName,
+                  LocationCode = x.issues.LocationCode,
+                  LocationName = x.issues.LocationName,
+                  AccountCode = x.issues.AccountCode,
+                  AccountTitles = x.issues.AccountTitles,
 
                   Uom = x.borrowed.Uom
 
@@ -782,6 +823,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    TotalQuantity = x.TotalQuantity,
                                                    PreparedBy = x.PreparedBy,
                                                    Remarks = x.Remarks,
+                                                   Reason = x.Reason,
                                                    BorrowedDate = x.PreparedDate.ToString(),
                                                    TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
@@ -807,6 +849,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 TotalQuantity = x.TotalQuantity,
                                                 PreparedBy = x.PreparedBy,
                                                 Remarks = x.Remarks,
+                                                Reason = x.Reason,
                                                 BorrowedDate = x.PreparedDate.ToString(),
                                                 TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
@@ -829,7 +872,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                 Remarks = x.Remarks,
 
-                                                
+
                                                 TransactionDate = x.TransactionDate.ToString(),
                                                 CompanyCode = x.CompanyCode,
                                                 CompanyName = x.CompanyName,
@@ -1082,7 +1125,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status)
         {
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == status)
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -1099,7 +1142,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       CustomerCode = x.Key.CustomerCode,
                                                       CustomerName = x.Key.CustomerName,
                                                       ReturnBy = x.Key.ReturnBy,
-                                                      IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
+                                                      IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
 
                                                   });
 
@@ -1107,33 +1150,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var BorrowIssue = _context.BorrowedIssueDetails
                 .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowissue.IsApproveReturn == false)
+                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
                 .OrderByDescending(x => x.borrowissue.IsApproveReturn)
                 .GroupBy(x => new
                 {
+                    //x.borrowdetails.BorrowedPKey,
                     x.borrowissue.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
                     x.borrowissue.ReturnBy,
-                    x.borrowissue.IsApproveReturn,
+                    x.borrowdetails.IsApprovedReturned,
 
 
 
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-
+                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
-                    Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
                     ReturnBy = x.Key.ReturnBy,
-                    IsApproveReturn = x.Key.IsApproveReturn
+
+                    Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
+                    TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
+
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
 
 
                 });
@@ -1146,7 +1192,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status)
         {
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true && x.IsApprovedReturned == status)
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
                                                 .GroupBy(x => new
                                                 {
 
@@ -1154,7 +1200,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                     x.CustomerCode,
                                                     x.CustomerName,
                                                     x.ReturnBy,
-                                                    x.IsApprovedReturned
+                                                    //x.IsApprovedReturned
 
                                                 }).Select(x => new DtoGetAllReturnedItem
                                                 {
@@ -1163,7 +1209,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                     CustomerCode = x.Key.CustomerCode,
                                                     CustomerName = x.Key.CustomerName,
                                                     ReturnBy = x.Key.ReturnBy,
-                                                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
+                                                    //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
 
                                                 });
 
@@ -1171,17 +1217,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var BorrowIssue = _context.BorrowedIssueDetails
                 .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowissue.IsApproveReturn == false)
+                .Where(x => x.borrowdetails.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
                 .OrderByDescending(x => x.borrowissue.IsApproveReturn)
                 .GroupBy(x => new
                 {
+                    //x.borrowdetails.BorrowedPKey,
                     x.borrowissue.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
                     x.borrowissue.ReturnBy,
-                    x.borrowissue.IsApproveReturn,
+                    x.borrowdetails.IsApprovedReturned,
 
 
 
@@ -1189,6 +1236,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 }).Select(x => new DtoGetAllReturnedItem
                 {
 
+                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
@@ -1197,7 +1245,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
                     ReturnBy = x.Key.ReturnBy,
-                    IsApproveReturn = x.Key.IsApproveReturn
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
 
 
                 }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
@@ -1291,6 +1339,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.IsReject,
                     x.borrowissue.IsRejectDate,
                     x.borrowissue.Remarks,
+                    x.borrowissue.Reason,
+
+
+                    x.borrowissue.PreparedBy,
+
+
+                    x.borrowissue.CompanyCode,
+                    x.borrowissue.CompanyName,
+                    x.borrowissue.DepartmentCode,
+                    x.borrowissue.DepartmentName,
+                    x.borrowissue.LocationCode,
+                    x.borrowissue.LocationName,
+                    x.borrowissue.AccountCode,
+                    x.borrowissue.AccountTitles,
+
 
 
                 })
@@ -1309,10 +1372,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                    IsApproveReturnedDate = x.Key.IsApprovedReturnedDate.ToString(),
                    Consumed = x.Sum(x => x.borrowdetails.Quantity != null ? x.borrowdetails.Quantity : 0) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                    ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
-                   IsReject = x.Key.IsReject ,
+                   IsReject = x.Key.IsReject,
                    IsRejectDate = x.Key.IsRejectDate.ToString(),
                    Remarks = x.Key.Remarks,
-                   
+
+                   PreparedBy = x.Key.PreparedBy,
+
+                   CompanyCode = x.Key.CompanyCode,
+                   CompanyName = x.Key.CompanyName,
+                   DepartmentCode = x.Key.DepartmentCode,
+                   DepartmentName = x.Key.DepartmentName,
+                   LocationCode = x.Key.LocationCode,
+                   LocationName = x.Key.LocationName,
+                   AccountCode = x.Key.AccountCode,
+                   AccountTitles = x.Key.AccountTitles,
+
+                   Reason = x.Key.Reason
 
 
                });
@@ -1343,6 +1418,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                      x.borrowissue.IsReject,
                      x.borrowissue.IsRejectDate,
                      x.borrowissue.Remarks,
+                     x.borrowissue.Reason,
+
+                     x.borrowissue.PreparedBy,
+
+                     x.borrowissue.CompanyCode,
+                     x.borrowissue.CompanyName,
+                     x.borrowissue.DepartmentCode,
+                     x.borrowissue.DepartmentName,
+                     x.borrowissue.LocationCode,
+                     x.borrowissue.LocationName,
+                     x.borrowissue.AccountCode,
+                     x.borrowissue.AccountTitles,
+
+
 
 
                  })
@@ -1363,7 +1452,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
                     IsReject = x.Key.IsReject,
                     IsRejectDate = x.Key.IsRejectDate.ToString(),
-                    Remarks = x.Key.Remarks
+                    Remarks = x.Key.Remarks,
+
+                    PreparedBy = x.Key.PreparedBy,
+
+                    CompanyCode = x.Key.CompanyCode,
+                    CompanyName = x.Key.CompanyName,
+                    DepartmentCode = x.Key.DepartmentCode,
+                    DepartmentName = x.Key.DepartmentName,
+                    LocationCode = x.Key.LocationCode,
+                    LocationName = x.Key.LocationName,
+                    AccountCode = x.Key.AccountCode,
+                    AccountTitles = x.Key.AccountTitles,
+
+                    Reason = x.Key.Reason
+
 
                 }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
@@ -1375,5 +1478,5 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
     }
-    
+
 }
