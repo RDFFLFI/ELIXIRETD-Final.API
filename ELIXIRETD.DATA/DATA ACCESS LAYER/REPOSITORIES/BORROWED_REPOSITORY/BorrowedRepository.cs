@@ -26,6 +26,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status, int empid)
         {
+            //var daytoday = DateTime.Now;
+
 
             var employee = _context.Users.Where(x => x.Id == empid)
                                          .FirstOrDefault();
@@ -51,6 +53,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsApproved = x.IsApproved,
                                                       Remarks = x.Remarks,
                                                       Reason = x.Reason,
+                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                       ApproveDate = x.IsApprovedDate.ToString()
@@ -90,6 +93,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       Reason = x.Reason,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
                                                       ApproveDate = x.IsApprovedDate.ToString()
 
                                                   })
@@ -825,6 +829,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Remarks = x.Remarks,
                                                    Reason = x.Reason,
                                                    BorrowedDate = x.PreparedDate.ToString(),
+                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
                                                    TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                                });
@@ -851,6 +856,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 Remarks = x.Remarks,
                                                 Reason = x.Reason,
                                                 BorrowedDate = x.PreparedDate.ToString(),
+                                                AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
                                                 TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                             }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
@@ -1231,8 +1237,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetails.IsApprovedReturned,
 
 
-
-
                 }).Select(x => new DtoGetAllReturnedItem
                 {
 
@@ -1471,7 +1475,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
-
 
 
             return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);

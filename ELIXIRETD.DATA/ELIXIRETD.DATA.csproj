@@ -10,6 +10,7 @@
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\ORDERING_MODEL\Ordering.cs~RF45e8aa.TMP" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\BORROWED_REPOSITORY\iwffkyel.vzn~" />
+    <None Remove="DATA ACCESS LAYER\REPOSITORIES\BORROWED_REPOSITORY\uzibyjn0.vdb~" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\IMPORT_REPOSITORY\PoSummaryRepository.cs~RFb3a532.TMP" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\ORDERS_REPOSITORY\d2mrx2zd.x3r~" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\ORDERS_REPOSITORY\mqnhpeko.g55~" />
@@ -26,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="6.0.8" />
+    <PackageReference Include="EntityFramework.Functions" Version="1.5.0" />
     <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="6.0.2" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
