@@ -46,8 +46,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> ApprovalForMoveOrders(MoveOrder moveorder);
         Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id);
 
-        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams);
-        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search);
+      
+     
 
         Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination (UserParams userParams);
         
@@ -144,6 +144,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername, bool status);
 
+
+        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status);
+        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
 
     }
 }

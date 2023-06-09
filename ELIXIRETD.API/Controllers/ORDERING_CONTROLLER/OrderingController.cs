@@ -307,14 +307,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         //============================================= Move Order Preparation ===================================================
 
-        [HttpGet]
-        [Route("ViewMoveOrderForApproval")]
-        public async Task<IActionResult> ViewMoveOrderForApproval([FromQuery] int id)
-        {
-            var orders = await _unitofwork.Orders.ViewMoveOrderForApproval
-                (id);
-            return Ok(orders);
-        }
+     
 
 
 
@@ -329,53 +322,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         }
 
-        [HttpGet]
-        [Route("GetAllForApprovalMoveOrderPagination")]
-        public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GEtAllForApprovalMoveOrderPagination([FromQuery] UserParams userParams )
-        {
-            var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPagination(userParams);
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+       
 
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-
-            };
-
-            return Ok(moveorderResult);
-        }
-
-        [HttpGet]
-        [Route("GetAllForApprovalMoveOrderPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GetallForApprovalMoveOrderPaginationOrig([FromQuery] UserParams userParams , [FromQuery] string search)
-        {
-            if (search == null)
-                return await GEtAllForApprovalMoveOrderPagination(userParams);
-
-            var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPaginationOrig(userParams, search);
-
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-
-            };
-
-            return Ok(moveorderResult);
-        }
+     
 
         [HttpGet]
         [Route("ApprovedMoveOrderPagination")]
@@ -968,6 +917,64 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         }
+
+        [HttpGet]
+        [Route("GetAllForApprovalMoveOrderPagination")]
+        public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GEtAllForApprovalMoveOrderPagination([FromQuery] UserParams userParams, bool status)
+        {
+            var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPagination(userParams, status);
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+
+            };
+
+            return Ok(moveorderResult);
+        }
+
+        [HttpGet]
+        [Route("GetAllForApprovalMoveOrderPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GetallForApprovalMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        {
+            if (search == null)
+                return await GEtAllForApprovalMoveOrderPagination(userParams, status);
+
+            var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPaginationOrig(userParams, search, status);
+
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+
+            };
+
+            return Ok(moveorderResult);
+        }
+
+
+        [HttpGet]
+        [Route("ViewMoveOrderForApproval")]
+        public async Task<IActionResult> ViewMoveOrderForApproval([FromQuery] int id)
+        {
+            var orders = await _unitofwork.Orders.ViewMoveOrderForApproval(id);
+            return Ok(orders);
+        }
+
 
 
 

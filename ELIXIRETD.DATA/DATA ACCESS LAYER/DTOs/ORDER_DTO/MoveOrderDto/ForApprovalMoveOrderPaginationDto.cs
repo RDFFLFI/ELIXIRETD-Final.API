@@ -9,7 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
     public class ForApprovalMoveOrderPaginationDto
     {
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
         public string Department { get; set; }
         public string CustomerName { get; set; }
 
@@ -25,7 +25,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
 
         public string Address { get; set; }
 
-        public bool Rush { get; set; }
+        public bool IsRush { get; set; }
+
+        public string Rush { get; set; }
 
 
         public string CompanyCode { get; set; }

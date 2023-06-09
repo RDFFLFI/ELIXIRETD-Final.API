@@ -12,7 +12,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
     {
         public int Id { get; set; }
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
 
         public int BarcodeNo { get; set; }
 
