@@ -59,7 +59,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          .Select(x => new DtoMoveOrderReports
                          {
 
-                             MoveOrderId = x.moveorder.OrderNo,
+                             MIRId = x.moveorder.OrderNo,
                              CustomerCode = x.moveorder.Customercode,
                              CustomerName = x.moveorder.CustomerName,
                              ItemCode = x.moveorder.ItemCode,
@@ -145,7 +145,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           select new DtoTransactReports
                           {
 
-                              OrderNo = total.Key.OrderNo,
+                              MIRId = total.Key.OrderNo,
                               CustomerName = total.Key.CustomerName,
                               CustomerCode = total.Key.CustomerCode,
                               ItemCode = total.Key.ItemCode,
