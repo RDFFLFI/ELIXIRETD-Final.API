@@ -49,9 +49,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
       
      
 
-        Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination (UserParams userParams);
+       
         
-        Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig (UserParams userParams, string search);
+       
 
         Task<GetAllApprovedMoveOrderDto> GetAllApprovedMoveOrder(int id);
 
@@ -62,9 +62,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> RejectApproveMoveOrder(MoveOrder moveOrder);
         Task<bool> RejectForMoveOrder(MoveOrder moveOrder);
 
-        Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPagination(UserParams userParams);
-        Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search);
-
+      
+      
         Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status);
 
         Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid);
@@ -147,6 +146,15 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status);
         Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
+
+
+        Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination(UserParams userParams, bool status);
+
+        Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig(UserParams userParams, string search , bool status);
+
+        Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPagination(UserParams userParams, bool status);
+        Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
+
 
     }
 }

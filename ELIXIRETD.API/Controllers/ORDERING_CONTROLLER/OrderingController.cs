@@ -288,187 +288,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
        
 
-       
-
-      
-        [HttpPut]
-        [Route("UpdatePrintStatus")]
-        public async Task<IActionResult> UpdatePrintStatus([FromBody] MoveOrder moveorder)
-        {
-
-            await _unitofwork.Orders.UpdatePrintStatus(moveorder);
-            await _unitofwork.CompleteAsync();
-
-            return Ok(moveorder);
-        }
-
-       
-
-
         //============================================= Move Order Preparation ===================================================
 
      
 
-
-
-        [HttpPut]
-        [Route("ApproveListOfMoveOrder")]
-        public async Task<IActionResult> ApprovalListofMoveOrder([FromBody] MoveOrder moveOrder)
-        {
-            await _unitofwork.Orders.ApprovalForMoveOrders(moveOrder);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully Approved List for move order!");
-
-        }
-
-       
-
      
-
-        [HttpGet]
-        [Route("ApprovedMoveOrderPagination")]
-        public async Task<ActionResult<IEnumerable<ApprovedMoveOrderPaginationDto>>> ApprovedMoveOrderPagination([FromQuery] UserParams userParams)
-        {
-            var moveorder = await _unitofwork.Orders.ApprovedMoveOrderPagination(userParams);
-
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-            };
-
-            return Ok(moveorderResult);
-
-        }
-
-        [HttpGet]
-        [Route("ApprovedMoveOrderPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<ApprovedMoveOrderPaginationDto>>> ApprovedMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search)
-        {
-
-            if (search == null)
-
-                return await ApprovedMoveOrderPagination(userParams);
-
-            var moveorder = await _unitofwork.Orders.ApprovedMoveOrderPaginationOrig(userParams, search);
-
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-            };
-
-            return Ok(moveorderResult);
-        }
-
-        [HttpGet]
-        [Route("GetAllApprovedMoveOrder")]
-        public async Task<IActionResult>GetAllApprovedMoveOrder([FromQuery] int id)
-        {
-            var orders = await _unitofwork.Orders.GetAllApprovedMoveOrder(id);
-
-
-            return Ok(orders);
-        }
-
-      
-
-        [HttpPut]
-        [Route("ReturnMoveOrderForApproval")]
-        public async Task<IActionResult> ReturnMoveOrderForApproval([FromBody] MoveOrder moveorder)
-        {
-
-            await _unitofwork.Orders.ReturnMoveOrderForApproval(moveorder);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully return list for move order!");
-        }
-
-        [HttpPut]
-        [Route("RejectApproveListOfMoveOrder")]
-        public async Task<IActionResult> RejectApproveListOfMoveOrder([FromBody] MoveOrder moveorder)
-        {
-            await _unitofwork.Orders.RejectApproveMoveOrder(moveorder);
-            await _unitofwork.CompleteAsync();
-            return new JsonResult("Successfully reject approved list for move order!");
-        }
-
-        [HttpPut]
-        [Route("RejectListOfMoveOrder")]
-        public async Task<IActionResult> RejectListOfMoveOrder([FromBody] MoveOrder moveorder)
-        {
-
-            await _unitofwork.Orders.RejectForMoveOrder(moveorder);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully reject list for move order!");
-        }
-
-        [HttpGet]
-        [Route("RejectedMoveOrderPagination")]
-        public async Task<ActionResult<IEnumerable<RejectedMoveOrderPaginationDto>>> RejectedMoveOrderPagination([FromQuery] UserParams userParams)
-        {
-            var moveorder = await _unitofwork.Orders.RejectedMoveOrderPagination(userParams);
-
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-            };
-
-            return Ok(moveorderResult);
-        }
-
-
-        [HttpGet]
-        [Route("RejectedMoveOrderPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<RejectedMoveOrderPaginationDto>>> RejectedMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search)
-        {
-
-            if (search == null)
-
-                return await RejectedMoveOrderPagination(userParams);
-
-            var moveorder = await _unitofwork.Orders.RejectedMoveOrderPaginationOrig(userParams, search);
-
-            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-            var moveorderResult = new
-            {
-                moveorder,
-                moveorder.CurrentPage,
-                moveorder.PageSize,
-                moveorder.TotalCount,
-                moveorder.TotalPages,
-                moveorder.HasNextPage,
-                moveorder.HasPreviousPage
-            };
-
-            return Ok(moveorderResult);
-        }
-
+   
+     
         //==================================== Transact move Order ==================================================
 
         [HttpGet]
@@ -975,8 +801,181 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
+        [HttpPut]
+        [Route("ApproveListOfMoveOrder")]
+        public async Task<IActionResult> ApprovalListofMoveOrder([FromBody] MoveOrder moveOrder)
+        {
+            await _unitofwork.Orders.ApprovalForMoveOrders(moveOrder);
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully Approved List for move order!");
+
+        }
 
 
+        [HttpPut]
+        [Route("UpdatePrintStatus")]
+        public async Task<IActionResult> UpdatePrintStatus([FromBody] MoveOrder moveorder)
+        {
+
+            await _unitofwork.Orders.UpdatePrintStatus(moveorder);
+            await _unitofwork.CompleteAsync();
+
+            return Ok(moveorder);
+        }
+
+        [HttpPut]
+        [Route("RejectListOfMoveOrder")]
+        public async Task<IActionResult> RejectListOfMoveOrder([FromBody] MoveOrder moveorder)
+        {
+
+            await _unitofwork.Orders.RejectForMoveOrder(moveorder);
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully reject list for move order!");
+        }
+
+
+
+        //=================================================================== MIR MoveOrder Approve =======================================================
+
+
+        [HttpGet]
+        [Route("ApprovedMoveOrderPagination")]
+        public async Task<ActionResult<IEnumerable<ApprovedMoveOrderPaginationDto>>> ApprovedMoveOrderPagination([FromQuery] UserParams userParams , [FromQuery] bool status)
+        {
+            var moveorder = await _unitofwork.Orders.ApprovedMoveOrderPagination(userParams,status);
+
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+            };
+
+            return Ok(moveorderResult);
+
+        }
+
+
+        [HttpGet]
+        [Route("ApprovedMoveOrderPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<ApprovedMoveOrderPaginationDto>>> ApprovedMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search , [FromQuery] bool status)
+        {
+
+            if (search == null)
+
+                return await ApprovedMoveOrderPagination(userParams, status);
+
+            var moveorder = await _unitofwork.Orders.ApprovedMoveOrderPaginationOrig(userParams, search, status);
+
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+            };
+
+            return Ok(moveorderResult);
+        }
+
+        [HttpGet]
+        [Route("GetAllApprovedMoveOrder")]
+        public async Task<IActionResult> GetAllApprovedMoveOrder([FromQuery] int id)
+        {
+            var orders = await _unitofwork.Orders.GetAllApprovedMoveOrder(id);
+
+
+            return Ok(orders);
+        }
+
+
+
+        [HttpPut]
+        [Route("RejectApproveListOfMoveOrder")]
+        public async Task<IActionResult> RejectApproveListOfMoveOrder([FromBody] MoveOrder moveorder)
+        {
+            await _unitofwork.Orders.RejectApproveMoveOrder(moveorder);
+            await _unitofwork.CompleteAsync();
+            return new JsonResult("Successfully reject approved list for move order!");
+        }
+
+
+
+        [HttpGet]
+        [Route("RejectedMoveOrderPagination")]
+        public async Task<ActionResult<IEnumerable<RejectedMoveOrderPaginationDto>>> RejectedMoveOrderPagination([FromQuery] UserParams userParams , bool status)
+        {
+            var moveorder = await _unitofwork.Orders.RejectedMoveOrderPagination(userParams , status);
+
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+            };
+
+            return Ok(moveorderResult);
+        }
+
+
+
+        [HttpGet]
+        [Route("RejectedMoveOrderPaginationOrig")]
+        public async Task<ActionResult<IEnumerable<RejectedMoveOrderPaginationDto>>> RejectedMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        {
+
+            if (search == null)
+
+                return await RejectedMoveOrderPagination(userParams, status);
+
+            var moveorder = await _unitofwork.Orders.RejectedMoveOrderPaginationOrig(userParams, search, status);
+
+            Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
+
+            var moveorderResult = new
+            {
+                moveorder,
+                moveorder.CurrentPage,
+                moveorder.PageSize,
+                moveorder.TotalCount,
+                moveorder.TotalPages,
+                moveorder.HasNextPage,
+                moveorder.HasPreviousPage
+            };
+
+            return Ok(moveorderResult);
+        }
+
+
+        [HttpPut]
+        [Route("ReturnMoveOrderForApproval")]
+        public async Task<IActionResult> ReturnMoveOrderForApproval([FromBody] MoveOrder moveorder)
+        {
+
+            await _unitofwork.Orders.ReturnMoveOrderForApproval(moveorder);
+            await _unitofwork.CompleteAsync();
+
+            return new JsonResult("Successfully return list for move order!");
+        }
 
 
 

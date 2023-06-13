@@ -10,12 +10,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
     public class RejectedMoveOrderPaginationDto
     {
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
         public string Department { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
         public string Category { get; set; }
-        
+
         public decimal Quantity { get; set; }
 
         public string OrderDate { get; set; }
@@ -24,11 +24,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
 
         public bool IsReject { get; set; }
 
-        public string RejectedDate { get; set; }  
+        public string RejectedDate { get; set; }
 
         public string Remarks { get; set; }
 
-        public bool Rush { get; set; }
+        public bool IsRush { get; set; }
+
+        public string Rush { get; set; }
+
+
 
 
 
