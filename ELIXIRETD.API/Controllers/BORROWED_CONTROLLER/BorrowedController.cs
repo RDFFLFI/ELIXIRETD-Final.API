@@ -21,7 +21,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllBorrowedIssueWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status, [FromQuery] int empid)
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllBorrowedIssueWithPagination([FromQuery] UserParams userParams, [FromQuery] /*bool status*/ bool status, [FromQuery] int empid)
         {
             var issue = await _unitofwork.Borrowed.GetAllBorrowedReceiptWithPagination(userParams, status, empid);
 
@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
                 return await GetAllBorrowedIssueWithPagination(userParams, status, empid);
 
-            var issue = await _unitofwork.Borrowed.GetAllBorrowedIssuetWithPaginationOrig(userParams, search, status , empid);
+            var issue = await _unitofwork.Borrowed.GetAllBorrowedIssuetWithPaginationOrig(userParams, search, status, empid);
 
             Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
@@ -80,6 +80,8 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             borrowed.IsTransact = true;
 
             borrowed.IsApproved = false; // new Borrowed
+
+            borrowed.StatusApproved = "For Borrowed Approval";
 
             await _unitofwork.Borrowed.AddBorrowedIssue(borrowed);
             await _unitofwork.CompleteAsync();

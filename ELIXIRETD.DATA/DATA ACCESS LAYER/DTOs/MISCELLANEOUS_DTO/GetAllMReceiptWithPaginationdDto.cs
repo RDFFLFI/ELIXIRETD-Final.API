@@ -1,6 +1,4 @@
-﻿using Microsoft.Identity.Client;
-
-namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
+﻿namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
 {
     public class GetAllMReceiptWithPaginationdDto
     {

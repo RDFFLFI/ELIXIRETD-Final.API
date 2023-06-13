@@ -74,6 +74,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string Reason { get; set; }
 
 
+        public string StatusApproved { get; set; }
+
+
 
     }
 }
