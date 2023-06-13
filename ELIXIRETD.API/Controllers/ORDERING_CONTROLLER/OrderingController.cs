@@ -297,50 +297,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
      
         //==================================== Transact move Order ==================================================
 
-        [HttpGet]
-        [Route("GetTotalListForMoveOrder")]
-        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status)
-        {
-
-            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status);
-
-            return Ok(orders);
-
-        }
-
-        [HttpGet]
-        [Route("ListOfMoveOrdersForTransact")]
-        public async Task<IActionResult> ListOfMoveOrdersForTransact([FromQuery] int orderid)
-        {
-
-            var orders = await _unitofwork.Orders.ListOfMoveOrdersForTransact(orderid);
-
-            return Ok(orders);
-
-        }
-
-
-        [HttpPost]
-        [Route("TransactListOfMoveOrders")]
-        public async Task<IActionResult> TransactListsOfMoveOrders([FromBody] TransactMoveOrder[] transact)
-        {
         
 
-            foreach (TransactMoveOrder items in transact)
-            {
-
-                if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
-                    return BadRequest("no order exist");
-
-            }
-
-            await _unitofwork.CompleteAsync();
-
-
-
-            return Ok(transact);
-
-        }
+    
 
 
         //=================================================================== MIR Ordering Preparation Schedule =======================================================
@@ -976,6 +935,56 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             return new JsonResult("Successfully return list for move order!");
         }
+
+
+        //=================================================================== MIR Transact MoveOrder =======================================================
+
+        [HttpGet]
+        [Route("GetTotalListForMoveOrder")]
+        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status)
+        {
+
+            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status);
+
+            return Ok(orders);
+
+        }
+
+
+        [HttpGet]
+        [Route("ListOfMoveOrdersForTransact")]
+        public async Task<IActionResult> ListOfMoveOrdersForTransact([FromQuery] int orderid)
+        {
+
+            var orders = await _unitofwork.Orders.ListOfMoveOrdersForTransact(orderid);
+
+            return Ok(orders);
+
+        }
+
+        [HttpPost]
+        [Route("TransactListOfMoveOrders")]
+        public async Task<IActionResult> TransactListsOfMoveOrders([FromBody] TransactMoveOrder[] transact)
+        {
+
+
+            foreach (TransactMoveOrder items in transact)
+            {
+
+                if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
+                    return BadRequest("no order exist");
+
+            }
+
+            await _unitofwork.CompleteAsync();
+
+
+
+            return Ok(transact);
+
+        }
+
+
 
 
 

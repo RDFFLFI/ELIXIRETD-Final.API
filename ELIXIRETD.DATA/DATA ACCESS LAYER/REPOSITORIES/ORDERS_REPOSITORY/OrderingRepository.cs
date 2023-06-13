@@ -441,208 +441,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
      
         // =========================================== Transact Order ============================================================
 
-        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status)
-        {
-
-            var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
-                                        .GroupBy(x => new
-                                        {
-
-                                            x.Id,
-                                            x.Rush,
-
-                                        }).Select(x => new GetallApproveDto
-                                        {
-                                            MIRId = x.Key.Id,
-                                            IsRush = x.Key.Rush
-
-                                        });
-
-            var orders = _context.MoveOrders
-                 .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.MIRId, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
-                .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
-                .Where(x => x.moveorder.IsTransact == status && x.moveorder.IsActive && x.moveorder.IsApprove == true)
-                .GroupBy(x => new
-                {
-                    x.moveorder.OrderNo,
-                    //x.moveorder.Department,
-                    x.moveorder.CustomerName,
-                    x.moveorder.Customercode,
-
-                    //x.moveorder.DateNeeded,
-                    x.moveorder.PreparedDate,
-                    x.moveorder.IsApprove,
-                    //x.moveorder.IsTransact,
-
-                    x.rushgenerate.IsRush
-
-
-                }).OrderByDescending(x => x.Key.IsRush)
-                .ThenBy(x => x.Key.PreparedDate)
-                .Select(x => new TotalListForTransactMoveOrderDto
-                {
-
-
-                    OrderNo = x.Key.OrderNo,
-                    //Department = x.Key.Department,
-                    CustomerName = x.Key.CustomerName,
-                    CustomerCode = x.Key.Customercode,
-
-                    TotalOrders = x.Sum(x => x.moveorder.QuantityOrdered),
-                    //DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
-                    PreparedDate = x.Key.PreparedDate.ToString(),
-                    IsApproved = x.Key.IsApprove != null,
-
-                    Rush = x.Key.IsRush
-
-                });
-
-
-
-            //var orders = _context.MoveOrders.Where(x => x.IsActive == true)
-            //                                .Where(x => x.IsTransact == status)
-            //                                .GroupBy(x => new
-            //                                {
-            //                                    x.OrderNo,
-            //                                    x.Department,
-            //                                    x.CustomerName,
-            //                                    x.Customercode,
-
-            //                                    x.DateNeeded,
-            //                                    x.PreparedDate,
-            //                                    x.IsApprove,
-            //                                    x.IsTransact
-
-            //                                }).Where(x => x.Key.IsApprove == true)
-
-            //                                .Select(x => new TotalListForTransactMoveOrderDto
-            //                                {
-            //                                    OrderNo = x.Key.OrderNo,
-            //                                    Department= x.Key.Department,
-            //                                    CustomerName = x.Key.CustomerName,
-            //                                    CustomerCode = x.Key.Customercode,
-
-            //                                    TotalOrders = x.Sum(x => x.QuantityOrdered),
-            //                                    DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
-            //                                    PreparedDate = x.Key.PreparedDate.ToString(),
-            //                                    IsApproved = x.Key.IsApprove != null
-
-            //                                });
-
-            return await orders.ToListAsync();
-
-        }
-
-        public async Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid)
-        {
-
-            //var rushorder = _context.GenerateOrders.Where(x => x.IsActive == true)
-            //                           .Select(x => new GetallApproveDto
-            //                           {
-            //                               OrderNoPKey = x.Id,
-            //                               Rush = x.Rush
-
-            //                           });
-
-            //var orders = _context.MoveOrders
-            //     .GroupJoin(rushorder, moveorder => moveorder.OrderNo, rushgenerate => rushgenerate.OrderNoPKey, (moveorder, rushgenerate) => new { moveorder, rushgenerate })
-            //    .SelectMany(x => x.rushgenerate.DefaultIfEmpty(), (x, rushgenerate) => new { x.moveorder, rushgenerate })
-            //    .Where(x => x.moveorder.IsTransact == true && x.moveorder.IsApprove == true)
-            //    .Select(x => new ListOfMoveOrdersForTransactDto
-            //    {
-
-            //        OrderNoPKey = x.moveorder.OrderNoPkey,
-            //        OrderNo = x.moveorder.OrderNo,
-            //        BarcodeNo = x.moveorder.WarehouseId,
-            //        OrderDate = x.moveorder.OrderDate.ToString(),
-            //        PreparedDate = x.moveorder.PreparedDate.ToString(),
-            //        DateNeeded = x.moveorder.DateNeeded.ToString(),
-            //        Department = x.moveorder.Department,
-            //        CustomerCode = x.moveorder.Customercode,
-            //        CustomerName = x.moveorder.CustomerName,
-            //        //Category = x.Category,
-            //        ItemCode = x.moveorder.ItemCode,
-            //        ItemDescription = x.moveorder.ItemDescription,
-            //        Uom = x.moveorder.Uom,
-            //        Quantity = x.moveorder.QuantityOrdered,
-            //        IsApprove = x.moveorder.IsApprove != null,
-            //        Rush = x.moveorder.Rush
-
-            //    });
-
-            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
-                                            .ThenBy(x => x.Rush)
-                                            .Where(x => x.IsActive == true)
-                                           .Where(x => x.IsApprove == true)
-
-                                           .Select(x => new ListOfMoveOrdersForTransactDto
-                                           {
-                                               OrderNoPKey = x.OrderNoPkey,
-                                               OrderNo = x.OrderNo,
-                                               BarcodeNo = x.WarehouseId,
-                                               OrderDate = x.OrderDate.ToString(),
-                                               PreparedDate = x.PreparedDate.ToString(),
-                                               DateNeeded = x.DateNeeded.ToString(),
-                                               Department = x.Department,
-                                               CustomerCode = x.Customercode,
-                                               CustomerName = x.CustomerName,
-                                               Category = x.Category,
-                                               ItemCode = x.ItemCode,
-                                               ItemDescription = x.ItemDescription,
-                                               Uom = x.Uom,
-                                               Quantity = x.QuantityOrdered,
-                                               IsApprove = x.IsApprove != null,
-                                               Rush = x.Rush
-
-                                           });
-
-            return await orders.Where(x => x.OrderNo == orderid)
-                               .ToListAsync();
-
-        }
-
-
-        public async Task<bool> TransanctListOfMoveOrders(TransactMoveOrder transact)
-        {
-            var existing = await _context.MoveOrders.Where(x => x.OrderNo == transact.OrderNo)
-                                                    .Where(x => x.IsApprove == true)
-                                                    .ToListAsync();
-
-
-            var existingtransact = await _context.TransactOrder.Where(x => x.OrderNo == transact.OrderNo)
-                                                       .ToListAsync();
-
-
-
-            foreach (var x in existingtransact)
-            {
-
-                x.IsActive = true;
-                x.IsTransact = true;
-                x.PreparedDate = DateTime.Now;
-
-
-            }
-
-
-
-            await _context.TransactOrder.AddAsync(transact);
-
-            if (!existing.Any())
-                return false;
-
-
-            foreach (var itemss in existing)
-            {
-                itemss.IsTransact = true;
-            }
-
-            return true;
-
-        }
-
       
-
+     
 
         // Notification
 
@@ -2711,8 +2511,121 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
+        //=================================================================== MIR Transact MoveOrder =======================================================
 
 
+        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status)
+        {
+
+
+            var orders = _context.MoveOrders.Where(x => x.IsActive == true)
+                                            .Where(x => x.IsTransact == status)
+                                            .GroupBy(x => new
+                                            {
+                                                x.OrderNo,
+                                                x.Department,
+                                                x.CustomerName,
+                                                x.Customercode,
+
+                                                x.DateNeeded,
+                                                x.PreparedDate,
+                                                x.IsApprove,
+                                                x.IsTransact,
+                                                x.Rush
+
+                                            }).Where(x => x.Key.IsApprove == true)
+
+                                            .Select(x => new TotalListForTransactMoveOrderDto
+                                            {
+                                                MIRId = x.Key.OrderNo,
+                                                Department = x.Key.Department,
+                                                CustomerName = x.Key.CustomerName,
+                                                CustomerCode = x.Key.Customercode,
+
+                                                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                                                DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
+                                                PreparedDate = x.Key.PreparedDate.ToString(),
+                                                IsApproved = x.Key.IsApprove != null,
+                                                IsRush = x.Key.Rush != null ? true: false,
+                                                Rush = x.Key.Rush
+
+                                            });
+
+            return await orders.ToListAsync();
+
+        }
+
+        public async Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid)
+        {
+       
+            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
+                                            .ThenBy(x => x.Rush)
+                                            .Where(x => x.IsActive == true)
+                                           .Where(x => x.IsApprove == true)
+
+                                           .Select(x => new ListOfMoveOrdersForTransactDto
+                                           {
+                                               OrderNoPkey = x.OrderNoPkey,
+                                               MIRId = x.OrderNo,
+                                               BarcodeNo = x.WarehouseId,
+                                               OrderDate = x.OrderDate.ToString(),
+                                               PreparedDate = x.PreparedDate.ToString(),
+                                               DateNeeded = x.DateNeeded.ToString(),
+                                               Department = x.Department,
+                                               CustomerCode = x.Customercode,
+                                               CustomerName = x.CustomerName,
+                                               Category = x.Category,
+                                               ItemCode = x.ItemCode,
+                                               ItemDescription = x.ItemDescription,
+                                               Uom = x.Uom,
+                                               Quantity = x.QuantityOrdered,
+                                               IsApprove = x.IsApprove != null,
+                          
+
+                                           });
+
+            return await orders.Where(x => x.MIRId == orderid)
+                               .ToListAsync();
+
+        }
+
+
+        public async Task<bool> TransanctListOfMoveOrders(TransactMoveOrder transact)
+        {
+            var existing = await _context.MoveOrders.Where(x => x.OrderNo == transact.OrderNo)
+                                                    .Where(x => x.IsApprove == true)
+                                                    .ToListAsync();
+
+
+            var existingtransact = await _context.TransactOrder.Where(x => x.OrderNo == transact.OrderNo)
+                                                       .ToListAsync();
+
+
+
+            foreach (var x in existingtransact)
+            {
+
+                x.IsActive = true;
+                x.IsTransact = true;
+                x.PreparedDate = DateTime.Now;
+
+            }
+
+
+            await _context.TransactOrder.AddAsync(transact);
+
+            if (!existing.Any())
+                return false;
+
+
+            foreach (var itemss in existing)
+            {
+                itemss.IsTransact = true;
+            }
+
+            return true;
+
+        }
 
 
 

@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
     public class TotalListForTransactMoveOrderDto
     {
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
 
         public string Department { get; set; }
 
@@ -27,9 +27,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
 
         public string PreparedDate { get; set; }
 
-        public bool IsApproved { get; set; }   
-        
-        public bool Rush { get; set; }
+        public bool IsApproved { get; set; }
+
+        public bool IsRush { get; set; }
+
+        public string Rush { get; set; }
 
     }
 }

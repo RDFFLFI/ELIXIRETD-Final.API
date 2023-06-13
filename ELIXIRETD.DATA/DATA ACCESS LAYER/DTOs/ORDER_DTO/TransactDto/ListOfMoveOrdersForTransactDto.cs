@@ -9,9 +9,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
     public class ListOfMoveOrdersForTransactDto
     {
 
-        public int OrderNoPKey { get; set; }    
+        public int OrderNoPkey { get; set; }    
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
 
         public int BarcodeNo { get; set; }
 
@@ -39,7 +39,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
 
         public bool IsApprove { get; set; }
 
-        public string Rush { get; set; }
+        //public string Rush { get; set; }
 
 
 
