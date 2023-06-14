@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO.BorrowedNotification;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
@@ -81,6 +82,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransactionOrig(UserParams userParams, string search);
 
 
+        //============================================= Notification ========================================
+
+
+        Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationForBorrowedApproval();
+
+        Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationForReturnedApproval();
 
 
     }

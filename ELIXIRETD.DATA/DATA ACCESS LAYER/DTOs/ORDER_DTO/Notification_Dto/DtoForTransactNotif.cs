@@ -9,7 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto
     public class DtoForTransactNotif
     {
 
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
 

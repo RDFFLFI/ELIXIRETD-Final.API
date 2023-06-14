@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO.BorrowedNotification;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
@@ -11,6 +12,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
+using System.Diagnostics.Contracts;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
@@ -1526,6 +1529,71 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
         }
 
+
+
+
+        //================================================ Borrowed Notification =============================================================
+
+
+        public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationForBorrowedApproval()
+        {
+
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                                  .Where(x => x.IsApproved == false)
+                                                  
+                                                 .GroupBy(x => new
+                                                 {
+                                                     x.Id,
+                                                     x.CustomerCode,
+                                                     x.CustomerName,
+                                                     x.IsApproved,
+                                                     x.PreparedDate,
+                                                     x.IsActive
+
+                                                 }).Select(x => new GetNotificationForBorrowedApprovalDto
+                                                 {
+
+                                                     Id = x.Key.Id,
+                                                     CustomerCode = x.Key.CustomerCode,
+                                                     CustomerName = x.Key.CustomerName,
+                                                     IsApproved = x.Key.IsApproved,
+                                                     IsActive = x.Key.IsActive
+
+
+                                                 });
+
+
+            return await borrowed.ToListAsync();
+
+        }
+
+        public async Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationForReturnedApproval()
+        {
+            var returned = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                                        .Where(x => x.IsReturned == true)
+                                                        .Where(x => x.IsApprovedReturned == false)
+                                                        .GroupBy(x => new
+                                                        {
+
+                                                            x.Id,
+                                                            x.CustomerCode,
+                                                            x.CustomerName,
+                                                            x.IsApprovedReturned,
+                                                            //x.ReturnedDate,
+                                                            x.IsActive
+
+                                                        }).Select(x => new GetNotificationForReturnedApprovalDto
+                                                        {
+                                                            Id = x.Key.Id,
+                                                            CustomerCode = x.Key.CustomerCode,
+                                                            CustomerName = x.Key.CustomerName,
+                                                            IsActive = x.Key.IsActive
+
+
+                                                        });
+
+            return  await returned.ToListAsync();
+        }
     }
 
 }

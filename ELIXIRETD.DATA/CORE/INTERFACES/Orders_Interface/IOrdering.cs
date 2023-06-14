@@ -88,7 +88,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<IReadOnlyList<DtoRejectMoveOrderNotif>> GetRejectMoveOrderNotification();
 
-
+        Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule();
 
 
 

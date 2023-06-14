@@ -29,22 +29,29 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             //Ordering 
 
             var OrderingNotif = await _unitOfWork.Orders.GetOrdersForNotification();
-            //var OrderingApprovalNotif = await _unitOfWork.Orders.GetAllListForApprovalOfSchedule();
+            var OrderingApprovalNotif = await _unitOfWork.Orders.GetAllListForApprovalOfSchedule();
             var MoveorderlistNotif = await _unitOfWork.Orders.GetMoveOrdersForNotification();
             var TransactmoveorderNotif = await _unitOfWork.Orders.GetAllForTransactMoveOrderNotification();
             var ForApprovalListNotif = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotification();
             var rejectlistNotif = await _unitOfWork.Orders.GetRejectMoveOrderNotification();
+
+            //borrowed
+            var ForBorrowedApproval = await _unitOfWork.Borrowed.GetNotificationForBorrowedApproval();
+            var ForReturnedApproval = await _unitOfWork.Borrowed.GetNotificationForReturnedApproval();
 
 
             var posummarycount = PoSummaryNotif.Count();
             //var cancelledcount = CancelledPONotif.Count();
 
             var orderingnotifcount = OrderingNotif.Count();
-            //var orderingapprovalcount = OrderingApprovalNotif.Count();
+            var orderingapprovalcount = OrderingApprovalNotif.Count();
             var moveorderlistcount = MoveorderlistNotif.Count();
             var transactmoveordercount = TransactmoveorderNotif.Count();
             var forapprovalmoveordercount = ForApprovalListNotif.Count();
             var rejectlistcount = rejectlistNotif.Count();
+
+            var forborrowedApprovalcount = ForBorrowedApproval.Count();
+            var forreturnedApprovalcount = ForReturnedApproval.Count();
 
             var countlist = new
             {
@@ -61,10 +68,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     orderingnotifcount
                 },
-                //OrderingApproval = new
-                //{
-                //    orderingapprovalcount
-                //},
+                OrderingApproval = new
+                {
+                    orderingapprovalcount
+                },
                 MoveOrderlist = new
                 {
                     moveorderlistcount
@@ -80,6 +87,14 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 Rejectlist = new
                 {
                     rejectlistcount
+                },
+                BorrowedApproval = new
+                {
+                    forborrowedApprovalcount
+                },
+                ReturnedApproval = new
+                {
+                    forreturnedApprovalcount
                 }
 
             };

@@ -8,7 +8,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto
 {
     public class DtoRejectMoveOrderNotif
     {
-        public int OrderNo { get; set; }
+        public int MIRId { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
         public decimal Quantity { get; set; }
