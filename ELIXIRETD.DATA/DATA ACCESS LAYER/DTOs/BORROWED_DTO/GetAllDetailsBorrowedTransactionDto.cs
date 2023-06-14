@@ -50,6 +50,9 @@
 
         public string PreparedBy { get; set; }
 
+        public string StatusApprove { get; set; }
+
+
 
 
 

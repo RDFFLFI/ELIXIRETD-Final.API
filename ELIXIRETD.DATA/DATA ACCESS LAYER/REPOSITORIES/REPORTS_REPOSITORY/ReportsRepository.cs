@@ -283,10 +283,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                TransactedBy = borrowed.PreparedBy,
                                BorrowedDate = borrowed.PreparedDate.ToString(),
 
-                               IsApprove = borrowed.IsApproved,
+                               StatusApprove = borrowed.StatusApproved,
+                               AgingDays = borrowed.AgingDays,
+
+                               //IsApprove = borrowed.IsApproved,
                                IsApproveDate = borrowed.IsApprovedDate.ToString(),
                                IsApproveBy = borrowed.ApproveBy,
-                               IsApproveReturned = borrowed.IsApprovedReturned != null ? true : false,
+                               //IsApproveReturned = borrowed.IsApprovedReturned != null ? true : false,
                                IsApproveReturnDate = borrowed.IsApprovedReturnedDate.ToString(),
                                IsApproveReturnedBy = borrowed.ApprovedReturnedBy,
 

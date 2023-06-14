@@ -536,7 +536,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             returned.IsApprovedReturned = false;
             returned.StatusApproved = "For return approval";
 
+            var borrowWithAgingDays = await _context.BorrowedIssues
+       .Where(x => x.Id == borrowed.Id)
+       .Select(x => new
+       {
+           AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0
+       })
+       .FirstOrDefaultAsync();
 
+            if (borrowWithAgingDays != null)
+            {
+                returned.AgingDays = borrowWithAgingDays.AgingDays;
+            }
+
+            await _context.SaveChangesAsync();
 
             return true;
         }
