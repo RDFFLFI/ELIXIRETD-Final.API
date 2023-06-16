@@ -294,52 +294,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-        public async Task<bool> InActiveBorrowedIssues(BorrowedIssue borrowed)
-        {
-
-            var existing = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                        .FirstOrDefaultAsync();
-
-
-            var existingdetails = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                            .ToListAsync();
-
-            if (existing == null)
-                return false;
-
-            existing.IsActive = false;
-
-            foreach (var items in existingdetails)
-            {
-
-                items.IsActive = false;
-            }
-            return true;
-
-        }
-
-        public async Task<bool> ActiveBorrowedIssues(BorrowedIssue borrowed)
-        {
-            var existing = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                       .FirstOrDefaultAsync();
-
-
-            var existingdetails = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                            .ToListAsync();
-
-            if (existing == null)
-                return false;
-
-            existing.IsActive = true;
-
-            foreach (var items in existingdetails)
-            {
-
-                items.IsActive = true;
-            }
-            return true;
-        }
-
 
         public async Task<IReadOnlyList<GetAllDetailsInBorrowedIssueDto>> GetAllDetailsInBorrowedIssue(int id)
         {
@@ -513,16 +467,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .Where(x => x.BorrowedPKey == borrowed.Id)
                 .ToListAsync();
 
-            //returned.DepartmentName = borrowed.DepartmentName;
-            //returned.CompanyCode = borrowed.CompanyCode;
-            //returned.CompanyName = borrowed.CompanyName;
-            //returned.DepartmentCode = borrowed.DepartmentCode;
-            //returned.DepartmentName = borrowed.DepartmentName;
-            //returned.LocationCode = borrowed.LocationCode;
-            //returned.LocationName = borrowed.LocationName;
-            //returned.AccountCode = borrowed.AccountCode;
-            //returned.AccountTitles = borrowed.AccountTitles;
-
             foreach (var item in returnedDetails)
             {
 
@@ -539,13 +483,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             returned.IsApprovedReturned = false;
             returned.StatusApproved = "For return approval";
 
-            var borrowWithAgingDays = await _context.BorrowedIssues
-       .Where(x => x.Id == borrowed.Id)
-       .Select(x => new
-       {
-           AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0
-       })
-       .FirstOrDefaultAsync();
+            var borrowWithAgingDays = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                                   .Select(x => new
+                                                                   {
+                                                                       AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0
+                                                                   }).FirstOrDefaultAsync();
 
             if (borrowWithAgingDays != null)
             {
@@ -1394,7 +1336,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.StatusApproved,
                     x.borrowissue.PreparedBy,
 
-
                     x.borrowissue.CompanyCode,
                     x.borrowissue.CompanyName,
                     x.borrowissue.DepartmentCode,
@@ -1482,7 +1423,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                      x.borrowissue.LocationName,
                      x.borrowissue.AccountCode,
                      x.borrowissue.AccountTitles,
-
 
 
 

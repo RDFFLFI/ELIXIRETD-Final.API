@@ -10,6 +10,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -1118,11 +1119,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<bool> PreparationOfSchedule(Ordering orders)
         {
 
-            var order = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
+            var Ordertransact = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
                                              .ToListAsync();
 
 
-            foreach (var items in order)
+            foreach (var items in Ordertransact)
             {
 
                 items.IsPrepared = true;
@@ -1133,20 +1134,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
+
+
         public async Task<bool> EditQuantityOrder(Ordering orders)
         {
             var existingOrder = await _context.Orders.Where(x => x.Id == orders.Id)
                                                      .FirstOrDefaultAsync();
-
-            //if (existingOrder == null)
-            //{
-            //    return false;
-            //}
-
-            //else if (orders.QuantityOrdered > orders.QuantityOrdered && orders.QuantityOrdered <= 0)
-            //{
-            //    return false;
-            //}
 
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
 
@@ -1293,7 +1286,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
-        public async Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar()
+        public async Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar(bool status)
         {
 
             var orders = _context.Orders.GroupBy(x => new
@@ -1329,7 +1322,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   Remarks = x.Key.Remarks,
                   IsRush = x.Key.Rush != null ? true : false,
                   Rush = x.Key.Rush
-              });
+              }).Where(x => x.IsRush == status);
 
             return await orders.ToListAsync();
 

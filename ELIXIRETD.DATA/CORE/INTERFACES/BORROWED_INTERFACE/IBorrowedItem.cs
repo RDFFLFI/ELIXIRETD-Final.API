@@ -24,9 +24,6 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> UpdateIssuePKey(BorrowedIssueDetails borowed);
 
-        Task<bool> InActiveBorrowedIssues(BorrowedIssue borrowed);
-
-        Task<bool> ActiveBorrowedIssues(BorrowedIssue borrowed);
 
         Task<IReadOnlyList<GetAllDetailsInBorrowedIssueDto>> GetAllDetailsInBorrowedIssue(int id);
         Task<IReadOnlyList<GetAllAvailableBorrowIssueDto>> GetAllAvailableIssue(int empid);

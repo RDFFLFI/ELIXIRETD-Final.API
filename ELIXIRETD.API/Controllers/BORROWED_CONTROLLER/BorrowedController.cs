@@ -157,27 +157,6 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
-        [HttpPut]
-        [Route("InActiveIssue")]
-        public async Task<IActionResult> InActiveIssue([FromBody] BorrowedIssue borrowed)
-        {
-
-            await _unitofwork.Borrowed.InActiveBorrowedIssues(borrowed);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully inactive borrowed issue!");
-        }
-
-        [HttpPut]
-        [Route("ActiveIssue")]
-        public async Task<IActionResult> ActiveIssue([FromBody] BorrowedIssue borrowed)
-        {
-
-            await _unitofwork.Borrowed.ActiveBorrowedIssues(borrowed);
-            await _unitofwork.CompleteAsync();
-
-            return new JsonResult("Successfully active borrowed issue!");
-        }
 
         [HttpGet]
         [Route("GetAllDetailsInBorrowedIssue")]

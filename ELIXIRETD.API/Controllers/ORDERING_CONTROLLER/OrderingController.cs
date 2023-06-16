@@ -384,11 +384,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("PreparationOfSchedule")]
-        public async Task<IActionResult> PreparationOfSchedule(Ordering[] Orders)
+        public async Task<IActionResult> PreparationOfSchedule(Ordering[] orderspreparation)
         {
 
 
-            foreach (Ordering items in Orders)
+            foreach (Ordering items in orderspreparation)
             {
                 ///*  var result =*/ await _unitofwork.Orders.PreparationOfSchedule(items);
                 //if (!result.Success)
@@ -396,6 +396,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 //    return BadRequest(result.Message);
                 //}
 
+              
                 if (!await _unitofwork.Orders.ValidatePrepareDate(items))
                 {
                     return BadRequest("Date needed must be in the future.");
@@ -407,7 +408,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
-            return Ok(Orders);
+            return Ok(orderspreparation);
             
         }
 
@@ -484,9 +485,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllApprovedOrdersForCalendar")]
-        public async Task<IActionResult> GetallApprovedOrdersforCalendar()
+        public async Task<IActionResult> GetallApprovedOrdersforCalendar(bool status)
         {
-            var orders = await _unitofwork.Orders.GetAllApprovedOrdersForCalendar();
+            var orders = await _unitofwork.Orders.GetAllApprovedOrdersForCalendar(status);
             return Ok(orders);
         }
 

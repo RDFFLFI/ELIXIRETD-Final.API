@@ -27,7 +27,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<IReadOnlyList<DetailedListofOrdersDto>> DetailedListOfOrders (string customer);
       
         Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int Id);
-        Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar();
+        Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar(bool status );
         Task<bool> CancelOrders(Ordering orders);
         Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId);
         Task<bool> PrepareItemForMoveOrder(MoveOrder orders);
@@ -130,7 +130,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
    
         Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName);
 
-        Task<bool> PreparationOfSchedule ( Ordering orders);
+        Task<bool> PreparationOfSchedule ( Ordering orderspreparation);
 
         Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule(bool status);
 

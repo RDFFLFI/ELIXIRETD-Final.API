@@ -419,6 +419,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                          });
 
             var getBorrowedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                    .Where(x => x.IsApproved == true)
                                                                     .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(DateTo))
                                                                     .GroupBy(x => new
                                                                     {
@@ -433,6 +434,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getBorrowedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                  .Where(x => x.IsApproved == true)
                                                                   .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne) && x.BorrowedDate <= (DateToday))
                                                                   .GroupBy(x => new
                                                                   {
@@ -449,6 +451,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getReturnedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                       .Where(x => x.IsApprovedReturned == true)
+                   
                                                                        .Where(x => x.IsReturned == true)
                                                                        .Where(x => x.ReturnedDate >= DateTime.Parse(DateFrom) && x.ReturnedDate <= DateTime.Parse(DateTo))
                                                                        .GroupBy(x => new
@@ -467,6 +471,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getReturnedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                                        .Where(x => x.IsApprovedReturned == true)
                                                                         .Where(x => x.IsReturned == true)
                                                                         .Where(x => x.ReturnedDate >= DateTime.Parse(PlusOne) && x.ReturnedDate <= (DateToday))
                                                                         .GroupBy(x => new
@@ -577,6 +582,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                              .Where(x => x.IsApproved == true)
                                                               .GroupBy(x => new
                                                               {
 
@@ -593,6 +599,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                             .Where(x => x.IsReturned == true)
+                                                               .Where(x => x.IsApprovedReturned == true)
                                                              .GroupBy(x => new
                                                              {
 
