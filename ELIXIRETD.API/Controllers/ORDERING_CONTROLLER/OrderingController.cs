@@ -534,6 +534,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             var orderResult = new
             {
                 orders,
+
                 orders.CurrentPage,
                 orders.PageSize,
                 orders.TotalCount,

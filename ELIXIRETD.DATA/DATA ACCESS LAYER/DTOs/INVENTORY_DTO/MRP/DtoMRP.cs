@@ -38,6 +38,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public decimal ReturnedBorrowed { get; set; }
         public decimal BorrowedDepartment { get; set; }
 
+        public decimal BorrowedDifference { get; set; }
+
 
 
 

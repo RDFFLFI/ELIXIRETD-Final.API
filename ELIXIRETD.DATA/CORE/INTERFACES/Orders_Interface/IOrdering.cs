@@ -46,12 +46,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> ApprovalForMoveOrders(MoveOrder moveorder);
         Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id);
 
-      
      
-
-       
-        
-       
 
         Task<GetAllApprovedMoveOrderDto> GetAllApprovedMoveOrder(int id);
 
