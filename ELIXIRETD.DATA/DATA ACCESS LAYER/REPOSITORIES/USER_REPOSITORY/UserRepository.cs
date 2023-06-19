@@ -61,9 +61,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<bool> AddNewUser(User user)
         {
-         
+
             //user.Password = user.UserName;
-          
+            //user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); // use for add encrypted password 
 
             await _context.Users.AddAsync(user);
 
@@ -73,6 +73,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
 
       
+        public async Task<bool> UpdateUserInfo(User user)
+        {
+            var existingUser = await _context.Users.Where(x => x.Id == user.Id)
+                                              .FirstOrDefaultAsync();
+
+            //if (!string.IsNullOrEmpty(user.Password))
+            //{
+            //    existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);  // for encrypted password
+            //}
+
+            //user.UserName = existingUser.UserName;
+            existingUser.UserRoleId = user.UserRoleId;
+            existingUser.Password = user.Password; // remove it if use encrypted password
+
+            return true;
+        }
 
         public async Task<bool> ChangePassword(User user)
         {
@@ -81,20 +97,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             pass.Password = user.Password;
 
-            return true;
-        }
-
-
-        public async Task<bool> UpdateUserInfo(User user)
-        {
-            var existingUser = await _context.Users.Where(x => x.Id == user.Id)
-                                              .FirstOrDefaultAsync();
-
-            
-            //user.UserName = existingUser.UserName;
-            existingUser.UserRoleId = user.UserRoleId;
-            existingUser.Password = user.Password;
-            
             return true;
         }
 

@@ -29,10 +29,13 @@ namespace ELIXIRETD.DATA.SERVICES
         public AuthenticateResponse Authenticate(AuthenticateRequest request)
         {
             var user = _context.Users.SingleOrDefault(x => x.UserName == request.Username
-                                                        && x.Password == request.Password                                                        
+                                                        && x.Password == request.Password // remove it if encrypted the password
                                                         && x.IsActive != false);
             if (user == null)
                 return null;
+
+            //if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) // for encrypted Password
+            //    return null;
 
             var token = generateJwtToken(user);
             return new AuthenticateResponse(user, token , _context);

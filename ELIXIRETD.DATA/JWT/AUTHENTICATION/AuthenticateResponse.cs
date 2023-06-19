@@ -38,7 +38,9 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
             Role = user.UserRoleId;
             Token = token;
 
-            var role = _context.Roles.FirstOrDefault(r => r.Id == Role);
+       
+
+            var role = _context.Roles.FirstOrDefault(x => x.Id == Role);
             if (role != null)
             {
                 RoleName = role.RoleName;

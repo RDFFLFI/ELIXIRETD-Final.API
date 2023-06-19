@@ -68,17 +68,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
             return Ok(user);
         }
 
-        [HttpPut]
-        [Route("ChangePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] User user)
-        {
-
-            await _unitOfWork.Users.ChangePassword(user);
-            await _unitOfWork.CompleteAsync();
-
-            return Ok(user);
-        }
-
+     
         [HttpPut]
         [Route("UpdateUserInfo")]
         public async Task<IActionResult> UpdateUserInfo(User user)
@@ -98,6 +88,18 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
             return Ok("Successfully updated!");
 
+        }
+
+
+        [HttpPut]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] User user)
+        {
+
+            await _unitOfWork.Users.ChangePassword(user);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(user);
         }
 
 

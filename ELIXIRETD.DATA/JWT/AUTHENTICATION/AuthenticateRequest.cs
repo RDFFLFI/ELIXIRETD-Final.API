@@ -17,5 +17,7 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
         [Required]
         public string Password { get; set; }
 
+      
+
     }
 }
