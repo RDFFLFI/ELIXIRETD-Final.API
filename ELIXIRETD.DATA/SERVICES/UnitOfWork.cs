@@ -24,6 +24,7 @@ namespace ELIXIRETD.DATA.SERVICES
 
     {
         private readonly StoreContext _context;
+
         private IDbContextTransaction _transaction;
 
         public IUserRepository Users { get; private set; }

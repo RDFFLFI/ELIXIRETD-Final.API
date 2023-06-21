@@ -1219,6 +1219,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         .Select(x => new GetallOrderfroScheduleApproveDto
                                         {
                                             MIRId = x.TrasactId,
+                                            OrderId = x.Id, 
                                             OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
                                             DateNeeded = x.DateNeeded.ToString("MM/dd/yyyy"),
                                             Department = x.Department,
@@ -1319,6 +1320,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   IsRush = x.Key.Rush != null ? true : false,
                   Rush = x.Key.Rush
               }).Where(x => x.IsRush == status);
+
 
             return await orders.ToListAsync();
 
@@ -1701,6 +1703,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<GetAllOutOfStockByItemCodeAndOrderDateDto>> GetAllOutOfStockByItemCodeAndOrderDate(string itemcode, string orderdate)
         {
 
+
             CultureInfo usCulture = new CultureInfo("en-US");
             CultureInfo.CurrentCulture = usCulture;
 
@@ -1884,12 +1887,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     CompanyCode = x.CompanyCode,
                     LocationCode = x.LocationCode,
                     LocationName = x.LocationName,
-                    //AccountCode = x.AccountCode,
-                    //AccountTitles = x.AccountTitles,
+
 
                     CustomerName = x.CustomerName,
                     CustomerCode = x.Customercode,
-                    //Address = x.AddressOrder,
+
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemdDescription,
                     Uom = x.Uom,
@@ -1913,6 +1915,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<bool> PrepareItemForMoveOrder(MoveOrder orders)
         {
+
             await _context.MoveOrders.AddAsync(orders);
             return true;
 
@@ -2570,7 +2573,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 Department = x.Key.Department,
                                                 CustomerName = x.Key.CustomerName,
                                                 CustomerCode = x.Key.Customercode,
-
                                                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                                                 DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
                                                 PreparedDate = x.Key.PreparedDate.ToString(),
@@ -2609,7 +2611,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                Uom = x.Uom,
                                                Quantity = x.QuantityOrdered,
                                                IsApprove = x.IsApprove != null,
-                          
+
 
                                            });
 
