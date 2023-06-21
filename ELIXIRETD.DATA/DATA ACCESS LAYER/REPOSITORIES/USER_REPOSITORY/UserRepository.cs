@@ -83,7 +83,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
             //    existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);  // for encrypted password
             //}
 
-            //user.UserName = existingUser.UserName;
+          
             existingUser.UserRoleId = user.UserRoleId;
             existingUser.Password = user.Password; // remove it if use encrypted password
 
@@ -191,8 +191,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         //--------------Validation
 
-
-        
 
         public async Task<bool> ValidateRoleId(int id)
         {

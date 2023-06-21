@@ -946,7 +946,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-        private static Dictionary<string, decimal> stockOnHandDict = new Dictionary<string, decimal>();
+        //private static Dictionary<string, decimal> stockOnHandDict = new Dictionary<string, decimal>();
 
         public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
         {
@@ -1065,7 +1065,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.StandartQuantity,
 
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
-
+                    
                 })
                 .Select(total => new AllOrdersPerMIRIDsDTO
                 {
@@ -1182,7 +1182,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.Department,
                                           x.CustomerName,
                                           x.Customercode,
-                                          x.Category,
                                           x.PreparedDate,
                                           x.IsApproved,
                                           x.IsActive,
@@ -1199,7 +1198,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsRush = x.Key.Rush != null ? true : false,
@@ -1274,7 +1272,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.PreparedDate = null;
                 items.IsPrepared = false;
                 //items.OrderNoPKey = 0;
-                items.IsRush = null;
+                //items.IsRush = null;
             }
 
             //var orderPkey = await _context.GenerateOrders.Where(x => x.Id == orders.OrderNoPKey)
@@ -1294,7 +1292,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.TrasactId,
                 x.Department,
                 x.CustomerName,
-                x.Category,
                 x.Customercode,
                 x.PreparedDate,
                 x.IsApproved,
@@ -1314,7 +1311,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   Department = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
-                  Category = x.Key.Category,
                   TotalOrders = x.Sum(x => x.QuantityOrdered),
                   PreparedDate = x.Key.PreparedDate.ToString(),
                   IsMove = x.Key.IsMove,
@@ -1329,8 +1325,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
         //=============================================== MIR Update in MoveOrder For Preparation =======================================================================
-
-
 
         public async Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPagination(UserParams userParams)
         {
@@ -1394,7 +1388,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.TrasactId,
                 x.CustomerName,
                 x.Customercode,
-                x.Category,
+              
                 x.PreparedDate,
                 x.IsApproved,
                 x.IsMove,
@@ -1419,7 +1413,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Id = x.Key.TrasactId,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
+               
                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsMove = x.Key.IsMove,
@@ -2055,7 +2049,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                x.OrderNo,
                                                x.CustomerName,
                                                x.Customercode,
-                                               x.Category,
+                                              
                                                x.PreparedDate,
                                                x.Rush
 
@@ -2068,7 +2062,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                   MIRId = x.Key.OrderNo,
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                  Category = x.Key.Category,
+                                                 
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
                                                   IsRush = x.Key.Rush != null ? true : false,
@@ -2092,7 +2086,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                x.OrderNo,
                                                x.CustomerName,
                                                x.Customercode,
-                                               x.Category,
+                                              
                                                x.PreparedDate,
                                                x.Rush
 
@@ -2105,7 +2099,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                   MIRId = x.Key.OrderNo,
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                  Category = x.Key.Category,
+                                                
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
                                                   IsRush = x.Key.Rush != null ? true : false,
@@ -2247,7 +2241,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                          x.CustomerName,
                          x.Customercode,
                          x.AddressOrder,
-                         x.Category,
+                      
                          x.PreparedDate,
                          x.IsApprove,
                          x.IsPrepared,
@@ -2269,7 +2263,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
                   Address = x.Key.AddressOrder,
-                  Category = x.Key.Customercode,
+                
                   Quantity = x.Sum(x => x.QuantityOrdered),
                   PreparedDate = x.Key.PreparedDate.ToString(),
                   IsApprove = x.Key.IsApprove != null,
@@ -2297,7 +2291,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                         x.CustomerName,
                         x.Customercode,
                         x.AddressOrder,
-                        x.Category,
+                      
                         x.PreparedDate,
                         x.IsApprove,
                         x.IsPrepared,
@@ -2319,7 +2313,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                  CustomerName = x.Key.CustomerName,
                  CustomerCode = x.Key.Customercode,
                  Address = x.Key.AddressOrder,
-                 Category = x.Key.Customercode,
+              
                  Quantity = x.Sum(x => x.QuantityOrdered),
                  PreparedDate = x.Key.PreparedDate.ToString(),
                  IsApprove = x.Key.IsApprove != null,

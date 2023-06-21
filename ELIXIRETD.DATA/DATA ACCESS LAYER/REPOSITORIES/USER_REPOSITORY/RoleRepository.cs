@@ -258,7 +258,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                   IsActive = x.rolemoduless.rolemodoless.IsActive,
                                   RoleId = x.rolemoduless.rolemodoless.RoleId
 
-                              });
+                              });  
 
                                     return await rolemodules
                                     .Where(x => x.RoleId == id)
@@ -285,5 +285,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
 
         }
+
+
+
     }
 }
