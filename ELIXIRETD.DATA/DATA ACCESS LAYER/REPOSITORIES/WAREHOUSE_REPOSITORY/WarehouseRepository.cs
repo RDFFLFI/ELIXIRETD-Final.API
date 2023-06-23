@@ -222,7 +222,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                         
                                                      })
                                                   
-                                                     .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
+                                                     .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0) )
                                                      .Where(x => x.IsActive == true);
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);

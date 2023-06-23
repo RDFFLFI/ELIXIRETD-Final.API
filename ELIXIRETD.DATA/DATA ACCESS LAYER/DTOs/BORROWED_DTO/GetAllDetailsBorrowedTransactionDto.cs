@@ -3,9 +3,10 @@
     public class GetAllDetailsBorrowedTransactionDto
     {
 
-        public int Id;
+        public int Id { get; set; }
 
         public string CustomerName { get; set; }
+
         public string CustomerCode { get; set; }
         //public string ItemCode { get; set; }
         //public string ItemDescription { get; set; }
@@ -20,14 +21,14 @@
 
         public decimal TotalBorrowed { get; set; }
 
-        public bool ? IsApproveReturned { get; set; }
+        public bool? IsApproveReturned { get; set; }
 
         public string IsApproveReturnedDate { get; set; }
 
         public decimal Consumed { get; set; }
         public decimal ReturnedQuantity { get; set; }
 
-        public bool ? IsReject { get; set; }
+        public bool? IsReject { get; set; }
 
         public string IsRejectDate { get; set; }
 
@@ -52,11 +53,6 @@
 
         public string StatusApprove { get; set; }
 
-
-
-
-
-
-
+        public int AgingDays { get; set; }
     }
 }

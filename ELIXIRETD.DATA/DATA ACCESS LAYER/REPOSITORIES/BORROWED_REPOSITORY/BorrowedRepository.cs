@@ -9,12 +9,18 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using EntityFramework.Functions;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
+using System;
 using System.Diagnostics.Contracts;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+//using EntityFramework.FunctionsExtensions.DateDiffDay;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 {
@@ -482,19 +488,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             returned.IsActive = true;
             returned.IsApprovedReturned = false;
             returned.StatusApproved = "For return approval";
-
-            var borrowWithAgingDays = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                                   .Select(x => new
-                                                                   {
-                                                                       AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0
-                                                                   }).FirstOrDefaultAsync();
-
-            if (borrowWithAgingDays != null)
-            {
-                returned.AgingDays = borrowWithAgingDays.AgingDays;
-            }
-
-            await _context.SaveChangesAsync();
+ 
 
             return true;
         }
@@ -1279,6 +1273,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             }
 
 
+            var borrowWithAgingDays = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                               .Select(x => new
+                                                               {
+                                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value, DateTime.Now) : 0
+                                                               }).FirstOrDefaultAsync();
+
+            if (borrowWithAgingDays != null)
+            {
+                issue.AgingDays = borrowWithAgingDays.AgingDays;
+            }
+
+            await _context.SaveChangesAsync();
+
+
+
             return true;
         }
 
@@ -1312,10 +1321,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransaction(UserParams userParams)
         {
-
-            var borrowed = _context.BorrowedIssues
-                 .GroupJoin(_context.BorrowedIssueDetails, borrowissue => borrowissue.Id, borrowdetails => borrowdetails.BorrowedPKey, (borrowissue, borrowdetails) => new { borrowissue, borrowdetails })
-                .SelectMany(x => x.borrowdetails.DefaultIfEmpty(), (x, borrowdetails) => new { x.borrowissue, borrowdetails })
+          
+            var borrowed = _context.BorrowedIssueDetails
+                 .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new {borrowdetails, borrowissue })
+                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
                 .GroupBy(x => new
                 {
 
@@ -1332,6 +1341,87 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.IsRejectDate,
                     x.borrowissue.Remarks,
                     x.borrowissue.Reason,
+                
+
+                    x.borrowissue.StatusApproved,
+                    x.borrowissue.PreparedBy,
+
+                    x.borrowissue.CompanyCode,
+                    x.borrowissue.CompanyName,
+                    x.borrowissue.DepartmentCode,
+                    x.borrowissue.DepartmentName,
+                    x.borrowissue.LocationCode,
+                    x.borrowissue.LocationName,
+                    x.borrowissue.AccountCode,
+                    x.borrowissue.AccountTitles,
+                   
+
+
+                })
+               .Select(x => new GetAllDetailsBorrowedTransactionDto
+               {
+
+                   Id = x.Key.Id,
+                   CustomerCode = x.Key.CustomerCode,
+                   CustomerName = x.Key.CustomerName,
+                   TransactionDate = x.Key.TransactionDate.ToString(),
+                   BorrowedDate = x.Key.PreparedDate.ToString(),
+                   IsApproved = x.Key.IsApproved,
+                   IsApprovedDate = x.Key.IsApprovedDate.ToString(),
+                   TotalBorrowed = x.Sum(x => x.borrowdetails.Quantity),
+                   IsApproveReturned = x.Key.IsApprovedReturned,
+                   IsApproveReturnedDate = x.Key.IsApprovedReturnedDate.ToString(),
+                   Consumed = x.Sum(x => x.borrowdetails.Quantity != null ? x.borrowdetails.Quantity : 0) - x.Sum(x => x.borrowdetails.ReturnQuantity),
+                   ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
+                   IsReject = x.Key.IsReject,
+                   IsRejectDate = x.Key.IsRejectDate.ToString(),
+                   Remarks = x.Key.Remarks,
+
+                   StatusApprove = x.Key.StatusApproved,
+                   PreparedBy = x.Key.PreparedBy,
+
+                   CompanyCode = x.Key.CompanyCode,
+                   CompanyName = x.Key.CompanyName,
+                   DepartmentCode = x.Key.DepartmentCode,
+                   DepartmentName = x.Key.DepartmentName,
+                   LocationCode = x.Key.LocationCode,
+                   LocationName = x.Key.LocationName,
+                   AccountCode = x.Key.AccountCode,
+                   AccountTitles = x.Key.AccountTitles,
+
+                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null? EF.Functions.DateDiffDay(DateTime.Now, x.Key.IsApprovedDate.Value): 0,
+                   Reason = x.Key.Reason
+               });
+
+
+           
+
+            return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+        public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransactionOrig(UserParams userParams, string search)
+        {
+            var borrowed = _context.BorrowedIssueDetails
+                 .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
+                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
+                .GroupBy(x => new
+                {
+
+                    x.borrowissue.Id,
+                    x.borrowissue.CustomerCode,
+                    x.borrowissue.CustomerName,
+                    x.borrowissue.TransactionDate,
+                    x.borrowissue.PreparedDate,
+                    x.borrowissue.IsApproved,
+                    x.borrowissue.IsApprovedDate,
+                    x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.IsApprovedReturnedDate,
+                    x.borrowissue.IsReject,
+                    x.borrowissue.IsRejectDate,
+                    x.borrowissue.Remarks,
+                    x.borrowissue.Reason,
+
 
                     x.borrowissue.StatusApproved,
                     x.borrowissue.PreparedBy,
@@ -1379,89 +1469,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                    AccountCode = x.Key.AccountCode,
                    AccountTitles = x.Key.AccountTitles,
 
+                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null ? EF.Functions.DateDiffDay(DateTime.Now, x.Key.IsApprovedDate.Value) : 0,
                    Reason = x.Key.Reason
-
-
-               });
-
-
-            return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
-
-        }
-
-
-        public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransactionOrig(UserParams userParams, string search)
-        {
-            var borrowed = _context.BorrowedIssues
-                  .GroupJoin(_context.BorrowedIssueDetails, borrowissue => borrowissue.Id, borrowdetails => borrowdetails.BorrowedPKey, (borrowissue, borrowdetails) => new { borrowissue, borrowdetails })
-                 .SelectMany(x => x.borrowdetails.DefaultIfEmpty(), (x, borrowdetails) => new { x.borrowissue, borrowdetails })
-                 .GroupBy(x => new
-                 {
-
-                     x.borrowissue.Id,
-                     x.borrowissue.CustomerCode,
-                     x.borrowissue.CustomerName,
-                     x.borrowissue.TransactionDate,
-                     x.borrowissue.PreparedDate,
-                     x.borrowissue.IsApproved,
-                     x.borrowissue.IsApprovedDate,
-                     x.borrowissue.IsApprovedReturned,
-                     x.borrowissue.IsApprovedReturnedDate,
-                     x.borrowissue.IsReject,
-                     x.borrowissue.IsRejectDate,
-                     x.borrowissue.Remarks,
-                     x.borrowissue.Reason,
-
-                     x.borrowissue.StatusApproved,
-                     x.borrowissue.PreparedBy,
-
-                     x.borrowissue.CompanyCode,
-                     x.borrowissue.CompanyName,
-                     x.borrowissue.DepartmentCode,
-                     x.borrowissue.DepartmentName,
-                     x.borrowissue.LocationCode,
-                     x.borrowissue.LocationName,
-                     x.borrowissue.AccountCode,
-                     x.borrowissue.AccountTitles,
-
-
-
-                 })
-                .Select(x => new GetAllDetailsBorrowedTransactionDto
-                {
-
-                    Id = x.Key.Id,
-                    CustomerCode = x.Key.CustomerCode,
-                    CustomerName = x.Key.CustomerName,
-                    TransactionDate = x.Key.TransactionDate.ToString(),
-                    BorrowedDate = x.Key.PreparedDate.ToString(),
-                    IsApproved = x.Key.IsApproved,
-                    IsApprovedDate = x.Key.IsApprovedDate.ToString(),
-                    TotalBorrowed = x.Sum(x => x.borrowdetails.Quantity),
-                    IsApproveReturned = x.Key.IsApprovedReturned,
-                    IsApproveReturnedDate = x.Key.IsApprovedReturnedDate.ToString(),
-                    Consumed = x.Sum(x => x.borrowdetails.Quantity != null ? x.borrowdetails.Quantity : 0) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
-                    IsReject = x.Key.IsReject,
-                    IsRejectDate = x.Key.IsRejectDate.ToString(),
-                    Remarks = x.Key.Remarks,
-
-                    StatusApprove = x.Key.StatusApproved,
-                    PreparedBy = x.Key.PreparedBy,
-
-                    CompanyCode = x.Key.CompanyCode,
-                    CompanyName = x.Key.CompanyName,
-                    DepartmentCode = x.Key.DepartmentCode,
-                    DepartmentName = x.Key.DepartmentName,
-                    LocationCode = x.Key.LocationCode,
-                    LocationName = x.Key.LocationName,
-                    AccountCode = x.Key.AccountCode,
-                    AccountTitles = x.Key.AccountTitles,
-
-                    Reason = x.Key.Reason
-
-
-                }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
+               }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
 
