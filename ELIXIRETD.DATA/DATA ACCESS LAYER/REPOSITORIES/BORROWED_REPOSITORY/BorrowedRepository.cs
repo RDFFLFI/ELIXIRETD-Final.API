@@ -1012,6 +1012,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
                                  .Where(x => x.PreparedBy == employee.FullName)
                                  .Where(x => x.IsRejectDate != null)
+                                   
                                  .Where(x => x.IsReturned == null)
                                  .Where(x => x.IsReject == true)
                                  .Where(x => x.IsApproved == false)
@@ -1354,6 +1355,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.LocationName,
                     x.borrowissue.AccountCode,
                     x.borrowissue.AccountTitles,
+                    x.borrowissue.AgingDays
                    
 
 
@@ -1432,7 +1434,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.DepartmentName,
                     x.borrowissue.LocationCode,
                     x.borrowissue.LocationName,
-                    x.borrowissue.AccountCode,
+                    x.borrowissue.AccountCode, 
                     x.borrowissue.AccountTitles,
 
 
