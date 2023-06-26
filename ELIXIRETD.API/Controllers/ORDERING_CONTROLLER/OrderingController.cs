@@ -484,20 +484,29 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("ApprovePreparedDate")]
-        public async Task<IActionResult> ApprovedpreparedDate(Ordering orders)
+        public async Task<IActionResult> ApprovedpreparedDate([FromQuery]Ordering[] orders)
         {
-            await _unitofwork.Orders.ApprovePreparedDate(orders);
-            await _unitofwork.CompleteAsync();
+            
+            foreach(Ordering items  in orders)
+            {
+                await _unitofwork.Orders.ApprovePreparedDate(items);
+                await _unitofwork.CompleteAsync();
+            }
+          
 
             return new JsonResult("Successfully approved date!");
         }
 
         [HttpPut]
         [Route("RejectPreparedDate")]
-        public async Task<IActionResult> Rejectdate(Ordering orders)
+        public async Task<IActionResult> Rejectdate([FromQuery] Ordering[] orders)
         {
-            await _unitofwork.Orders.RejectPreparedDate(orders);
-            await _unitofwork.CompleteAsync();
+
+            foreach (Ordering items in orders)
+            {
+                await _unitofwork.Orders.RejectPreparedDate(items);
+                await _unitofwork.CompleteAsync();
+            }
 
             return new JsonResult("Successfully reject prepared date!");
         }

@@ -1301,6 +1301,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var order = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
                                              .ToListAsync();
 
+
+
             foreach (var items in order)
             {
                 items.IsApproved = true;
