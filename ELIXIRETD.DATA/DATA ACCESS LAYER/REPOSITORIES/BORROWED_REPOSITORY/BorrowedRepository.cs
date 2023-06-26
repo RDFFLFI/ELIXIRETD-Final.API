@@ -1329,9 +1329,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransaction(UserParams userParams)
         {
           
-            var borrowed = _context.BorrowedIssueDetails
+
+                 var borrowed = _context.BorrowedIssueDetails
                  .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new {borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
+                .Where(x => x.borrowdetails.IsActive == true)
                 .GroupBy(x => new
                 {
 
@@ -1413,6 +1415,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrowed = _context.BorrowedIssueDetails
                  .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
+                  .Where(x => x.borrowdetails.IsActive == true)
                 .GroupBy(x => new
                 {
 
@@ -1599,10 +1602,70 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+        public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id)
+        {
+            var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                            .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                            {
+                                                Id = x.Id,
+                                                Customer = x.CustomerName,
+                                                CustomerCode = x.CustomerCode,
+
+                                                Remarks = x.Remarks,
+
+                                                TransactionDate = x.TransactionDate.ToString(),
+
+                                                CompanyCode = x.CompanyCode,
+                                                CompanyName = x.CompanyName,
+                                                DepartmentCode = x.DepartmentCode,
+                                                DepartmentName = x.DepartmentName,
+                                                LocationCode = x.LocationCode,
+                                                LocationName = x.LocationName,
+                                                AccountCode = x.AccountCode,
+                                                AccountTitles = x.AccountTitles,
+
+                                            });
 
 
+            var borrow = _context.BorrowedIssueDetails
+                .GroupJoin(issueBorrowed, borrowed => borrowed.BorrowedPKey, issues => issues.Id, (borrowed, issues) => new { borrowed, issues })
+                .SelectMany(x => x.issues.DefaultIfEmpty(), (x, issues) => new { x.borrowed, issues })
+              .Where(x => x.borrowed.BorrowedPKey == id)
+              .Where(x => x.borrowed.IsActive == true)
+              .Select(x => new DtoViewBorrewedReturnedDetails
+              {
+                  BorrowedPKey = x.borrowed.BorrowedPKey,
+                  Id = x.borrowed.Id,
+                  Customer = x.issues.Customer,
+                  CustomerCode = x.issues.CustomerCode,
+
+                  ItemCode = x.borrowed.ItemCode,
+                  ItemDescription = x.borrowed.ItemDescription,
+                  ReturnQuantity = x.borrowed.ReturnQuantity,
+                  Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
+                  ReturnedDate = x.borrowed.ReturnedDate.ToString(),
+                  PreparedBy = x.borrowed.PreparedBy,
+
+                  Remarks = x.issues.Remarks,
+
+                  TransactionDate = x.issues.TransactionDate.ToString(),
+                  CompanyCode = x.issues.CompanyCode,
+                  CompanyName = x.issues.CompanyName,
+                  DepartmentCode = x.issues.DepartmentCode,
+                  DepartmentName = x.issues.DepartmentName,
+                  LocationCode = x.issues.LocationCode,
+                  LocationName = x.issues.LocationName,
+                  AccountCode = x.issues.AccountCode,
+                  AccountTitles = x.issues.AccountTitles,
+
+                  Uom = x.borrowed.Uom
+
+              });
+
+            return await borrow.ToListAsync();
 
 
+        }
     }
 
 }
