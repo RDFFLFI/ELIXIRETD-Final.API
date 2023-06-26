@@ -63,7 +63,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       IsApproved = x.IsApproved,
                                                       Remarks = x.Remarks,
                                                       Reason = x.Reason,
-                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
+                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                       ApproveDate = x.IsApprovedDate.ToString(),
@@ -104,7 +104,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                       Reason = x.Reason,
                                                       BorrowedDate = x.PreparedDate.ToString(),
                                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
-                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
+                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
                                                       ApproveDate = x.IsApprovedDate.ToString(),
                                                       StatusApprove = x.StatusApproved
 
@@ -934,6 +934,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+
+
+
+
+
+
         public async Task<bool> RejectForBorrowed(BorrowedIssue borrowed)
         {
 
@@ -1391,7 +1397,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                    AccountCode = x.Key.AccountCode,
                    AccountTitles = x.Key.AccountTitles,
 
-                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null? EF.Functions.DateDiffDay(DateTime.Now, x.Key.IsApprovedDate.Value): 0,
+                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value , DateTime.Now) : 0,
                    Reason = x.Key.Reason
                });
 
@@ -1471,7 +1477,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                    AccountCode = x.Key.AccountCode,
                    AccountTitles = x.Key.AccountTitles,
 
-                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null ? EF.Functions.DateDiffDay(DateTime.Now, x.Key.IsApprovedDate.Value) : 0,
+                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
                    Reason = x.Key.Reason
                }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
@@ -1546,6 +1552,57 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             return  await returned.ToListAsync();
         }
+
+
+
+        // New Updates for borrowed
+
+
+        public async Task<bool> AddPendingBorrowedItem(BorrowedIssueDetails borrow)
+        {
+
+            await _context.BorrowedIssueDetails.AddAsync(borrow);
+
+            return true;
+
+        }
+
+        public async Task<bool> CloseSaveBorrowed(BorrowedIssueDetails borrow)
+        {
+
+            var close = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrow.BorrowedPKey)
+                                                           .ToListAsync();
+
+
+            foreach(var item in close)
+            {
+
+                item.ReturnQuantity = 0;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> EditBorrowedQuantity(BorrowedIssueDetails borrow)
+        {
+
+            var borrowed = await _context.BorrowedIssueDetails.Where(x => x.Id == borrow.Id)
+                                                              .FirstOrDefaultAsync();
+
+            borrowed.Quantity = borrow.Quantity;
+            borrowed.WarehouseId = borrow.WarehouseId;
+            borrowed.ItemCode = borrow.ItemCode;
+            borrowed.ItemDescription = borrow.ItemDescription;
+            borrowed.Uom = borrow.Uom;
+
+            return true;
+
+        }
+
+
+
+
+
     }
 
 }

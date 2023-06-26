@@ -639,6 +639,64 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         }
 
+        
+        // Update Borrowed
+
+
+        [HttpPost]
+        [Route("AddPendingBorrowedItem")]
+        public async Task<IActionResult> AddPendingBorrowedItem([FromBody] BorrowedIssueDetails borrowed)
+        {
+            borrowed.IsActive = true;
+            borrowed.PreparedDate = DateTime.Now;
+            borrowed.BorrowedDate = DateTime.Now;
+
+            borrowed.IsApproved = false; // new Borrowed
+
+            await _unitofwork.Borrowed.AddPendingBorrowedItem(borrowed);
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully add new borrowed issue!");
+
+        }
+
+
+        [HttpPut]
+        [Route("CloseSaveBorrowed")]
+        public async Task<IActionResult> CloseSaveBorrowed([FromBody] BorrowedIssueDetails[] borrowed)
+        {
+          
+            foreach(BorrowedIssueDetails items in borrowed)
+            {
+                await _unitofwork.Borrowed.CloseSaveBorrowed(items);
+                await _unitofwork.CompleteAsync();
+            }
+          
+            return Ok(borrowed);
+
+        }
+
+
+        [HttpPut]
+        [Route("EditBorrowedQuantity")]
+        public async Task<IActionResult> EditBorrowedQuantity([FromBody] BorrowedIssueDetails borrowed)
+        {
+
+           
+                await _unitofwork.Borrowed.EditBorrowedQuantity(borrowed);
+                await _unitofwork.CompleteAsync();
+            
+
+            return Ok("Successfully edit borrowed issue!");
+
+        }
+
+
+
+
+
+
+
 
 
     }

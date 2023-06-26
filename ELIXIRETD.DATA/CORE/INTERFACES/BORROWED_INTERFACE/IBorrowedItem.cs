@@ -32,8 +32,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed);
         Task<bool> SaveReturnedQuantity(BorrowedIssue borrowed);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams, bool status , int empid);
-        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search , bool status , int empid);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams, bool status, int empid);
+        Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search, bool status, int empid);
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id);
 
@@ -50,9 +50,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<IReadOnlyList<GetAllForApprovalDetailsInBorrowed>> GetAllForApprovalDetailsInBorrowed(int id);
 
-        Task<bool> ApprovedForBorrowed (BorrowedIssue borrowed); 
+        Task<bool> ApprovedForBorrowed(BorrowedIssue borrowed);
 
-        Task<bool> RejectForBorrowed (BorrowedIssue borrowed);
+        Task<bool> RejectForBorrowed(BorrowedIssue borrowed);
 
 
         Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams);
@@ -71,9 +71,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status);
         Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status);
 
-        Task<bool> ApproveForReturned (BorrowedIssue borrowed);
+        Task<bool> ApproveForReturned(BorrowedIssue borrowed);
 
-        Task<bool> CancelForReturned (BorrowedIssue borrowed);
+        Task<bool> CancelForReturned(BorrowedIssue borrowed);
 
         Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransaction(UserParams userParams);
         Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransactionOrig(UserParams userParams, string search);
@@ -85,6 +85,18 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationForBorrowedApproval();
 
         Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationForReturnedApproval();
+
+
+
+        // Update In Borrowed
+
+
+
+        Task<bool> AddPendingBorrowedItem(BorrowedIssueDetails borrow);
+
+        Task<bool> CloseSaveBorrowed(BorrowedIssueDetails borrow);
+
+        Task<bool> EditBorrowedQuantity(BorrowedIssueDetails borrow);
 
 
     }
