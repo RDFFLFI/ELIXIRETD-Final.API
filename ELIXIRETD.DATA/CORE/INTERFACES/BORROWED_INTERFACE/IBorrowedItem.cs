@@ -100,6 +100,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id);
 
+        
+
 
     }
 }

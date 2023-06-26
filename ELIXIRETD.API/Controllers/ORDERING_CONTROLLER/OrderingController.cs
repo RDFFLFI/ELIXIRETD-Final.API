@@ -358,14 +358,33 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         [HttpGet]
-        [Route("GetAllListOfMir")]
-        public async Task<IActionResult> GetAllListOfMir([FromQuery] string customer, bool status)
+        [Route("GetAllListOfMirNoSearch")]
+        public async Task<IActionResult> GetAllListOfMirNoSearch([FromQuery] bool status )
         {
+            //if (search == null)
 
-            var orders = await _unitofwork.Orders.GetAllListOfMir(customer, status);
+                var orders = await _unitofwork.Orders.GetAllListOfMirNoSearch(status);
 
             return Ok(orders);
         }
+
+
+
+
+        [HttpGet]
+        [Route("GetAllListOfMir")]
+        public async Task<IActionResult> GetAllListOfMir([FromQuery]  bool status , [FromQuery] string search)
+        {
+            if(search == null)
+            {
+                return await GetAllListOfMirNoSearch(status/*, status*/);
+            }
+
+            var orders = await _unitofwork.Orders.GetAllListOfMir(status, search );
+
+            return Ok(orders);
+        }
+
 
         [HttpGet("GetAllListOfMirOrders")]
         public async Task<IActionResult> GetAllListOfMirOrders(string customer)

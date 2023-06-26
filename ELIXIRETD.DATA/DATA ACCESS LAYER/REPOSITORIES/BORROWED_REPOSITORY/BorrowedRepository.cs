@@ -766,6 +766,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
             borrow.IsActive = false;
+            borrow.Remarks = borrowed.Remarks;
 
             return true;
 

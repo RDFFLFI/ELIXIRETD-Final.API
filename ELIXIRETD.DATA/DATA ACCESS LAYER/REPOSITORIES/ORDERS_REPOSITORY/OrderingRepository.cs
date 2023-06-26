@@ -830,6 +830,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig(UserParams userParams, string search /*, bool status*/)
         {
+            bool status = true;
+
+
+
+            //if(search == null)
+            //{
+            //   GetAllListOfMir(status);
+            //}
 
             var orders = _context.Orders.OrderBy(x => x.SyncDate)  /*.OrderBy(x => x.Rush == null ? 1 : 0)*/
                                    //                              //.ThenBy(x => x.Rush)
@@ -864,7 +872,44 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
         //Viewing
-        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer, bool status)
+
+        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirNoSearch(bool status)
+        {
+            var orders = _context.Orders
+                                       .Where(x => x.IsActive == true)
+                                       .Where(x => x.IsPrepared != true)
+                                       .GroupBy(x => new
+                                       {
+
+                                           x.Customercode,
+                                           x.CustomerName,
+                                           x.CustomerType,
+                                           x.TrasactId,
+                                           x.DateNeeded,
+                                           x.OrderDate,
+                                           x.Rush,
+
+                                       }).Select(x => new GetAllListOfMirDto
+                                       {
+
+                                           MIRId = x.Key.TrasactId,
+                                           CustomerCode = x.Key.Customercode,
+                                           CustomerName = x.Key.CustomerName,
+                                           CustomerType = x.Key.CustomerType,
+                                           TotalQuantity = x.Sum(x => x.QuantityOrdered),
+                                           DateNeeded = x.Key.DateNeeded.ToString(),
+                                           OrderedDate = x.Key.OrderDate.ToString(),
+                                           IsRush = x.Key.Rush != null ? true : false,
+                                           Rush = x.Key.Rush
+
+                                       }).Where(x => x.IsRush == status);
+
+            return await orders.ToListAsync();
+        }
+
+
+
+        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(bool status , string search)
         {
             //bool status;
 
@@ -877,7 +922,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             //    status = false;
             //}
 
-            var orders = _context.Orders.Where(x => x.CustomerName == Customer)
+            var orders = _context.Orders
                                         .Where(x => x.IsActive == true)
                                         .Where(x => x.IsPrepared != true)
                                         .GroupBy(x => new
@@ -904,10 +949,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             IsRush = x.Key.Rush != null ? true : false,
                                             Rush = x.Key.Rush
 
-                                        }).Where(x => x.IsRush == status);
+                                        }).Where(x => x.IsRush == status)
+                                          .Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
+                                          || Convert.ToString(x.CustomerCode).ToLower().Contains(search.Trim().ToLower())
+                                           || Convert.ToString(x.CustomerType).ToLower().Contains(search.Trim().ToLower())
+                                            || Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
+                                           )
+                                          ;
 
             return await orders.ToListAsync();
         }
+
+
+
+
+
+
 
         public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer)
         {
@@ -2662,9 +2719,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-
-
-
-
+      
     }
 }

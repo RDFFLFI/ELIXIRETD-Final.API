@@ -117,7 +117,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search/* , bool status*/);
 
-        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(string Customer, bool status);
+
+        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirNoSearch(bool status);
+        Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir( bool status , string search);
         Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer);
 
 
