@@ -20,6 +20,7 @@ using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using NetTopologySuite.IO;
 //using EntityFramework.FunctionsExtensions.DateDiffDay;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
@@ -1564,7 +1565,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<bool> AddPendingBorrowedItem(BorrowedIssueDetails borrow)
         {
-
+         
             await _context.BorrowedIssueDetails.AddAsync(borrow);
 
             return true;
@@ -1599,9 +1600,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             borrowed.ItemDescription = borrow.ItemDescription;
             borrowed.Uom = borrow.Uom;
 
+          
             return true;
 
         }
+
+        public async Task<bool> EditBorrowedIssue(BorrowedIssue borrow)
+        {
+            
+            var borrowed = await _context.BorrowedIssues.Where(x => x.Id == borrow.Id)
+                                                         .FirstOrDefaultAsync();
+
+            borrowed.CustomerCode = borrow.CustomerCode;
+            borrowed.CustomerName = borrow.CustomerName;
+
+            borrowed.TotalQuantity = borrow.TotalQuantity;
+            borrowed.DepartmentCode = borrow.DepartmentCode;
+            borrowed.DepartmentName = borrow.DepartmentName;
+            borrowed.CompanyCode = borrow.CompanyCode;
+            borrowed.CompanyName = borrow.CompanyName;
+            borrowed.LocationCode = borrow.LocationCode;
+            borrowed.LocationName = borrow.LocationName;
+            borrowed.AccountCode = borrow.AccountCode;
+            borrowed.AccountTitles = borrow.AccountTitles;
+
+            return true;
+
+        }
+
+
+
+
+
 
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id)
         {
@@ -1689,11 +1719,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-
-        
-
-
-
+       
     }
 
 }

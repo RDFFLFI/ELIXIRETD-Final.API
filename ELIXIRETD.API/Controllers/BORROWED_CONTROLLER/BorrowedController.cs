@@ -651,6 +651,8 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             borrowed.PreparedDate = DateTime.Now;
             borrowed.BorrowedDate = DateTime.Now;
 
+            borrowed.IsTransact = true;
+
             borrowed.IsApproved = false; // new Borrowed
 
             await _unitofwork.Borrowed.AddPendingBorrowedItem(borrowed);
@@ -690,6 +692,22 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             return Ok("Successfully edit borrowed issue!");
 
         }
+
+        [HttpPut]
+        [Route("EditBorrowedIssue")]
+        public async Task<IActionResult> EditBorrowedIssue([FromBody] BorrowedIssue borrowed)
+        {
+
+
+            await _unitofwork.Borrowed.EditBorrowedIssue(borrowed);
+            await _unitofwork.CompleteAsync();
+
+
+            return Ok("Successfully edit borrowed issue!");
+
+        }
+
+
 
 
         [HttpGet]

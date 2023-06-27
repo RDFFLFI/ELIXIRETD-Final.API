@@ -1183,7 +1183,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.PreparedDate = orders.PreparedDate;
             }
 
-
             return true;
         }
 
@@ -1196,9 +1195,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
 
+            //if (existingOrder.QuantityOrdered != Math.Floor(existingOrder.QuantityOrdered))
+            //{
+            //    return false;
+            //}
+
             return true;
         }
 
+                         
         public async Task<bool> CancelOrders(Ordering orders)
         {
             var existing = await _context.Orders.Where(x => x.Id == orders.Id)

@@ -463,7 +463,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
             //if (editquantity == false)
-            //    return BadRequest("Invalid request!, Quantity cannot be zero or exceed actual quantity");
+            //    return BadRequest("Invalid request!, Quantity must be in whole number");
 
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
