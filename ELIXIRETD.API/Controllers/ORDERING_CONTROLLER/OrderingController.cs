@@ -359,7 +359,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMirNoSearch")]
-        public async Task<IActionResult> GetAllListOfMirNoSearch( [FromQuery]UserParams userParams, [FromQuery] bool status )
+        public async Task<ActionResult<IEnumerable<GetAllListOfMirDto>>> GetAllListOfMirNoSearch( [FromQuery]UserParams userParams, [FromQuery] bool status )
         {
             //if (search == null)
 
@@ -386,7 +386,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMir")]
-        public async Task<IActionResult> GetAllListOfMir([FromQuery] UserParams userParams, [FromQuery]  bool status , [FromQuery] string search)
+        public async Task<ActionResult<IEnumerable<GetAllListOfMirDto>>> GetAllListOfMir([FromQuery] UserParams userParams, [FromQuery]  bool status , [FromQuery] string search)
         {
             if(search == null)
             
@@ -599,15 +599,59 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orderResult);
         }
 
+        [HttpGet]
+        [Route("GetAllListOfApprovedPreparedforMoveOrderNoSearch")]
+        public async Task<ActionResult<IEnumerable<TotalListOfApprovedPreparedDateDto>>> GetAllListOfApprovedPreparedforMoveOrderNoSearch([FromQuery] UserParams userParams, [FromQuery] bool status)
+        {
+
+            var orders = await _unitofwork.Orders.TotalListOfApprovedPreparedDateNoSearch(userParams, status);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
+        }
+
+
 
 
         [HttpGet]
         [Route("GetAllListOfApprovedPreparedforMoveOrder")]
-        public async Task<IActionResult> GetAllListOfApprovedPreparedforMoveOrder([FromQuery] string customername , bool status)
+        public async Task<ActionResult<IEnumerable<TotalListOfApprovedPreparedDateDto>>> GetAllListOfApprovedPreparedforMoveOrder([FromQuery] UserParams userParams,[FromQuery] bool status , [FromQuery] string search)
         {
-            var order = await _unitofwork.Orders.TotalListOfApprovedPreparedDate(customername, status);
 
-            return Ok(order);
+            if (search == null)
+
+                return await GetAllListOfApprovedPreparedforMoveOrderNoSearch(userParams,status);
+
+            var orders = await _unitofwork.Orders.TotalListOfApprovedPreparedDate(userParams, status, search);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
         }
 
 
@@ -817,10 +861,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("ApproveListOfMoveOrder")]
-        public async Task<IActionResult> ApprovalListofMoveOrder([FromBody] MoveOrder moveOrder)
+        public async Task<IActionResult> ApprovalListofMoveOrder([FromBody] MoveOrder[] moveOrder)
         {
-            await _unitofwork.Orders.ApprovalForMoveOrders(moveOrder);
-            await _unitofwork.CompleteAsync();
+            foreach(MoveOrder items in moveOrder)
+            {
+                await _unitofwork.Orders.ApprovalForMoveOrders(items);
+                await _unitofwork.CompleteAsync();
+            }    
 
             return new JsonResult("Successfully Approved List for move order!");
 

@@ -1437,11 +1437,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-
-
-        public async Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername , bool status)
+        public async Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDateNoSearch(UserParams userParams, bool status)
         {
-
+           
             var orders = _context.Orders.GroupBy(x => new
             {
                 x.TrasactId,
@@ -1463,7 +1461,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.Rush
 
 
-            }).Where(x => x.Key.CustomerName == customername)
+            })
             .Where(x => x.Key.IsApproved == true)
             .Where(x => x.Key.IsActive == true)
             .Where(x => x.Key.PreparedDate != null)
@@ -1492,7 +1490,67 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             }).Where(x => x.IsRush == status);
 
-            return await orders.ToListAsync();
+            return await PagedList<TotalListOfApprovedPreparedDateDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+        public async Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(UserParams userParams, bool status , string search)
+        {
+
+            var orders = _context.Orders.GroupBy(x => new
+            {
+                x.TrasactId,
+                x.CustomerName,
+                x.Customercode,
+              
+                x.PreparedDate,
+                x.IsApproved,
+                x.IsMove,
+                x.IsReject,
+                x.IsActive,
+
+                x.Department,
+                x.DepartmentCode,
+                x.CompanyName,
+                x.CompanyCode,
+                x.LocationCode,
+                x.LocationName,
+                x.Rush
+
+
+            })
+            .Where(x => x.Key.IsApproved == true)
+            .Where(x => x.Key.IsActive == true)
+            .Where(x => x.Key.PreparedDate != null)
+            .Where(x => x.Key.IsMove == false)
+
+            .Select(x => new TotalListOfApprovedPreparedDateDto
+            {
+                Id = x.Key.TrasactId,
+                CustomerName = x.Key.CustomerName,
+                CustomerCode = x.Key.Customercode,
+               
+                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                PreparedDate = x.Key.PreparedDate.ToString(),
+                IsMove = x.Key.IsMove,
+                IsReject = x.Key.IsReject != null,
+
+                Department = x.Key.Department,
+                DepartmentCode = x.Key.DepartmentCode,
+                CompanyName = x.Key.CompanyName,
+                CompanyCode = x.Key.CompanyCode,
+                LocationCode = x.Key.LocationCode,
+                LocationName = x.Key.LocationName,
+                    
+                IsRush = x.Key.Rush != null ? true : false,
+                Rush = x.Key.Rush,
+
+            }).Where(x => x.IsRush == status)
+              .Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
+              || Convert.ToString(x.CustomerCode).ToLower().Contains(search.Trim().ToLower())
+              || Convert.ToString(x.Id).ToLower().Contains(search.Trim().ToLower()));
+
+            return await PagedList<TotalListOfApprovedPreparedDateDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
 
@@ -2719,6 +2777,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-      
+       
+
+       
     }
 }

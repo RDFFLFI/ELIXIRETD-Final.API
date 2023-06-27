@@ -793,7 +793,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Remarks = x.Remarks,
                                                    Reason = x.Reason,
                                                    BorrowedDate = x.PreparedDate.ToString(),
-                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
+                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay( x.IsApprovedDate.Value, DateTime.Now) : 0,
                                                    TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                    StatusApprove = x.StatusApproved
 
@@ -821,7 +821,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 Remarks = x.Remarks,
                                                 Reason = x.Reason,
                                                 BorrowedDate = x.PreparedDate.ToString(),
-                                                AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(DateTime.Now, x.IsApprovedDate.Value) : 0,
+                                                AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value ,DateTime.Now) : 0,
                                                 TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                                 StatusApprove = x.StatusApproved
 

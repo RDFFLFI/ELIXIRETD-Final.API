@@ -138,7 +138,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPagination(UserParams userParams);
         Task<PagedList<GetAllListForMoveOrderPaginationDto>> GetAllListForMoveOrderPaginatioOrig(UserParams userParams, string search);
 
-        Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername, bool status);
+
+        Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDateNoSearch(UserParams userParams, bool status);
+
+        Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(UserParams userParams, bool status , string search);
 
 
         Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status);
