@@ -737,6 +737,18 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("GetTransactedBorrowedDetails")]
+        public async Task<IActionResult> GetTransactedBorrowedDetails([FromQuery] int empid)
+        {
+
+            var issue = await _unitofwork.Borrowed.GetTransactedBorrowedDetails(empid);
+
+            return Ok(issue);
+
+        }
+
+
 
     }
 }

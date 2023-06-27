@@ -1717,7 +1717,30 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-       
+        public async Task<IReadOnlyList<GetAllAvailableBorrowIssueDto>> GetTransactedBorrowedDetails(int empid)
+        {
+            var employee = await _context.Users.Where(x => x.Id == empid)
+                                             .FirstOrDefaultAsync();
+
+            var items = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                         .Where(x => x.PreparedBy == employee.FullName)
+                                                         .Where(x => x.IsTransact == true)
+                                                         .Select(x => new GetAllAvailableBorrowIssueDto
+                                                         {
+
+                                                             Id = x.Id,
+                                                             ItemCode = x.ItemCode,
+                                                             ItemDescription = x.ItemDescription,
+                                                             Uom = x.Uom,
+                                                             TotalQuantity = x.Quantity,
+                                                             BorrowDate = x.BorrowedDate.ToString()
+
+                                                         });
+
+            return await items.ToListAsync();
+        }
+
+
     }
 
 }
