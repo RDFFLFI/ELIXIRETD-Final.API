@@ -1613,6 +1613,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             borrowed.CustomerCode = borrow.CustomerCode;
             borrowed.CustomerName = borrow.CustomerName;
+            borrowed.TransactionDate = borrow.TransactionDate;
 
             borrowed.TotalQuantity = borrow.TotalQuantity;
             borrowed.DepartmentCode = borrow.DepartmentCode;
@@ -1627,9 +1628,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return true;
 
         }
-
-
-
 
 
 
