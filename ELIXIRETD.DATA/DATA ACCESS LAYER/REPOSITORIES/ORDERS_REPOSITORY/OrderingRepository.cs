@@ -873,7 +873,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         //Viewing
 
-        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirNoSearch(bool status)
+        public async Task<PagedList<GetAllListOfMirDto>> GetAllListOfMirNoSearch(UserParams userParams, bool status)
         {
             var orders = _context.Orders
                                        .Where(x => x.IsActive == true)
@@ -904,12 +904,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                        }).Where(x => x.IsRush == status);
 
-            return await orders.ToListAsync();
+            return await PagedList<GetAllListOfMirDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
 
 
 
-        public async Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMir(bool status , string search)
+        public async Task<PagedList<GetAllListOfMirDto>> GetAllListOfMir(UserParams userParams, bool status , string search)
         {
             //bool status;
 
@@ -953,16 +953,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           .Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
                                           || Convert.ToString(x.CustomerCode).ToLower().Contains(search.Trim().ToLower())
                                            || Convert.ToString(x.CustomerType).ToLower().Contains(search.Trim().ToLower())
-                                            || Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
-                                           )
-                                          ;
+                                            || Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower()));
 
-            return await orders.ToListAsync();
+
+
+            return await PagedList<GetAllListOfMirDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
-
-
-
-
 
 
 
@@ -1005,7 +1001,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         //private static Dictionary<string, decimal> stockOnHandDict = new Dictionary<string, decimal>();
 
-        public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName)
+        public async Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds/*, string customerName*/)
         {
             var result = new List<AllOrdersPerMIRIDsDTO>();
 
@@ -1050,7 +1046,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == true)
+                                                                .Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1106,7 +1102,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var stockOnHandDict = new Dictionary<string, decimal>();
 
             var orders = _context.Orders
-                .Where(ordering => ordering.CustomerName == customerName && ordering.PreparedDate == null && ordering.IsActive == true)
+                .Where(ordering =>/* ordering.CustomerName == customerName &&*/ ordering.PreparedDate == null && ordering.IsActive == true)
                 .Where(x => listofMirIds.Contains(x.TrasactId))
                 .GroupJoin(getReserve, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
@@ -1441,6 +1437,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
+
+
         public async Task<IReadOnlyList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(string customername , bool status)
         {
 
@@ -1585,7 +1583,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var TotalBorrowIssue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
                                                                       .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == true)
+                                                                      .Where(x => x.IsApproved == false)
                                                                       .SumAsync(x => x.Quantity);
 
             var TotalBorrowReturned = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
@@ -1686,7 +1684,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == true)
+                                                                .Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1802,7 +1800,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == true)
+                                                                .Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 

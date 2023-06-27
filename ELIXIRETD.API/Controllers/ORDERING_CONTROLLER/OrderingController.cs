@@ -359,13 +359,26 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMirNoSearch")]
-        public async Task<IActionResult> GetAllListOfMirNoSearch([FromQuery] bool status )
+        public async Task<IActionResult> GetAllListOfMirNoSearch( [FromQuery]UserParams userParams, [FromQuery] bool status )
         {
             //if (search == null)
 
-                var orders = await _unitofwork.Orders.GetAllListOfMirNoSearch(status);
+            var orders = await _unitofwork.Orders.GetAllListOfMirNoSearch(userParams, status /*, status*/);
 
-            return Ok(orders);
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
+            {
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
+
+            return Ok(orderResult);
         }
 
 
@@ -373,16 +386,28 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetAllListOfMir")]
-        public async Task<IActionResult> GetAllListOfMir([FromQuery]  bool status , [FromQuery] string search)
+        public async Task<IActionResult> GetAllListOfMir([FromQuery] UserParams userParams, [FromQuery]  bool status , [FromQuery] string search)
         {
             if(search == null)
+            
+                return await GetAllListOfMirNoSearch(userParams,  status/*, status*/);
+
+            var orders = await _unitofwork.Orders.GetAllListOfMir(userParams, status, search /*, status*/);
+
+            Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
+
+            var orderResult = new
             {
-                return await GetAllListOfMirNoSearch(status/*, status*/);
-            }
+                orders,
+                orders.CurrentPage,
+                orders.PageSize,
+                orders.TotalCount,
+                orders.TotalPages,
+                orders.HasNextPage,
+                orders.HasPreviousPage
+            };
 
-            var orders = await _unitofwork.Orders.GetAllListOfMir(status, search );
-
-            return Ok(orders);
+            return Ok(orderResult);
         }
 
 
@@ -395,9 +420,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         [HttpGet("GetAllListOfMirOrdersByMirIds")]
-        public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds, [FromQuery] string customerName)
+        public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds/*, [FromQuery] string customerName*/)
         {
-            var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds, customerName);
+            var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds/*, customerName*/);
             return Ok(orders);
         }
 

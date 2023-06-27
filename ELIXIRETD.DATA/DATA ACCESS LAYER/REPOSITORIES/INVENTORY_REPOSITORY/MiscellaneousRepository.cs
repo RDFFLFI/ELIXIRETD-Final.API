@@ -266,7 +266,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             });
 
             var borrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsApproved == true)
+                                                           .Where(x => x.IsApproved == false)
                                                            .GroupBy(x => new
                                                            {
 

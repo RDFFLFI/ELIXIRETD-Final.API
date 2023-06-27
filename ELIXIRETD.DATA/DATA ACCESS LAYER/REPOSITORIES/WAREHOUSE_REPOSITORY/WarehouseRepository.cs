@@ -477,7 +477,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                         .Where(x => x.IsApproved == true)
+                                                         .Where(x => x.IsApproved == false)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,
@@ -586,7 +586,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                         .Where(x => x.IsApproved == true)
+                                                         .Where(x => x.IsApproved == false)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,

@@ -703,7 +703,20 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpPut]
+        [Route("CancelAllBorrowed")]
+        public async Task<IActionResult> CancelAllBorrowed([FromBody] BorrowedIssue[] borrowed)
+        {
 
+            foreach (BorrowedIssue items in borrowed)
+            {
+                await _unitofwork.Borrowed.CancelAllBorrowed(items);
+                await _unitofwork.CompleteAsync();
+            }
+
+            return Ok(borrowed);
+
+        }
 
 
 

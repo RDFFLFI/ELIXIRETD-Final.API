@@ -91,7 +91,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         // Update In Borrowed
 
 
-
+        Task<bool> CancelAllBorrowed(BorrowedIssue borrowed);
         Task<bool> AddPendingBorrowedItem(BorrowedIssueDetails borrow);
 
         Task<bool> CloseSaveBorrowed(BorrowedIssueDetails borrow);

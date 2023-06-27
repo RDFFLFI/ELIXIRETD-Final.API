@@ -187,7 +187,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             });
 
             var BorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsApproved == true)
+                                                           .Where(x => x.IsApproved == false)
                                                            .GroupBy(x => new
                                                            {
                                                                x.ItemCode,
@@ -1667,6 +1667,33 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
         }
+
+        public async Task<bool> CancelAllBorrowed(BorrowedIssue borrowed)
+        {
+           
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                       .FirstOrDefaultAsync();
+
+            var details = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                             .ToListAsync();
+
+            issue.ApproveBy = borrowed.ApproveBy;
+            issue.IsActive = false;
+
+            foreach(var items in details)
+            {
+                items.IsActive = false;
+            }
+
+            return true;
+
+        }
+
+
+        
+
+
+
     }
 
 }
