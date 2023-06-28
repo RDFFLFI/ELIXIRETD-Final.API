@@ -43,34 +43,91 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                          .FirstOrDefault();
 
 
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
-                                                  .ThenByDescending(x => x.PreparedDate)
-                                                  .Where(x => x.PreparedBy == employee.FullName)
-                                                  .Where(x => x.IsReturned == null)
-                                                  //.Where(x => x.StatusApproved == status)
-                                                  .Where(x => x.IsApproved == status)
-                                                  //.Where(x => x.IsApproved == false)
-                                                  .Where(x => x.IsReject == null)
-                                                  .Where(x => x.IsActive == true)
-                                                  .Select(x => new GetAllBorrowedReceiptWithPaginationDto
-                                                  {
+            var details = _context.BorrowedIssueDetails
+                                                     .GroupBy(x => new
+                                                     {
+                                                         x.BorrowedPKey,
+                                                         x.IsActive,
 
-                                                      BorrowedPKey = x.Id,
-                                                      CustomerName = x.CustomerName,
-                                                      CustomerCode = x.CustomerCode,
-                                                      TotalQuantity = x.TotalQuantity,
-                                                      PreparedBy = x.PreparedBy,
-                                                      IsActive = x.IsActive,
-                                                      IsApproved = x.IsApproved,
-                                                      Remarks = x.Remarks,
-                                                      Reason = x.Reason,
-                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
-                                                      BorrowedDate = x.PreparedDate.ToString(),
-                                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
-                                                      ApproveDate = x.IsApprovedDate.ToString(),
-                                                      StatusApprove = x.StatusApproved
+                                                     }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                                                     {
+                                                         BorrowedPKey = x.Key.BorrowedPKey,
+                                                         IsActive = x.Key.IsActive,
+                                                         TotalQuantity = x.Sum(x => x.Quantity),
 
-                                                  });
+                                                     });
+
+            var borrow = _context.BorrowedIssues
+                .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
+                .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
+                .Where(x => x.issues.PreparedBy == employee.FullName)
+                .Where(x => x.borrowed.IsActive == true)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .GroupBy(x => new
+                {
+                    x.borrowed.BorrowedPKey,
+                    x.issues.CustomerCode,
+                    x.issues.CustomerName,
+                    x.borrowed.TotalQuantity,
+                    x.issues.PreparedBy,
+                    x.borrowed.IsActive,
+                    x.issues.IsApproved,
+                    x.issues.Remarks,
+                    x.issues.Reason,
+                    x.issues.PreparedDate,
+                    x.issues.TransactionDate,
+                    x.issues.IsApprovedDate,
+                    x.issues.StatusApproved,
+
+                }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                {
+                    BorrowedPKey = x.Key.BorrowedPKey,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.CustomerCode,
+                    TotalQuantity = x.Key.TotalQuantity,
+                    PreparedBy = x.Key.PreparedBy,
+                    IsActive = x.Key.IsActive,
+                    IsApproved = x.Key.IsApproved,
+                    Remarks = x.Key.Remarks,
+                    Reason = x.Key.Reason,
+                    AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
+                    BorrowedDate = x.Key.PreparedDate.ToString(),
+                    TransactionDate = x.Key.TransactionDate.ToString(),
+                    ApproveDate = x.Key.IsApprovedDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved
+
+                });
+
+
+
+            //var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
+            //                                      .ThenByDescending(x => x.PreparedDate)
+            //                                      .Where(x => x.PreparedBy == employee.FullName)
+            //                                      .Where(x => x.IsReturned == null)
+            //                                      //.Where(x => x.StatusApproved == status)
+            //                                      .Where(x => x.IsApproved == status)
+            //                                      //.Where(x => x.IsApproved == false)
+            //                                      .Where(x => x.IsReject == null)
+            //                                      .Where(x => x.IsActive == true)
+            //                                      .Select(x => new GetAllBorrowedReceiptWithPaginationDto
+            //                                      {
+
+            //                                          BorrowedPKey = x.Id,
+            //                                          CustomerName = x.CustomerName,
+            //                                          CustomerCode = x.CustomerCode,
+            //                                          TotalQuantity = x.TotalQuantity,
+            //                                          PreparedBy = x.PreparedBy,
+            //                                          IsActive = x.IsActive,
+            //                                          IsApproved = x.IsApproved,
+            //                                          Remarks = x.Remarks,
+            //                                          Reason = x.Reason,
+            //                                          AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
+            //                                          BorrowedDate = x.PreparedDate.ToString(),
+            //                                          TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+            //                                          ApproveDate = x.IsApprovedDate.ToString(),
+            //                                          StatusApprove = x.StatusApproved
+
+            //                                      });
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
 
@@ -80,37 +137,97 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
 
             var employee = _context.Users.Where(x => x.Id == empid)
-                                      .FirstOrDefault();
+                                       .FirstOrDefault();
 
 
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
-                                                  .ThenByDescending(x => x.PreparedDate)
-                                                  .Where(x => x.PreparedBy == employee.FullName)
-                                                   .Where(x => x.IsApproved == status)
-                                                  .Where(x => x.IsReturned == null)
-                                                  //.Where(x => x.IsApproved == false)
-                                                  .Where(x => x.IsReject == null)
-                                                  .Where(x => x.IsActive == true)
-                                                  .Select(x => new GetAllBorrowedReceiptWithPaginationDto
-                                                  {
+            var details = _context.BorrowedIssueDetails
+                                                     .GroupBy(x => new
+                                                     {
+                                                         x.BorrowedPKey,
+                                                         x.IsActive,
 
-                                                      BorrowedPKey = x.Id,
-                                                      CustomerName = x.CustomerName,
-                                                      CustomerCode = x.CustomerCode,
-                                                      TotalQuantity = x.TotalQuantity,
-                                                      PreparedBy = x.PreparedBy,
-                                                      IsApproved = x.IsApproved,
-                                                      IsActive = x.IsActive,
-                                                      Remarks = x.Remarks,
-                                                      Reason = x.Reason,
-                                                      BorrowedDate = x.PreparedDate.ToString(),
-                                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
-                                                      AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
-                                                      ApproveDate = x.IsApprovedDate.ToString(),
-                                                      StatusApprove = x.StatusApproved
+                                                     }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                                                     {
+                                                         BorrowedPKey = x.Key.BorrowedPKey,
+                                                         IsActive = x.Key.IsActive,
+                                                         TotalQuantity = x.Sum(x => x.Quantity),
 
-                                                  })
-                                                  .Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+                                                     });
+
+            var borrow = _context.BorrowedIssues
+                .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
+                .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
+                .Where(x => x.issues.PreparedBy == employee.FullName)
+                .Where(x => x.borrowed.IsActive == true)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .GroupBy(x => new
+                {
+                    x.borrowed.BorrowedPKey,
+                    x.issues.CustomerCode,
+                    x.issues.CustomerName,
+                    x.borrowed.TotalQuantity,
+                    x.issues.PreparedBy,
+                    x.borrowed.IsActive,
+                    x.issues.IsApproved,
+                    x.issues.Remarks,
+                    x.issues.Reason,
+                    x.issues.PreparedDate,
+                    x.issues.TransactionDate,
+                    x.issues.IsApprovedDate,
+                    x.issues.StatusApproved,
+
+                }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                {
+                    BorrowedPKey = x.Key.BorrowedPKey,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.CustomerCode,
+                    TotalQuantity = x.Key.TotalQuantity,
+                    PreparedBy = x.Key.PreparedBy,
+                    IsActive = x.Key.IsActive,
+                    IsApproved = x.Key.IsApproved,
+                    Remarks = x.Key.Remarks,
+                    Reason = x.Key.Reason,
+                    AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
+                    BorrowedDate = x.Key.PreparedDate.ToString(),
+                    TransactionDate = x.Key.TransactionDate.ToString(),
+                    ApproveDate = x.Key.IsApprovedDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved
+
+                }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+
+
+            //var employee = _context.Users.Where(x => x.Id == empid)
+            //                          .FirstOrDefault();
+
+
+            //var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsApproved)
+            //                                      .ThenByDescending(x => x.PreparedDate)
+            //                                      .Where(x => x.PreparedBy == employee.FullName)
+            //                                       .Where(x => x.IsApproved == status)
+            //                                      .Where(x => x.IsReturned == null)
+            //                                      //.Where(x => x.IsApproved == false)
+            //                                      .Where(x => x.IsReject == null)
+            //                                      .Where(x => x.IsActive == true)
+            //                                      .Select(x => new GetAllBorrowedReceiptWithPaginationDto
+            //                                      {
+
+            //                                          BorrowedPKey = x.Id,
+            //                                          CustomerName = x.CustomerName,
+            //                                          CustomerCode = x.CustomerCode,
+            //                                          TotalQuantity = x.TotalQuantity,
+            //                                          PreparedBy = x.PreparedBy,
+            //                                          IsApproved = x.IsApproved,
+            //                                          IsActive = x.IsActive,
+            //                                          Remarks = x.Remarks,
+            //                                          Reason = x.Reason,
+            //                                          BorrowedDate = x.PreparedDate.ToString(),
+            //                                          TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+            //                                          AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value , DateTime.Now) : 0,
+            //                                          ApproveDate = x.IsApprovedDate.ToString(),
+            //                                          StatusApprove = x.StatusApproved
+
+            //                                      })
+                                               
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
@@ -138,6 +255,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
                                                                .GroupBy(x => new
                                                                {
+
 
                                                                    x.Id,
                                                                    x.ItemCode,
@@ -778,27 +896,81 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status)
         {
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
-                                               .Where(x => x.IsReturned == null)
-                                               .Where(x => x.IsReject == null)
-                                               .Where(x => x.IsApproved == status)
-                                               .Where(x => x.IsActive == true)
-                                               .Select(x => new GetAllForApprovalBorrowedPaginationDTO
-                                               {
 
-                                                   BorrowedPKey = x.Id,
-                                                   CustomerName = x.CustomerName,
-                                                   CustomerCode = x.CustomerCode,
-                                                   TotalQuantity = x.TotalQuantity,
-                                                   PreparedBy = x.PreparedBy,
-                                                   Remarks = x.Remarks,
-                                                   Reason = x.Reason,
-                                                   BorrowedDate = x.PreparedDate.ToString(),
-                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay( x.IsApprovedDate.Value, DateTime.Now) : 0,
-                                                   TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
-                                                   StatusApprove = x.StatusApproved
+            var details = _context.BorrowedIssueDetails
+                                                   .GroupBy(x => new
+                                                   {
+                                                       x.BorrowedPKey,
+                                                       x.IsActive,
 
-                                               });
+                                                   }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                                                   {
+                                                       BorrowedPKey = x.Key.BorrowedPKey,
+                                                       IsActive = x.Key.IsActive,
+                                                       TotalQuantity = x.Sum(x => x.Quantity),
+
+                                                   });
+
+            var borrow = _context.BorrowedIssues
+                .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
+                .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
+                .Where(x => x.borrowed.IsActive == true)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .GroupBy(x => new
+                {
+                    x.borrowed.BorrowedPKey,
+                    x.issues.CustomerCode,
+                    x.issues.CustomerName,
+                    x.borrowed.TotalQuantity,
+                    x.issues.PreparedBy,
+                    x.borrowed.IsActive,
+                    x.issues.IsApproved,
+                    x.issues.Remarks,
+                    x.issues.Reason,
+                    x.issues.PreparedDate,
+                    x.issues.TransactionDate,
+                    x.issues.IsApprovedDate,
+                    x.issues.StatusApproved,
+
+                }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                {
+                    BorrowedPKey = x.Key.BorrowedPKey,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.CustomerCode,
+                    TotalQuantity = x.Key.TotalQuantity,
+                    PreparedBy = x.Key.PreparedBy,
+                    IsActive = x.Key.IsActive,
+                 
+                    Remarks = x.Key.Remarks,
+                    Reason = x.Key.Reason,
+                    AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
+                    BorrowedDate = x.Key.PreparedDate.ToString(),
+                    TransactionDate = x.Key.TransactionDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved
+
+                });
+
+            //var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
+            //                                   .Where(x => x.IsReturned == null)
+            //                                   .Where(x => x.IsReject == null)
+            //                                   .Where(x => x.IsApproved == status)
+            //                                   .Where(x => x.IsActive == true)
+            //                                   .Select(x => new GetAllForApprovalBorrowedPaginationDTO
+            //                                   {
+
+            //                                       BorrowedPKey = x.Id,
+            //                                       CustomerName = x.CustomerName,
+            //                                       CustomerCode = x.CustomerCode,
+            //                                       TotalQuantity = x.TotalQuantity,
+            //                                       PreparedBy = x.PreparedBy,
+            //                                       Remarks = x.Remarks,
+            //                                       Reason = x.Reason,
+            //                                       BorrowedDate = x.PreparedDate.ToString(),
+            //                                       AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay( x.IsApprovedDate.Value, DateTime.Now) : 0,
+            //                                       TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+            //                                       StatusApprove = x.StatusApproved
+
+            //                                   });
 
             return await PagedList<GetAllForApprovalBorrowedPaginationDTO>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
@@ -806,29 +978,84 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
         {
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
-                                            .Where(x => x.IsReturned == null)
-                                            .Where(x => x.IsReject == null)
-                                            .Where(x => x.IsApproved == status)
-                                            .Where(x => x.IsActive == true)
-                                            .Select(x => new GetAllForApprovalBorrowedPaginationDTO
-                                            {
+            //var borrow = _context.BorrowedIssues.OrderByDescending(x => x.PreparedDate)
+            //                                .Where(x => x.IsReturned == null)
+            //                                .Where(x => x.IsReject == null)
+            //                                .Where(x => x.IsApproved == status)
+            //                                .Where(x => x.IsActive == true)
+            //                                .Select(x => new GetAllForApprovalBorrowedPaginationDTO
+            //                                {
 
-                                                BorrowedPKey = x.Id,
-                                                CustomerName = x.CustomerName,
-                                                CustomerCode = x.CustomerCode,
-                                                TotalQuantity = x.TotalQuantity,
-                                                PreparedBy = x.PreparedBy,
-                                                Remarks = x.Remarks,
-                                                Reason = x.Reason,
-                                                BorrowedDate = x.PreparedDate.ToString(),
-                                                AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value ,DateTime.Now) : 0,
-                                                TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
-                                                StatusApprove = x.StatusApproved
+            //                                    BorrowedPKey = x.Id,
+            //                                    CustomerName = x.CustomerName,
+            //                                    CustomerCode = x.CustomerCode,
+            //                                    TotalQuantity = x.TotalQuantity,
+            //                                    PreparedBy = x.PreparedBy,
+            //                                    Remarks = x.Remarks,
+            //                                    Reason = x.Reason,
+            //                                    BorrowedDate = x.PreparedDate.ToString(),
+            //                                    AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value ,DateTime.Now) : 0,
+            //                                    TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+            //                                    StatusApprove = x.StatusApproved
 
-                                            }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
+            //                                }).
+
+
+            var details = _context.BorrowedIssueDetails
+                                                 .GroupBy(x => new
+                                                 {
+                                                     x.BorrowedPKey,
+                                                     x.IsActive,
+
+                                                 }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                                                 {
+                                                     BorrowedPKey = x.Key.BorrowedPKey,
+                                                     IsActive = x.Key.IsActive,
+                                                     TotalQuantity = x.Sum(x => x.Quantity),
+
+                                                 });
+
+            var borrow = _context.BorrowedIssues
+                .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
+                .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
+                .Where(x => x.borrowed.IsActive == true)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .GroupBy(x => new
+                {
+                    x.borrowed.BorrowedPKey,
+                    x.issues.CustomerCode,
+                    x.issues.CustomerName,
+                    x.borrowed.TotalQuantity,
+                    x.issues.PreparedBy,
+                    x.borrowed.IsActive,
+                    x.issues.IsApproved,
+                    x.issues.Remarks,
+                    x.issues.Reason,
+                    x.issues.PreparedDate,
+                    x.issues.TransactionDate,
+                    x.issues.IsApprovedDate,
+                    x.issues.StatusApproved,
+
+                }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                {
+                    BorrowedPKey = x.Key.BorrowedPKey,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.CustomerCode,
+                    TotalQuantity = x.Key.TotalQuantity,
+                    PreparedBy = x.Key.PreparedBy,
+                    IsActive = x.Key.IsActive,
+
+                    Remarks = x.Key.Remarks,
+                    Reason = x.Key.Reason,
+                    AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
+                    BorrowedDate = x.Key.PreparedDate.ToString(),
+                    TransactionDate = x.Key.TransactionDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved
+
+                }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
                                                     || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                                                       || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
+
 
             return await PagedList<GetAllForApprovalBorrowedPaginationDTO>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
