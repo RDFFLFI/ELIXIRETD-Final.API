@@ -101,6 +101,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<bool> EditBorrowedIssue(BorrowedIssue borrow);
 
 
+        Task<bool> CancelUpdateBorrowed(BorrowedIssueDetails borrowed);
+
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id);
 

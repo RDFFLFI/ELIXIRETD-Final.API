@@ -21,6 +21,8 @@ using System.Reflection.Metadata.Ecma335;
 using System.Security.Principal;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using NetTopologySuite.IO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY.Excemption;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.USER_REPOSITORY.Excemption;
 //using EntityFramework.FunctionsExtensions.DateDiffDay;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
@@ -1967,7 +1969,33 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await items.ToListAsync();
         }
 
+        public async Task<bool> CancelUpdateBorrowed(BorrowedIssueDetails borrowed)
+        {
 
+            var cancel = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id && x.IsActive == true)
+                                                                        .FirstOrDefaultAsync();
+
+            if (cancel == null)
+                throw new NoBorrowedFoundExcemption(); 
+
+            var activeModulesCount = await _context.BorrowedIssueDetails
+                .Where(x => x.BorrowedPKey == cancel.BorrowedPKey && x.IsActive == true)
+                .CountAsync();
+
+            if (activeModulesCount > 1)
+            {
+                cancel.IsActive = false;
+                cancel.IsTransact = false;
+                return true; 
+            }
+            else
+            {
+                throw new AtLeast1ItemException(); 
+            }
+
+
+
+        }
     }
 
 }

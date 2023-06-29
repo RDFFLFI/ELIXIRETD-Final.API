@@ -509,7 +509,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("ApprovePreparedDate")]
-        public async Task<IActionResult> ApprovedpreparedDate([FromQuery]Ordering[] orders)
+        public async Task<IActionResult> ApprovedpreparedDate(Ordering[] orders)
         {
             
             foreach(Ordering items  in orders)
@@ -524,7 +524,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("RejectPreparedDate")]
-        public async Task<IActionResult> Rejectdate([FromQuery] Ordering[] orders)
+        public async Task<IActionResult> Rejectdate(Ordering[] orders)
         {
 
             foreach (Ordering items in orders)
@@ -532,6 +532,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 await _unitofwork.Orders.RejectPreparedDate(items);
                 await _unitofwork.CompleteAsync();
             }
+           
 
             return new JsonResult("Successfully reject prepared date!");
         }
@@ -745,12 +746,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("CancelOrdersInMoveOrder")]
-        public async Task<IActionResult> CancelOrdersInMoveOrder([FromBody] Ordering order)
+        public async Task<IActionResult> CancelOrdersInMoveOrder([FromBody] Ordering[] order)
         {
+           foreach(Ordering items in order)
+            {
+                await _unitofwork.Orders.CancelControlInMoveOrder(items);
 
-            await _unitofwork.Orders.CancelControlInMoveOrder(order);
-
-            await _unitofwork.CompleteAsync();
+                await _unitofwork.CompleteAsync();
+            }
 
             return Ok("Successfully cancel orders");
 

@@ -26,7 +26,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<bool> ReturnCancelOrdersInList( Ordering orders);
         Task<IReadOnlyList<DetailedListofOrdersDto>> DetailedListOfOrders (string customer);
       
-        Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int Id);
+        Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int list);
         Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar(bool status );
         Task<bool> CancelOrders(Ordering orders);
         Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId);

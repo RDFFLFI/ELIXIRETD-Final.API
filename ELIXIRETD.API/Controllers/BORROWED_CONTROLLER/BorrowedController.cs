@@ -3,6 +3,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY.Excemption;
 using ELIXIRETD.DATA.SERVICES;
 
 namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
@@ -747,6 +748,28 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             return Ok(issue);
 
         }
+
+
+        [HttpPut]
+        [Route("CancelUpdateBorrowed")]
+        public async Task<IActionResult> CancelUpdateBorrowed(BorrowedIssueDetails[] borrowed)
+        {
+            try
+            {
+                foreach (BorrowedIssueDetails items in borrowed)
+                {
+                    await _unitofwork.Borrowed.CancelUpdateBorrowed(items);
+                    await _unitofwork.CompleteAsync();
+                }
+                return new JsonResult("Successfully cancel item!");
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message); // Return bad request for the AtLeast1ItemException
+            }
+
+        }
+
 
 
 

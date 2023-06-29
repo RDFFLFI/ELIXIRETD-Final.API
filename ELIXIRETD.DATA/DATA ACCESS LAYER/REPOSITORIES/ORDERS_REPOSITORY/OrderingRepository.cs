@@ -1266,7 +1266,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return await orders.ToListAsync();
 
         }
-
+         
         public async Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int Id)
         {
             var orders = _context.Orders.OrderBy(x => x.PreparedDate)
@@ -2057,6 +2057,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             {
                 items.IsApproved = null;
                 items.ApprovedDate = null;
+                
 
             }
 
