@@ -21,6 +21,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public decimal ReturnQuantity { get; set; }
 
+        public decimal BorrowedQuantity { get; set; }
+
         public int Id { get; set; }
 
         public int BorrowedPKey { get; set; }

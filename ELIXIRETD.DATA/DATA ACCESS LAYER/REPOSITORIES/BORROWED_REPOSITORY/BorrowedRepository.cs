@@ -671,6 +671,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
                     PreparedBy = x.Key.PreparedBy,
@@ -774,6 +775,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
                     PreparedBy = x.Key.PreparedBy,
@@ -832,8 +834,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                   ItemCode = x.borrowed.ItemCode,
                   ItemDescription = x.borrowed.ItemDescription,
+
+                  BorrowedQuantity = x.borrowed.Quantity,
                   ReturnQuantity = x.borrowed.ReturnQuantity,
                   Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
+
                   ReturnedDate = x.borrowed.ReturnedDate.ToString(),
                   PreparedBy = x.borrowed.PreparedBy,
 
@@ -1389,6 +1394,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
                     ReturnBy = x.Key.ReturnBy,
 
+                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
 
@@ -1464,6 +1470,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ReturnedDate = x.Key.ReturnedDate.ToString(),
                     ReturnBy = x.Key.ReturnBy,
 
+
+                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
 

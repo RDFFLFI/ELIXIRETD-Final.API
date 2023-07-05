@@ -16,6 +16,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public decimal Consumed { get; set; }
         public string ReturnedDate { get; set; }
         public decimal TotalReturned { get; set; }
+        public decimal TotalBorrowedQuantity { get; set; }
 
         public string ReturnBy { get; set; }
 
