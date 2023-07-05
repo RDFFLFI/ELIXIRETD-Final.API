@@ -29,25 +29,43 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             //Ordering 
 
             var OrderingNotif = await _unitOfWork.Orders.GetOrdersForNotification();
+            var OrderingNotifNotRush = await _unitOfWork.Orders.GetOrdersForNotificationNotRush();
+
             var OrderingApprovalNotif = await _unitOfWork.Orders.GetAllListForApprovalOfSchedule();
+            var OrderingApprovalNotifNotRush = await _unitOfWork.Orders.GetAllListForApprovalOfScheduleNotRush();
+
             var MoveorderlistNotif = await _unitOfWork.Orders.GetMoveOrdersForNotification();
+            var MoveorderlistNotifNotRush = await _unitOfWork.Orders.GetMoveOrdersForNotificationNotRush();
+
             var TransactmoveorderNotif = await _unitOfWork.Orders.GetAllForTransactMoveOrderNotification();
+
             var ForApprovalListNotif = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotification();
+            var ForApprovalListNotifNotRush = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotificationNotRush();
+
             var rejectlistNotif = await _unitOfWork.Orders.GetRejectMoveOrderNotification();
 
             //borrowed
             var ForBorrowedApproval = await _unitOfWork.Borrowed.GetNotificationForBorrowedApproval();
             var ForReturnedApproval = await _unitOfWork.Borrowed.GetNotificationForReturnedApproval();
-
+           
 
             var posummarycount = PoSummaryNotif.Count();
             //var cancelledcount = CancelledPONotif.Count();
 
             var orderingnotifcount = OrderingNotif.Count();
+            var orderingnotifcountNotRush = OrderingNotifNotRush.Count();
+
             var orderingapprovalcount = OrderingApprovalNotif.Count();
+            var orderingapprovalcountNotRush = OrderingApprovalNotifNotRush.Count();
+
             var moveorderlistcount = MoveorderlistNotif.Count();
+            var moveorderlistcountNotRush = MoveorderlistNotifNotRush.Count();
+
             var transactmoveordercount = TransactmoveorderNotif.Count();
+
             var forapprovalmoveordercount = ForApprovalListNotif.Count();
+            var forapprovalmoveordercountNotRush = ForApprovalListNotifNotRush.Count();
+
             var rejectlistcount = rejectlistNotif.Count();
 
             var forborrowedApprovalcount = ForBorrowedApproval.Count();
@@ -68,13 +86,27 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     orderingnotifcount
                 },
+                OrderingNotRush = new
+                {
+                    orderingnotifcountNotRush
+                },
+
                 OrderingApproval = new
                 {
                     orderingapprovalcount
                 },
+                OrderingApprovalNotRush = new
+                {
+                    orderingapprovalcountNotRush
+                },
+
                 MoveOrderlist = new
                 {
                     moveorderlistcount
+                },
+                MoveOrderlistNotRush = new
+                {
+                    moveorderlistcountNotRush
                 },
                 Transactmoveorder = new
                 {
@@ -83,6 +115,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 ForApprovalMoveOrder = new
                 {
                     forapprovalmoveordercount
+                },
+                ForApprovalMoveOrderNotRush = new
+                {
+                    forapprovalmoveordercountNotRush
                 },
                 Rejectlist = new
                 {

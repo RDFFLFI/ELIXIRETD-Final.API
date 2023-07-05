@@ -1727,6 +1727,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         //================================================ Borrowed Notification =============================================================
 
 
+
+
+
+
         public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationForBorrowedApproval()
         {
 
@@ -1749,7 +1753,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                      CustomerCode = x.Key.CustomerCode,
                                                      CustomerName = x.Key.CustomerName,
                                                      IsApproved = x.Key.IsApproved,
-                                                     IsActive = x.Key.IsActive
+                                                     IsActive = x.Key.IsActive,
+                                                     
 
 
                                                  });
@@ -1995,6 +2000,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
+        }
+
+        public async Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification()
+        {
+
+
+            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
+                                                  .Select(x => new RejectBorrowedNotificationDto
+                                                  {
+                                                      BorrowedPKey = x.Id,
+                                                      CustomerCode = x.CustomerCode,
+                                                      CustomerName = x.CustomerName,
+                                                      IsActive = x.IsActive,                                             
+                                                  });
+
+            return await reject.ToListAsync();
+                                                
         }
     }
 

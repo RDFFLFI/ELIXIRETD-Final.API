@@ -879,11 +879,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("UpdatePrintStatus")]
-        public async Task<IActionResult> UpdatePrintStatus([FromBody] MoveOrder moveorder)
+        public async Task<IActionResult> UpdatePrintStatus([FromBody] MoveOrder[] moveorder)
         {
 
-            await _unitofwork.Orders.UpdatePrintStatus(moveorder);
-            await _unitofwork.CompleteAsync();
+            foreach( MoveOrder items in moveorder)
+            {
+                await _unitofwork.Orders.UpdatePrintStatus(items);
+                await _unitofwork.CompleteAsync();
+            }
+           
 
             return Ok(moveorder);
         }
