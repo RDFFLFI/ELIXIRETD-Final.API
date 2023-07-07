@@ -142,5 +142,53 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
         }
 
 
+
+
+        [HttpGet]
+        [Route("GetNotificationWithParameters")]
+        public async Task<IActionResult> GetNotificationWithEmpId(int empid)
+        {
+
+            //Receiving
+            var ApprovedBorrowedNotif = await _unitOfWork.Borrowed.GetNotificationBorrowedApprove(empid);
+            var ApproveReturnedNotif = await _unitOfWork.Borrowed.GetNotificationReturnedApprove(empid);
+            var RejectNotif = await _unitOfWork.Borrowed.RejectBorrowedNotificationWithParameter(empid);
+
+
+
+            var borrowedApprovecount = ApprovedBorrowedNotif.Count();
+            var returnedApprovecount = ApproveReturnedNotif.Count();    
+            var RejectNotifcount = RejectNotif.Count();
+
+
+            var countlist = new
+            {
+
+                BorrowedApproved = new
+                {
+                    borrowedApprovecount
+                },
+                ReturnedApproved = new
+                {
+                   returnedApprovecount
+                },
+                RejectNotification = new
+                {
+                    RejectNotifcount
+                },
+
+
+            };
+
+            return Ok(countlist);
+
+
+
+        }
+
+
+
+
+
     }
 }

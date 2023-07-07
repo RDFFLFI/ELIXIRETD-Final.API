@@ -86,6 +86,16 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationForReturnedApproval();
 
+        Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification();
+
+
+        Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationBorrowedApprove(int empid);
+
+        Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationReturnedApprove(int empid);
+
+
+        Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotificationWithParameter(int empid);
+
 
 
         // Update In Borrowed
@@ -106,7 +116,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id);
 
-        Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification();
+      
+
+
+
+
 
 
         Task<IReadOnlyList<GetAllAvailableBorrowIssueDto>> GetTransactedBorrowedDetails(int empid);

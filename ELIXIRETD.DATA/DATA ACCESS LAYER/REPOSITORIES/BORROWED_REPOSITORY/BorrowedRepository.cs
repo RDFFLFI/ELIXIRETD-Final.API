@@ -1204,6 +1204,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.IsApprovedDate = null;
                 item.IsReject = true;
                 item.IsRejectDate = DateTime.Now;
+                item.ReturnQuantity = 0;
 
             }
 
@@ -1801,6 +1802,117 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
+        
+
+
+        public async Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification()
+        {
+
+
+            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
+                                                  .Select(x => new RejectBorrowedNotificationDto
+                                                  {
+                                                      BorrowedPKey = x.Id,
+                                                      CustomerCode = x.CustomerCode,
+                                                      CustomerName = x.CustomerName,
+                                                      IsActive = x.IsActive,
+                                                  });
+
+            return await reject.ToListAsync();
+
+        }
+
+
+        public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationBorrowedApprove(int empid)
+        {
+
+            var employee = await _context.Users.Where(x => x.Id == empid)
+                                          .FirstOrDefaultAsync();
+
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                                .Where(x => x.IsApproved == true)
+                                                .Where(x => x.PreparedBy == employee.FullName)
+
+                                               .GroupBy(x => new
+                                               {
+                                                   x.Id,
+                                                   x.CustomerCode,
+                                                   x.CustomerName,
+                                                   x.IsApproved,
+                                                   x.PreparedDate,
+                                                   x.IsActive
+
+                                               }).Select(x => new GetNotificationForBorrowedApprovalDto
+                                               {
+
+                                                   Id = x.Key.Id,
+                                                   CustomerCode = x.Key.CustomerCode,
+                                                   CustomerName = x.Key.CustomerName,
+                                                   IsApproved = x.Key.IsApproved,
+                                                   IsActive = x.Key.IsActive,
+
+                                               });
+
+
+            return await borrowed.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationReturnedApprove(int empid)
+        {
+
+            var employee = await   _context.Users.Where(x => x.Id == empid)
+                                                  .FirstOrDefaultAsync();
+
+
+            var returned = _context.BorrowedIssues.Where(x => x.IsActive == true)
+                                                       .Where(x => x.IsReturned == true)
+                                                       .Where(x => x.IsApprovedReturned == true)
+                                                       .Where(x => x.PreparedBy == employee.FullName)
+                                                       .GroupBy(x => new
+                                                       {
+
+                                                           x.Id,
+                                                           x.CustomerCode,
+                                                           x.CustomerName,
+                                                           x.IsApprovedReturned,
+                                                           //x.ReturnedDate,
+                                                           x.IsActive
+
+                                                       }).Select(x => new GetNotificationForReturnedApprovalDto
+                                                       {
+                                                           Id = x.Key.Id,
+                                                           CustomerCode = x.Key.CustomerCode,
+                                                           CustomerName = x.Key.CustomerName,
+                                                           IsActive = x.Key.IsActive
+
+
+                                                       });
+
+            return await returned.ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotificationWithParameter(int empid)
+        {
+
+            var employee = await _context.Users.Where(x => x.Id == empid)
+                                                .FirstOrDefaultAsync();
+
+            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
+                                                .Where(x => x.PreparedBy == employee.FullName)
+                                                  .Select(x => new RejectBorrowedNotificationDto
+                                                  {
+                                                      BorrowedPKey = x.Id,
+                                                      CustomerCode = x.CustomerCode,
+                                                      CustomerName = x.CustomerName,
+                                                      IsActive = x.IsActive,
+                                                  });
+
+            return await reject.ToListAsync();
+
+        }
+
+
+
 
         // New Updates for borrowed
 
@@ -2010,22 +2122,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-        public async Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification()
-        {
-
-
-            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
-                                                  .Select(x => new RejectBorrowedNotificationDto
-                                                  {
-                                                      BorrowedPKey = x.Id,
-                                                      CustomerCode = x.CustomerCode,
-                                                      CustomerName = x.CustomerName,
-                                                      IsActive = x.IsActive,                                             
-                                                  });
-
-            return await reject.ToListAsync();
-                                                
-        }
+      
     }
 
 }
