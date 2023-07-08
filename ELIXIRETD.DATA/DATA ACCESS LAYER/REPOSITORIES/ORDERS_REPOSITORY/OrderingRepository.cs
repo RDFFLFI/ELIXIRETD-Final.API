@@ -1721,6 +1721,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var orders = _context.Orders
                    .Where(x => x.TrasactId == id)
+                   .Where(x => x.IsActive == true)
                    .Where(x => x.IsMove == false)
                    .GroupJoin(moveorders, ordering => ordering.Id, moveorder => moveorder.OrderPKey, (ordering, moveorder) => new { ordering, moveorder })
                    .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
@@ -2606,7 +2607,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<GetAllApprovedMoveOrderDto> GetAllApprovedMoveOrder(int id)
         {
 
-            var orders = _context.MoveOrders.Where(x => x.OrderNoPkey == id && x.IsActive == true)
+            var orders = _context.MoveOrders.Where(x => x.OrderNoPkey == id)
                                             .GroupBy(x => new
                                             {
                                                 x.OrderNo,
@@ -2630,6 +2631,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
                                             }).Where(x => x.Key.IsApprove == true)
+                                              .Where(x => x.Key.IsReject != true)
 
                                              .Select(x => new GetAllApprovedMoveOrderDto
                                              {
@@ -2649,7 +2651,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  IsPrepared = x.Key.IsPrepared,
                                                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
                                                  IsPrint = x.Key.IsPrint != null,
-                                                 IsTransact = x.Key.IsTransact,
+                                                 IsTransact = x.Key.IsTransact != null,
                                                  Rush = x.Key.Rush
 
                                              });
