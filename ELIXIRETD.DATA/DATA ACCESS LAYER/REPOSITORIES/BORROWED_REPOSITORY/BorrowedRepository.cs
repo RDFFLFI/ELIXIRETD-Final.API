@@ -1745,7 +1745,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var borrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
                                                   .Where(x => x.IsApproved == false)
-                                                  
+                                                  .Where(x => x.IsApprovedDate == null && x.IsReject == null)
+                                   
                                                  .GroupBy(x => new
                                                  {
                                                      x.Id,
@@ -1753,7 +1754,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                      x.CustomerName,
                                                      x.IsApproved,
                                                      x.PreparedDate,
-                                                     x.IsActive
+                                                     //x.IsActive
 
                                                  }).Select(x => new GetNotificationForBorrowedApprovalDto
                                                  {
@@ -1762,9 +1763,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                      CustomerCode = x.Key.CustomerCode,
                                                      CustomerName = x.Key.CustomerName,
                                                      IsApproved = x.Key.IsApproved,
-                                                     IsActive = x.Key.IsActive,
+                                                     //IsActive = x.Key.IsActive,
                                                      
-
 
                                                  });
 
@@ -1786,14 +1786,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             x.CustomerName,
                                                             x.IsApprovedReturned,
                                                             //x.ReturnedDate,
-                                                            x.IsActive
+                                                            //x.IsActive
 
                                                         }).Select(x => new GetNotificationForReturnedApprovalDto
                                                         {
                                                             Id = x.Key.Id,
                                                             CustomerCode = x.Key.CustomerCode,
                                                             CustomerName = x.Key.CustomerName,
-                                                            IsActive = x.Key.IsActive
+                                                            //IsActive = x.Key.IsActive
 
 
                                                         });

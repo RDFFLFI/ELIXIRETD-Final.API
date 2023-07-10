@@ -74,19 +74,28 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         //Notification
 
+        Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotificationAll();
         Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotification();
         Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotificationNotRush();
 
+
+        Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotificationAll();
         Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotification();
         Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotificationNotRush();
 
+
+        Task<IReadOnlyList<DtoForApprovalMoveOrderNotif>> GetForApprovalMoveOrdersNotificationAll();
         Task<IReadOnlyList<DtoForApprovalMoveOrderNotif>> GetForApprovalMoveOrdersNotification();
         Task<IReadOnlyList<DtoForApprovalMoveOrderNotif>> GetForApprovalMoveOrdersNotificationNotRush();
+
+
 
         Task<IReadOnlyList<DtoForTransactNotif>> GetAllForTransactMoveOrderNotification();
 
         Task<IReadOnlyList<DtoRejectMoveOrderNotif>> GetRejectMoveOrderNotification();
 
+
+        Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfScheduleAll();
         Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule();
         Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfScheduleNotRush();
 
