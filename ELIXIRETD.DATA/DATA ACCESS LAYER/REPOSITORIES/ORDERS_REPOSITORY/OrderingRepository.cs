@@ -886,6 +886,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                     //    .Where(x => x.Key.PreparedDate != null)
                                     //    .Where(x => x.Key.IsActive == true)
 
+
+
         .Select(x => new GetallApproveDto
         {
             MIRId = x.Key.TrasactId,
@@ -1380,6 +1382,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .GroupBy(x => new
                 {
                     x.ordering.Id,
+                    x.ordering.Customercode,
+                    x.ordering.CustomerName,
                     x.ordering.TrasactId,
                     x.ordering.ItemCode,
                     x.ordering.ItemdDescription,
@@ -1395,7 +1399,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
 
                     Id = total.Key.Id,
+                    
                     MIRId = total.Key.TrasactId,
+                    CustomerCode = total.Key.Customercode,
+                    CustomerName = total.Key.CustomerName,
                     ItemCode = total.Key.ItemCode,
                     ItemDescription = total.Key.ItemdDescription,
                     Uom = total.Key.Uom,
@@ -2609,7 +2616,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.RejectedDateTempo = DateTime.Now;
                 items.Remarks = moveOrder.Remarks;
                 items.IsReject = true;
-                items.IsActive = true;
+                //items.IsActive = true;
                 items.IsPrepared = true;
                 items.IsApproveReject = null;
 
@@ -2806,7 +2813,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = null;
                 items.IsApproveReject = true;
                 items.IsActive = false;
-                items.IsPrepared = true;
+                //items.IsPrepared = true;
                 items.IsApprove = false;
 
             }
@@ -2818,7 +2825,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
 
 
-            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
+            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true &&  x.IsActive == false)
+                                           
                                             .GroupBy(x => new
                                             {
 
@@ -2863,7 +2871,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
         {
 
-            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
+            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true && x.IsActive == false)
                                           .GroupBy(x => new
                                           {
 
