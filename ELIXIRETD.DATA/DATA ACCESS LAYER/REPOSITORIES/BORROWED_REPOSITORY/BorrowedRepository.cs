@@ -1553,7 +1553,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 item.IsReturned = null;
                 item.ReturnedDate = null;
-                item.IsApprovedReturned = false;
+                item.IsApprovedReturned = null;
                 item.ReturnQuantity = 0;
             }
 
