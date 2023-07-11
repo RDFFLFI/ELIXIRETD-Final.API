@@ -209,6 +209,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //if (validate == true)
             //    return BadRequest("The item category cannot be changed because you entered the same item category!");
 
+            if (await _unitOfWork.Materials.ValidateItemCategInUse(category.Id))
+                return BadRequest("Item category was in use!");
+
             if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
                 return BadRequest("Item category already exist, Please try something else!");
                     
@@ -338,8 +341,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //var validate = await _unitOfWork.Materials.ValidateSubCategorySame(category);
             //if (validate == true)
             //    return BadRequest("The sub category cannot be changed because you entered the same sub category!");
+            if (await _unitOfWork.Materials.ValidateSubcategInUse(category.Id))
+                return BadRequest("Sub category is in use!");
 
             var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateSubCategoryAndItemCategories(category);
+
             if (existingSubCategAndItemCateg == true)
                 return BadRequest("Sub category and item category already exist, Please try something else!");
 

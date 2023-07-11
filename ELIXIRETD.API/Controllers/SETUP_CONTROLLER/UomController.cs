@@ -67,6 +67,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //if (validate == true)
             //    return BadRequest("The uom cannot be changed because you entered the same uom!");
 
+            if (await _unitOfWork.Uoms.ValidateUomInUse(uom.Id))
+                return BadRequest("Uom is in use!");
+
             if (await _unitOfWork.Uoms.UomDescriptionExist(uom.UomDescription))
                 return BadRequest("Uom code description already exist, Please try something else!");
 

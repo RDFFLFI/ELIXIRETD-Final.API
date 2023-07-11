@@ -410,6 +410,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                 {
 
                     Id = x.Id,
+                    PoNumber = x.PoNumber,
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemDescription,
                     ActualGood = x.ActualDelivered,
@@ -429,6 +430,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                .Select(x => new WarehouseReceivingDto
                {
                    Id = x.Id,
+                   PoNumber = x.PoNumber,
                    ItemCode = x.ItemCode,
                    ItemDescription = x.ItemDescription,
                    ActualGood = x.ActualDelivered,

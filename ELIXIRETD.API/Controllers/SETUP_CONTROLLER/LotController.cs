@@ -212,6 +212,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             //if (validate == true)
             //    return BadRequest("The lot name cannot be changed because you entered the same lot name!");
+            if (await _unitOfWork.Lots.ValidateLotInUse(category.Id))
+                return BadRequest("Lot name is in use!");
 
             if (await _unitOfWork.Lots.LotCategoryNameExist(category.LotName))
                 return BadRequest("Lot Name already Exist, Please try something else!");
