@@ -110,6 +110,17 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
 
         [HttpGet]
+        [Route("GetAvailableStocksForBorrowedIssueNoParameters")]
+        public async Task<IActionResult> GetAvailableStocksForBorrowedIssueNoParameters()
+        {
+
+            var borrow = await _unitofwork.Borrowed.GetAvailableStocksForBorrowedIssueNoParameters();
+
+            return Ok(borrow);
+        }
+
+
+        [HttpGet]
         [Route("GetAllAvailableStocksForBorrowedIsssue")]
         public async Task<IActionResult> GetAllAvailableStocksForBorrowedIsssue([FromQuery] string itemcode)
         {

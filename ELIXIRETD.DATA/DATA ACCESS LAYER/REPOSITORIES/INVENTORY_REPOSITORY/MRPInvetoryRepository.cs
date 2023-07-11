@@ -522,11 +522,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  TotalPrice = decimal.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
-                                 SuggestedPo = total.Key.sudggest,
+                                 SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = decimal.Round(total.Key.averageissuance, 2),
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = decimal.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1), 2),
-                                 BorrowedDifference = total.Key.borrow - total.Key.returned
+                                 BorrowedDifference = total.Key.returned
 
         });
 
@@ -1005,11 +1005,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow ,
-                                 SuggestedPo = total.Key.sudggest,
+                                 SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m)),
-                                 BorrowedDifference = total.Key.borrow - total.Key.returned
+                                 BorrowedDifference = total.Key.returned
                              });
 
 
@@ -1490,11 +1490,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow ,
-                                 SuggestedPo = total.Key.sudggest,
+                                 SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m)),
-                                 BorrowedDifference = total.Key.borrow - total.Key.returned
+                                 BorrowedDifference = total.Key.returned
 
 
                              }).Where(x => x.ItemDescription.ToLower()

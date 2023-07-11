@@ -2458,7 +2458,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                x.OrderNo,
                                                x.CustomerName,
                                                x.Customercode,
-                                              
+                                               x.Remarks,
                                                x.PreparedDate,
                                                x.Rush
 
@@ -2471,7 +2471,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                   MIRId = x.Key.OrderNo,
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                 
+                                                  Remarks = x.Key.Remarks,
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
                                                   IsRush = x.Key.Rush != null ? true : false,
@@ -2495,7 +2495,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                x.OrderNo,
                                                x.CustomerName,
                                                x.Customercode,
-                                              
+                                               x.Remarks,
                                                x.PreparedDate,
                                                x.Rush
 
@@ -2508,7 +2508,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                   MIRId = x.Key.OrderNo,
                                                   CustomerName = x.Key.CustomerName,
                                                   Customercode = x.Key.Customercode,
-                                                
+                                                  Remarks = x.Key.Remarks,
                                                   Quantity = x.Sum(x => x.QuantityOrdered),
                                                   PreparedDate = x.Key.PreparedDate.ToString(),
                                                   IsRush = x.Key.Rush != null ? true : false,

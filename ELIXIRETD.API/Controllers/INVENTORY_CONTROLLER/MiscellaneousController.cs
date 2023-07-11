@@ -187,6 +187,16 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
             return Ok(details);
         }
 
+
+        [HttpGet]
+        [Route("GetAvailableStocksForIssueNoParameters")]
+        public async Task<IActionResult> GetAvailableStocksForIssueNoParameters()
+        {
+            var reciept = await _unitofwork.miscellaneous.GetAvailableStocksForIssueNoParameters();
+
+            return Ok(reciept);
+        }
+
         [HttpGet]
         [Route("GetAllAvailableStocksForMIsssue")]
         public async Task<IActionResult> GetAllAvailableStocksFOrMIssue([FromQuery] string itemcode)

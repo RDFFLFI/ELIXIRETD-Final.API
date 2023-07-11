@@ -31,6 +31,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE
         Task<bool> UpdateIssuePKey(MiscellaneousIssueDetails details);
 
         Task<IReadOnlyList<GetAvailableStocksForIssueDto>> GetAvailableStocksForIssue(string itemcode);
+
+        Task<IReadOnlyList<GetAvailableStocksForIssueDto>> GetAvailableStocksForIssueNoParameters();
+
+
         Task<PagedList<GetAllMIssueWithPaginationDto>> GetAllMIssueWithPagination(UserParams userParams, bool status);
         Task<PagedList<GetAllMIssueWithPaginationDto>> GetAllMIssueWithPaginationOrig(UserParams userParams, string search, bool status);
         Task<bool> InActivateMiscellaenousIssue (MiscellaneousIssue issue);
