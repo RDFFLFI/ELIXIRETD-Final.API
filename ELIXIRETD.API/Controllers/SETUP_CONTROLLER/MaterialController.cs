@@ -83,9 +83,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                     }
 
-                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);
-                    //var validateSubandCategories = await _unitOfWork.Materials.ValidateSubcategories(items.SubCategoryId);   
-
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);  
 
                       if(validateDuplicate == true)
                       {
