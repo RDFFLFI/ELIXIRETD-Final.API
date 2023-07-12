@@ -191,5 +191,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return await uoms.ToListAsync();
         }
+
+
+
+        public async Task<Uom> GetByCodeAsync(string uomCode)
+        {
+            return await _context.Uoms.FirstOrDefaultAsync(u => u.UomCode == uomCode);
+        }
+
     }
 }

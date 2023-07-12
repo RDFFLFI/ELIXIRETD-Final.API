@@ -30,6 +30,14 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ValidateSubcategInUse(int subcateg);
 
 
+        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int subCategory);
+        Task<bool> ValidateSubcategories(int subcategories);
+
+
+        Task<bool>AddMaterialImport(Material material);
+        Task<SubCategory> GetByNameAndItemCategoryIdAsync(string subCategoryName, int itemCategoryId);
+        Task<ItemCategory> GetByNameAsync(string itemCategoryName);
+
 
         Task<bool> ExistSubCategory(SubCategory category);
         Task<bool> ValidateItemCategory(int ItemCateg);

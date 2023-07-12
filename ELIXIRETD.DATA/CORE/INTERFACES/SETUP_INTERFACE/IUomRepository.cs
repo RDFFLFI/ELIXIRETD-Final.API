@@ -35,5 +35,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<UomDto>> GetAllUom();
 
 
+        Task<Uom> GetByCodeAsync(string uomCode);
+
+
     }
 }

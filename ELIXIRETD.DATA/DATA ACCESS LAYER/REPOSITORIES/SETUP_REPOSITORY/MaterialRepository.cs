@@ -7,6 +7,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Data;
 using System.Security.Cryptography;
 
@@ -67,6 +68,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return await materials.ToListAsync();
         }
+
+
 
 
 
@@ -739,6 +742,54 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                        });
 
             return await categories.ToListAsync();
+        }
+
+        public async Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int subCategory)
+        {
+
+            var validate = await _context.Materials.Where(x => x.ItemCode == itemCode && x.ItemDescription == itemdescription &&  x.UomId == uom && x.SubCategoryId == subCategory)
+                                             .FirstOrDefaultAsync();
+
+            if(validate == null)
+            {
+                return false;
+            }
+
+            return true;
+        
+
+        }
+
+
+        public async Task<bool> AddMaterialImport(Material material)
+        {
+        
+            await _context.Materials.AddAsync(material);
+
+            return true;
+        }
+
+        public async Task<SubCategory> GetByNameAndItemCategoryIdAsync(string subCategoryName, int itemCategoryId)
+        {
+            return await _context.SubCategories.FirstOrDefaultAsync(x => x.SubCategoryName == subCategoryName && x.ItemCategoryId == itemCategoryId);
+        }
+
+        public async Task<ItemCategory> GetByNameAsync(string itemCategoryName)
+        {
+            return await _context.ItemCategories.FirstOrDefaultAsync(x => x.ItemCategoryName == itemCategoryName);
+        }
+
+        public async Task<bool> ValidateSubcategories(int subcategories)
+        {
+            var validate = await _context.SubCategories.Where(x => x.Id == subcategories && x.IsActive == true)
+                                                        .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+            return true;
+
+
         }
     }
  

@@ -3,11 +3,18 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using ELIXIRETD.DATA.SERVICES;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
+//using System.Data.Entity;
 using System.Data.OleDb;
+using System.Text.Json;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 {
@@ -15,11 +22,108 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
     public class MaterialController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly StoreContext _context;
 
-        public MaterialController(IUnitOfWork unitOfWork)
+        public MaterialController(IUnitOfWork unitOfWork , StoreContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
+
+        [HttpPost]
+        [Route("AddNewImportMaterials")]
+        public async Task<IActionResult> AddNewImportMaterials([FromBody] Material[] materials)
+        {
+
+            if (ModelState.IsValid != true) return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            {
+
+                List<Material> DuplicateList = new List<Material>();
+                List<Material> AvailableImport = new List<Material>();
+                List<Material> ItemcategoryNotExist = new List<Material>();
+                List<Material> SubcategoryNotExist = new List<Material>();
+                List<Material> UomNotExist = new List<Material>();
+
+                foreach (Material items in materials)
+                {
+
+                    Uom uom = await _unitOfWork.Uoms.GetByCodeAsync(items.UomCode);
+                    if (uom == null)
+                    {
+                        UomNotExist.Add(items);
+                        continue;
+                    }
+                    items.UomId = uom.Id;
+
+                    ItemCategory itemCategory = await _unitOfWork.Materials.GetByNameAsync(items.ItemCategoryName);
+                    if (itemCategory == null)
+                    {
+                        ItemcategoryNotExist.Add(items);
+                        continue;
+                    }
+                   
+
+                    SubCategory subCategory = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.SubCategoryName, itemCategory.Id);
+                    if(subCategory == null)
+                    {
+                        SubcategoryNotExist.Add(items);
+                        continue;
+                    }
+                    else
+                    {
+                        items.SubCategoryId = subCategory.Id;
+                    }
+                  
+
+
+                    if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.SubCategoryId == items.SubCategoryId) > 1)
+                    {
+                        DuplicateList.Add(items);
+                        continue;
+
+                    }
+
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);
+                    //var validateSubandCategories = await _unitOfWork.Materials.ValidateSubcategories(items.SubCategoryId);   
+
+
+                      if(validateDuplicate == true)
+                      {
+                        DuplicateList.Add(items);
+                      }
+                   
+                      else
+                      {
+                        AvailableImport.Add(items);
+                        await _unitOfWork.Materials.AddMaterialImport(items);
+                      }
+
+                }
+
+                var resultList = new
+                {
+                    AvailableImport,
+                    DuplicateList,
+                    ItemcategoryNotExist,
+                    SubcategoryNotExist,
+                    UomNotExist
+                    
+                 
+                };
+
+                if (DuplicateList.Count == 0 && SubcategoryNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0)
+                {
+                    await _unitOfWork.CompleteAsync();
+                    return Ok("Successfully Add!");
+                }
+                else
+                {
+                    return BadRequest(resultList);
+                }
+
+            }
+        }
+
 
 
         [HttpGet]
@@ -27,7 +131,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> GetAllActiveMaterials()
         {
             var materials = await _unitOfWork.Materials.GetAllActiveMaterials();
-
             return Ok(materials);
         }
 
