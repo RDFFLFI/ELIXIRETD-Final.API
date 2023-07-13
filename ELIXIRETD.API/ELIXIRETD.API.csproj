@@ -10,6 +10,7 @@
     <None Remove="Controllers\ORDERING_CONTROLLER\OrderingController.cs~RF1900bdd.TMP" />
     <None Remove="Controllers\ORDERING_CONTROLLER\OrderingController.cs~RFb66bd4.TMP" />
     <None Remove="Controllers\SETUP_CONTROLLER\MaterialController.cs~RF1e0928c.TMP" />
+    <None Remove="Controllers\SETUP_CONTROLLER\MaterialController.cs~RF3922c5.TMP" />
   </ItemGroup>
 
   <ItemGroup>

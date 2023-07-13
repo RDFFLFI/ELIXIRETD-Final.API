@@ -3043,20 +3043,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-            foreach (var x in existingtransact)
-            {
-
-                x.IsActive = true;
-                x.IsTransact = true;
-                x.PreparedDate = DateTime.Now;
-
-            }
 
 
             await _context.TransactOrder.AddAsync(transact);
 
-            if (!existing.Any())
-                return false;
+            //if (!existing.Any())
+            //    return false;
 
 
             foreach (var itemss in existing)

@@ -760,7 +760,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             returned.IsReturned = true;
             returned.IsActive = true;
             returned.IsApprovedReturned = false;
+
             returned.StatusApproved = "For return approval";
+
+
             returned.DepartmentCode = borrowed.DepartmentCode;
             returned.DepartmentName = borrowed.DepartmentName;
             returned.CompanyCode = borrowed.CompanyCode;

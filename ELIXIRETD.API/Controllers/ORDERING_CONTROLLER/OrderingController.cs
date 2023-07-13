@@ -1079,6 +1079,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             foreach (TransactMoveOrder items in transact)
             {
+                items.IsTransact = true;
+                items.IsActive = true;
+                items.PreparedDate = DateTime.Now;
 
                 if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
                     return BadRequest("no order exist");
