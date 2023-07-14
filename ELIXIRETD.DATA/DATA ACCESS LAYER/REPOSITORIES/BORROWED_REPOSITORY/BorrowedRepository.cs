@@ -255,28 +255,28 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<IReadOnlyList<GetAvailableStocksForBorrowedIssue_Dto>> GetAvailableStocksForBorrowedIssueNoParameters()
         {
             var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                              .GroupBy(x => new
-                                                              {
+                                                               .GroupBy(x => new
+                                                               {
 
 
-                                                                  x.Id,
-                                                                  x.ItemCode,
-                                                                  x.ItemDescription,
-                                                                  x.Uom,
-                                                                  x.ActualGood,
-                                                                  x.ActualReceivingDate,
+                                                                   x.Id,
+                                                                   x.ItemCode,
+                                                                   x.ItemDescription,
+                                                                   x.Uom,
+                                                                   x.ActualGood,
+                                                                   x.ActualReceivingDate,
 
-                                                              }).Select(x => new WarehouseInventory
-                                                              {
+                                                               }).Select(x => new WarehouseInventory
+                                                               {
 
-                                                                  WarehouseId = x.Key.Id,
-                                                                  ItemCode = x.Key.ItemCode,
-                                                                  ItemDescription = x.Key.ItemDescription,
-                                                                  Uom = x.Key.Uom,
-                                                                  ActualGood = x.Key.ActualGood,
-                                                                  RecievingDate = x.Key.ActualReceivingDate.ToString()
+                                                                   WarehouseId = x.Key.Id,
+                                                                   ItemCode = x.Key.ItemCode,
+                                                                   ItemDescription = x.Key.ItemDescription,
+                                                                   Uom = x.Key.Uom,
+                                                                   ActualGood = x.Key.ActualGood,
+                                                                   RecievingDate = x.Key.ActualReceivingDate.ToString()
 
-                                                              });
+                                                               });
 
             var moveorderOut = _context.MoveOrders.Where(x => x.IsActive == true)
                                                   .Where(x => x.IsPrepared == true)
@@ -403,8 +403,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                     RemainingStocks = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                     ReceivingDate = total.Key.RecievingDate,
 
-                                }).Where(x => x.RemainingStocks != 0)
-                                   ;
+                                }).Where(x => x.RemainingStocks != 0);
+                                 
 
             return await getAvailable.ToListAsync();
         }
