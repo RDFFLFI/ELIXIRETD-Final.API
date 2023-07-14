@@ -222,12 +222,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<IReadOnlyList<GetAvailableStocksForIssueDto>> GetAvailableStocksForIssueNoParameters()
         {
-            var hasQuantity = await _context.MiscellaneousIssueDetail.AnyAsync(x => x.IsActive && x.Quantity > 0);
-
-            if (!hasQuantity)
-            {
-                return new List<GetAvailableStocksForIssueDto>();
-            }
+          
 
 
             var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -362,7 +357,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                   ReceivingDate = total.Key.ReceivingDate
 
-                              }).Where(x => x.RemainingStocks != 0 && x.RemainingStocks > 0);
+                              }).Where(x => x.RemainingStocks != 0);
 
             return await getAvailable.ToListAsync();
         }
@@ -374,14 +369,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<IReadOnlyList<GetAvailableStocksForIssueDto>> GetAvailableStocksForIssue(string itemcode)
         {
-
-
-            var hasQuantity = await _context.MiscellaneousIssueDetail.AnyAsync(x => x.IsActive && x.ItemCode == itemcode && x.Quantity > 0);
-
-            if (!hasQuantity)
-            {
-                return new List<GetAvailableStocksForIssueDto>();
-            }
 
 
             var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -504,7 +491,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                   ReceivingDate = total.Key.ReceivingDate
 
-                              }).Where(x => x.RemainingStocks != 0 && x.ItemCode == itemcode && x.RemainingStocks > 0);
+                              }).Where(x => x.RemainingStocks != 0 && x.ItemCode == itemcode);
 
             return await getAvailable.ToListAsync();
 
