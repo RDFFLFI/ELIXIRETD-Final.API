@@ -91,13 +91,20 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotification();
 
+        Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationAllBorrowedNoParameters();
+
+
+
 
         Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationBorrowedApprove(int empid);
 
         Task<IReadOnlyList<GetNotificationForReturnedApprovalDto>> GetNotificationReturnedApprove(int empid);
 
-
         Task<IReadOnlyList<RejectBorrowedNotificationDto>> RejectBorrowedNotificationWithParameter(int empid);
+
+        Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationAllBorrowed(int empid);
+
+
 
 
 

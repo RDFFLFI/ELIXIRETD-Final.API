@@ -54,6 +54,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                                SyncStatus = x.StatusSync,
 
+                                             
                                                SyncDate = x.SyncDate.ToString(),
 
                                                DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
@@ -83,6 +84,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              SupplierName = x.SupplierName,
 
                                              SyncDate = x.SyncDate.ToString(),
+                                             SyncStatus = x.StatusSync,
+
 
                                              ModifyBy = x.ModifyBy,
                                              ModifyDate = x.ModifyDate.ToString(),
@@ -105,6 +108,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           SupplierCode = x.SupplierCode,
                                           SupplierName = x.SupplierName,
 
+
+                                          SyncStatus = x.StatusSync,
                                           SyncDate = x.SyncDate.ToString(),
 
                                           ModifyBy = x.ModifyBy,

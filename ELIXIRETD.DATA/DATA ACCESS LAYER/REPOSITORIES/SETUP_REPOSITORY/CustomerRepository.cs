@@ -119,6 +119,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                           SyncDate = x.SyncDate.ToString(),
 
+                                          SyncStatus = x.StatusSync,
+
                                           CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,
                                           DepartmentCode = x.DepartmentCode,
@@ -157,7 +159,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                           SyncDate = x.SyncDate.ToString(),
 
-
+                                          SyncStatus = x.StatusSync,
 
                                           CompanyCode = x.CompanyCode,
                                           CompanyName = x.CompanyName,

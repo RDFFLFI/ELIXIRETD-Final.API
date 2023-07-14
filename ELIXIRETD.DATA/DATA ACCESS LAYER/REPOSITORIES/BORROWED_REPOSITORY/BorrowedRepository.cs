@@ -1994,6 +1994,44 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
+
+       public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationAllBorrowedNoParameters()
+        {
+            var borrowed = _context.BorrowedIssues
+                                                .Where(x => x.IsReturned == null)
+                                                 .Where(x => x.IsActive == true && x.IsApproved == false || x.IsReject != null)
+                                              
+                            
+                                                .GroupBy(x => new
+                                                {
+                                                    x.Id,
+                                                    x.CustomerCode,
+                                                    x.CustomerName,
+                                                  
+                                                    //x.IsActive
+
+                                                }).Select(x => new GetNotificationForBorrowedApprovalDto
+                                                {
+
+                                                    Id = x.Key.Id,
+                                                    CustomerCode = x.Key.CustomerCode,
+                                                    CustomerName = x.Key.CustomerName,
+                                                 
+                                                    //IsActive = x.Key.IsActive,
+
+
+                                                });
+
+
+            return await borrowed.ToListAsync();
+        }
+
+
+
+
+
+
+
         public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationBorrowedApprove(int empid)
         {
 
@@ -2002,6 +2040,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var borrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
                                                 .Where(x => x.IsApproved == true)
+                                                .Where(x => x.IsReturned == null)
                                                 .Where(x => x.PreparedBy == employee.FullName)
 
                                                .GroupBy(x => new
@@ -2047,14 +2086,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            x.CustomerName,
                                                            x.IsApprovedReturned,
                                                            //x.ReturnedDate,
-                                                           x.IsActive
+                                                           //x.IsActive
 
                                                        }).Select(x => new GetNotificationForReturnedApprovalDto
                                                        {
                                                            Id = x.Key.Id,
                                                            CustomerCode = x.Key.CustomerCode,
                                                            CustomerName = x.Key.CustomerName,
-                                                           IsActive = x.Key.IsActive
+                                                           //IsActive = x.Key.IsActive
 
 
                                                        });
@@ -2068,7 +2107,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var employee = await _context.Users.Where(x => x.Id == empid)
                                                 .FirstOrDefaultAsync();
 
-            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
+            var reject = _context.BorrowedIssues.Where(x =>  x.IsReject == true && x.IsRejectDate != null)
                                                 .Where(x => x.PreparedBy == employee.FullName)
                                                   .Select(x => new RejectBorrowedNotificationDto
                                                   {
@@ -2082,6 +2121,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+
+       public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationAllBorrowed(int empid)
+        {
+            var employee = await _context.Users.Where(x => x.Id == empid)
+                                        .FirstOrDefaultAsync();
+
+            var borrowed = _context.BorrowedIssues
+                                              
+                                                .Where(x => x.IsReturned == null)
+                                                .Where(x => x.IsApprovedDate != null || x.IsRejectDate != null)
+                                                .Where(x => x.PreparedBy == employee.FullName)
+
+                                               .GroupBy(x => new
+                                               {
+                                                   x.Id,
+                                                   x.CustomerCode,
+                                                   x.CustomerName,
+                                                
+
+                                               }).Select(x => new GetNotificationForBorrowedApprovalDto
+                                               {
+
+                                                   Id = x.Key.Id,
+                                                   CustomerCode = x.Key.CustomerCode,
+                                                   CustomerName = x.Key.CustomerName,
+
+                                               });
+
+
+            return await borrowed.ToListAsync();
+
+        }
 
 
 

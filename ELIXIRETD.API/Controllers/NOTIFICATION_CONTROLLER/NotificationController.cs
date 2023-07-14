@@ -47,6 +47,8 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             //borrowed
             var ForBorrowedApproval = await _unitOfWork.Borrowed.GetNotificationForBorrowedApproval();
             var ForReturnedApproval = await _unitOfWork.Borrowed.GetNotificationForReturnedApproval();
+
+            var ForGetAllBorrowedNoParameters = await _unitOfWork.Borrowed.GetNotificationAllBorrowedNoParameters();
            
 
             var posummarycount = PoSummaryNotif.Count();
@@ -70,6 +72,9 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
 
             var forborrowedApprovalcount = ForBorrowedApproval.Count();
             var forreturnedApprovalcount = ForReturnedApproval.Count();
+
+            var GetAllBorrowed = ForGetAllBorrowedNoParameters.Count();
+
 
             var countlist = new
             {
@@ -131,6 +136,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 ReturnedApproval = new
                 {
                     forreturnedApprovalcount
+                },
+                GetAllBorrowed = new
+                {
+                    GetAllBorrowed
                 }
 
             };
@@ -153,12 +162,13 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             var ApprovedBorrowedNotif = await _unitOfWork.Borrowed.GetNotificationBorrowedApprove(empid);
             var ApproveReturnedNotif = await _unitOfWork.Borrowed.GetNotificationReturnedApprove(empid);
             var RejectNotif = await _unitOfWork.Borrowed.RejectBorrowedNotificationWithParameter(empid);
-
+            var AllBorrowed = await _unitOfWork.Borrowed.GetNotificationAllBorrowed(empid);
 
 
             var borrowedApprovecount = ApprovedBorrowedNotif.Count();
             var returnedApprovecount = ApproveReturnedNotif.Count();    
             var RejectNotifcount = RejectNotif.Count();
+            var allBorrowed =  AllBorrowed.Count();
 
 
             var countlist = new
@@ -176,6 +186,11 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     RejectNotifcount
                 },
+                AllBorrowedCount = new
+                {
+                    allBorrowed
+                }
+
 
 
             };
