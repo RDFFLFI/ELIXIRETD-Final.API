@@ -32,6 +32,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  CustomerName = x.CustomerName,
                                                  CustomerType = x.CustomerType,
 
+                                                 SyncStatus = x.StatusSync,
+
 
                                                  ModifyBy = x.ModifyBy,
                                                  ModifyDate = x.ModifyDate.ToString(),
@@ -67,6 +69,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                               CustomerName = x.CustomerName,
                                               CustomerType = x.CustomerType,
 
+                                              SyncStatus = x.StatusSync,
 
                                               ModifyBy = x.ModifyBy,
                                               ModifyDate = x.ModifyDate.ToString(),

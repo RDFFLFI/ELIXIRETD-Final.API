@@ -16,6 +16,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public string DateAdded { get; set; }
         public string AddedBy { get; set; }
 
+        public string SyncStatus { get; set; }
+
         public string ModifyDate { get; set; }
         public string ModifyBy { get; set; }
 

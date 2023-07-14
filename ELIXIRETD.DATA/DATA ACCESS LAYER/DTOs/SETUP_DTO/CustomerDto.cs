@@ -13,6 +13,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public string CustomerName { get; set; }
         public string CustomerType { get; set; }
 
+        public string SyncStatus { get; set; }
+
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
         public string DepartmentCode { get; set; }
