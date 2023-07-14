@@ -235,13 +235,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                {
                                                                    x.Id,
                                                                    x.ItemCode,
+                                                                   x.ItemDescription,
+                                                                   x.Uom,
                                                                    x.ActualGood,
                                                                    x.ActualReceivingDate
                                                                }).Select(x => new WarehouseInventory
                                                                {
                                                                    WarehouseId = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
+
                                                                    ActualGood = x.Key.ActualGood,
+                                                                   ItemDescription = x.Key.ItemDescription,
+                                                                   Uom = x.Key.Uom,
                                                                    RecievingDate = x.Key.ActualReceivingDate.ToString()
 
                                                                });
@@ -321,6 +326,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
                                   warehouseId = x.warehouse.warehouse.warehouse.warehouse.WarehouseId,
                                   itemcode = x.warehouse.warehouse.warehouse.warehouse.ItemCode,
+                                  itemdescription = x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
+                                  uom = x.warehouse.warehouse.warehouse.warehouse.Uom,
+                                  
                                   ReceivingDate = x.warehouse.warehouse.warehouse.warehouse.RecievingDate,
                                   WarehouseActualGood = x.warehouse.warehouse.warehouse.warehouse.ActualGood != null ? x.warehouse.warehouse.warehouse.warehouse.ActualGood : 0,
                                   MoveOrderOut = x.warehouse.warehouse.warehouse.moveorder.QuantityOrdered != null ? x.warehouse.warehouse.warehouse.moveorder.QuantityOrdered : 0,
@@ -333,6 +341,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   x.warehouseId,
                                   x.itemcode,
+                                  x.itemdescription,
+                                  x.uom,
                                   x.ReceivingDate,
                                   x.WarehouseActualGood,
                                   x.MoveOrderOut,
@@ -347,6 +357,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
                                   WarehouseId = total.Key.warehouseId,
                                   ItemCode = total.Key.itemcode,
+                                  ItemDescription = total.Key.itemdescription,
+                                  Uom = total.Key.uom,  
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                   ReceivingDate = total.Key.ReceivingDate
 

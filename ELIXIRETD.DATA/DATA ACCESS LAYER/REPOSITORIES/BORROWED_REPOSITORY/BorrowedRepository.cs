@@ -261,6 +261,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                                   x.Id,
                                                                   x.ItemCode,
+                                                                  x.ItemDescription,
+                                                                  x.Uom,
                                                                   x.ActualGood,
                                                                   x.ActualReceivingDate,
 
@@ -269,6 +271,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                                   WarehouseId = x.Key.Id,
                                                                   ItemCode = x.Key.ItemCode,
+                                                                  ItemDescription = x.Key.ItemDescription,
+                                                                  Uom = x.Key.Uom,
                                                                   ActualGood = x.Key.ActualGood,
                                                                   RecievingDate = x.Key.ActualReceivingDate.ToString()
 
@@ -377,6 +381,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                     warehouse.WarehouseId,
                                     warehouse.ItemCode,
+                                    warehouse.ItemDescription,
+                                    warehouse.Uom,
                                     warehouse.RecievingDate,
                                     WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
                                     MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
@@ -392,6 +398,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                     WarehouseId = total.Key.WarehouseId,
                                     ItemCode = total.Key.ItemCode,
+                                    ItemDescription = total.Key.ItemDescription,
+                                    Uom = total.Key.Uom,
                                     RemainingStocks = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                     ReceivingDate = total.Key.RecievingDate,
 

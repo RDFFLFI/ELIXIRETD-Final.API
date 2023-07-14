@@ -4,6 +4,9 @@
     {
         public int WarehouseId { get; set; }
         public string ItemCode { get; set; }
+        public string ItemDescription { get; set; }
+
+        public string Uom { get; set; }
         public decimal ActualGood { get; set; }
         public string RecievingDate { get; set; }
 
