@@ -14,7 +14,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL
         public string SupplierName { get; set; }
         public string SupplierAddress { get; set; }
         public bool IsActive { get; set; } = true;
-        public DateTime DateAdded { get; set; } = DateTime.Now;
+        public DateTime DateAdded { get; set; }
         public string AddedBy { get; set; }
 
 
