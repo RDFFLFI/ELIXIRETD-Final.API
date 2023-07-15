@@ -779,26 +779,45 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<DtoOrderNotif>> GetOrdersForNotificationAll()
         {
-            var orders = _context.Orders.OrderBy(x => x.OrderDate)
-                                   .GroupBy(x => new
-                                   {
-                                       x.TrasactId,
-                                       x.CustomerName,
-                                       x.IsActive,
-                                       x.PreparedDate,
-                                       ////x.Rush
+            //var orders = _context.Orders.OrderBy(x => x.OrderDate)
+            //                       .GroupBy(x => new
+            //                       {
+            //                           x.TrasactId,
+            //                           x.CustomerName,
+            //                           x.IsActive,
+            //                           x.PreparedDate,
+            //                           ////x.Rush
 
-                                   }).Where(x => x.Key.IsActive == true)
-                                     .Where(x => x.Key.PreparedDate == null)
+            //                       }).Where(x => x.Key.IsActive == true)
+            //                         .Where(x => x.Key.PreparedDate == null)
 
-                                     .Select(x => new DtoOrderNotif
-                                     {
-                                         MIRId = x.Key.TrasactId,
-                                         CustomerName = x.Key.CustomerName,
-                                         IsActive = x.Key.IsActive,
-                                         //Rush = x.Key.Rush != null ? true : false,
+            //                         .Select(x => new DtoOrderNotif
+            //                         {
+            //                             MIRId = x.Key.TrasactId,
+            //                             CustomerName = x.Key.CustomerName,
+            //                             IsActive = x.Key.IsActive,
+            //                             //Rush = x.Key.Rush != null ? true : false,
 
-                                     })/*.Where(x => x.Rush == true)*/;
+            var orders = _context.Orders
+                               .GroupBy(x => new
+                               {
+                                   x.TrasactId,
+                                   x.CustomerName,
+                                   x.IsActive,
+                                   x.PreparedDate,
+                                   //x.Rush
+
+                               }).Where(x => x.Key.IsActive == true)
+                                 .Where(x => x.Key.PreparedDate == null)
+
+                                 .Select(x => new DtoOrderNotif
+                                 {
+                                     MIRId = x.Key.TrasactId,
+                                     CustomerName = x.Key.CustomerName,
+                                     IsActive = x.Key.IsActive,
+                                     //Rush = x.Key.Rush != null ? true : false,
+
+                                 })/*.Where(x => x.Rush == true)*/;
 
             return await orders.ToListAsync();
         }
@@ -821,7 +840,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                    {
                                        CustomerName = x.Key.CustomerName,
                                        IsActive = x.Key.IsActive,
-                                       IsApproved = x.Key.IsApproved != null,
+                                      /* IsApproved = x.Key.IsApproved != null*/
                                        //Rush = x.Key.Rush != null ? true : false,
 
                                    })/*.Where(x => x.Rush == true)*/;

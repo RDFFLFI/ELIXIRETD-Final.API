@@ -48,7 +48,7 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             // All
 
             var OrderingNotifAll = await _unitOfWork.Orders.GetOrdersForNotificationAll();
-            var OrderingApprovalNotifAll = await _unitOfWork.Orders.GetMoveOrdersForNotificationAll();
+            var OrderingApprovalNotifAll = await _unitOfWork.Orders.GetAllListForApprovalOfScheduleAll();
             var MoveorderlistNotifAll = await _unitOfWork.Orders.GetMoveOrdersForNotificationAll();
             var ForApprovalListNotifAll = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotificationAll();
 
@@ -113,7 +113,7 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
 
                 OrderingAll = new
                 {
-                    orderingapprovalallcount
+                    orderingnotifallcount
                 },
                 Ordering = new
                 {
