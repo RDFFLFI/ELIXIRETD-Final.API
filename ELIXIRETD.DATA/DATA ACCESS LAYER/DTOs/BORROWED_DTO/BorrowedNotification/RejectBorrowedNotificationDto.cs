@@ -9,7 +9,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO.BorrowedNotificatio
     public class RejectBorrowedNotificationDto
     {
 
-        public int BorrowedPKey { get; set; }
+
+        public int Id { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
         public decimal TotalQuantity { get; set; }

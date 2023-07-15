@@ -42,7 +42,11 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             var ForApprovalListNotif = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotification();
             var ForApprovalListNotifNotRush = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotificationNotRush();
 
-            var rejectlistNotif = await _unitOfWork.Orders.GetRejectMoveOrderNotification();
+            var rejectlistNotifs = await _unitOfWork.Borrowed.RejectBorrowedNotification();
+
+
+
+
 
             //borrowed
             var ForBorrowedApproval = await _unitOfWork.Borrowed.GetNotificationForBorrowedApproval();
@@ -68,7 +72,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             var forapprovalmoveordercount = ForApprovalListNotif.Count();
             var forapprovalmoveordercountNotRush = ForApprovalListNotifNotRush.Count();
 
-            var rejectlistcount = rejectlistNotif.Count();
+
+
+
+            var rejectlistscount = rejectlistNotifs.Count();
 
             var forborrowedApprovalcount = ForBorrowedApproval.Count();
             var forreturnedApprovalcount = ForReturnedApproval.Count();
@@ -125,10 +132,7 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     forapprovalmoveordercountNotRush
                 },
-                Rejectlist = new
-                {
-                    rejectlistcount
-                },
+               
                 BorrowedApproval = new
                 {
                     forborrowedApprovalcount
@@ -136,6 +140,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 ReturnedApproval = new
                 {
                     forreturnedApprovalcount
+                },
+                Rejectlist = new
+                {
+                    rejectlistscount
                 },
                 GetAllBorrowed = new
                 {

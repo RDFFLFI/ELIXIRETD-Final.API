@@ -1980,16 +1980,35 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
 
 
-            var reject = _context.BorrowedIssues.Where(x => x.IsActive == false && x.IsReject == true && x.IsRejectDate != null)
-                                                  .Select(x => new RejectBorrowedNotificationDto
-                                                  {
-                                                      BorrowedPKey = x.Id,
-                                                      CustomerCode = x.CustomerCode,
-                                                      CustomerName = x.CustomerName,
-                                                      IsActive = x.IsActive,
-                                                  });
+            var borrowed = _context.BorrowedIssues
+                                                .Where(x => x.IsApproved == false)
+                                                .Where(x => x.IsApprovedDate == null && x.IsReject == true)
 
-            return await reject.ToListAsync();
+                                               .GroupBy(x => new
+                                               {
+                                                   x.Id,
+                                                   x.CustomerCode,
+                                                   x.CustomerName,
+                                                   x.IsApproved,
+                                                   //x.PreparedDate,
+                                                   //x.IsActive
+
+                                               }).Select(x => new RejectBorrowedNotificationDto
+                                               {
+
+                                                   Id = x.Key.Id,
+                                                   CustomerCode = x.Key.CustomerCode,
+                                                   CustomerName = x.Key.CustomerName,
+                                                   //IsApproved = x.Key.IsApproved,
+                                                   //IsActive = x.Key.IsActive,
+
+
+                                               });
+
+
+            return await borrowed.ToListAsync();
+
+            
 
         }
 
@@ -2111,7 +2130,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 .Where(x => x.PreparedBy == employee.FullName)
                                                   .Select(x => new RejectBorrowedNotificationDto
                                                   {
-                                                      BorrowedPKey = x.Id,
+                                                      Id = x.Id,
                                                       CustomerCode = x.CustomerCode,
                                                       CustomerName = x.CustomerName,
                                                       IsActive = x.IsActive,
