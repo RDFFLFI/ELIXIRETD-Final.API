@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,21 +40,29 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
 
             var TransactmoveorderNotif = await _unitOfWork.Orders.GetAllForTransactMoveOrderNotification();
 
+            var RejectMoveOrderNotif = await _unitOfWork.Orders.GetRejectMoveOrderNotification();
+
             var ForApprovalListNotif = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotification();
             var ForApprovalListNotifNotRush = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotificationNotRush();
 
-            var rejectlistNotifs = await _unitOfWork.Borrowed.RejectBorrowedNotification();
+            // All
 
-
-
-
+            var OrderingNotifAll = await _unitOfWork.Orders.GetOrdersForNotificationAll();
+            var OrderingApprovalNotifAll = await _unitOfWork.Orders.GetMoveOrdersForNotificationAll();
+            var MoveorderlistNotifAll = await _unitOfWork.Orders.GetMoveOrdersForNotificationAll();
+            var ForApprovalListNotifAll = await _unitOfWork.Orders.GetForApprovalMoveOrdersNotificationAll();
 
             //borrowed
             var ForBorrowedApproval = await _unitOfWork.Borrowed.GetNotificationForBorrowedApproval();
             var ForReturnedApproval = await _unitOfWork.Borrowed.GetNotificationForReturnedApproval();
 
             var ForGetAllBorrowedNoParameters = await _unitOfWork.Borrowed.GetNotificationAllBorrowedNoParameters();
-           
+            var rejectlistNotifs = await _unitOfWork.Borrowed.RejectBorrowedNotification();
+
+
+
+
+
 
             var posummarycount = PoSummaryNotif.Count();
             //var cancelledcount = CancelledPONotif.Count();
@@ -68,12 +77,19 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
             var moveorderlistcountNotRush = MoveorderlistNotifNotRush.Count();
 
             var transactmoveordercount = TransactmoveorderNotif.Count();
+            var rejectmoveordercount = RejectMoveOrderNotif.Count();
 
             var forapprovalmoveordercount = ForApprovalListNotif.Count();
             var forapprovalmoveordercountNotRush = ForApprovalListNotifNotRush.Count();
 
+            // all
 
+            var orderingnotifallcount = OrderingNotifAll.Count();
+            var orderingapprovalallcount = OrderingApprovalNotifAll.Count();
+            var moveorderlistallcount = MoveorderlistNotifAll.Count();
+            var forapprovalmoveorderallcount = ForApprovalListNotifAll.Count();
 
+            //Borrowed
 
             var rejectlistscount = rejectlistNotifs.Count();
 
@@ -94,6 +110,11 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 //{
                 //    cancelledcount
                 //},
+
+                OrderingAll = new
+                {
+                    orderingapprovalallcount
+                },
                 Ordering = new
                 {
                     orderingnotifcount
@@ -101,6 +122,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 OrderingNotRush = new
                 {
                     orderingnotifcountNotRush
+                },
+                OrderingApprovalAll = new
+                {
+                    orderingapprovalallcount
                 },
 
                 OrderingApproval = new
@@ -111,7 +136,10 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     orderingapprovalcountNotRush
                 },
-
+                MoveOrderlistAll = new
+                {
+                    moveorderlistallcount
+                },
                 MoveOrderlist = new
                 {
                     moveorderlistcount
@@ -124,6 +152,15 @@ namespace ELIXIRETD.API.Controllers.NOTIFICATION_CONTROLLER
                 {
                     transactmoveordercount
                 },
+                Rejectmoveorder = new
+                {
+                    rejectmoveordercount
+                },
+                ForApprovalMoveOrderAll = new
+                {
+                    forapprovalmoveorderallcount
+                },
+
                 ForApprovalMoveOrder = new
                 {
                     forapprovalmoveordercount

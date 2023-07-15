@@ -65,6 +65,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public int AgingDays { get; set; }
 
+        public bool ? IsReject { get; set; }
+
 
 
 

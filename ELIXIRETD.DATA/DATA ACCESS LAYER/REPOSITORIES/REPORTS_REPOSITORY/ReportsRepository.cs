@@ -261,7 +261,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var Reports = (from borrowed in _context.BorrowedIssues
-                           where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo) && borrowed.IsActive == true
+                           where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo)  
+                           where borrowed.IsActive == true || borrowed.IsReject != null
                            join returned in _context.BorrowedIssueDetails
                            on borrowed.Id equals returned.BorrowedPKey
                            into leftJ
@@ -283,6 +284,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                TransactedBy = borrowed.PreparedBy,
                                BorrowedDate = borrowed.PreparedDate.ToString(),
 
+                               IsReject = borrowed.IsReject,
                                StatusApprove = borrowed.StatusApproved,
                                AgingDays = borrowed.AgingDays,
 
