@@ -489,17 +489,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var orders = _context.Orders
                                   .GroupBy(x => new
                                   {
+                                      x.TrasactId,
                                       x.CustomerName,
                                       x.IsActive,
                                       x.IsApproved,
                                       x.IsMove,
-                                      x.Rush
+                                      x.Rush,
+                                      x.PreparedDate
 
-                                  }).Where(x => x.Key.IsActive == true)
-                                    .Where(x => x.Key.IsApproved == true)
+                                  }).Where(x => x.Key.IsApproved == true)
+                                    .Where(x => x.Key.IsActive == true)
+                                    .Where(x => x.Key.PreparedDate != null)
                                     .Where(x => x.Key.IsMove == false)
                                     .Select(x => new DtoForMoveOrderNotif
                                     {
+                                        MIRId = x.Key.TrasactId,
                                         CustomerName = x.Key.CustomerName,
                                         IsActive = x.Key.IsActive,
                                         IsApproved = x.Key.IsApproved != null,
@@ -513,30 +517,32 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotificationNotRush()
         {
             var orders = _context.Orders
-                                  .GroupBy(x => new
-                                  {
-                                      x.CustomerName,
-                                      x.IsActive,
-                                      x.IsApproved,
-                                      x.IsMove,
-                                      x.Rush
+                                 .GroupBy(x => new
+                                 {
+                                     x.TrasactId,
+                                     x.CustomerName,
+                                     x.IsActive,
+                                     x.IsApproved,
+                                     x.IsMove,
+                                     x.Rush,
+                                     x.PreparedDate
 
-                                  }).Where(x => x.Key.IsActive == true)
-                                    .Where(x => x.Key.IsApproved == true)
-                                    .Where(x => x.Key.IsMove == false)
-                                    .Select(x => new DtoForMoveOrderNotif
-                                    {
-                                        CustomerName = x.Key.CustomerName,
-                                        IsActive = x.Key.IsActive,
-                                        IsApproved = x.Key.IsApproved != null,
-                                        Rush = x.Key.Rush != null ? true : false,
+                                 }).Where(x => x.Key.IsApproved == true)
+                                   .Where(x => x.Key.IsActive == true)
+                                   .Where(x => x.Key.PreparedDate != null)
+                                   .Where(x => x.Key.IsMove == false)
+                                   .Select(x => new DtoForMoveOrderNotif
+                                   {
+                                       MIRId = x.Key.TrasactId,
+                                       CustomerName = x.Key.CustomerName,
+                                       IsActive = x.Key.IsActive,
+                                       IsApproved = x.Key.IsApproved != null,
+                                       Rush = x.Key.Rush != null ? true : false,
 
-                                    }).Where(x => x.Rush == false);
+                                   }).Where(x => x.Rush == false);
 
             return await orders.ToListAsync();
         }
-
-
 
 
 
@@ -825,25 +831,31 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<DtoForMoveOrderNotif>> GetMoveOrdersForNotificationAll()
         {
             var orders = _context.Orders
-                                 .GroupBy(x => new
-                                 {
-                                     x.CustomerName,
-                                     x.IsActive,
-                                     x.IsApproved,
-                                     x.IsMove,
-                                     //x.Rush
+                                .GroupBy(x => new
+                                {
+                                    x.TrasactId,
+                                    x.CustomerName,
+                                    x.IsActive,
+                                    x.IsApproved,
+                                    x.IsMove,
+                                    //x.Rush,
+                                    x.PreparedDate
 
-                                 }).Where(x => x.Key.IsActive == true)
-                                   .Where(x => x.Key.IsApproved == true)
-                                   .Where(x => x.Key.IsMove == false)
-                                   .Select(x => new DtoForMoveOrderNotif
-                                   {
-                                       CustomerName = x.Key.CustomerName,
-                                       IsActive = x.Key.IsActive,
+                                }).Where(x => x.Key.IsApproved == true)
+                                  .Where(x => x.Key.IsActive == true)
+                                  .Where(x => x.Key.PreparedDate != null)
+                                  .Where(x => x.Key.IsMove == false)
+                                  .Select(x => new DtoForMoveOrderNotif
+                                  {
+                                      MIRId = x.Key.TrasactId,
+                                      CustomerName = x.Key.CustomerName,
+                                      IsActive = x.Key.IsActive,
+                                      //IsApproved = x.Key.IsApproved != null,
+                                      //Rush = x.Key.Rush != null ? true : false,
                                       /* IsApproved = x.Key.IsApproved != null*/
-                                       //Rush = x.Key.Rush != null ? true : false,
+                                      //Rush = x.Key.Rush != null ? true : false,
 
-                                   })/*.Where(x => x.Rush == true)*/;
+                                  })/*.Where(x => x.Rush == true)*/;
 
             return await orders.ToListAsync();
         }

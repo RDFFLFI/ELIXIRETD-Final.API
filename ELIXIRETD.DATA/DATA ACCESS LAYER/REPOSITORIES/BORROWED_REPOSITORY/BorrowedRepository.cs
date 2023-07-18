@@ -791,33 +791,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var employee = _context.Users.Where(x => x.Id == empid)
                                      .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues
-                                                  .Where(x => x.IsReturned == true && x.IsActive == true)
-                                                  .GroupBy(x => new
-                                                  {
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
+                                                          .GroupBy(x => new
+                                                          {
 
-                                                      x.Id,
-                                                      x.CustomerCode,
-                                                      x.CustomerName,
-                                                      x.IsApprovedReturned,
-                                                      x.IsApprovedReturnedDate,
-                                                      x.PreparedBy,
-                                                      x.StatusApproved,
-                                                      x.IsActive
+                                                              x.Id,
+                                                              x.CustomerCode,
+                                                              x.CustomerName,
+                                                              x.ReturnBy,
+                                                              x.IsApprovedReturned,
+                                                              x.StatusApproved,
+                                                              x.IsActive,
+                                                              x.PreparedBy
 
-                                                  }).Select(x => new DtoGetAllReturnedItem
-                                                  {
+                                                              //x.IsApprovedReturned
 
-                                                      Id = x.Key.Id,
-                                                      CustomerCode = x.Key.CustomerCode,
-                                                      CustomerName = x.Key.CustomerName,
-                                                      IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                      ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
-                                                      PreparedBy = x.Key.PreparedBy,
-                                                      StatusApprove = x.Key.StatusApproved
-                                                      
+                                                          }).Select(x => new DtoGetAllReturnedItem
+                                                          {
 
-                                                  });
+                                                              Id = x.Key.Id,
+                                                              CustomerCode = x.Key.CustomerCode,
+                                                              CustomerName = x.Key.CustomerName,
+                                                              ReturnBy = x.Key.ReturnBy,
+                                                              PreparedBy = x.Key.PreparedBy,
+
+                                                              IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                                              StatusApprove = x.Key.StatusApproved,
+                                                              IsActive = x.Key.IsActive
+                                                              //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
+
+                                                          });
 
 
             var BorrowIssue = _context.BorrowedIssueDetails
@@ -825,34 +828,40 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
                 .Where(x => x.borrowissue.PreparedBy == employee.FullName)
                 .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
+                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
                 .GroupBy(x => new
                 {
+                    //x.borrowdetails.BorrowedPKey,
                     x.borrowissue.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
+                    x.borrowissue.ReturnBy,
                     x.borrowdetails.IsApprovedReturned,
-                    x.borrowissue.ApproveReturnDate,
-                    x.borrowdetails.IsApprovedReturnedDate,
-                    x.borrowissue.StatusApprove,
+                    x.borrowissue.StatusApprove
+
+
 
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-
+                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    PreparedBy = x.Key.PreparedBy,
+                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+                    ReturnBy = x.Key.ReturnBy,
+
+
                     TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+
                     IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
-                    StatusApprove = x.Key.StatusApprove,
-                    
+                    StatusApprove = x.Key.StatusApprove
+
 
                 });
 
@@ -893,38 +902,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var employee = _context.Users.Where(x => x.Id == empid)
                                    .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues
-                                              .Where(x => x.IsReturned == true && x.IsActive == true)
-                                              .GroupBy(x => new
-                                              {
+            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
+                                                           .GroupBy(x => new
+                                                           {
 
-                                                  x.Id,
-                                                  x.CustomerCode,
-                                                  x.CustomerName,
-                                                  x.IsApprovedReturned,
-                                                  x.IsApprovedReturnedDate,
-                                                  x.PreparedBy,
-                                                  x.StatusApproved,
-                                                  x.IsActive
+                                                               x.Id,
+                                                               x.CustomerCode,
+                                                               x.CustomerName,
+                                                               x.ReturnBy,
+                                                               x.IsApprovedReturned,
+                                                               x.StatusApproved,
+                                                               x.IsActive,
+                                                               x.PreparedBy
 
+                                                               //x.IsApprovedReturned
 
-                                                  //x.IsApprovedReturned,
+                                                           }).Select(x => new DtoGetAllReturnedItem
+                                                           {
 
-                                              }).Select(x => new DtoGetAllReturnedItem
-                                              {
+                                                               Id = x.Key.Id,
+                                                               CustomerCode = x.Key.CustomerCode,
+                                                               CustomerName = x.Key.CustomerName,
+                                                               ReturnBy = x.Key.ReturnBy,
+                                                               PreparedBy = x.Key.PreparedBy,
 
-                                                  Id = x.Key.Id,
-                                                  CustomerCode = x.Key.CustomerCode,
-                                                  CustomerName = x.Key.CustomerName,
-                                                  //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                  IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
-                                                  PreparedBy = x.Key.PreparedBy,
-                                                  StatusApprove = x.Key.StatusApproved,
-                                                  IsActive = x.Key.IsActive
+                                                               IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                                               StatusApprove = x.Key.StatusApproved,
+                                                               IsActive = x.Key.IsActive
+                                                               //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
 
-
-                                              });
+                                                           });
 
 
             var BorrowIssue = _context.BorrowedIssueDetails
@@ -932,31 +939,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
                 .Where(x => x.borrowissue.PreparedBy == employee.FullName)
                 .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
+                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
                 .GroupBy(x => new
                 {
+                    //x.borrowdetails.BorrowedPKey,
                     x.borrowissue.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
                     x.borrowdetails.PreparedBy,
                     x.borrowdetails.ReturnedDate,
+                    x.borrowissue.ReturnBy,
                     x.borrowdetails.IsApprovedReturned,
-                    x.borrowdetails.IsApprovedReturnedDate,
                     x.borrowissue.StatusApprove
+
+
 
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-
+                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    PreparedBy = x.Key.PreparedBy,
+                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+                    ReturnBy = x.Key.ReturnBy,
+
+
                     TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
                     Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
                     TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+
                     IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                     StatusApprove = x.Key.StatusApprove
 
 
