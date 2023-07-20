@@ -261,6 +261,70 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         {
             return await _context.Users.AnyAsync(x => x.EmpId == empId && x.FullName == fullName);
         }
+
+
+
+
+
+
+        // Import
+
+
+        //public async Task<bool> AddNewUserImport(User user)
+        //{
+
+
+        //    await _context.Users.AddAsync(user);
+
+        //    return true;
+
+        //}
+
+        private string GenerateUsername(string fullName)
+        {
+            if (string.IsNullOrEmpty(fullName))
+            {
+                throw new ArgumentException("FullName must not be null or empty.");
+            }
+
+
+            string[] nameParts = fullName.Split(',');
+
+            if (nameParts.Length < 2)
+            {
+                throw new ArgumentException("FullName should contain at least a last name and a first name separated by a comma.");
+            }
+
+
+            string lastName = nameParts[0].Trim();
+            string firstName = nameParts[1].Trim();
+
+
+            string username = firstName.Substring(0, 1) + lastName;
+
+            return username;
+        }
+
+        public async Task<bool> AddNewUserImport(User user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user), "User parameter must not be null.");
+            }
+
+            user.UserName = GenerateUsername(user.FullName);
+
+            user.Password = user.UserName;
+            
+             await _context.Users.AddAsync(user);
+
+            return true;
+        }
+
+
+
+
+
     }
 }
 

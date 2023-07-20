@@ -38,6 +38,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
 
         Task<bool> ValidateEmpIdAndFullName(string empId, string fullName);
 
+        // Import
+
+        Task<bool> AddNewUserImport (User user);
+
         
 
 

@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using System;
 using System.Collections.Generic;
@@ -34,5 +35,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
         Task<bool> ValidateRoleSame(UserRole roles);
 
         Task<bool> ValidateRoleInUse(int role);
+
+
+        Task<UserRole> GetByCodeAsync(string userRoleCode);
     }
 }

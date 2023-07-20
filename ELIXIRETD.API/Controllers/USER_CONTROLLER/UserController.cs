@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.AspNetCore.Http;
@@ -177,7 +178,83 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
 
 
-     
+        [HttpPost]
+        [Route("AddNewUsersImport")]
+        public async Task<IActionResult> AddNewUsersImport([FromBody] User[] users)
+        {
+
+            if (ModelState.IsValid != true) return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            {
+
+                List<User> DuplicateList = new List<User>();
+                List<User> AvailableImport = new List<User>();
+                List<User> UserRoleNotExist = new List<User>();
+
+                foreach (User items in users)
+                {
+
+                    UserRole userRole = await _unitOfWork.Roles.GetByCodeAsync(items.UserRoleName);
+                    if (userRole == null)
+                    {
+                        UserRoleNotExist.Add(items);
+                        continue;
+                    }
+                    items.UserRoleId =userRole.Id;
+
+
+                    if (users.Count(x => x.EmpId == items.EmpId && x.FullName == items.FullName ) > 1)
+                    {
+                        DuplicateList.Add(items);
+                        continue;
+                    }
+
+                 
+
+
+                    var validateDuplicate = await _unitOfWork.Users.ValidateEmpIdAndFullName(items.EmpId, items.FullName);
+
+                        if (validateDuplicate == true)
+                        {
+                            DuplicateList.Add(items);
+                        }
+                        else
+                        {
+                            AvailableImport.Add(items);
+                            await _unitOfWork.Users.AddNewUserImport(items);
+                        }
+
+                    
+                }
+
+
+                    var resultList = new
+                    {
+                        AvailableImport,
+                        DuplicateList,
+                        UserRoleNotExist
+
+
+                    };
+
+
+                    if (DuplicateList.Count == 0 && UserRoleNotExist.Count == 0)
+                    {
+                        await _unitOfWork.CompleteAsync();
+                        return Ok("Successfully Add!");
+                    }
+                    else
+                    {
+                        return BadRequest(resultList);
+                    }
+
+            }
+
+
+            
+        }
+
+
+
 
 
     }

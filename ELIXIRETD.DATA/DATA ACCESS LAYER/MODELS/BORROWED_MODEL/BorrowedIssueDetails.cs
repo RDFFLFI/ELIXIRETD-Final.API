@@ -79,5 +79,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
 
         public int AgingDays { get; set; }
 
+        public string ItemRemarks { get; set; }
+
     }
 }

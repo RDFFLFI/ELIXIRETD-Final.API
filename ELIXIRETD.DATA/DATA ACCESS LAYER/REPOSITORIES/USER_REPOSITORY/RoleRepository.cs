@@ -244,6 +244,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                               .Join(_context.Roles, rolemoduless => rolemoduless.RoleId, role => role.Id, (rolemodoless, role) => new { rolemodoless, role })
                               .Join(_context.Modules, rolemoduless => rolemoduless.rolemodoless.ModuleId, module => module.Id, (rolemoduless, module) => new { rolemoduless, module })
                               .OrderBy(x => x.module.MainMenu.MenuOrder)
+                              .ThenBy(x => x.module.Id)
                               .Select(x => new RoleWithModuleDto
                               {
 
@@ -286,7 +287,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         }
 
-
-
+        public async Task<UserRole> GetByCodeAsync(string userRoleCode)
+        {
+            return await _context.Roles.FirstOrDefaultAsync(u => u.RoleName == userRoleCode);
+        }
     }
 }

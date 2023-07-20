@@ -77,6 +77,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string CustomerType { get; set; }
 
+        public string ItemRemarks { get; set; }
+
 
     }
 }

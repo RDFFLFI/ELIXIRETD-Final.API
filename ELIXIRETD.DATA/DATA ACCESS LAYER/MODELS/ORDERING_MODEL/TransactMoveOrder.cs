@@ -27,6 +27,9 @@
 
         public string CustomerType { get; set; }
 
-        
+
+        public string ItemRemarks { get; set; }
+
+
     }
 }

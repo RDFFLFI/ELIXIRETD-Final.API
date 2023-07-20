@@ -1496,7 +1496,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  DaysLevel = Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m)),
                                  BorrowedDifference = total.Key.returned
 
-
+                                 
                              }).Where(x => x.ItemDescription.ToLower()
                                .Contains(search.Trim().ToLower()));
 
