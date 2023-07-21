@@ -44,6 +44,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
+        public bool IsMove { get; set; }
+
 
 
     }

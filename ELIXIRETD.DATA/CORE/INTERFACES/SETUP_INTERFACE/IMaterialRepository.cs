@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,16 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int subCategory);
         Task<bool> ValidateSubcategories(int subcategories);
+
+        Task<bool> ValildateItemCodeForPoSummary(string itemCode);
+        Task<bool> ValildateItemCodeForReceiving(string itemCode);
+        Task<bool> ValildateItemCodeForOrdering(string itemCode);
+        Task<bool> ValildateItemCodeForMiscIssue(string itemCode);
+        Task<bool> ValildateItemCodeForBorrowedIssue(string itemCode);
+
+
+
+
 
 
         Task<bool>AddMaterialImport(Material material);
@@ -97,6 +108,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<IReadOnlyList<MaterialDto>> GetAllMaterial ();
 
         Task<IReadOnlyList<ItemCategoryDto>> GetAllItemCategory();
+
+        
 
        
 

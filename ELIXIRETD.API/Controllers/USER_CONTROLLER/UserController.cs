@@ -220,7 +220,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
 
                     var validateDuplicate = await _unitOfWork.Users.ValidateEmpIdAndFullName(items.EmpId, items.FullName);
+
                     //var validationFullname = await _unitOfWork.Users.GenerateUsername(items.FullName);
+
                     string fullName = items.FullName?.Trim();
                     string[] nameParts = fullName?.Split(',');
 

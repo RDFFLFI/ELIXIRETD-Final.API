@@ -792,6 +792,40 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
         }
+
+        public async Task<bool> ValildateItemCodeForPoSummary(string itemCode)
+        {
+           var validate = await _context.PoSummaries.Where(x => x.ItemCode == itemCode)
+                                                    .Where(x => x.IsActive == true)
+                                                    .FirstOrDefaultAsync();
+
+
+            if(validate == null) 
+                return false;
+
+            return true;
+
+        }
+
+        public async Task<bool> ValildateItemCodeForReceiving(string itemCode)
+        {
+            return await _context.WarehouseReceived.AnyAsync(x => x.ItemCode == itemCode && x.IsActive == true);
+        }
+
+        public async Task<bool> ValildateItemCodeForOrdering(string itemCode)
+        {
+            return await _context.Orders.AnyAsync(x => x.ItemCode == itemCode && x.IsActive == true);
+        }
+
+        public async Task<bool> ValildateItemCodeForMiscIssue(string itemCode)
+        {
+            return await _context.MiscellaneousIssueDetail.AnyAsync(x => x.ItemCode == itemCode && x.IsActive == true);
+        }
+
+        public async Task<bool> ValildateItemCodeForBorrowedIssue(string itemCode)
+        {
+            return await _context.BorrowedIssueDetails.AnyAsync(x => x.ItemCode == itemCode && x.IsActive == true);
+        }
     }
  
 }

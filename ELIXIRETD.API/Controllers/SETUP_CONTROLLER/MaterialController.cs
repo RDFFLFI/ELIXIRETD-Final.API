@@ -177,6 +177,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("GetAllInActiveMaterials")]
         public async Task<IActionResult> GetAllInActiveMaterials()
         {
+
+
+
             var materials = await _unitOfWork.Materials.GetAllInActiveMaterials();
 
             return Ok(materials);
@@ -215,9 +218,17 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
-            //var updated = await _unitOfWork.Materials.UpdateMaterial(material);
-            //if (!updated)
-            //    return BadRequest("The material cannot be updated because a material with the same description already exists!");
+            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(material.ItemCode);
+            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(material.ItemCode);
+            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(material.ItemCode);
+            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(material.ItemCode);
+            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(material.ItemCode);
+
+            if (!validateItemCodePoSummary || !validateItemCodeForRecieving || !validateItemCodeForOrdering || !validateItemCodeForMiscIssue || !validateItemCodeForBorrowedIssue)
+            {
+                return BadRequest("ItemCode was in use!");
+            }
+
 
             if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription , material.SubCategoryId))
                 return BadRequest("Item description, item category and sub category already exist, Please try something else!");
@@ -233,7 +244,19 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("InActiveMaterial")]
         public async Task<IActionResult> InActiveRawMaterial([FromBody] Material rawmaterial)
         {
-         
+
+            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(rawmaterial.ItemCode);
+            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(rawmaterial.ItemCode);
+            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(rawmaterial.ItemCode);
+            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(rawmaterial.ItemCode);
+            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(rawmaterial.ItemCode);
+
+            if (!validateItemCodePoSummary || !validateItemCodeForRecieving || !validateItemCodeForOrdering || !validateItemCodeForMiscIssue || !validateItemCodeForBorrowedIssue)
+            {
+                return BadRequest("ItemCode was in use!");
+            }
+
+
             await _unitOfWork.Materials.InActiveMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
 

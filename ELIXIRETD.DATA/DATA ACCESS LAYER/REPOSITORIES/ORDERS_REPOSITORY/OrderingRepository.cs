@@ -2492,36 +2492,51 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status)
         {
 
-            var order = _context.MoveOrders.Where(x => x.IsActive == true)
-                                           .Where(x => x.IsReject == null)
-                                           .Where(x => x.IsApprove == null)
-                                           .Where(x => x.IsPrepared == true)
-                                           .GroupBy(x => new
-                                           {
+            var orderingvalidation =  _context.Orders.GroupBy(x => new
+            {
 
-                                               x.OrderNo,
-                                               x.CustomerName,
-                                               x.Customercode,
-                                               x.Remarks,
-                                               x.PreparedDate,
-                                               x.Rush
+                x.TrasactId,
+                x.IsMove
 
 
-                                           })
+            }).Select(x => new ForApprovalMoveOrderPaginationDto
+            {
 
-                                              .Select(x => new ForApprovalMoveOrderPaginationDto
-                                              {
+                MIRId = x.Key.TrasactId,
+                IsMove = x.Key.IsMove
 
-                                                  MIRId = x.Key.OrderNo,
-                                                  CustomerName = x.Key.CustomerName,
-                                                  Customercode = x.Key.Customercode,
-                                                  Remarks = x.Key.Remarks,
-                                                  Quantity = x.Sum(x => x.QuantityOrdered),
-                                                  PreparedDate = x.Key.PreparedDate.ToString(),
-                                                  IsRush = x.Key.Rush != null ? true : false,
-                                                  Rush = x.Key.Rush,
+            });
 
-                                              }).Where(x => x.IsRush == status);
+
+
+            var order = _context.MoveOrders
+                .GroupJoin(orderingvalidation, moveorders => moveorders.OrderNo, ordering => ordering.MIRId, (moveorders, ordering) => new { moveorders, ordering })
+                .SelectMany(x => x.ordering.DefaultIfEmpty(), (x, ordering) => new { x.moveorders, ordering })
+                .Where(x => x.moveorders.IsActive == true && x.moveorders.IsReject == null && x.moveorders.IsApprove == null && x.moveorders.IsPrepared == true && x.ordering.IsMove == true)
+                .GroupBy(x => new
+                {
+
+                    x.moveorders.OrderNo,
+                    x.moveorders.Customercode,
+                    x.moveorders.CustomerName,
+                    x.moveorders.Remarks,
+                    x.moveorders.PreparedDate,
+                    x.moveorders.Rush
+                }).Select(x => new ForApprovalMoveOrderPaginationDto
+                {
+                    MIRId = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    Customercode = x.Key.Customercode,
+                    Remarks = x.Key.Remarks,
+                    Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsRush = x.Key.Rush != null ? true : false,
+                    Rush = x.Key.Rush,
+                }).Where(x => x.IsRush == status);
+
+
+
+         
 
             return await PagedList<ForApprovalMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
         }
@@ -2529,39 +2544,50 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
         {
-            var order = _context.MoveOrders.Where(x => x.IsActive == true)
-                                           .Where(x => x.IsReject == null)
-                                           .Where(x => x.IsApprove == null)
-                                           .Where(x => x.IsPrepared == true)
-                                           .GroupBy(x => new
-                                           {
+            var orderingvalidation = _context.Orders.GroupBy(x => new
+            {
 
-                                               x.OrderNo,
-                                               x.CustomerName,
-                                               x.Customercode,
-                                               x.Remarks,
-                                               x.PreparedDate,
-                                               x.Rush
+                x.TrasactId,
+                x.IsMove
 
 
-                                           })
+            }).Select(x => new ForApprovalMoveOrderPaginationDto
+            {
 
-                                              .Select(x => new ForApprovalMoveOrderPaginationDto
-                                              {
+                MIRId = x.Key.TrasactId,
+                IsMove = x.Key.IsMove
 
-                                                  MIRId = x.Key.OrderNo,
-                                                  CustomerName = x.Key.CustomerName,
-                                                  Customercode = x.Key.Customercode,
-                                                  Remarks = x.Key.Remarks,
-                                                  Quantity = x.Sum(x => x.QuantityOrdered),
-                                                  PreparedDate = x.Key.PreparedDate.ToString(),
-                                                  IsRush = x.Key.Rush != null ? true : false,
-                                                  Rush = x.Key.Rush,
+            });
 
-                                              }).Where(x => x.IsRush == status)
-                                                 .Where(x => Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
-                                                  || Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
-                                                     || Convert.ToString(x.Customercode).ToLower().Contains(search.Trim().ToLower()));
+
+
+            var order = _context.MoveOrders
+                .GroupJoin(orderingvalidation, moveorders => moveorders.OrderNo, ordering => ordering.MIRId, (moveorders, ordering) => new { moveorders, ordering })
+                .SelectMany(x => x.ordering.DefaultIfEmpty(), (x, ordering) => new { x.moveorders, ordering })
+                .Where(x => x.moveorders.IsActive == true && x.moveorders.IsReject == null && x.moveorders.IsApprove == null && x.moveorders.IsPrepared == true && x.ordering.IsMove == true)
+                .GroupBy(x => new
+                {
+
+                    x.moveorders.OrderNo,
+                    x.moveorders.Customercode,
+                    x.moveorders.CustomerName,
+                    x.moveorders.Remarks,
+                    x.moveorders.PreparedDate,
+                    x.moveorders.Rush
+                }).Select(x => new ForApprovalMoveOrderPaginationDto
+                {
+                    MIRId = x.Key.OrderNo,
+                    CustomerName = x.Key.CustomerName,
+                    Customercode = x.Key.Customercode,
+                    Remarks = x.Key.Remarks,
+                    Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
+                    PreparedDate = x.Key.PreparedDate.ToString(),
+                    IsRush = x.Key.Rush != null ? true : false,
+                    Rush = x.Key.Rush,
+                }).Where(x => x.IsRush == status)
+                  .Where(x => Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
+                  || Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
+                  || Convert.ToString(x.Customercode).ToLower().Contains(search.Trim().ToLower()));
 
 
 
