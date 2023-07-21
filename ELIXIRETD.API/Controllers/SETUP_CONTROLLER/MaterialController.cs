@@ -10,6 +10,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using ELIXIRETD.DATA.SERVICES;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Index.HPRtree;
 //using System.Data.Entity;
@@ -45,6 +46,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 List<Material> UomNotExist = new List<Material>();
                 List<Material> ItemCodeNull = new List<Material>();
                 List<Material> ItemDescriptionNull = new List<Material>();
+                List<Material> ItemCodeAlreadyExist = new List<Material>();
+                List<Material> ItemDescriptionAlreadyExist = new List<Material>();
 
                 foreach (Material items in materials)
                 {
@@ -64,6 +67,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         continue;
                     }
                    
+                    
 
                     SubCategory subCategory = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.SubCategoryName, itemCategory.Id);
                     if(subCategory == null)
@@ -86,9 +90,22 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     }
 
                     var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);
+                    
+                    if(await _unitOfWork.Materials.ItemCodeExist(items.ItemCode))
+                    {
+                        ItemCodeAlreadyExist.Add(items);
+                        continue;
+                    }
+                    if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(items.ItemDescription, items.SubCategoryId))
+                    {
+                        ItemDescriptionAlreadyExist.Add(items);
+                        continue;
+                    }
 
-                    //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
-                      if(items.ItemCode == string.Empty || items.ItemCode == null)
+
+
+                        //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
+                        if (items.ItemCode == string.Empty || items.ItemCode == null)
                       {
                         ItemCodeNull.Add(items);
                         continue;
@@ -103,7 +120,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     }
 
 
-                    if (validateDuplicate == true)
+                      if (validateDuplicate == true)
                       {
                         DuplicateList.Add(items);
                       }
@@ -124,12 +141,15 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     SubcategoryNotExist,
                     UomNotExist,
                     ItemCodeNull,
-                    ItemDescriptionNull
+                    ItemDescriptionNull,
+                    ItemCodeAlreadyExist,
+                    ItemDescriptionAlreadyExist
                     
                  
                 };
 
-                if (DuplicateList.Count == 0 && SubcategoryNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0)
+                if (DuplicateList.Count == 0 && SubcategoryNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0
+                    && ItemCodeAlreadyExist.Count == 0 && ItemDescriptionAlreadyExist.Count == 0)
                 {
                     await _unitOfWork.CompleteAsync();
                     return Ok("Successfully Add!");

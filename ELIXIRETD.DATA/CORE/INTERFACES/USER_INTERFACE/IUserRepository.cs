@@ -42,7 +42,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE
 
         Task<bool> AddNewUserImport (User user);
 
-        
+
+        Task<string> GenerateUsername(string fullName);
+
+
+
 
 
 

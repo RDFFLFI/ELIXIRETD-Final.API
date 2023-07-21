@@ -189,6 +189,14 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                 List<User> DuplicateList = new List<User>();
                 List<User> AvailableImport = new List<User>();
                 List<User> UserRoleNotExist = new List<User>();
+                List<User> EmpIdNULL = new List<User>();
+                List<User> FullNameNULL = new List<User>();
+                List<User> DepartmentNULL = new List<User>();
+                List<User> FullNameIncomplete = new List<User>();
+
+
+
+
 
                 foreach (User items in users)
                 {
@@ -212,11 +220,44 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
 
 
                     var validateDuplicate = await _unitOfWork.Users.ValidateEmpIdAndFullName(items.EmpId, items.FullName);
+                    //var validationFullname = await _unitOfWork.Users.GenerateUsername(items.FullName);
+                    string fullName = items.FullName?.Trim();
+                    string[] nameParts = fullName?.Split(',');
 
-                        if (validateDuplicate == true)
+                    //string[] nameParts = items.FullName.Split(',');
+
+
+                    if (items.EmpId == string.Empty || items.EmpId == null)
+                    {
+                        EmpIdNULL.Add(items);
+                        continue;
+                    }
+
+                    if (items.FullName == string.Empty || items.FullName == null)
+                    {
+                        FullNameNULL.Add(items);
+                        continue;
+                    }
+                    
+                    if(items.Department == string.Empty || items.Department == null)
+                    {
+                        DepartmentNULL.Add(items);
+                        continue;
+                    }
+                  
+
+                    if (validateDuplicate == true)
                         {
                             DuplicateList.Add(items);
                         }
+
+
+                    if(nameParts.Length < 2 || nameParts.Any(part => part.Trim().Contains(" ")) || nameParts[1].Trim().Length == 0 || nameParts[0].Trim().Length == 0)
+                    {
+                        FullNameIncomplete.Add(items);
+                        continue;
+                    }
+
                         else
                         {
                             AvailableImport.Add(items);
@@ -231,13 +272,18 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                     {
                         AvailableImport,
                         DuplicateList,
-                        UserRoleNotExist
+                        UserRoleNotExist,
+                        EmpIdNULL,
+                        FullNameNULL,
+                        DepartmentNULL,
+                        FullNameIncomplete,
+                     
 
 
                     };
 
 
-                    if (DuplicateList.Count == 0 && UserRoleNotExist.Count == 0)
+                    if (DuplicateList.Count == 0 && UserRoleNotExist.Count == 0 && EmpIdNULL.Count == 0 && FullNameNULL.Count == 0 && FullNameIncomplete.Count == 0 && DepartmentNULL.Count == 0)
                     {
                         await _unitOfWork.CompleteAsync();
                         return Ok("Successfully Add!");
@@ -246,6 +292,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                     {
                         return BadRequest(resultList);
                     }
+
 
             }
 

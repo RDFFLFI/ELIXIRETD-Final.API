@@ -280,20 +280,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         //}
 
-        private string GenerateUsername(string fullName)
+        public async Task <string> GenerateUsername(string fullName)
         {
-            if (string.IsNullOrEmpty(fullName))
-            {
-                throw new ArgumentException("FullName must not be null or empty.");
-            }
+            //if (string.IsNullOrEmpty(fullName))
+            //{
+            //    throw new ArgumentException("FullName must not be null or empty.");
+            //}
 
 
             string[] nameParts = fullName.Split(',');
 
-            if (nameParts.Length < 2)
-            {
-                throw new ArgumentException("FullName should contain at least a last name and a first name separated by a comma.");
-            }
+            //if (nameParts.Length < 2)
+            //{
+            //    throw new ArgumentException("FullName should contain at least a last name and a first name separated by a comma.");
+                
+            //}
 
 
             string lastName = nameParts[0].Trim();
@@ -312,7 +313,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 throw new ArgumentNullException(nameof(user), "User parameter must not be null.");
             }
 
-            user.UserName = GenerateUsername(user.FullName);
+            user.UserName = await GenerateUsername(user.FullName);
 
             user.Password = user.UserName;
             
