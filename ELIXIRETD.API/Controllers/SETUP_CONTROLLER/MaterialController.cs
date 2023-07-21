@@ -43,6 +43,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 List<Material> ItemcategoryNotExist = new List<Material>();
                 List<Material> SubcategoryNotExist = new List<Material>();
                 List<Material> UomNotExist = new List<Material>();
+                List<Material> ItemCodeNull = new List<Material>();
+                List<Material> ItemDescriptionNull = new List<Material>();
 
                 foreach (Material items in materials)
                 {
@@ -83,9 +85,25 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                     }
 
-                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);  
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.SubCategoryId);
 
-                      if(validateDuplicate == true)
+                    //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
+                      if(items.ItemCode == string.Empty || items.ItemCode == null)
+                      {
+                        ItemCodeNull.Add(items);
+                        continue;
+
+                      }
+
+                    if (items.ItemDescription == string.Empty || items.ItemDescription == null)
+                    {
+                        ItemDescriptionNull.Add(items);
+                        continue;
+
+                    }
+
+
+                    if (validateDuplicate == true)
                       {
                         DuplicateList.Add(items);
                       }
@@ -104,12 +122,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     DuplicateList,
                     ItemcategoryNotExist,
                     SubcategoryNotExist,
-                    UomNotExist
+                    UomNotExist,
+                    ItemCodeNull,
+                    ItemDescriptionNull
                     
                  
                 };
 
-                if (DuplicateList.Count == 0 && SubcategoryNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0)
+                if (DuplicateList.Count == 0 && SubcategoryNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0)
                 {
                     await _unitOfWork.CompleteAsync();
                     return Ok("Successfully Add!");
