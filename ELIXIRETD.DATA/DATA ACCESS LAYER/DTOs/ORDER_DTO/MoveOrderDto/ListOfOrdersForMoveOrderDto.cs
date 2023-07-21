@@ -27,6 +27,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public bool IsApproved { get; set; }
 
         public decimal PreparedQuantity { get; set; }
+
+        public string Remarks { get; set; }
+
+        public string ItemRemarks { get; set; }
         //public string Rush { get; set; }
 
 

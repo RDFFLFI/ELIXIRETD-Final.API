@@ -38,6 +38,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string PreparedDate { get; set; }
 
 
+        public string Remarks { get; set; }
+
+
 
 
 

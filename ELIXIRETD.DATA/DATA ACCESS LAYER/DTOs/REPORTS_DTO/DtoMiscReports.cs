@@ -21,6 +21,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string TransactBy { get; set; }
         public string TransactDate { get; set; }
 
+        public string Remarks { get; set; }
+
         public string ReceivingDate { get; set; }
 
 

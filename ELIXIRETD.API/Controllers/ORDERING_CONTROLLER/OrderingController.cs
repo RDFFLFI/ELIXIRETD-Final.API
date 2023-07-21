@@ -65,7 +65,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
                         //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName , items.CustomerType);
-                        var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription);
+                        var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription, items.Uom);
                         //var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
                         //var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
@@ -736,6 +736,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.Rush = details.Rush;
 
             order.CustomerType = details.CustomerType;
+
+            order.ItemRemarks = details.ItemRemarks;
 
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();

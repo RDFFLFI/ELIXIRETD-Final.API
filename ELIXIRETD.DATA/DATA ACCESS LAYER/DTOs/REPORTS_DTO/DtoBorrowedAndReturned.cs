@@ -46,7 +46,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string AddressOrder { get; set; }
 
+        public string Remarks { get; set; }
 
+        public string Details { get; set; }
 
         public string StatusApprove { get; set; }
 

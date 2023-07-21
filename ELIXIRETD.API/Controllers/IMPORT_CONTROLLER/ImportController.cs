@@ -53,7 +53,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
                         var validateUom = await _unitOfWork.Imports.CheckUomCode(items.Uom);
                         var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
-                        var validateItemDescription = await _unitOfWork.Imports.CheckItemDescription(items.ItemCode , items.ItemDescription);
+                        var validateItemDescription = await _unitOfWork.Imports.CheckItemDescription(items.ItemCode , items.ItemDescription , items.Uom);
 
 
                         if (validatePoandItem == true)

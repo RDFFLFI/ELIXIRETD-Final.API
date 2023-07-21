@@ -259,22 +259,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                {
 
 
-                                                                   x.Id,
+                                                                   //x.Id,
                                                                    x.ItemCode,
                                                                    x.ItemDescription,
                                                                    x.Uom,
                                                                    x.ActualGood,
-                                                                   x.ActualReceivingDate,
+                                                                   //x.ActualReceivingDate,
 
                                                                }).Select(x => new WarehouseInventory
                                                                {
 
-                                                                   WarehouseId = x.Key.Id,
+                                                                   //WarehouseId = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
                                                                    ItemDescription = x.Key.ItemDescription,
                                                                    Uom = x.Key.Uom,
                                                                    ActualGood = x.Key.ActualGood,
-                                                                   RecievingDate = x.Key.ActualReceivingDate.ToString()
+                                                                   //RecievingDate = x.Key.ActualReceivingDate.ToString()
 
                                                                });
 
@@ -283,13 +283,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   .GroupBy(x => new
                                                   {
 
-                                                      x.WarehouseId,
+                                                      //x.WarehouseId,
                                                       x.ItemCode
 
                                                   }).Select(x => new MoveOrderInventory
                                                   {
 
-                                                      WarehouseId = x.Key.WarehouseId,
+                                                      //WarehouseId = x.Key.WarehouseId,
                                                       ItemCode = x.Key.ItemCode,
                                                       QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
@@ -301,13 +301,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             {
 
                                                                 x.ItemCode,
-                                                                x.WarehouseId
+                                                                //x.WarehouseId
 
                                                             }).Select(x => new ItemStocksDto
                                                             {
                                                                 ItemCode = x.Key.ItemCode,
                                                                 Out = x.Sum(x => x.Quantity),
-                                                                warehouseId = x.Key.WarehouseId
+                                                                //warehouseId = x.Key.WarehouseId
 
                                                             });
 
@@ -322,7 +322,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            {
                                                                ItemCode = x.Key.ItemCode,
                                                                Out = x.Sum(x => x.Quantity),
-                                                               warehouseId = x.Key.WarehouseId
+                                                               //warehouseId = x.Key.WarehouseId
 
                                                            });
 
@@ -333,36 +333,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                              .GroupBy(x => new
                                                              {
                                                                  x.ItemCode,
-                                                                 x.WarehouseId,
+                                                                 //x.WarehouseId,
 
                                                              }).Select(x => new ItemStocksDto
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
                                                                  In = x.Sum(x => x.ReturnQuantity),
-                                                                 warehouseId = x.Key.WarehouseId,
+                                                                 //warehouseId = x.Key.WarehouseId,
 
                                                              });
 
 
             var getAvailable = (from warehouse in getWarehouseStocks
                                 join Moveorder in moveorderOut
-                                on warehouse.WarehouseId equals Moveorder.WarehouseId
+                                on warehouse.ItemCode equals Moveorder.ItemCode
                                 into leftJ1
                                 from Moveorder in leftJ1.DefaultIfEmpty()
 
                                 join issue in issueOut
-                                on warehouse.WarehouseId equals issue.warehouseId
+                                on warehouse.ItemCode equals issue.ItemCode
                                 into leftJ2
                                 from issue in leftJ2.DefaultIfEmpty()
 
                                 join borrowOut in BorrowedOut
-                                on warehouse.WarehouseId equals borrowOut.warehouseId
+                                on warehouse.ItemCode equals borrowOut.ItemCode
                                 into leftJ3
                                 from borrowOut in leftJ3.DefaultIfEmpty()
 
                                 join returned in BorrowedReturn
-                                on warehouse.WarehouseId equals returned.warehouseId
+                                on warehouse.ItemCode equals returned.ItemCode
                                 into LeftJ4
                                 from returned in LeftJ4.DefaultIfEmpty()
 
@@ -379,11 +379,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 by new
                                 {
 
-                                    warehouse.WarehouseId,
+                                    //warehouse.WarehouseId,
                                     warehouse.ItemCode,
                                     warehouse.ItemDescription,
                                     warehouse.Uom,
-                                    warehouse.RecievingDate,
+                                    //warehouse.RecievingDate,
                                     WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
                                     MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
                                     IssueOut = issue.Out != null ? issue.Out : 0,
@@ -396,17 +396,33 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 select new GetAvailableStocksForBorrowedIssue_Dto
                                 {
 
-                                    WarehouseId = total.Key.WarehouseId,
+                                    //WarehouseId = total.Key.WarehouseId,
                                     ItemCode = total.Key.ItemCode,
                                     ItemDescription = total.Key.ItemDescription,
                                     Uom = total.Key.Uom,
                                     RemainingStocks = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
-                                    ReceivingDate = total.Key.RecievingDate,
+                                    //ReceivingDate = total.Key.RecievingDate,
 
                                 }).Where(x => x.RemainingStocks != 0);
+
+
+
+            var GetAvailableItem =  getAvailable.GroupBy(x => new
+            {
+                x.ItemCode,
+                x.ItemDescription,
+                x.Uom,
+
+            }).Select(x => new GetAvailableStocksForBorrowedIssue_Dto
+            {
+                ItemCode = x.Key.ItemCode,
+                ItemDescription = x.Key.ItemDescription,
+                Uom = x.Key.Uom,
+
+            });
                                  
 
-            return await getAvailable.ToListAsync();
+            return await GetAvailableItem.ToListAsync();
         }
 
 

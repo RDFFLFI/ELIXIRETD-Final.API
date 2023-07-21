@@ -983,10 +983,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateItemCode(string ItemCode, string itemdescription)
+        public async Task<bool> ValidateItemCode(string ItemCode, string itemdescription , string uom)
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == ItemCode)
                                                 .Where(x => x.ItemDescription == itemdescription)
+                                                .Where(x => x.Uom.UomCode == uom)
                                                 .Where(x => x.IsActive == true)
                                                 .FirstOrDefaultAsync();
             if (validate == null)
@@ -1419,6 +1420,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemCode,
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
+                    x.ordering.ItemRemarks,
                     //x.ordering.IsActive,
                     //x.ordering.IsPrepared,
                     x.ordering.StandartQuantity,
@@ -1438,6 +1440,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ItemDescription = total.Key.ItemdDescription,
                     Uom = total.Key.Uom,
                     QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
+                    ItemRemarks = total.Key.ItemRemarks,
                     //IsActive = total.Key.IsActive,
                     ////IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0,
@@ -1597,6 +1600,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             Category = x.Category,
                                             Uom = x.Uom,
                                             QuantityOrder = x.QuantityOrdered,
+                                            ItemRemarks = x.ItemRemarks,
                                             //IsApproved = x.IsApproved != null,
                                             //Rush = x.Rush
 
@@ -1905,6 +1909,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.ItemCode,
                        x.ordering.ItemdDescription,
                        x.ordering.Uom,
+                       x.ordering.ItemRemarks,
+                       x.ordering.Remarks,
+
                        //x.ordering.Rush
                        //x.ordering.IsApproved,
 
@@ -1927,7 +1934,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        ItemDescription = total.Key.ItemdDescription,
                        Uom = total.Key.Uom,
                        QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
-
+                       ItemRemarks = total.Key.ItemRemarks,
+                       Remarks = total.Key.Remarks,
                        //IsApproved = total.Key.IsApproved != null,
 
                        PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
@@ -2335,7 +2343,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     PrepareDate = x.PreparedDate.ToString(),
 
                     CustomerType = x.CustomerType,
-                    Rush = x.Rush
+                    Rush = x.Rush,
+                    ItemRemarks = x.ItemRemarks
+
+
 
                 });
 
@@ -2399,7 +2410,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      ItemDescription = x.ItemDescription,
                      Quantity = x.QuantityOrdered,
                      IsActive = x.IsActive,
-                     Rush = x.Rush
+                     Rush = x.Rush,
+                     //ItemRemarks = x.ItemRemarks
+
 
 
                  });
@@ -2584,6 +2597,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 LocationName = x.LocationName,
                                                 AccountCode = x.AccountCode,
                                                 AccountTitles = x.AccountTitles,
+                                                ItemRemarks = x.ItemRemarks
 
 
                                             });
@@ -2798,7 +2812,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.ApproveDateTempo,
                                                 x.IsPrint,
                                                 x.IsTransact,
-                                                x.Rush
+                                                x.Rush,
+                                                x.ItemRemarks
 
 
                                             }).Where(x => x.Key.IsApprove == true)
@@ -2823,7 +2838,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
                                                  IsPrint = x.Key.IsPrint != null,
                                                  IsTransact = x.Key.IsTransact != null,
-                                                 Rush = x.Key.Rush
+                                                 Rush = x.Key.Rush,
+                                                 ItemRemarks = x.Key.ItemRemarks
 
                                              });
 
@@ -3052,7 +3068,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                Uom = x.Uom,
                                                Quantity = x.QuantityOrdered,
                                                IsApprove = x.IsApprove != null,
-
+                                               ItemRemarks = x.ItemRemarks
+                                               
 
                                            });
 

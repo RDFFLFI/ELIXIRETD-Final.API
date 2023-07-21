@@ -80,7 +80,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              LocationName = x.moveorder.LocationName,
                              AccountCode = x.moveorder.AccountCode,
                              AccountTitles = x.moveorder.AccountTitles,
-                             CustomerType = x.moveorder.CustomerType
+                             CustomerType = x.moveorder.CustomerType,
+                             ItemRemarks = x.moveorder.ItemRemarks
+
 
 
 
@@ -135,6 +137,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.LocationName,
                              moveorder.AccountCode,
                              moveorder.AccountTitles,
+                             moveorder.ItemRemarks,
 
                               customer.CustomerType,
 
@@ -169,6 +172,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               LocationName = total.Key.LocationName,
                               AccountCode = total.Key.AccountCode,
                               AccountTitles = total.Key.AccountTitles,
+                              ItemRemarks = total.Key.ItemRemarks
 
                           });
 
@@ -193,7 +197,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 ReceiptId = receiptHeader.Id,
                                 SupplierCode = receiptHeader.SupplierCode,
                                 SupplierName = receiptHeader.supplier,
-                                Details = receiptHeader.Remarks,
+                                Details = receiptHeader.Details,
+                                Remarks = receiptHeader.Remarks,
                                 ItemCode = receipt.ItemCode,
                                 ItemDescription = receipt.ItemDescription,
                                 Uom = receipt.Uom,
@@ -202,6 +207,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 TransactBy = receiptHeader.PreparedBy,
                                 TransactDate = receiptHeader.TransactionDate.ToString(),
                                 ReceivingDate = receipt.ReceivingDate.ToString(),
+                                
 
                                 CompanyCode = receiptHeader.CompanyCode,
                                 CompanyName = receiptHeader.CompanyName,
@@ -231,7 +237,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            IssueId = x.receipt.Id,
                            CustomerCode = x.receipt.Customercode,
                            CustomerName = x.receipt.Customer,
-                           Details = x.issue.Remarks,
+                           Details = x.receipt.Details,
+                           Remarks = x.receipt.Remarks,
+                           
                            ItemCode = x.issue !=null ? x.issue.ItemCode : null ,
                            ItemDescription = x.issue !=null ? x.issue.ItemDescription : null ,
                            Uom = x.issue != null    ? x.issue.Uom : null ,  
@@ -283,6 +291,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                Uom = returned.Uom,
                                TransactedBy = borrowed.PreparedBy,
                                BorrowedDate = borrowed.PreparedDate.ToString(),
+
+                               Remarks = borrowed.Remarks,
+                               Details = borrowed.Details,
 
                                IsReject = borrowed.IsReject,
                                StatusApprove = borrowed.StatusApproved,
