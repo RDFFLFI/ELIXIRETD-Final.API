@@ -224,7 +224,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(material.ItemCode);
             var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(material.ItemCode);
 
-            if (!validateItemCodePoSummary || !validateItemCodeForRecieving || !validateItemCodeForOrdering || !validateItemCodeForMiscIssue || !validateItemCodeForBorrowedIssue)
+            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true ||  validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true )
             {
                 return BadRequest("ItemCode was in use!");
             }
@@ -251,7 +251,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(rawmaterial.ItemCode);
             var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(rawmaterial.ItemCode);
 
-            if (!validateItemCodePoSummary || !validateItemCodeForRecieving || !validateItemCodeForOrdering || !validateItemCodeForMiscIssue || !validateItemCodeForBorrowedIssue)
+            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
             {
                 return BadRequest("ItemCode was in use!");
             }
