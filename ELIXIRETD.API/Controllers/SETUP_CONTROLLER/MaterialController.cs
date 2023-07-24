@@ -266,7 +266,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(items);
             var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(items);
 
-            if (validateItemCodePoSummary == true /*|| validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true*/)
+            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
             {
                 return BadRequest("ItemCode is in Use!");
             }
