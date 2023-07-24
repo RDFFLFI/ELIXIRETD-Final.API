@@ -246,27 +246,28 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                         DepartmentNULL.Add(items);
                         continue;
                     }
-                  
 
-                    if (validateDuplicate == true)
-                        {
-                            DuplicateList.Add(items);
-                        }
-
-
-                    if(nameParts.Length < 2 || nameParts.Any(part => part.Trim().Contains(" ")) || nameParts[1].Trim().Length == 0 || nameParts[0].Trim().Length == 0)
+                    if (nameParts.Length < 2 || nameParts[1].Trim().Length == 0 || nameParts[0].Trim().Length == 0)
                     {
                         FullNameIncomplete.Add(items);
                         continue;
                     }
 
-                        else
-                        {
-                            AvailableImport.Add(items);
-                            await _unitOfWork.Users.AddNewUserImport(items);
-                        }
 
-                    
+                    if (validateDuplicate == true)
+                    {
+                       DuplicateList.Add(items);
+                    }
+
+
+                    else
+                    {
+                        AvailableImport.Add(items);
+                        await _unitOfWork.Users.AddNewUserImport(items);
+                    }
+
+
+
                 }
 
 
