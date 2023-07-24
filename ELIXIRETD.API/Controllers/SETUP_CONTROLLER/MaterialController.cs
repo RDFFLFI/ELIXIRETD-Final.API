@@ -242,22 +242,39 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("InActiveMaterial")]
-        public async Task<IActionResult> InActiveRawMaterial([FromBody] Material rawmaterial)
+        public async Task<IActionResult> InActiveMaterial(Material materials)
         {
 
-            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(rawmaterial.ItemCode);
-            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(rawmaterial.ItemCode);
-            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(rawmaterial.ItemCode);
-            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(rawmaterial.ItemCode);
-            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(rawmaterial.ItemCode);
+            var itemcodes =  await _context.Materials.Where(x => x.Id  == materials.Id)
+                                                      .Where(x => x.IsActive  == true)
+                                                      .FirstOrDefaultAsync();
 
-            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
+            if(itemcodes == null)
             {
-                return BadRequest("ItemCode was in use!");
+                return BadRequest("Item not exist!");
+            }
+            
+            var items = itemcodes.ItemCode;
+
+
+
+
+
+            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(items);
+            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(items);
+            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(items);
+            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(items);
+            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(items);
+
+            if (validateItemCodePoSummary == true /*|| validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true*/)
+            {
+                return BadRequest("ItemCode is in Use!");
             }
 
 
-            await _unitOfWork.Materials.InActiveMaterial(rawmaterial);
+
+
+            await _unitOfWork.Materials.InActiveMaterial(materials);
             await _unitOfWork.CompleteAsync();
 
             return Ok("Successfully inactive materials!");

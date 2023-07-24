@@ -13,6 +13,8 @@
 
         public string Rush { get; set; }
 
+        public bool IsMove { get; set; }
+
     }
 
 

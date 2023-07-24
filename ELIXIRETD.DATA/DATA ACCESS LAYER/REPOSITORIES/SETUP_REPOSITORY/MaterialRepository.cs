@@ -149,6 +149,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             var existingMaterial = await _context.Materials.Where(x => x.Id == materials.Id)
                                                            .FirstOrDefaultAsync();
 
+
+            //var itemcodes = await _context.Materials.Where(x => x.ItemCode == existingMaterial.ItemCode)
+            //                                          .FirstOrDefaultAsync();
+
+
+
+
+
+            if(existingMaterial == null)
+                return false;
+
             existingMaterial.IsActive = false;
 
             return true;
@@ -838,7 +849,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             var validate = await _context.MiscellaneousIssueDetail.Where(x => x.ItemCode == itemCode)
                                                     .Where(x => x.IsActive == true)
                                                     .FirstOrDefaultAsync();
-
 
             if (validate == null)
                 return false;

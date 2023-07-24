@@ -17,5 +17,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto
 
         public bool Rush { get;set; }
 
+        public bool IsMove { get; set; }
+
     }
 }

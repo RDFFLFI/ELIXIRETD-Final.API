@@ -734,6 +734,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.IsActive = true;
             order.IsPrepared = true;
             order.Rush = details.Rush;
+            order.Remarks = details.Remarks;
 
             order.CustomerType = details.CustomerType;
 
