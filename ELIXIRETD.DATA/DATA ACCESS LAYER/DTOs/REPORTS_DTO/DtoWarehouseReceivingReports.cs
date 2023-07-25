@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string ReceivedBy { get; set; }
 
         public string TransactionType { get; set; }
+
+        public decimal UnitPrice { get; set; }
+
+        public decimal TotalUnitPrice { get; set; }
 
     }
 }

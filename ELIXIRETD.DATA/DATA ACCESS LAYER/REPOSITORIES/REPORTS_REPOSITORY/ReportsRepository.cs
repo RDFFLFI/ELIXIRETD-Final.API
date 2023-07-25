@@ -41,7 +41,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           TotalReject = x.TotalReject,
                                                           SupplierName = x.Supplier,
                                                           TransactionType = x.TransactionType,
-                                                          ReceivedBy = x.AddedBy
+                                                          ReceivedBy = x.AddedBy,
+                                                          UnitPrice = x.UnitPrice,
+                                                          TotalUnitPrice = x.UnitPrice * x.ActualDelivered
 
                                                       });
 
