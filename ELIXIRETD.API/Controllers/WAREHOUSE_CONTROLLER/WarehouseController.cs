@@ -5,6 +5,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
 {
@@ -12,10 +14,12 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
     public class WarehouseController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly StoreContext _context;
 
-        public WarehouseController(IUnitOfWork unitOfWork)
+        public WarehouseController(IUnitOfWork unitOfWork , StoreContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         [HttpGet]
@@ -46,6 +50,17 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<IActionResult> UpdateReceiveInfo([FromBody] Warehouse_Receiving receiving)
         {
 
+            var unitprice = await _context.PoSummaries.Where(x => x.ItemCode == receiving.ItemCode)
+                                                       .Where(x => x.Id == receiving.PoSummaryId)
+                                                       .FirstOrDefaultAsync();
+
+            if(unitprice == null)
+            {
+                return BadRequest("No po id exist!");
+            }
+            receiving.UnitPrice = unitprice.UnitPrice;
+
+                                            
 
             if (receiving.ActualDelivered <= 0)
                 return BadRequest("Received failed, please check your input in actual delivered!");

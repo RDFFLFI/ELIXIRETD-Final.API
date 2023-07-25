@@ -31,6 +31,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
 
         public string LotSection { get; set; }
 
+        public decimal UnitPrice { get; set; }
+        
+        public decimal TotalUnitPrice { get; set; }
+
 
 
     }

@@ -348,7 +348,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               }
                               //,
                               //x => x
-                              ).Select(total => new GetAvailableStocksForIssueDto
+                              ).OrderBy(x => x.Key.itemcode).Select(total => new GetAvailableStocksForIssueDto
                               {
                                   //WarehouseId = total.Key.warehouseId,
                                   ItemCode = total.Key.itemcode,

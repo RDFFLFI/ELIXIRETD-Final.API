@@ -26,6 +26,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<IReadOnlyList<MaterialDto>> GetAllActiveMaterials()
         {
             var materials = _context.Materials.Where(x => x.IsActive == true)
+                                              .OrderBy(x => x.ItemCode)
                                             .Select(x => new MaterialDto
                                             {
                                                 Id = x.Id,

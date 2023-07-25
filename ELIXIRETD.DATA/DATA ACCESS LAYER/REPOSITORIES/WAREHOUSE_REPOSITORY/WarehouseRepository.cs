@@ -184,6 +184,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                    QuantityOrdered = posummary.Ordered,
                                    IsActive = posummary.IsActive,
                                    ActualRemaining = 0,
+                                   UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0 ,
                                    TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
                                    ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
 
@@ -200,6 +201,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
+                                 x.UnitPrice
 
                              })
 
@@ -219,6 +221,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          ActualGood = receive.Sum(x => x.ActualGood),
                                                          ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
                                                          IsActive = receive.Key.IsActive,
+                                                         UnitPrice = receive.Key.UnitPrice
                                                         
                                                      })
                                                   
@@ -255,6 +258,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  QuantityOrdered = posummary.Ordered,
                                  IsActive = posummary.IsActive,
                                  TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
+                                 UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0,
                                  ActualRemaining = 0,
                                  ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
 
@@ -271,6 +275,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
+                                 x.UnitPrice
                               
                              })
                                                   .Select(receive => new WarehouseReceivingDto
@@ -289,6 +294,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                       ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood ),
                                                       IsActive = receive.Key.IsActive,
                                                       TotalReject = receive.Sum(x => x.TotalReject),
+                                                      UnitPrice = receive.Key.UnitPrice,
 
 
                                                   }).OrderByDescending(x => x.PoNumber)
@@ -417,7 +423,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                     DateReceive = x.ReceivingDate.ToString(),
                     Supplier = x.Supplier,
                     Uom = x.Uom,
-                    LotSection = x.LotSection
+                    LotSection = x.LotSection,
+                    UnitPrice = x.UnitPrice,
+                    TotalUnitPrice = x.UnitPrice * x.ActualDelivered
 
                 });
 
@@ -437,7 +445,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                    DateReceive = x.ReceivingDate.ToString(),
                    Supplier = x.Supplier,
                    Uom = x.Uom,
-                   LotSection = x.LotSection
+                   LotSection = x.LotSection,
+                   UnitPrice = x.UnitPrice,
+                   TotalUnitPrice = x.UnitPrice * x.ActualDelivered
 
                }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())

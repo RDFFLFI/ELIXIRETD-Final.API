@@ -393,6 +393,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                 } into total
 
+                                orderby total.Key.ItemCode
+
                                 select new GetAvailableStocksForBorrowedIssue_Dto
                                 {
 
