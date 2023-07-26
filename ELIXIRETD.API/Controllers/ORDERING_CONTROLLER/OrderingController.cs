@@ -897,10 +897,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPut]
         [Route("RejectListOfMoveOrder")]
-        public async Task<IActionResult> RejectListOfMoveOrder([FromBody] MoveOrder moveorder)
+        public async Task<IActionResult> RejectListOfMoveOrder([FromBody] MoveOrder[] moveorder)
         {
 
-            await _unitofwork.Orders.RejectForMoveOrder(moveorder);
+
+            foreach(MoveOrder items in moveorder)
+            {
+                await _unitofwork.Orders.RejectForMoveOrder(items);
+            }
+      
             await _unitofwork.CompleteAsync();
 
             return new JsonResult("Successfully reject list for move order!");
