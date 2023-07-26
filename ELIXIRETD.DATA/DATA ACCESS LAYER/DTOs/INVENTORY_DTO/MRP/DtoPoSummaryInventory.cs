@@ -11,5 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public string ItemCode { get; set; }
         public decimal Ordered { get; set; }
 
+        public decimal ActualGood { get; set; }
+
     }
 }

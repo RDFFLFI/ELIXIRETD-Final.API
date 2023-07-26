@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
@@ -807,6 +808,30 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ValildateItemCodeForPoSummary(string itemCode)
         {
+
+            //var poSummary = _context.PoSummaries
+            //    .Where(x => x.IsActive == true)
+            //    .GroupJoin(_context.WarehouseReceived, summaries => summaries.ItemCode, receive => receive.ItemCode, (summaries, receive) => new { summaries, receive })
+            //    .SelectMany(x => x.receive.DefaultIfEmpty(), (x, receive) => new { x.summaries, receive })
+            //    .GroupBy(x => new
+            //    {
+            //        x.summaries.ItemCode,
+                    
+
+
+            //    }).Select(x => new DtoPoSummaryInventory
+            //    {
+            //        ItemCode = x.Key.ItemCode,
+                    
+            //        ActualGood = x.Sum(x => x.summaries.Ordered) - x.Sum(x => x.receive.ActualDelivered != null && x.receive.IsActive != false) 
+
+
+            //    });
+
+
+
+
+
             var validate = await _context.PoSummaries.Where(x => x.ItemCode == itemCode)
                                                      .Where(x => x.IsActive == true)
                                                      .FirstOrDefaultAsync();

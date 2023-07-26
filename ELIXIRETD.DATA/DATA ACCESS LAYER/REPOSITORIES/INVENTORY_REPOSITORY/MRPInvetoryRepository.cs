@@ -142,7 +142,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                       //.Where(x => x.IsApproved == false)
                                                        .GroupBy(x => new
                                                        {
 
@@ -221,10 +221,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           into leftJ4
                           from returned in leftJ4.DefaultIfEmpty()
 
-                          join receipt in getReceiptIn
-                          on warehouse.ItemCode equals receipt.ItemCode
-                          into leftJ5
-                          from receipt in leftJ5.DefaultIfEmpty()
+                              //join receipt in getReceiptIn
+                              //on warehouse.ItemCode equals receipt.ItemCode
+                              //into leftJ5
+                              //from receipt in leftJ5.DefaultIfEmpty()
 
                           group new
                           {
@@ -234,7 +234,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               issue,
                               borrowed,
                               returned,
-                              receipt,
+                              //receipt,
 
 
                           }
@@ -262,6 +262,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               into leftJ1
                               from ordering in leftJ1.DefaultIfEmpty()
 
+
+
                               group new
                               {
 
@@ -280,7 +282,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   ItemCode = total.Key.ItemCode,
                                   Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) -
-                                  (total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0))
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
 
                               });
 
@@ -342,7 +344,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                                       .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == false)
+                                                                      //.Where(x => x.IsApproved == false)
                                                                       .GroupBy(x => new
                                                                       {
 
@@ -541,10 +543,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
+
                                  ReserveUsage = total.Key.usage,
+                                 //DaysLevel = /* Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m), 2)*/  total.Key.reserve / Math.Round(total.Key.averageissuance, 2),
+                                 //DaysLevel = Math.Round(total.Key.reserve / total.Key.averageissuance, 0, MidpointRounding.AwayFromZero),
+                                 //DaysLevel = (int)(total.Key.reserve  / Math.Round(total.Key.averageissuance, 2)),
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)(total.Key.reserve / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
                                  BorrowedDifference = total.Key.returned
-
 
                              });
 
@@ -645,7 +650,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                       //.Where(x => x.IsApproved == false)
                                                        .GroupBy(x => new
                                                        {
 
@@ -724,10 +729,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           into leftJ4
                           from returned in leftJ4.DefaultIfEmpty()
 
-                          join receipt in getReceiptIn
-                          on warehouse.ItemCode equals receipt.ItemCode
-                          into leftJ5
-                          from receipt in leftJ5.DefaultIfEmpty()
+                              //join receipt in getReceiptIn
+                              //on warehouse.ItemCode equals receipt.ItemCode
+                              //into leftJ5
+                              //from receipt in leftJ5.DefaultIfEmpty()
 
                           group new
                           {
@@ -737,7 +742,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               issue,
                               borrowed,
                               returned,
-                              receipt,
+                              //receipt,
 
 
                           }
@@ -765,6 +770,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               into leftJ1
                               from ordering in leftJ1.DefaultIfEmpty()
 
+
+
                               group new
                               {
 
@@ -783,7 +790,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   ItemCode = total.Key.ItemCode,
                                   Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) -
-                                  (total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0))
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
 
                               });
 
@@ -845,7 +852,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                                       .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == false)
+                                                                      //.Where(x => x.IsApproved == false)
                                                                       .GroupBy(x => new
                                                                       {
 
@@ -1044,7 +1051,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
+
                                  ReserveUsage = total.Key.usage,
+                                 //DaysLevel = /* Math.Round(total.Key.reserve / (total.Key.averageissuance != 0 ? total.Key.averageissuance : 1m), 2)*/  total.Key.reserve / Math.Round(total.Key.averageissuance, 2),
+                                 //DaysLevel = Math.Round(total.Key.reserve / total.Key.averageissuance, 0, MidpointRounding.AwayFromZero),
+                                 //DaysLevel = (int)(total.Key.reserve  / Math.Round(total.Key.averageissuance, 2)),
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)(total.Key.reserve / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
                                  BorrowedDifference = total.Key.returned
 
@@ -1152,7 +1163,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                                //.Where(x => x.IsApproved == false)
                                                        .GroupBy(x => new
                                                        {
 
@@ -1354,7 +1365,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getBorrowedOutPerMonth = _context.BorrowedIssueDetails.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                                       .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == false)
+                                                                      //.Where(x => x.IsApproved == false)
                                                                       .GroupBy(x => new
                                                                       {
 
