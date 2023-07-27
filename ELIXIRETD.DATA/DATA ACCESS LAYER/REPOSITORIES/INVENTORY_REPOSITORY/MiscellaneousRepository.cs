@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
@@ -38,8 +39,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
         public async Task<bool> AddMiscellaneousReceiptInWarehouse(Warehouse_Receiving receive)
         {
 
-
-
+          
 
             receive.ActualDelivered = receive.ActualGood;
             await _context.WarehouseReceived.AddAsync(receive);
@@ -95,6 +95,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<PagedList<GetAllMReceiptWithPaginationdDto>> GetAllMReceiptWithPaginationd(UserParams userParams, bool status)
         {
+
+           
+
+
             var receipt = _context.MiscellaneousReceipts.OrderByDescending(x => x.PreparedDate)
                                                         .Where(x => x.IsActive == status)
                                                         .Select(x => new GetAllMReceiptWithPaginationdDto
@@ -168,6 +172,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           Remarks = x.receiptparents.Remarks,
                           PreparedBy = x.receiptparents.PreparedBy,
 
+                          UnitCost = x.warehouse.UnitPrice,
+                          TotalCost = x.warehouse.UnitPrice * x.warehouse.ActualDelivered,
                           Uom = x.warehouse.Uom,
 
                           TransactionDate =x.receiptparents.TransactionDate.ToString(),
