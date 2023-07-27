@@ -201,6 +201,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
         public async Task<bool> AddMiscellaneousIssueDetails(MiscellaneousIssueDetails details)
         {
+            var warehouseUnitcost = await _context.WarehouseReceived.Where(x => x.Id == details.WarehouseId)
+                                                                    .Where(x => x.IsActive == true)
+                                                                    .FirstOrDefaultAsync();
+
+            details.UnitPrice = warehouseUnitcost.UnitPrice;
+
+
             await _context.MiscellaneousIssueDetail.AddAsync(details);
             return true;
         }
@@ -667,6 +674,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     AccountCode = x.issue.AccountCode,
                     AccountTitles = x.issue.AccountTitles,
 
+                    UnitCost = x.misc.UnitPrice,
+                    TotalCost  = x.misc.UnitPrice * x.misc.Quantity
+                    
 
 
 
