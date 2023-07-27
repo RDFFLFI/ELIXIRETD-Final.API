@@ -265,6 +265,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               into leftJ1
                               from ordering in leftJ1.DefaultIfEmpty()
 
+                              join issue in getIssueOut
+                              on warehouse.ItemCode equals issue.ItemCode
+                              into leftJ2
+                              from issue in leftJ2.DefaultIfEmpty()
+
+                              join borrowed in getBorrowedIssue
+                              on warehouse.ItemCode equals borrowed.ItemCode
+                              into leftJ3
+                              from borrowed in leftJ3.DefaultIfEmpty()
+
+                              join returned in getReturnedBorrow
+                              on warehouse.ItemCode equals returned.ItemCode
+                              into leftJ4
+                              from returned in leftJ4.DefaultIfEmpty()
+
 
 
                               group new
@@ -272,6 +287,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   warehouse,
                                   ordering,
+                                  issue,
+                                  borrowed,
+                                  returned
+
 
                               } by new
                               {
@@ -284,8 +303,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
 
                                   ItemCode = total.Key.ItemCode,
-                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) -
-                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
+                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) + total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0) - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0)
+                                  - total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0)
 
                               });
 
@@ -713,12 +733,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  ReturnedBorrowed = total.Key.returned,
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
-                                 Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
+                                 Reserve = total.Key.reserve,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
 
                                  ReserveUsage = total.Key.usage,
-                                 DaysLevel = total.Key.averageissuance != 0 ? (int)(total.Key.reserve / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
+                                 DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
                                  BorrowedDifference = total.Key.returned
 
                              });
@@ -941,6 +961,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               into leftJ1
                               from ordering in leftJ1.DefaultIfEmpty()
 
+                              join issue in getIssueOut
+                              on warehouse.ItemCode equals issue.ItemCode
+                              into leftJ2
+                              from issue in leftJ2.DefaultIfEmpty()
+
+                              join borrowed in getBorrowedIssue
+                              on warehouse.ItemCode equals borrowed.ItemCode
+                              into leftJ3
+                              from borrowed in leftJ3.DefaultIfEmpty()
+
+                              join returned in getReturnedBorrow
+                              on warehouse.ItemCode equals returned.ItemCode
+                              into leftJ4
+                              from returned in leftJ4.DefaultIfEmpty()
+
 
 
                               group new
@@ -948,6 +983,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   warehouse,
                                   ordering,
+                                  issue,
+                                  borrowed,
+                                  returned
+
 
                               } by new
                               {
@@ -960,8 +999,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
 
                                   ItemCode = total.Key.ItemCode,
-                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) -
-                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
+                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) + total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0) - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0)
+                                  - total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0)
 
                               });
 
@@ -1389,12 +1429,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  ReturnedBorrowed = total.Key.returned,
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
-                                 Reserve = total.Key.reserve + total.Key.returned - total.Key.issueOut - total.Key.borrow,
+                                 Reserve = total.Key.reserve,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
 
                                  ReserveUsage = total.Key.usage,
-                                 DaysLevel = total.Key.averageissuance != 0 ? (int)(total.Key.reserve / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
+                                 DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
                                  BorrowedDifference = total.Key.returned
 
 

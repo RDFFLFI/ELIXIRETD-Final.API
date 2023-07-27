@@ -35,6 +35,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
 
         public bool? IsTransact { get; set; }
 
+        
+
        
 
     }
