@@ -10,6 +10,10 @@
         public decimal ActualGood { get; set; }
         public string RecievingDate { get; set; }
 
+        public decimal UnitPrice { get; set; }
+
+        public decimal TotalUnitPrice { get; set; }
+
 
     }
 }

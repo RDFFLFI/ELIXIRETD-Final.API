@@ -38,6 +38,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
         public async Task<bool> AddMiscellaneousReceiptInWarehouse(Warehouse_Receiving receive)
         {
 
+
+
+
             receive.ActualDelivered = receive.ActualGood;
             await _context.WarehouseReceived.AddAsync(receive);
             return true;
