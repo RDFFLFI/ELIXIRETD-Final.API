@@ -79,6 +79,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string ItemRemarks { get; set; }
 
+        public decimal UnitPrice { get; set; }
+
 
     }
 }

@@ -83,7 +83,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              AccountCode = x.moveorder.AccountCode,
                              AccountTitles = x.moveorder.AccountTitles,
                              CustomerType = x.moveorder.CustomerType,
-                             ItemRemarks = x.moveorder.ItemRemarks
+                             ItemRemarks = x.moveorder.ItemRemarks,
+                             UnitCost = x.moveorder.UnitPrice,
+                             TotalCost = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered
 
 
 
@@ -140,6 +142,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.AccountCode,
                              moveorder.AccountTitles,
                              moveorder.ItemRemarks,
+                             moveorder.UnitPrice,
 
                               customer.CustomerType,
 
@@ -174,7 +177,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               LocationName = total.Key.LocationName,
                               AccountCode = total.Key.AccountCode,
                               AccountTitles = total.Key.AccountTitles,
-                              ItemRemarks = total.Key.ItemRemarks
+                              ItemRemarks = total.Key.ItemRemarks,
+                              UnitCost = total.Key.UnitPrice,
+                              TotalCost = total.Key.UnitPrice * total.Key.QuantityOrdered
+
+
+
 
                           });
 
@@ -220,6 +228,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 AccountCode = receiptHeader.AccountCode,
                                 AccountTitles = receiptHeader.AccountTitles,
 
+                                UnitCost = receipt.UnitPrice,
+                                TotalCost = receipt.UnitPrice * receipt.ActualDelivered
+
 
                             });
 
@@ -259,6 +270,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            LocationName = x.receipt.LocationName,
                            AccountCode = x.receipt.AccountCode,
                            AccountTitles = x.receipt.AccountTitles,
+                           UnitCost = x.issue.UnitPrice,
+                           TotalCost = x.issue.UnitPrice * x.issue.Quantity
+
 
                        });
 

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using NetTopologySuite.IO;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
@@ -2452,6 +2453,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<bool> PrepareItemForMoveOrder(MoveOrder orders)
         {
 
+            var UnitCost = await _context.WarehouseReceived.Where(x => x.Id == orders.WarehouseId)
+                                                           .Where(x => x.IsActive == orders.IsActive)
+                                                           .FirstOrDefaultAsync();
+
+            orders.UnitPrice = UnitCost.UnitPrice;
+
+
             await _context.MoveOrders.AddAsync(orders);
             return true;
 
@@ -2715,7 +2723,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 LocationName = x.LocationName,
                                                 AccountCode = x.AccountCode,
                                                 AccountTitles = x.AccountTitles,
-                                                ItemRemarks = x.ItemRemarks
+                                                ItemRemarks = x.ItemRemarks,
+                                                UnitCost = x.UnitPrice,
+                                                TotalCost = x.UnitPrice * x.QuantityOrdered
 
 
                                             });
@@ -2931,7 +2941,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 x.IsPrint,
                                                 x.IsTransact,
                                                 x.Rush,
-                                                x.ItemRemarks
+                                                x.ItemRemarks,
+                                              
+                                                
+
 
 
                                             }).Where(x => x.Key.IsApprove == true)
@@ -2957,7 +2970,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                  IsPrint = x.Key.IsPrint != null,
                                                  IsTransact = x.Key.IsTransact != null,
                                                  Rush = x.Key.Rush,
-                                                 ItemRemarks = x.Key.ItemRemarks
+                                                 ItemRemarks = x.Key.ItemRemarks,
+                                                 UnitCost = x.Sum(x => x.UnitPrice) * x.Sum(x => x.QuantityOrdered),
+                                                 
 
                                              });
 
@@ -3186,7 +3201,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                Uom = x.Uom,
                                                Quantity = x.QuantityOrdered,
                                                IsApprove = x.IsApprove != null,
-                                               ItemRemarks = x.ItemRemarks
+                                               ItemRemarks = x.ItemRemarks,
+                                               UnitCost = x.UnitPrice,
+                                               TotalCost = x.UnitPrice * x.QuantityOrdered
                                                
 
                                            });
