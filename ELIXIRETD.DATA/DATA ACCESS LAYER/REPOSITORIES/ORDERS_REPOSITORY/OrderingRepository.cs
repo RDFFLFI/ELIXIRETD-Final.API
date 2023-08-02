@@ -2511,6 +2511,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      Quantity = x.QuantityOrdered,
                      IsActive = x.IsActive,
                      Rush = x.Rush,
+                     UnitCost = x.UnitPrice,
+                     TotalCost = x.UnitPrice * x.QuantityOrdered
                      //ItemRemarks = x.ItemRemarks
 
 
