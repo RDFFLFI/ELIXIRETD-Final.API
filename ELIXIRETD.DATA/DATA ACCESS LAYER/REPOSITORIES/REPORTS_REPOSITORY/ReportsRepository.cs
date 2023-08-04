@@ -88,8 +88,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              TotalCost = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered
 
 
-
-
                          });
 
             return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -350,7 +348,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             DateOrdered = x.OrderDate.ToString(),
                                             CustomerCode = x.Customercode,
                                             CustomerName = x.CustomerName,
-                                            ItemCode = x.ItemCode,
+                                            ItemCode = x.ItemCode, 
                                             ItemDescription = x.ItemdDescription,
                                             QuantityOrdered = x.QuantityOrdered,
                                             CancelledDate = x.CancelDate.ToString(),

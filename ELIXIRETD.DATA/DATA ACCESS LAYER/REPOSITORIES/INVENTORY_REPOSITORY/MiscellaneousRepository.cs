@@ -531,7 +531,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   ReceivingDate = total.Key.ReceivingDate,
                                   UnitCost = total.Key.UnitCost
 
-                              }).Where(x => x.RemainingStocks != 0 && x.ItemCode == itemcode);
+                              }).Where(x => x.RemainingStocks >= 1 && x.ItemCode == itemcode);
 
             return await getAvailable.ToListAsync();
 
@@ -728,6 +728,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              Uom = x.Uom,
                                                              TotalQuantity = x.Quantity,
                                                              PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
+                                                             UnitCost = x.UnitPrice,
                                                              Barcode = x.WarehouseId
 
 
