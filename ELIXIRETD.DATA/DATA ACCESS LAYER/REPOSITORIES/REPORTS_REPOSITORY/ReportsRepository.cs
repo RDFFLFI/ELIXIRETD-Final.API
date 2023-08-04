@@ -301,8 +301,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                ItemCode = returned.ItemCode,
                                ItemDescription = returned.ItemDescription,
                                BorrowedQuantity = returned.Quantity != null ? returned.Quantity : 0,
-                               Consumed = (returned.Quantity != null ? returned.Quantity : 0) - (returned.ReturnQuantity != null ? returned.ReturnQuantity : 0),
-                               ReturnedQuantity = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
+                               //Consumed = (returned.Quantity != null ? returned.Quantity : 0) - (returned.ReturnQuantity != null ? returned.ReturnQuantity : 0),
+                               //ReturnedQuantity = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                ReturnedDate = returned.ReturnedDate.ToString(),
                                Uom = returned.Uom,
                                TransactedBy = borrowed.PreparedBy,
@@ -457,7 +457,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                     }).Select(x => new DtoBorrowedIssue
                                                                     {
                                                                         ItemCode = x.Key.ItemCode,
-                                                                        Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
+                                                                        //Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
 
                                                                     });
 
@@ -472,7 +472,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                   }).Select(x => new DtoBorrowedIssue
                                                                   {
                                                                       ItemCode = x.Key.ItemCode,
-                                                                      Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
+                                                                      //Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
 
                                                                   });
 
@@ -493,7 +493,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                        {
 
                                                                            ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                           //ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                                        });
 
@@ -512,7 +512,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                         {
 
                                                                            ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                           //ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                                         });
 
@@ -638,7 +638,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 ReturnQuantity = x.Sum(x => x.ReturnQuantity)
+                                                                 //ReturnQuantity = x.Sum(x => x.ReturnQuantity)
 
                                                              });
 

@@ -247,15 +247,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                    //x.Id,
                                                                    x.ItemCode,
                                                                    x.ItemDescription,
-                                                                   x.Uom,
-                                                                   x.ActualGood,
+                                                                   x.Uom
+                                                             
                                                                    //x.ActualReceivingDate
                                                                }).Select(x => new WarehouseInventory
                                                                {
                                                                    //WarehouseId = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
 
-                                                                   ActualGood = x.Key.ActualGood,
+                                                                   ActualGood = x.Sum(x => x.ActualDelivered),
                                                                    ItemDescription = x.Key.ItemDescription,
                                                                    Uom = x.Key.Uom,
                                                                    //RecievingDate = x.Key.ActualReceivingDate.ToString()
@@ -319,7 +319,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.ReturnQuantity),
+                                                                 In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                  //warehouseId = x.Key.WarehouseId,
 
                                                              });
@@ -373,7 +373,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                   //ReceivingDate = total.Key.ReceivingDate
 
-                              }).Where(x => x.RemainingStocks != 0);
+                              }).Where(x => x.RemainingStocks  >= 1);
 
 
             var GetAvailableItem = getAvailable.GroupBy(x => new
@@ -409,14 +409,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                {
                                                                    x.Id,
                                                                    x.ItemCode,
-                                                                   x.ActualGood,
-                                                                   x.ActualReceivingDate
+                                                                   //x.ActualGood,
+                                                                   x.ActualReceivingDate,
+                                                                   x.UnitPrice
+
                                                                }).Select(x => new WarehouseInventory
                                                                {
                                                                    WarehouseId = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
-                                                                   ActualGood = x.Key.ActualGood,
-                                                                   RecievingDate = x.Key.ActualReceivingDate.ToString()
+                                                                   ActualGood = x.Sum(x => x.ActualDelivered),
+                                                                   RecievingDate = x.Key.ActualReceivingDate.ToString(),
+                                                                   UnitPrice = x.Key.UnitPrice
+                                                                   
 
                                                                });
 
@@ -450,7 +454,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             });
 
             var borrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsApproved == false)
+                                                         
                                                            .GroupBy(x => new
                                                            {
 
@@ -477,7 +481,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.ReturnQuantity),
+                                                                 In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                  warehouseId = x.Key.WarehouseId,
 
                                                              });
@@ -501,6 +505,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   IssueOut = issue.Out != null ? issue.Out : 0,
                                   BorrowedOut = x.warehouse.warehouse.borrowed.Out != null ? x.warehouse.warehouse.borrowed.Out : 0,
                                   Borrowedreturn = x.warehouse.returned.In != null ? x.warehouse.returned.In : 0,
+                                  UnitCost = x.warehouse.warehouse.warehouse.warehouse.UnitPrice
 
                               }).GroupBy(x => new
                               {
@@ -513,6 +518,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   x.IssueOut,
                                   x.BorrowedOut,
                                   x.Borrowedreturn,
+                                  x.UnitCost
 
                               }
                               //,
@@ -522,7 +528,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   WarehouseId = total.Key.warehouseId,
                                   ItemCode = total.Key.itemcode,
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
-                                  ReceivingDate = total.Key.ReceivingDate
+                                  ReceivingDate = total.Key.ReceivingDate,
+                                  UnitCost = total.Key.UnitCost
 
                               }).Where(x => x.RemainingStocks != 0 && x.ItemCode == itemcode);
 

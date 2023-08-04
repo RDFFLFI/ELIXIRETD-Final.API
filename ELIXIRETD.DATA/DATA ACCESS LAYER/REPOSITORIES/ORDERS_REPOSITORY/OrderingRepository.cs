@@ -16,11 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using NetTopologySuite.IO;
+using NetTopologySuite.Mathematics;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
+using System;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 {
@@ -121,7 +124,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                             {
 
                                                                 ItemCode = x.Key.ItemCode,
-                                                                In = x.Sum(x => x.ReturnQuantity),
+                                                                //In = x.Sum(x => x.ReturnQuantity),
 
                                                             });
 
@@ -1444,7 +1447,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                              
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1468,7 +1471,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                             {
 
                                                                 ItemCode = x.Key.ItemCode,
-                                                                In = x.Sum(x => x.ReturnQuantity),
+                                                                In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
 
                                                             });
 
@@ -2057,14 +2060,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var TotalBorrowIssue = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
                                                                       .Where(x => x.IsActive == true)
-                                                                      .Where(x => x.IsApproved == false)
+                                                                      //.Where(x => x.IsApproved == false)
                                                                       .SumAsync(x => x.Quantity);
 
             var TotalBorrowReturned = await _context.BorrowedIssueDetails.Where(x => x.WarehouseId == id)
                                                                       .Where(x => x.IsActive == true)
                                                                       .Where(x => x.IsReturned == true)
                                                                       .Where(x => x.IsApprovedReturned == true)
-                                                                      .SumAsync(x => x.ReturnQuantity);
+                                                                      .SumAsync(x => x.Quantity - (x.Consume != null ? x.Consume : 0));
 
 
 
@@ -2127,19 +2130,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                   });
 
-            //var getMiscReceipts = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
-            //                                                .Where(x => x.IsWarehouseReceived == true)
-            //                                                .Where(x => x.IsActive == true)
-            //                                                .GroupBy(x => new
-            //                                                {
-            //                                                    x.Id,
-            //                                                    x.ItemCode,
-
-            //                                                }).Select(x => new ItemStocksDto
-            //                                                {
-            //                                                    warehouseId = x.Key.Id,
-            //                                                    ItemCode = x.Key.ItemCode,
-            //                                                });
+         
 
 
             var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
@@ -2158,7 +2149,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                                //.Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -2186,7 +2177,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                   }).Select(x => new ItemStocksDto
                                                                   {
                                                                       ItemCode = x.Key.ItemCode,
-                                                                      Remaining = x.Sum(x => x.ReturnQuantity),
+                                                                      Remaining = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                       warehouseId = x.Key.WarehouseId
 
                                                                   });
@@ -2274,7 +2265,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApproved == false)
+                                                                //.Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -2302,7 +2293,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                             {
 
                                                                 ItemCode = x.Key.ItemCode,
-                                                                In = x.Sum(x => x.ReturnQuantity),
+                                                                In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                 warehouseId = x.Key.WarehouseId
 
                                                             });
@@ -2700,40 +2691,98 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id)
         {
+
+            var UnitPriceById =  _context.MoveOrders.Where(x => x.IsActive == true)
+                .GroupBy(x => new
+            {
+                x.OrderNo,
+                x.Id,
+                x.ItemCode,
+                x.QuantityOrdered,
+                x.UnitPrice
+
+            }).Select(x => new ViewMoveOrderForApprovalDto
+            {
+                MIRId  = x.Key.OrderNo,
+                Id = x.Key.Id,
+                ItemCode = x.Key.ItemCode,
+                UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+                Quantity = x.Key.QuantityOrdered,
+                
+
+            });
+
+
+            var UnitPriceTotal = UnitPriceById.GroupBy(x => new
+            {
+                //x.MIRId,
+                x.ItemCode,
+
+
+            }).Select(x => new ViewMoveOrderForApprovalDto
+            {
+                //MIRId = x.Key.MIRId,
+                ItemCode = x.Key.ItemCode,
+                UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                Quantity = x.Sum(x => x.Quantity)
+
+            });
+
+
             var orders = _context.MoveOrders
-                 .Where(x => x.IsActive == true)
-                 .Where(x => x.IsPrepared == true)
-                                            .Select(x => new ViewMoveOrderForApprovalDto
-                                            {
-                                                Id = x.Id,
-                                                MIRId = x.OrderNo,
-                                                BarcodeNo = x.WarehouseId,
-                                                ItemCode = x.ItemCode,
-                                                ItemDescription = x.ItemDescription,
-                                                Uom = x.Uom,
-                                                Customercode = x.Customercode,
-                                                CustomerName = x.CustomerName,
-                                                Address = x.AddressOrder,
-                                                ApprovedDate = x.ApprovedDate.ToString(),
-                                                Quantity = x.QuantityOrdered,
-
-                                                CompanyCode = x.CompanyCode,
-                                                CompanyName = x.CompanyName,
-                                                DepartmentCode = x.DepartmentCode,
-                                                DepartmentName = x.DepartmentName,
-                                                LocationCode = x.LocationCode,
-                                                LocationName = x.LocationName,
-                                                AccountCode = x.AccountCode,
-                                                AccountTitles = x.AccountTitles,
-                                                ItemRemarks = x.ItemRemarks,
-                                                UnitCost = x.UnitPrice,
-                                                TotalCost = x.UnitPrice * x.QuantityOrdered
+                .Where(x => x.OrderNo == id)
+                .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode , unitprice => unitprice.ItemCode, (MoveOrders , unitprice) => new {MoveOrders , unitprice})
+                .SelectMany(x => x.unitprice.DefaultIfEmpty() , (x , unitprice) => new {x.MoveOrders , unitprice})
+                .Where(x => x.MoveOrders.IsActive == true && x.MoveOrders.IsPrepared == true)
+                .GroupBy(x => new
+                {
+                    x.MoveOrders.OrderNo,
+                    x.unitprice.ItemCode,
+                    x.MoveOrders.ItemDescription,
+                    x.MoveOrders.Uom,
+                    x.MoveOrders.Customercode,
+                    x.MoveOrders.CustomerName,
+                    x.MoveOrders.ApprovedDate,
+                    x.unitprice.UnitCost,
+                    x.unitprice.Quantity,
+                    x.MoveOrders.CompanyCode,
+                    x.MoveOrders.CompanyName,
+                    x.MoveOrders.DepartmentCode,
+                    x.MoveOrders.DepartmentName,
+                    x.MoveOrders.LocationCode,
+                    x.MoveOrders.LocationName,
+                    x.MoveOrders.AccountCode,
+                    x.MoveOrders.AccountTitles,
+                    x.MoveOrders.ItemRemarks,
 
 
-                                            });
 
-            return await orders.Where(x => x.MIRId == id)
-                                  .ToListAsync();
+
+                }).Select(x => new ViewMoveOrderForApprovalDto
+                {
+                    MIRId = x.Key.OrderNo,
+                    ItemCode = x.Key.ItemCode,
+                    ItemDescription = x.Key.ItemDescription,
+                    Uom = x.Key.Uom,
+                    Customercode = x.Key.Customercode,
+                    CustomerName = x.Key.CustomerName,
+                    ApprovedDate = x.Key.ApprovedDate.ToString(),
+                    Quantity = x.Key.Quantity,
+                    CompanyCode = x.Key.CompanyCode,
+                    CompanyName = x.Key.CompanyName,
+                    DepartmentCode = x.Key.DepartmentCode,
+                    DepartmentName = x.Key.DepartmentName,
+                    LocationCode = x.Key.LocationCode,
+                    LocationName = x.Key.LocationCode,
+                    AccountCode = x.Key.AccountCode,
+                    AccountTitles = x.Key.AccountTitles,
+                    ItemRemarks = x.Key.ItemRemarks,
+                    UnitCost = x.Key.UnitCost,
+
+                });
+
+            return await orders.ToListAsync();
+
 
         }
 
@@ -2922,61 +2971,144 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<GetAllApprovedMoveOrderDto> GetAllApprovedMoveOrder(int id)
         {
 
-            var orders = _context.MoveOrders.Where(x => x.OrderNoPkey == id)
-                                            .GroupBy(x => new
-                                            {
-                                                x.OrderNo,
-                                                x.WarehouseId,
-                                                x.ItemCode,
-                                                x.ItemDescription,
-                                                x.Uom,
-                                                x.Department,
-                                                x.CustomerName,
-                                                x.Customercode,
-                                                x.Category,
-                                                x.OrderDate,
-                                                x.PreparedDate,
-                                                x.IsApprove,
-                                                x.IsPrepared,
-                                                x.IsReject,
-                                                x.ApproveDateTempo,
-                                                x.IsPrint,
-                                                x.IsTransact,
-                                                x.Rush,
-                                                x.ItemRemarks,
-                                              
-                                                
+            var UnitPriceById = _context.MoveOrders.Where(x => x.IsActive == true)
+     .GroupBy(x => new
+     {
+         x.OrderNo,
+         x.Id,
+         x.ItemCode,
+         x.QuantityOrdered,
+         x.UnitPrice
+
+     }).Select(x => new ViewMoveOrderForApprovalDto
+     {
+         MIRId = x.Key.OrderNo,
+         Id = x.Key.Id,
+         ItemCode = x.Key.ItemCode,
+         UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+         Quantity = x.Key.QuantityOrdered,
+
+
+     });
+
+
+            var UnitPriceTotal = UnitPriceById.GroupBy(x => new
+            {
+                //x.MIRId,
+                x.ItemCode,
+
+
+            }).Select(x => new ViewMoveOrderForApprovalDto
+            {
+                //MIRId = x.Key.MIRId,
+                ItemCode = x.Key.ItemCode,
+                UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                Quantity = x.Sum(x => x.Quantity)
+
+            });
+
+
+            var orders = _context.MoveOrders
+                .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode, unitprice => unitprice.ItemCode, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
+                .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.MoveOrders, unitprice })
+                .GroupBy(x => new
+                {
+                    x.MoveOrders.OrderNo,
+                    x.unitprice.ItemCode,
+                    x.MoveOrders.ItemDescription,
+                    x.MoveOrders.Uom,
+                    x.MoveOrders.Department,
+                    x.MoveOrders.CustomerName,
+                    x.MoveOrders.Customercode,
+                    x.MoveOrders.Category,
+                    x.MoveOrders.OrderDate,
+                    x.MoveOrders.IsApprove,
+                    x.MoveOrders.IsPrepared,
+                    x.MoveOrders.IsTransact,
+                    x.MoveOrders.Rush,
+                    x.MoveOrders.ItemRemarks,
+                    x.unitprice.UnitCost,
+                    x.unitprice.Quantity
+
+                }).Where(x => x.Key.IsApprove == true).Select(x => new GetAllApprovedMoveOrderDto
+                {
+
+                    MIRId = x.Key.OrderNo,
+                    ItemCode = x.Key.ItemCode,
+                    ItemDescription = x.Key.ItemDescription,
+                    Uom = x.Key.Uom,
+                    Department = x.Key.Department,
+                    CustomerName = x.Key.CustomerName,
+                    CustomerCode = x.Key.Customercode,
+                    Category = x.Key.Category,
+                    Quantity = x.Key.Quantity,
+                    OrderDate = x.Key.OrderDate.ToString(),
+                    //IsApprove =  x.Key.IsApprove != null,
+                    //IsPrepared = x.Key.IsPrepared,     
+                    //IsTransact = x.Key.IsTransact != null,
+                    Rush = x.Key.Rush,
+                    ItemRemarks = x.Key.ItemRemarks,
+                    UnitCost = x.Key.UnitCost,
+                    TotalCost = x.Key.UnitCost * x.Key.Quantity
+                }).Where(x => x.MIRId == id);
 
 
 
-                                            }).Where(x => x.Key.IsApprove == true)
-                                              .Where(x => x.Key.IsReject != true)
+            //var orders = _context.MoveOrders.Where(x => x.OrderNoPkey == id)
+            //                                .GroupBy(x => new
+            //                                {
+            //                                    x.OrderNo,
+            //                                    x.WarehouseId,
+            //                                    x.ItemCode,
+            //                                    x.ItemDescription,
+            //                                    x.Uom,
+            //                                    x.Department,
+            //                                    x.CustomerName,
+            //                                    x.Customercode,
+            //                                    x.Category,
+            //                                    x.OrderDate,
+            //                                    x.PreparedDate,
+            //                                    x.IsApprove,
+            //                                    x.IsPrepared,
+            //                                    x.IsReject,
+            //                                    x.ApproveDateTempo,
+            //                                    x.IsPrint,
+            //                                    x.IsTransact,
+            //                                    x.Rush,
+            //                                    x.ItemRemarks,
 
-                                             .Select(x => new GetAllApprovedMoveOrderDto
-                                             {
-                                                 MIRId = x.Key.OrderNo,
-                                                 BarcodeNo = x.Key.WarehouseId,
-                                                 ItemCode = x.Key.ItemCode,
-                                                 ItemDescription = x.Key.ItemDescription,
-                                                 Uom = x.Key.Uom,
-                                                 Department = x.Key.Department,
-                                                 CustomerName = x.Key.CustomerName,
-                                                 CustomerCode = x.Key.Customercode,
-                                                 Category = x.Key.Category,
-                                                 Quantity = x.Sum(x => x.QuantityOrdered),
-                                                 OrderDate = x.Key.OrderDate.ToString(),
-                                                 PreparedDate = x.Key.PreparedDate.ToString(),
-                                                 IsApprove = x.Key.IsApprove != null,
-                                                 IsPrepared = x.Key.IsPrepared,
-                                                 ApprovedDate = x.Key.ApproveDateTempo.ToString(),
-                                                 IsPrint = x.Key.IsPrint != null,
-                                                 IsTransact = x.Key.IsTransact != null,
-                                                 Rush = x.Key.Rush,
-                                                 ItemRemarks = x.Key.ItemRemarks,
-                                                 UnitCost = x.Sum(x => x.UnitPrice) * x.Sum(x => x.QuantityOrdered),
-                                                 
 
-                                             });
+
+
+
+            //                                }).Where(x => x.Key.IsApprove == true)
+            //                                  .Where(x => x.Key.IsReject != true)
+
+            //                                 .Select(x => new GetAllApprovedMoveOrderDto
+            //                                 {
+            //                                     MIRId = x.Key.OrderNo,
+            //                                     BarcodeNo = x.Key.WarehouseId,
+            //                                     ItemCode = x.Key.ItemCode,
+            //                                     ItemDescription = x.Key.ItemDescription,
+            //                                     Uom = x.Key.Uom,
+            //                                     Department = x.Key.Department,
+            //                                     CustomerName = x.Key.CustomerName,
+            //                                     CustomerCode = x.Key.Customercode,
+            //                                     Category = x.Key.Category,
+            //                                     Quantity = x.Sum(x => x.QuantityOrdered),
+            //                                     OrderDate = x.Key.OrderDate.ToString(),
+            //                                     PreparedDate = x.Key.PreparedDate.ToString(),
+            //                                     IsApprove = x.Key.IsApprove != null,
+            //                                     IsPrepared = x.Key.IsPrepared,
+            //                                     ApprovedDate = x.Key.ApproveDateTempo.ToString(),
+            //                                     IsPrint = x.Key.IsPrint != null,
+            //                                     IsTransact = x.Key.IsTransact != null,
+            //                                     Rush = x.Key.Rush,
+            //                                     ItemRemarks = x.Key.ItemRemarks,
+            //                                     UnitCost = x.Sum(x => x.UnitPrice) * x.Sum(x => x.QuantityOrdered),
+
+
+            //                                 });
 
             return await orders.FirstOrDefaultAsync();
 
@@ -3180,35 +3312,118 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid)
         {
-       
-            var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
-                                            .ThenBy(x => x.Rush)
-                                            .Where(x => x.IsActive == true)
-                                           .Where(x => x.IsApprove == true)
 
-                                           .Select(x => new ListOfMoveOrdersForTransactDto
-                                           {
-                                               OrderNoPkey = x.OrderNoPkey,
-                                               MIRId = x.OrderNo,
-                                               BarcodeNo = x.WarehouseId,
-                                               OrderDate = x.OrderDate.ToString(),
-                                               PreparedDate = x.PreparedDate.ToString(),
-                                               DateNeeded = x.DateNeeded.ToString(),
-                                               Department = x.Department,
-                                               CustomerCode = x.Customercode,
-                                               CustomerName = x.CustomerName,
-                                               Category = x.Category,
-                                               ItemCode = x.ItemCode,
-                                               ItemDescription = x.ItemDescription,
-                                               Uom = x.Uom,
-                                               Quantity = x.QuantityOrdered,
-                                               IsApprove = x.IsApprove != null,
-                                               ItemRemarks = x.ItemRemarks,
-                                               UnitCost = x.UnitPrice,
-                                               TotalCost = x.UnitPrice * x.QuantityOrdered
-                                               
 
-                                           });
+            var UnitPriceById = _context.MoveOrders.Where(x => x.IsActive == true)
+                 .GroupBy(x => new
+                 {
+                     x.OrderNo,
+                     x.Id,
+                     x.ItemCode,
+                     x.QuantityOrdered,
+                     x.UnitPrice
+
+                 }).Select(x => new ViewMoveOrderForApprovalDto
+                 {
+                     MIRId = x.Key.OrderNo,
+                     Id = x.Key.Id,
+                     ItemCode = x.Key.ItemCode,
+                     UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+                     Quantity = x.Key.QuantityOrdered,
+
+
+                 });
+
+
+
+            var UnitPriceTotal = UnitPriceById.GroupBy(x => new
+            {
+                //x.MIRId,
+                x.ItemCode,
+
+
+            }).Select(x => new ViewMoveOrderForApprovalDto
+            {
+                //MIRId = x.Key.MIRId,
+                ItemCode = x.Key.ItemCode,
+                UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                Quantity = x.Sum(x => x.Quantity)
+
+            });
+
+            var orders = _context.MoveOrders
+                .OrderBy(x => x.Rush == null)
+                .ThenBy(x => x.Rush)
+                 .Where(x => x.IsActive == true)
+                   .Where(x => x.IsApprove == true)
+              .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode, unitprice => unitprice.ItemCode, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
+              .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.MoveOrders, unitprice })
+              .GroupBy(x => new
+              {
+
+                  x.MoveOrders.OrderNo,
+                  x.MoveOrders.OrderDate,
+                  x.MoveOrders.PreparedDate,
+                  x.MoveOrders.DateNeeded,
+                  x.MoveOrders.Customercode,
+                  x.MoveOrders.CustomerName,
+                  x.MoveOrders.Category,
+                  x.MoveOrders.ItemCode,
+                  x.MoveOrders.ItemDescription,
+                  x.MoveOrders.Uom,
+                  x.unitprice.UnitCost,
+                  x.unitprice.Quantity,
+                  x.MoveOrders.IsApprove,
+                  x.MoveOrders.ItemRemarks
+
+              }).Select(x => new ListOfMoveOrdersForTransactDto
+              {
+
+                  MIRId = x.Key.OrderNo,
+                  OrderDate = x.Key.OrderDate.ToString(),
+                  PreparedDate = x.Key.PreparedDate.ToString(),
+                  DateNeeded = x.Key.DateNeeded.ToString(),
+                  CustomerCode = x.Key.Customercode,
+                  CustomerName = x.Key.CustomerName,
+                  Category = x.Key.Category,
+                  ItemCode = x.Key.ItemCode,
+                  ItemDescription = x.Key.ItemDescription,
+                  Uom = x.Key.Uom,
+                  Quantity = x.Key.Quantity,
+                  ItemRemarks = x.Key.ItemRemarks,
+                  UnitCost = x.Key.UnitCost,
+                  TotalCost = x.Key.UnitCost * x.Key.Quantity
+
+              });
+
+            //var orders = _context.MoveOrders.OrderBy(x => x.Rush == null)
+            //                                .ThenBy(x => x.Rush)
+            //                                .Where(x => x.IsActive == true)
+            //                               .Where(x => x.IsApprove == true)
+
+            //                               .Select(x => new ListOfMoveOrdersForTransactDto
+            //                               {
+            //                                   OrderNoPkey = x.OrderNoPkey,
+            //                                   MIRId = x.OrderNo,
+            //                                   BarcodeNo = x.WarehouseId,
+            //                                   OrderDate = x.OrderDate.ToString(),
+            //                                   PreparedDate = x.PreparedDate.ToString(),
+            //                                   DateNeeded = x.DateNeeded.ToString(),
+            //                                   Department = x.Department,
+            //                                   CustomerCode = x.Customercode,
+            //                                   CustomerName = x.CustomerName,
+            //                                   Category = x.Category,
+            //                                   ItemCode = x.ItemCode,
+            //                                   ItemDescription = x.ItemDescription,
+            //                                   Uom = x.Uom,
+            //                                   Quantity = x.QuantityOrdered,
+            //                                   IsApprove = x.IsApprove != null,
+            //                                   ItemRemarks = x.ItemRemarks,
+            //                                   UnitCost = x.UnitPrice,
+            //                                   TotalCost = x.UnitPrice * x.QuantityOrdered
+
+
+            //                               });
 
             return await orders.Where(x => x.MIRId == orderid)
                                .ToListAsync();

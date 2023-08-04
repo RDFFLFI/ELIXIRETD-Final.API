@@ -20,5 +20,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
 
         public decimal RemainingStocks { get; set; }
 
+        public decimal UnitCost { get; set; }
+
     }
 }

@@ -43,10 +43,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public bool ? IsReturned { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal  Consume { get; set; }
+        public decimal Consume { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal ReturnQuantity { get; set; }
+        //[Column(TypeName = "decimal(18,2)")]
+        //public decimal ReturnQuantity { get; set; }
 
         [Column(TypeName = "Date")]
         public DateTime? ReturnedDate { get; set; }
@@ -97,6 +97,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string AccountTitles { get; set; }
 
         public string EmpId { get; set; }
+
+        public string FullName { get; set; }
 
 
 

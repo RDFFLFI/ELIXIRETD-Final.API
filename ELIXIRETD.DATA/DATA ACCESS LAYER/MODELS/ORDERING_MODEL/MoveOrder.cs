@@ -28,6 +28,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public bool IsActive { get; set; }
 
         public bool? IsApprove { get; set; }
+
+        [Column(TypeName = "Date")]
         public DateTime? ApprovedDate { get; set; }
 
         [Column(TypeName = "Date")]

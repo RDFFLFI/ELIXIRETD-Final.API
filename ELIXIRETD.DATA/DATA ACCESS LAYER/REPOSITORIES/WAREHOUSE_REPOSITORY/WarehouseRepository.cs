@@ -489,7 +489,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                         .Where(x => x.IsApproved == false)
+                                                         //.Where(x => x.IsApproved == false)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,
@@ -515,7 +515,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                               {
 
                                                                   ItemCode = x.Key.ItemCode,
-                                                                  In = x.Sum(x => x.ReturnQuantity),
+                                                                  In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                   warehouseId = x.Key.WarehouseId,
 
                                                               });
@@ -598,7 +598,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
 
             var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                         .Where(x => x.IsApproved == false)
+                                                         //.Where(x => x.IsApproved == false)
                                                          .GroupBy(x => new
                                                          {
                                                              x.ItemCode,
@@ -624,7 +624,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                               {
 
                                                                   ItemCode = x.Key.ItemCode,
-                                                                  In = x.Sum(x => x.ReturnQuantity),
+                                                                  In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
                                                                   warehouseId = x.Key.WarehouseId,
 
                                                               });
