@@ -149,6 +149,23 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpPut]
+        [Route("CancelAllborrowedfortransact")]
+        public async Task<IActionResult> CancelAllborrowedfortransact([FromBody] BorrowedIssueDetails[] borrowed)
+        {
+
+            foreach (BorrowedIssueDetails items in borrowed)
+            {
+
+                await _unitofwork.Borrowed.CancelAllborrowedfortransact(items);
+                await _unitofwork.CompleteAsync();
+
+            }
+
+
+            return new JsonResult("Successfully cancelled transaction!");
+        }
+
 
         [HttpPut]
         [Route("UpdateBorrowedIssuePKey")]
@@ -193,10 +210,10 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpPut]
         [Route("CancelItemCodeInBorrowedIssue")]
-        public async Task<IActionResult> CancelItemCodeInBorrowedIssue([FromBody] BorrowedIssueDetails[] borrowed)
+        public async Task<IActionResult> CancelItemCodeInBorrowedIssue([FromBody] BorrowedConsume[] consumes)
         {
 
-            foreach(BorrowedIssueDetails items in borrowed)
+            foreach(BorrowedConsume items in consumes)
 
             {
                 await _unitofwork.Borrowed.CancelIssuePerItemCode(items);
@@ -207,24 +224,47 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
-        [HttpPut]
-        [Route("EditReturnedQuantity")]
-        public async Task<IActionResult> EditQuantityReturned(BorrowedIssueDetails borrowed)
+        [HttpGet]
+        [Route("GetItemForReturned")]
+        public async Task<IActionResult> GetItemForReturned(int id)
         {
 
-            var edit = await _unitofwork.Borrowed.EditReturnQuantity(borrowed);
+            var issue = await _unitofwork.Borrowed.GetItemForReturned(id);
+
+            return Ok(issue);
+
+        }
 
 
+        [HttpPost]
+        [Route("EditReturnedQuantity")]
+        public async Task<IActionResult> EditQuantityReturned(BorrowedConsume consumes)
+        {
 
-            if (edit == false)
-                return BadRequest("Edit failed, please check your input in returned quantity!");
+            var edit = await _unitofwork.Borrowed.EditReturnQuantity(consumes);
 
+            if (edit == false) 
+                return BadRequest("Invalid Input or Consumed must not be greater than borrowed quantity");
 
+            await _unitofwork.Borrowed.EditReturnQuantity(consumes);
             await _unitofwork.CompleteAsync();
 
             return Ok("Successfully edit returned quantity!");
 
         }
+
+
+        [HttpGet]
+        [Route("GetConsumedItem")]
+        public async Task<IActionResult> GetConsumedItem(int id)
+        {
+
+            var issue = await _unitofwork.Borrowed.GetConsumedItem(id);
+
+            return Ok(issue);
+
+        }
+
 
         [HttpPut]
         [Route("SaveReturnedQuantity")]
@@ -294,6 +334,20 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         }
 
+        [HttpPut]
+        [Route("CancelReturnItem")]
+        public async Task<IActionResult> CancelReturnItem([FromBody] BorrowedIssueDetails[] borrowed)
+        {
+
+            foreach (BorrowedIssueDetails items in borrowed)
+
+            {
+                await _unitofwork.Borrowed.CancelReturnItem(items);
+                await _unitofwork.CompleteAsync();
+            }
+
+            return new JsonResult("Successfully cancelled transaction!");
+        }
 
         [HttpGet]
         [Route("ViewBorrowedReturnDetails")]
@@ -306,12 +360,23 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("ViewConsumeForReturn")]
+        public async Task<IActionResult> ViewConsumeForReturn([FromQuery] int id)
+        {
+
+            var borrow = await _unitofwork.Borrowed.ViewConsumeForReturn(id);
+
+            return Ok(borrow);
+        }
+
+
         // New Update Borrowed
 
 
         [HttpGet]
         [Route("GetAllForApprovalBorrowedWithPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllForApprovalBorrowedPaginationDTO>>> GetAllForApprovalBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPagination([FromQuery] UserParams userParams, [FromQuery] bool status)
         {
             var issue = await _unitofwork.Borrowed.GetAllForApprovalBorrowedWithPagination(userParams, status);
 
@@ -335,7 +400,7 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
 
         [HttpGet]
         [Route("GetAllForApprovalBorrowedWithPaginationOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllForApprovalBorrowedPaginationDTO>>> GetAllForApprovalBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
+        public async Task<ActionResult<IEnumerable<GetAllBorrowedReceiptWithPaginationDto>>> GetAllForApprovalBorrowedWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
         {
             if (search == null)
 
@@ -599,57 +664,57 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
-        [HttpGet]
-        [Route("GetAllDetailsBorrowedTransaction")]
-        public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransaction([FromQuery] UserParams userParams)
-        {
-            var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransaction(userParams);
+        //[HttpGet]
+        //[Route("GetAllDetailsBorrowedTransaction")]
+        //public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransaction([FromQuery] UserParams userParams)
+        //{
+        //    var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransaction(userParams);
 
-            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+        //    Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
-            var issueResult = new
-            {
-                issue,
-                issue.CurrentPage,
-                issue.PageSize,
-                issue.TotalCount,
-                issue.TotalPages,
-                issue.HasNextPage,
-                issue.HasPreviousPage
-            };
+        //    var issueResult = new
+        //    {
+        //        issue,
+        //        issue.CurrentPage,
+        //        issue.PageSize,
+        //        issue.TotalCount,
+        //        issue.TotalPages,
+        //        issue.HasNextPage,
+        //        issue.HasPreviousPage
+        //    };
 
-            return Ok(issueResult);
+        //    return Ok(issueResult);
 
-        }
+        //}
 
 
 
-        [HttpGet]
-        [Route("GetAllDetailsBorrowedTransactionOrig")]
-        public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransactionOrig([FromQuery] UserParams userParams, [FromQuery] string search)
-        {
-            if (search == null)
+        //[HttpGet]
+        //[Route("GetAllDetailsBorrowedTransactionOrig")]
+        //public async Task<ActionResult<IEnumerable<GetAllDetailsBorrowedTransactionDto>>> GetAllDetailsBorrowedTransactionOrig([FromQuery] UserParams userParams, [FromQuery] string search)
+        //{
+        //    if (search == null)
 
-                return await GetAllDetailsBorrowedTransaction(userParams);
+        //        return await GetAllDetailsBorrowedTransaction(userParams);
 
-            var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransactionOrig(userParams, search);
+        //    var issue = await _unitofwork.Borrowed.GetAllDetailsBorrowedTransactionOrig(userParams, search);
 
-            Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
+        //    Response.AddPaginationHeader(issue.CurrentPage, issue.PageSize, issue.TotalCount, issue.TotalPages, issue.HasNextPage, issue.HasPreviousPage);
 
-            var issueResult = new
-            {
-                issue,
-                issue.CurrentPage,
-                issue.PageSize,
-                issue.TotalCount,
-                issue.TotalPages,
-                issue.HasNextPage,
-                issue.HasPreviousPage
-            };
+        //    var issueResult = new
+        //    {
+        //        issue,
+        //        issue.CurrentPage,
+        //        issue.PageSize,
+        //        issue.TotalCount,
+        //        issue.TotalPages,
+        //        issue.HasNextPage,
+        //        issue.HasPreviousPage
+        //    };
 
-            return Ok(issueResult);
+        //    return Ok(issueResult);
 
-        }
+        //}
 
         
         // Update Borrowed
@@ -710,6 +775,10 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         public async Task<IActionResult> EditBorrowedIssue([FromBody] BorrowedIssue borrowed)
         {
 
+            var edit = await _unitofwork.Borrowed.EditBorrowedIssue(borrowed);
+
+            if (edit == false)
+                return BadRequest("Invalid Input or Consumed must not be greater than borrowed quantity");
 
             await _unitofwork.Borrowed.EditBorrowedIssue(borrowed);
             await _unitofwork.CompleteAsync();

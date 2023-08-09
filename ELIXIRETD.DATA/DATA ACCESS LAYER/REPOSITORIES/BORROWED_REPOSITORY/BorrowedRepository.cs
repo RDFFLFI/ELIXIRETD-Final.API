@@ -9,6 +9,10 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY.Excemption;
+using System.Security.Cryptography.X509Certificates;
+using System;
+using NetTopologySuite.Index.HPRtree;
+using Microsoft.Extensions.Logging.Abstractions;
 //using EntityFramework.FunctionsExtensions.DateDiffDay;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
@@ -24,8 +28,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
       
-
-
         public async Task<IReadOnlyList<GetAvailableStocksForBorrowedIssue_Dto>> GetAvailableStocksForBorrowedIssueNoParameters()
         {
             var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -37,7 +39,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                    x.ItemCode,
                                                                    x.ItemDescription,
                                                                    x.Uom,
-                                                                   x.ActualGood,
+                                                         
                                                                    //x.ActualReceivingDate,
 
                                                                }).Select(x => new WarehouseInventory
@@ -47,7 +49,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                    ItemCode = x.Key.ItemCode,
                                                                    ItemDescription = x.Key.ItemDescription,
                                                                    Uom = x.Key.Uom,
-                                                                   ActualGood = x.Key.ActualGood,
+                                                                   ActualGood = x.Sum(x => x.ActualDelivered)
                                                                    //RecievingDate = x.Key.ActualReceivingDate.ToString()
 
                                                                });
@@ -85,6 +87,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                             });
 
+
+
+
             var BorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                            .Where(x => x.IsApproved == false)
                                                            .GroupBy(x => new
@@ -100,20 +105,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                            });
 
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+                                                   .GroupBy(x => new
+                                                   {
+                                                       x.ItemCode,
+                                                       x.BorrowedItemPkey
+
+                                                   }).Select(x => new ItemStocksDto
+                                                   {
+                                                       ItemCode = x.Key.ItemCode,
+                                                       BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                                       Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                                                   });
+
+
 
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .Where(x => x.IsApprovedReturned == true)
+                                                             .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
+                                                             .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
                                                              .GroupBy(x => new
                                                              {
-                                                                 x.ItemCode,
+                                                                 x.returned.ItemCode,
+                                                                 //x.itemconsume.Consume
                                                                  //x.WarehouseId,
 
                                                              }).Select(x => new ItemStocksDto
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume ),
+                                                                 In = x.Sum(x => x.returned.Quantity) -  x.Sum(x => x.itemconsume.Consume),
                                                                  //warehouseId = x.Key.WarehouseId,
 
                                                              });
@@ -135,10 +158,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 into leftJ3
                                 from borrowOut in leftJ3.DefaultIfEmpty()
 
-                                join returned in BorrowedReturn
-                                on warehouse.ItemCode equals returned.ItemCode
-                                into LeftJ4
-                                from returned in LeftJ4.DefaultIfEmpty()
+                                //join returned in BorrowedReturn
+                                //on warehouse.ItemCode equals returned.ItemCode
+                                //into LeftJ4
+                                //from returned in LeftJ4.DefaultIfEmpty()
 
                                 group new
                                 {
@@ -147,22 +170,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                     Moveorder,
                                     issue,
                                     borrowOut,
-                                    returned,
+                                    //returned,
                                 }
 
                                 by new
                                 {
 
-                                    //warehouse.WarehouseId,
                                     warehouse.ItemCode,
                                     warehouse.ItemDescription,
                                     warehouse.Uom,
-                                    //warehouse.RecievingDate,
                                     WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
                                     MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
                                     IssueOut = issue.Out != null ? issue.Out : 0,
                                     BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
-                                    borrowedreturn = returned.In != null ? returned.In : 0
+                                    //borrowedreturn = returned.In != null ? returned.In : 0
 
 
                                 } into total
@@ -176,10 +197,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                     ItemCode = total.Key.ItemCode,
                                     ItemDescription = total.Key.ItemDescription,
                                     Uom = total.Key.Uom,
-                                    RemainingStocks = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
+                                    RemainingStocks = total.Key.WarehouseActualGood/* + total.Key.borrowedreturn*/ - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut,
                                     //ReceivingDate = total.Key.RecievingDate,
 
-                                }).Where(x => x.RemainingStocks != 0);
+                                }).Where(x => x.RemainingStocks >= 1);
 
 
 
@@ -212,7 +233,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                                    x.Id,
                                                                    x.ItemCode,
-                                                                   x.ActualGood,
+                                                                   //x.ActualGood,
                                                                    x.ActualReceivingDate,
                                                                    x.UnitPrice
 
@@ -221,7 +242,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                                    WarehouseId = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
-                                                                   ActualGood = x.Key.ActualGood,
+                                                                   ActualGood = x.Sum(x => x.ActualDelivered),
                                                                    RecievingDate = x.Key.ActualReceivingDate.ToString(),
                                                                    UnitPrice = x.Key.UnitPrice
 
@@ -276,19 +297,38 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            });
 
 
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+                                                   .GroupBy(x => new
+                                                   {
+                                                       x.ItemCode,
+                                                       x.BorrowedItemPkey
+
+                                                   }).Select(x => new ItemStocksDto
+                                                   {
+                                                       ItemCode = x.Key.ItemCode,
+                                                       BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                                       Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                                                   });
+
+
+
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .Where(x => x.IsApprovedReturned == true)
+                                                             .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
+                                                             .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
                                                              .GroupBy(x => new
                                                              {
-                                                                 x.ItemCode,
-                                                                 x.WarehouseId,
+                                                                 x.returned.ItemCode,
+                                                                 x.returned.WarehouseId,
+                                                                 //x.itemconsume.Consume
 
                                                              }).Select(x => new ItemStocksDto
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume != null ? x.Consume : 0),
+                                                                 In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
                                                                  warehouseId = x.Key.WarehouseId,
 
                                                              });
@@ -351,7 +391,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                     UnitCost = total.Key.UnitPrice
                                     
 
-                                }).Where(x => x.RemainingStocks != 0)
+                                }).Where(x => x.RemainingStocks >= 1)
                                    .Where(x => x.ItemCode == itemcode);
 
             return await getAvailable.ToListAsync();
@@ -360,629 +400,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
-        public async Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed)
-        {
-            var borrow = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
-                                                             .FirstOrDefaultAsync();
-
-
-            borrow.IsActive = false;
-            borrow.Remarks = borrowed.Remarks;
-
-            return true;
-
-        }
-
-
-        // ========================================================== Updated Borrowed ===========================================================================
-
-       
-
-
-      
-
-        public async Task<bool> ApprovedForBorrowed(BorrowedIssue borrowed)
-        {
-            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                     .FirstOrDefaultAsync();
-
-
-            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                            .ToListAsync();
-
-
-            issue.IsActive = true;
-            issue.IsApproved = true;
-            issue.IsApprovedDate = DateTime.Now;
-            issue.ApproveBy = borrowed.ApproveBy;
-            issue.StatusApproved = "Borrowed Approve";
-
-
-            foreach (var item in borrow)
-            {
-
-                item.IsActive = true;
-                item.IsApproved = true;
-                item.IsApprovedDate = DateTime.Now;
-
-            }
-
-
-            return true;
-
-        }
-
-
-
-
-
-
-
-        public async Task<bool> RejectForBorrowed(BorrowedIssue borrowed)
-        {
-
-            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                    .FirstOrDefaultAsync();
-
-
-            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                            .ToListAsync();
-
-
-            issue.IsActive = false;
-            issue.IsApproved = false;
-            issue.IsReject = true;
-            issue.IsApprovedDate = null;
-            issue.RejectBy = borrowed.RejectBy;
-            issue.Reason = borrowed.Reason;
-            issue.IsRejectDate = DateTime.Now;
-
-
-            foreach (var item in borrow)
-            {
-
-                item.IsActive = false;
-                item.IsApproved = false;
-                item.IsApprovedDate = null;
-                item.IsReject = true;
-                item.IsRejectDate = DateTime.Now;
-                //item.ReturnQuantity = 0;
-
-            }
-
-            return true;
-
-        }
-
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomer(UserParams userParams, int empid)
-        {
-
-            var employee = _context.Users.Where(x => x.Id == empid)
-                                        .FirstOrDefault();
-
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
-                                         .Where(x => x.PreparedBy == employee.FullName)
-                                        .Where(x => x.IsRejectDate != null)
-                                        .Where(x => x.IsReturned == null)
-                                        .Where(x => x.IsReject == true)
-                                        .Where(x => x.IsApproved == false)
-                                        .Select(x => new GetRejectBorrowedPagination
-                                        {
-
-                                            BorrowedPKey = x.Id,
-                                            CustomerName = x.CustomerName,
-                                            CustomerCode = x.CustomerCode,
-                                            TotalQuantity = x.TotalQuantity,
-                                            //PreparedBy = x.PreparedBy,
-                                            RejectDate = x.IsRejectDate.ToString(),
-                                            Remarks = x.Reason,
-                                            RejectBy = x.RejectBy,
-                                            //BorrowedDate = x.PreparedDate.ToString(),
-                                            TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
-
-                                        });
-
-            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
-
-
-        }
-
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomerOrig(UserParams userParams, string search, int empid)
-        {
-
-            var employee = _context.Users.Where(x => x.Id == empid)
-                                     .FirstOrDefault();
-
-
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
-                                 .Where(x => x.PreparedBy == employee.FullName)
-                                 .Where(x => x.IsRejectDate != null)
-                                   
-                                 .Where(x => x.IsReturned == null)
-                                 .Where(x => x.IsReject == true)
-                                 .Where(x => x.IsApproved == false)
-                                 .Select(x => new GetRejectBorrowedPagination
-                                 {
-
-                                     BorrowedPKey = x.Id,
-                                     CustomerName = x.CustomerName,
-                                     CustomerCode = x.CustomerCode,
-                                     TotalQuantity = x.TotalQuantity,
-                                     //PreparedBy = x.PreparedBy,
-                                     RejectDate = x.IsRejectDate.ToString(),
-                                     Remarks = x.Reason,
-                                     RejectBy = x.RejectBy,
-                                     //BorrowedDate = x.PreparedDate.ToString(),
-                                     TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
-
-                                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
-
-
-            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
-        }
-
-
-
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams)
-        {
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
-                                             .Where(x => x.IsRejectDate != null)
-                                             .Where(x => x.IsReturned == null)
-                                             .Where(x => x.IsReject == true)
-                                             .Where(x => x.IsApproved == false)
-                                             .Select(x => new GetRejectBorrowedPagination
-                                             {
-
-                                                 BorrowedPKey = x.Id,
-                                                 CustomerName = x.CustomerName,
-                                                 CustomerCode = x.CustomerCode,
-                                                 TotalQuantity = x.TotalQuantity,
-                                                 //PreparedBy = x.PreparedBy,
-                                                 RejectDate = x.IsRejectDate.ToString(),
-                                                 Remarks = x.Reason,
-                                                 RejectBy = x.RejectBy,
-                                                 //BorrowedDate = x.PreparedDate.ToString(),
-                                                 TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
-
-                                             });
-
-            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
-        }
-
-        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search)
-        {
-            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
-                                           .Where(x => x.IsRejectDate != null)
-                                           .Where(x => x.IsReturned == null)
-                                           .Where(x => x.IsReject == true)
-                                           .Where(x => x.IsApproved == false)
-                                           .Select(x => new GetRejectBorrowedPagination
-                                           {
-
-                                               BorrowedPKey = x.Id,
-                                               CustomerName = x.CustomerName,
-                                               CustomerCode = x.CustomerCode,
-                                               TotalQuantity = x.TotalQuantity,
-                                               //PreparedBy = x.PreparedBy,
-                                               RejectDate = x.IsRejectDate.ToString(),
-                                               Remarks = x.Remarks,
-                                               RejectBy = x.RejectBy,
-                                               //BorrowedDate = x.PreparedDate.ToString(),
-                                               TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
-
-                                           }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
-                                                    || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
-                                                      || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
-
-
-            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
-        }
-
-
-
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status)
-        {
-
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
-                                                  .GroupBy(x => new
-                                                  {
-
-                                                      x.Id,
-                                                      x.CustomerCode,
-                                                      x.CustomerName,
-                                                      x.ReturnBy,
-                                                      x.IsApprovedReturned,
-                                                      x.StatusApproved,
-                                                      x.IsActive
-
-                                                  }).Select(x => new DtoGetAllReturnedItem
-                                                  {
-
-                                                      Id = x.Key.Id,
-                                                      CustomerCode = x.Key.CustomerCode,
-                                                      CustomerName = x.Key.CustomerName,
-                                                      ReturnBy = x.Key.ReturnBy,
-                                                      IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                      StatusApprove = x.Key.StatusApproved,
-                                                      IsActive = x.Key.IsActive
-
-                                                  });
-
-
-            var BorrowIssue = _context.BorrowedIssueDetails
-                .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
-                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
-                .GroupBy(x => new
-                {
-                    //x.borrowdetails.BorrowedPKey,
-                    x.borrowissue.Id,
-                    x.borrowissue.CustomerCode,
-                    x.borrowissue.CustomerName,
-                    x.borrowdetails.PreparedBy,
-                    x.borrowdetails.ReturnedDate,
-                    x.borrowissue.ReturnBy,
-                    x.borrowdetails.IsApprovedReturned,
-                    x.borrowissue.StatusApprove
-
-
-
-
-                }).Select(x => new DtoGetAllReturnedItem
-                {
-                    //TransactionId = x.Key.BorrowedPKey,
-                    Id = x.Key.Id,
-                    CustomerCode = x.Key.CustomerCode,
-                    CustomerName = x.Key.CustomerName,
-                    PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
-                    ReturnBy = x.Key.ReturnBy,
-
-                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
-                    //Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    //TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
-
-                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    StatusApprove = x.Key.StatusApprove
-
-
-                });
-
-
-
-            return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
-        }
-
-        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status)
-        {
-
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
-                                                .GroupBy(x => new
-                                                {
-
-                                                    x.Id,
-                                                    x.CustomerCode,
-                                                    x.CustomerName,
-                                                    x.ReturnBy,
-                                                    x.IsApprovedReturned,
-                                                    x.StatusApproved,
-                                                    x.IsActive
-
-                                                    //x.IsApprovedReturned
-
-                                                }).Select(x => new DtoGetAllReturnedItem
-                                                {
-
-                                                    Id = x.Key.Id,
-                                                    CustomerCode = x.Key.CustomerCode,
-                                                    CustomerName = x.Key.CustomerName,
-                                                    ReturnBy = x.Key.ReturnBy,
- 
-                                                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                    StatusApprove = x.Key.StatusApproved,
-                                                    IsActive = x.Key.IsActive
-                                                    //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
-
-                                                });
-
-
-            var BorrowIssue = _context.BorrowedIssueDetails
-                .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
-                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
-                .GroupBy(x => new
-                {
-                    //x.borrowdetails.BorrowedPKey,
-                    x.borrowissue.Id,
-                    x.borrowissue.CustomerCode,
-                    x.borrowissue.CustomerName,
-                    x.borrowdetails.PreparedBy,
-                    x.borrowdetails.ReturnedDate,
-                    x.borrowissue.ReturnBy,
-                    x.borrowdetails.IsApprovedReturned,
-                    x.borrowissue.StatusApprove
-
-
-
-
-                }).Select(x => new DtoGetAllReturnedItem
-                {
-                    //TransactionId = x.Key.BorrowedPKey,
-                    Id = x.Key.Id,
-                    CustomerCode = x.Key.CustomerCode,
-                    CustomerName = x.Key.CustomerName,
-                    PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
-                    ReturnBy = x.Key.ReturnBy,
-
-
-                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
-                    //Consumed = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                    //TotalReturned = x.Sum(x => x.borrowdetails.ReturnQuantity),
-
-                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    StatusApprove = x.Key.StatusApprove
-
-
-                }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
-                          || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
-                          || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
-
-
-
-            return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
-
-
-        }
-
-        public async Task<bool> ApproveForReturned(BorrowedIssue borrowed)
-        {
-            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                     .FirstOrDefaultAsync();
-
-
-            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                            .ToListAsync();
-
-
-            issue.IsActive = true;
-            issue.IsApprovedReturned = true;
-            issue.IsApprovedReturnedDate = DateTime.Now;
-            issue.ApprovedReturnedBy = borrowed.ApprovedReturnedBy;
-            issue.IsReturned = true;
-            issue.StatusApproved = "Return approved";
-
-
-            foreach (var item in borrow)
-            {
-
-                item.IsActive = true;
-                item.IsApprovedReturned = true;
-                item.IsApprovedReturnedDate = DateTime.Now;
-                item.IsReturned = true;
-
-            }
-
-
-            var borrowWithAgingDays = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                               .Select(x => new
-                                                               {
-                                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value, DateTime.Now) : 0
-                                                               }).FirstOrDefaultAsync();
-
-            if (borrowWithAgingDays != null)
-            {
-                issue.AgingDays = borrowWithAgingDays.AgingDays;
-            }
-
-            await _context.SaveChangesAsync();
-
-
-
-            return true;
-        }
-
-        public async Task<bool> CancelForReturned(BorrowedIssue borrowed)
-        {
-            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
-                                                     .FirstOrDefaultAsync();
-
-
-            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
-                                                             .ToListAsync();
-
-
-            foreach (var item in borrow)
-            {
-
-                item.IsReturned = null;
-                item.ReturnedDate = null;
-                item.IsApprovedReturned = null;
-                //item.ReturnQuantity = 0;
-            }
-
-            issue.IsReturned = null;
-            issue.IsApprovedReturned = false;
-            issue.Reason = borrowed.Reason;
-
-            return true;
-
-        }
-
-
-        public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransaction(UserParams userParams)
-        {
-          
-
-                 var borrowed = _context.BorrowedIssueDetails
-                 .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new {borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                .Where(x => x.borrowdetails.IsActive == true)
-                .GroupBy(x => new
-                {
-
-                    x.borrowissue.Id,
-                    x.borrowissue.CustomerCode,
-                    x.borrowissue.CustomerName,
-                    x.borrowissue.TransactionDate,
-                    x.borrowissue.PreparedDate,
-                    x.borrowissue.IsApproved,
-                    x.borrowissue.IsApprovedDate,
-                    x.borrowissue.IsApprovedReturned,
-                    x.borrowissue.IsApprovedReturnedDate,
-                    x.borrowissue.IsReject,
-                    x.borrowissue.IsRejectDate,
-                    x.borrowissue.Remarks,
-                    x.borrowissue.Reason,
-                
-
-                    x.borrowissue.StatusApproved,
-                    x.borrowissue.PreparedBy,
-
-                    x.borrowissue.CompanyCode,
-                    x.borrowissue.CompanyName,
-                    x.borrowissue.DepartmentCode,
-                    x.borrowissue.DepartmentName,
-                    x.borrowissue.LocationCode,
-                    x.borrowissue.LocationName,
-                    x.borrowissue.AccountCode,
-                    x.borrowissue.AccountTitles,
-                    x.borrowissue.AgingDays
-                   
-
-
-                })
-               .Select(x => new GetAllDetailsBorrowedTransactionDto
-               {
-
-                   Id = x.Key.Id,
-                   CustomerCode = x.Key.CustomerCode,
-                   CustomerName = x.Key.CustomerName,
-                   TransactionDate = x.Key.TransactionDate.ToString(),
-                   BorrowedDate = x.Key.PreparedDate.ToString(),
-                   IsApproved = x.Key.IsApproved,
-                   IsApprovedDate = x.Key.IsApprovedDate.ToString(),
-                   TotalBorrowed = x.Sum(x => x.borrowdetails.Quantity),
-                   IsApproveReturned = x.Key.IsApprovedReturned,
-                   IsApproveReturnedDate = x.Key.IsApprovedReturnedDate.ToString(),
-                   //Consumed = x.Sum(x => x.borrowdetails.Quantity != null ? x.borrowdetails.Quantity : 0) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                   //ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
-                   IsReject = x.Key.IsReject,
-                   IsRejectDate = x.Key.IsRejectDate.ToString(),
-                   Remarks = x.Key.Remarks,
-
-                   StatusApprove = x.Key.StatusApproved,
-                   PreparedBy = x.Key.PreparedBy,
-
-                   CompanyCode = x.Key.CompanyCode,
-                   CompanyName = x.Key.CompanyName,
-                   DepartmentCode = x.Key.DepartmentCode,
-                   DepartmentName = x.Key.DepartmentName,
-                   LocationCode = x.Key.LocationCode,
-                   LocationName = x.Key.LocationName,
-                   AccountCode = x.Key.AccountCode,
-                   AccountTitles = x.Key.AccountTitles,
-
-                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value , DateTime.Now) : 0,
-                   Reason = x.Key.Reason
-               });
-
-
-           
-
-            return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
-        }
-
-
-        public async Task<PagedList<GetAllDetailsBorrowedTransactionDto>> GetAllDetailsBorrowedTransactionOrig(UserParams userParams, string search)
-        {
-            var borrowed = _context.BorrowedIssueDetails
-                 .GroupJoin(_context.BorrowedIssues, borrowdetails => borrowdetails.BorrowedPKey, borrowissue => borrowissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
-                  .Where(x => x.borrowdetails.IsActive == true)
-                .GroupBy(x => new
-                {
-
-                    x.borrowissue.Id,
-                    x.borrowissue.CustomerCode,
-                    x.borrowissue.CustomerName,
-                    x.borrowissue.TransactionDate,
-                    x.borrowissue.PreparedDate,
-                    x.borrowissue.IsApproved,
-                    x.borrowissue.IsApprovedDate,
-                    x.borrowissue.IsApprovedReturned,
-                    x.borrowissue.IsApprovedReturnedDate,
-                    x.borrowissue.IsReject,
-                    x.borrowissue.IsRejectDate,
-                    x.borrowissue.Remarks,
-                    x.borrowissue.Reason,
-
-
-                    x.borrowissue.StatusApproved,
-                    x.borrowissue.PreparedBy,
-
-                    x.borrowissue.CompanyCode,
-                    x.borrowissue.CompanyName,
-                    x.borrowissue.DepartmentCode,
-                    x.borrowissue.DepartmentName,
-                    x.borrowissue.LocationCode,
-                    x.borrowissue.LocationName,
-                    x.borrowissue.AccountCode, 
-                    x.borrowissue.AccountTitles,
-
-
-
-                })
-               .Select(x => new GetAllDetailsBorrowedTransactionDto
-               {
-
-                   Id = x.Key.Id,
-                   CustomerCode = x.Key.CustomerCode,
-                   CustomerName = x.Key.CustomerName,
-                   TransactionDate = x.Key.TransactionDate.ToString(),
-                   BorrowedDate = x.Key.PreparedDate.ToString(),
-                   IsApproved = x.Key.IsApproved,
-                   IsApprovedDate = x.Key.IsApprovedDate.ToString(),
-                   TotalBorrowed = x.Sum(x => x.borrowdetails.Quantity),
-                   IsApproveReturned = x.Key.IsApprovedReturned,
-                   IsApproveReturnedDate = x.Key.IsApprovedReturnedDate.ToString(),
-                   //Consumed = x.Sum(x => x.borrowdetails.Quantity != null ? x.borrowdetails.Quantity : 0) - x.Sum(x => x.borrowdetails.ReturnQuantity),
-                   //ReturnedQuantity = x.Sum(x => x.borrowdetails.ReturnQuantity != null ? x.borrowdetails.ReturnQuantity : 0),
-                   IsReject = x.Key.IsReject,
-                   IsRejectDate = x.Key.IsRejectDate.ToString(),
-                   Remarks = x.Key.Remarks,
-
-                   StatusApprove = x.Key.StatusApproved,
-                   PreparedBy = x.Key.PreparedBy,
-
-                   CompanyCode = x.Key.CompanyCode,
-                   CompanyName = x.Key.CompanyName,
-                   DepartmentCode = x.Key.DepartmentCode,
-                   DepartmentName = x.Key.DepartmentName,
-                   LocationCode = x.Key.LocationCode,
-                   LocationName = x.Key.LocationName,
-                   AccountCode = x.Key.AccountCode,
-                   AccountTitles = x.Key.AccountTitles,
-
-                   AgingDays = x.Key.IsApprovedDate != null && x.Key.IsApprovedReturnedDate == null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
-                   Reason = x.Key.Reason
-               }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
-                          || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
-                          || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
-
-
-            return await PagedList<GetAllDetailsBorrowedTransactionDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
-        }
-
-
-
-
         //================================================ Borrowed Notification =============================================================
-
-
-
 
 
 
@@ -1306,14 +724,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             borrowed.TransactionDate = borrow.TransactionDate;
 
             borrowed.TotalQuantity = borrow.TotalQuantity;
-            borrowed.DepartmentCode = borrow.DepartmentCode;
-            borrowed.DepartmentName = borrow.DepartmentName;
-            borrowed.CompanyCode = borrow.CompanyCode;
-            borrowed.CompanyName = borrow.CompanyName;
-            borrowed.LocationCode = borrow.LocationCode;
-            borrowed.LocationName = borrow.LocationName;
-            borrowed.AccountCode = borrow.AccountCode;
-            borrowed.AccountTitles = borrow.AccountTitles;
 
             return true;
 
@@ -1324,25 +734,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewAllBorrowedDetails(int id)
         {
             var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
-                                            .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                            .Select(x => new DtoViewBorrewedReturnedDetails
                                             {
                                                 Id = x.Id,
                                                 Customer = x.CustomerName,
                                                 CustomerCode = x.CustomerCode,
-
                                                 Remarks = x.Remarks,
-
                                                 TransactionDate = x.TransactionDate.ToString(),
-
-                                                CompanyCode = x.CompanyCode,
-                                                CompanyName = x.CompanyName,
-                                                DepartmentCode = x.DepartmentCode,
-                                                DepartmentName = x.DepartmentName,
-                                                LocationCode = x.LocationCode,
-                                                LocationName = x.LocationName,
-                                                AccountCode = x.AccountCode,
-                                                AccountTitles = x.AccountTitles,
-
+                                                
                                             });
 
 
@@ -1357,27 +756,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Id = x.borrowed.Id,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
-
                   ItemCode = x.borrowed.ItemCode,
                   ItemDescription = x.borrowed.ItemDescription,
-                  //ReturnQuantity = x.borrowed.ReturnQuantity,
-                  //Consume = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
+                  Uom = x.borrowed.Uom,
                   ReturnedDate = x.borrowed.ReturnedDate.ToString(),
                   PreparedBy = x.borrowed.PreparedBy,
-
                   Remarks = x.issues.Remarks,
-
                   TransactionDate = x.issues.TransactionDate.ToString(),
-                  CompanyCode = x.issues.CompanyCode,
-                  CompanyName = x.issues.CompanyName,
-                  DepartmentCode = x.issues.DepartmentCode,
-                  DepartmentName = x.issues.DepartmentName,
-                  LocationCode = x.issues.LocationCode,
-                  LocationName = x.issues.LocationName,
-                  AccountCode = x.issues.AccountCode,
-                  AccountTitles = x.issues.AccountTitles,
-
-                  Uom = x.borrowed.Uom
+   
 
               });
 
@@ -1529,9 +915,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
       
-
-
-
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status, int empid)
         {
             //var daytoday = DateTime.Now;
@@ -1552,6 +935,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          BorrowedPKey = x.Key.BorrowedPKey,
                                                          IsActive = x.Key.IsActive,
                                                          TotalQuantity = x.Sum(x => x.Quantity),
+                                                         //UnitCost = x.Sum(x => x.UnitPrice)
 
                                                      });
 
@@ -1576,6 +960,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    //x.borrowed.UnitCost
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
@@ -1592,7 +977,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedDate = x.Key.PreparedDate.ToString(),
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
-                    StatusApprove = x.Key.StatusApproved
+                    StatusApprove = x.Key.StatusApproved,
+                    //UnitCost = x.Key.UnitCost
 
                 });
 
@@ -1607,6 +993,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                        .FirstOrDefault();
 
 
+
             var details = _context.BorrowedIssueDetails
                                                      .GroupBy(x => new
                                                      {
@@ -1618,6 +1005,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          BorrowedPKey = x.Key.BorrowedPKey,
                                                          IsActive = x.Key.IsActive,
                                                          TotalQuantity = x.Sum(x => x.Quantity),
+                                                         //UnitCost = x.Sum(x => x.UnitPrice)
 
                                                      });
 
@@ -1642,6 +1030,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    ////x.borrowed.UnitCost
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
@@ -1658,11 +1047,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedDate = x.Key.PreparedDate.ToString(),
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
-                    StatusApprove = x.Key.StatusApproved
+                    StatusApprove = x.Key.StatusApproved,
+                    //UnitCost = x.Key.UnitCost
 
                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
-
-
 
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
@@ -1674,22 +1062,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
 
             var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
-                                               .Select(x => new GetAllDetailsInBorrowedIssueDto
+                                               .Select(x => new DtoViewBorrewedReturnedDetails
                                                {
                                                    Id = x.Id,
                                                    Customer = x.CustomerName,
                                                    CustomerCode = x.CustomerCode,
                                                    TransactionDate = x.TransactionDate.ToString(),
-
-                                                   CompanyCode = x.CompanyCode,
-                                                   CompanyName = x.CompanyName,
-                                                   DepartmentCode = x.DepartmentCode,
-                                                   DepartmentName = x.DepartmentName,
-                                                   LocationCode = x.LocationCode,
-                                                   LocationName = x.LocationName,
-                                                   AccountCode = x.AccountCode,
-                                                   AccountTitles = x.AccountTitles,
-
 
                                                });
 
@@ -1714,27 +1092,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   BorrowedPKey = x.borrowed.BorrowedPKey,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
+                  Uom = x.borrowed.Uom,
                   PreparedDate = x.borrowed.PreparedDate.ToString(),
                   ItemCode = x.borrowed.ItemCode,
                   ItemDescription = x.borrowed.ItemDescription,
                   Quantity = x.borrowed.Quantity,
-                  //Consumes = x.borrowed.Quantity - x.borrowed.ReturnQuantity,
-                  //ReturnQuantity = x.borrowed.ReturnQuantity != null ? x.borrowed.ReturnQuantity : 0,
                   Remarks = x.borrowed.Remarks,
                   PreparedBy = x.borrowed.PreparedBy,
+                  UnitCost = x.borrowed.UnitPrice,
+                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity
 
-                  Uom = x.borrowed.Uom,
 
-                  TransactionDate = x.issues.TransactionDate.ToString(),
-                  CompanyCode = x.issues.CompanyCode,
-                  CompanyName = x.issues.CompanyName,
-                  DepartmentCode = x.issues.DepartmentCode,
-                  DepartmentName = x.issues.DepartmentName,
-                  LocationCode = x.issues.LocationCode,
-                  LocationName = x.issues.LocationName,
-                  AccountCode = x.issues.AccountCode,
-                  AccountTitles = x.issues.AccountTitles,
-
+         
               });
 
 
@@ -1742,52 +1111,202 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-        public async Task<bool> CancelIssuePerItemCode(BorrowedIssueDetails borrowed)
+
+        public async Task<bool> CancelAllborrowedfortransact(BorrowedIssueDetails borrowed)
         {
 
-            var items = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
-                                                           .Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsTransact == true)
-                                                           .FirstOrDefaultAsync();
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.BorrowedPKey)
+                                                     .FirstOrDefaultAsync();
+
+           
+           
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.BorrowedPKey)
+                                                           .ToListAsync();
+
+            foreach(var items in borrow)
+            {
+
+                items.IsActive = false;
+                items.Remarks = borrowed.Remarks;
+            }
+
+            issue.IsActive = false;
+            issue.Remarks = borrowed.Remarks;
 
 
-            items.Consume = 0;
+            return true;
+        }
+
+        public async Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed)
+        {
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
+                                                             .FirstOrDefaultAsync();
+
+
+            borrow.IsActive = false;
+            borrow.Remarks = borrowed.Remarks;
 
             return true;
 
         }
+
 
         // ============================================================ Customer Returned ====================================================================
 
-        public async Task<bool> EditReturnQuantity(BorrowedIssueDetails borrowed)
+
+
+        public async Task<bool> AddBorrowConsume(BorrowedConsume consumes)
+        {
+            await _context.BorrowedConsumes.AddAsync(consumes);
+
+            return true;
+        }
+
+        public async Task<IReadOnlyList<DTOGetItemForReturned>> GetItemForReturned(int id)
+        {
+            var Consume = _context.BorrowedConsumes.Where(x => x.IsActive == true)
+                                                    .GroupBy(x => new
+                                                    {
+                                                        x.ItemCode,
+                                                        x.BorrowedItemPkey
+
+                                                    }).Select(x => new DTOGetItemForReturned
+                                                    {
+                                                        Id = x.Key.BorrowedItemPkey,
+                                                        ItemCode = x.Key.ItemCode,
+                                                        ConsumedQuantity = x.Sum(x => x.Consume)
+                                                    });
+
+            var Borrowed = _context.BorrowedIssueDetails
+            .GroupJoin(Consume, borrowed => borrowed.Id, consume => consume.Id, (borrowed, consume) => new { borrowed, consume })
+            .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrowed, consume })
+            .Where(x => x.borrowed.IsActive == true && x.borrowed.IsApproved == true && x.borrowed.IsReturned == null && x.borrowed.BorrowedPKey == id)
+            .GroupBy(x => new
+            {
+              x.borrowed.Id, 
+              x.borrowed.ItemCode,
+              x.borrowed.ItemDescription,
+              x.borrowed.Uom,
+              x.borrowed.Quantity,
+              Consumed = x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0 ,
+              
+            }).Select(x => new DTOGetItemForReturned
+            {
+
+              Id = x.Key.Id,
+              ItemCode = x.Key.ItemCode,
+              ItemDescription = x.Key.ItemDescription,
+              Uom = x.Key.Uom,
+              BorrowedQuantity = x.Key.Quantity,
+              ConsumedQuantity = x.Key.Consumed,
+              RemainingQuantity = Math.Max(0, x.Key.Quantity - x.Key.Consumed),
+              UnitCost = x.Sum(x => x.borrowed.UnitPrice)
+
+            });
+
+
+            return await Borrowed.ToListAsync();
+        }
+
+
+    
+        public async Task<bool> EditReturnQuantity(BorrowedConsume consumes)
         {
 
-            var editquantity = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
-                                                                  .FirstOrDefaultAsync();
+            var borrowed = await _context.BorrowedIssueDetails
+                           .FirstOrDefaultAsync(x => x.Id == consumes.BorrowedItemPkey);
 
-            if (editquantity == null)
-                return false;
+            var remainingItems = await GetItemForReturned(borrowed.BorrowedPKey);
 
-            editquantity.Consume = borrowed.Consume;
+            var remainingItem = remainingItems.FirstOrDefault(item => item.Id == consumes.BorrowedItemPkey);
+
+            if (remainingItem != null && consumes.Consume <= remainingItem.RemainingQuantity && consumes.Consume >= 0)
+            {
+                consumes.IsActive = true;
+                await _context.BorrowedConsumes.AddAsync(consumes);
+                return true;
+            }
+
+            return false;
+
+          
+        }
+
+        public async Task<IReadOnlyList<DtoGetConsumedItem>> GetConsumedItem(int id)
+        {
+
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true)
+                                                    .Select(x => new DtoGetConsumedItem
+                                                    {
+
+                                                        Id = x.Id,
+                                                        ItemCode = x.ItemCode,
+
+                                                        ConsumedQuantity = x.Consume,
+                                                        BorrowedItemPKey = x.BorrowedItemPkey,
+
+                                                        CompanyCode = x.CompanyCode,
+                                                        CompanyName = x.CompanyName,
+                                                        DepartmentCode = x.DepartmentCode,
+                                                        DepartmentName = x.DepartmentName,
+                                                        LocationCode = x.LocationCode,
+                                                        LocationName = x.LocationName,
+                                                        AccountCode = x.AccountCode,
+                                                        AccountTitles = x.AccountTitles,
+                                                        FullName = x.FullName,
+                                                        EmpId = x.EmpId,
+                                                        IsActive = x.IsActive
+                                                        
+
+                                                    });
 
 
-            editquantity.DepartmentCode = borrowed.DepartmentCode;
-            editquantity.DepartmentName = borrowed.DepartmentName;
-            editquantity.CompanyCode = borrowed.CompanyCode;
-            editquantity.CompanyName = borrowed.CompanyName;
-            editquantity.LocationCode = borrowed.LocationCode;
-            editquantity.LocationName = borrowed.LocationName;
-            editquantity.AccountCode = borrowed.AccountCode;
-            editquantity.AccountTitles = borrowed.AccountTitles;
-            editquantity.EmpId = borrowed.EmpId;
-            editquantity.FullName = borrowed.FullName;
+            var borrowed = _context.BorrowedIssueDetails
+                  .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
+                  .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                  .Where(x => x.borrow.BorrowedPKey == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned == null)
+                  .Select(x => new DtoGetConsumedItem
+                  {
+                      Id = x.consume.Id,
+                      BorrowedItemPKey = x.borrow.Id,
+                      ItemCode = x.consume.ItemCode,
+                      ItemDescription = x.borrow.ItemDescription,
+                      Uom = x.borrow.Uom,
+                      ConsumedQuantity = x.consume.ConsumedQuantity,
+                      CompanyCode = x.consume.CompanyCode,
+                      CompanyName = x.consume.CompanyName,
+                      DepartmentCode = x.consume.DepartmentCode,
+                      DepartmentName = x.consume.DepartmentName,
+                      LocationCode = x.consume.LocationCode,
+                      LocationName = x.consume.LocationName,
+                      AccountCode = x.consume.AccountCode,
+                      AccountTitles = x.consume.AccountTitles,
+                      FullName = x.consume.FullName,
+                      EmpId = x.consume.EmpId,
+                      IsActive = x.consume.IsActive
 
-            if (editquantity.Quantity < editquantity.Consume || editquantity.Consume < 0)
-                return false;
+
+                  });
+                
+
+            return await borrowed.ToListAsync();
+        }
+
+
+        public async Task<bool> CancelIssuePerItemCode(BorrowedConsume consumes)
+        {
+
+            var items = await _context.BorrowedConsumes.Where(x => x.Id == consumes.Id)
+                                                           .Where(x => x.IsActive == true)
+                                                           .FirstOrDefaultAsync();
+
+
+            items.IsActive = false;
 
             return true;
 
         }
+
 
         public async Task<bool> SaveReturnedQuantity(BorrowedIssueDetails borrowed)
         {
@@ -1808,98 +1327,92 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.ReturnedDate = DateTime.Now;
                 item.IsApprovedReturned = false;
 
-                //if(item.Consume <= 0)
-                // {
-                //     item.DepartmentCode = borrowed.DepartmentCode;
-                //     item.DepartmentName = borrowed.DepartmentName;
-                //     item.CompanyCode = borrowed.CompanyCode;
-                //     item.CompanyName = borrowed.CompanyName;
-                //     item.LocationCode = borrowed.LocationCode;
-                //     item.LocationName = borrowed.LocationName;
-                //     item.AccountCode = borrowed.AccountCode;
-                //     item.AccountTitles = borrowed.AccountTitles;
-
-                // }
-
             }
-
             returned.IsReturned = true;
+            
             returned.IsActive = true;
             returned.IsApprovedReturned = false;
-
             returned.StatusApproved = "For return approval";
-
-
-            //returned.DepartmentCode = borrowed.DepartmentCode;
-            //returned.DepartmentName = borrowed.DepartmentName;
-            //returned.CompanyCode = borrowed.CompanyCode;
-            //returned.CompanyName = borrowed.CompanyName;
-            //returned.LocationCode = borrowed.LocationCode;
-            //returned.LocationName = borrowed.LocationName;
-            //returned.AccountCode = borrowed.AccountCode;
-            //returned.AccountTitles = borrowed.AccountTitles;
-
-
 
             return true;
         }
 
 
-
         public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItem(UserParams userParams, bool status, int empid)
         {
+
             var employee = _context.Users.Where(x => x.Id == empid)
                                      .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
-                                                          .GroupBy(x => new
-                                                          {
 
-                                                              x.Id,
-                                                              x.CustomerCode,
-                                                              x.CustomerName,
-                                                              x.ReturnBy,
-                                                              x.IsApprovedReturned,
-                                                              x.StatusApproved,
-                                                              x.IsActive,
-                                                              x.PreparedBy
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true).GroupBy(x => new
+            {
+                x.BorrowedItemPkey,
 
-                                                              //x.IsApprovedReturned
+            }).Select(x => new DtoGetConsumedItem
+            {
+                BorrowedItemPKey = x.Key.BorrowedItemPkey,
+                ConsumedQuantity = x.Sum(x => x.Consume)
 
-                                                          }).Select(x => new DtoGetAllReturnedItem
-                                                          {
-
-                                                              Id = x.Key.Id,
-                                                              CustomerCode = x.Key.CustomerCode,
-                                                              CustomerName = x.Key.CustomerName,
-                                                              ReturnBy = x.Key.ReturnBy,
-                                                              PreparedBy = x.Key.PreparedBy,
-
-                                                              IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                              StatusApprove = x.Key.StatusApproved,
-                                                              IsActive = x.Key.IsActive
-                                                              //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
-
-                                                          });
+            });
 
 
-            var BorrowIssue = _context.BorrowedIssueDetails
-                .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
+
+            var borrowed = _context.BorrowedIssueDetails.Where(x => x.IsReturned == true && x.IsActive == true)
+                             .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
+                             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                              .GroupBy(x => new
+                              {
+
+                                  x.borrow.BorrowedPKey,
+                                  x.borrow.PreparedBy,
+                                  x.borrow.ReturnedDate,
+                                  x.borrow.IsApprovedReturned,
+                                  x.borrow.IsApprovedReturnedDate,
+                                  x.borrow.ReturnBy,
+
+                                  //x.borrow.IsReturned,
+
+                              }).Select(x => new DtoGetAllReturnedItem
+                              {
+
+                                  Id = x.Key.BorrowedPKey,
+                                  PreparedBy = x.Key.PreparedBy,
+                                  IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                  ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  ReturnBy = x.Key.ReturnBy,
+                                  TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
+                                  //IsReturned = x.Key.IsReturned != null ? true : false,
+                                  ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
+                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
+
+
+                              });
+
+
+
+            var BorrowIssue = _context.BorrowedIssues
+                .GroupJoin(borrowed, borrowissue => borrowissue.Id, borrowdetail => borrowdetail.Id, (borrowissue, borrowdetail) => new { borrowissue, borrowdetail })
+                .SelectMany(x => x.borrowdetail.DefaultIfEmpty(), (x, borrowdetail) => new { x.borrowissue, borrowdetail })
                 .Where(x => x.borrowissue.PreparedBy == employee.FullName)
-                .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
-                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
+                .Where(x => x.borrowissue.IsActive == true && x.borrowissue.IsReturned == true && x.borrowdetail.IsApproveReturn == status)
+                .OrderByDescending(x => x.borrowdetail.IsApproveReturn)
                 .GroupBy(x => new
                 {
-                    //x.borrowdetails.BorrowedPKey,
-                    x.borrowissue.Id,
+
+                    x.borrowdetail.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
-                    x.borrowdetails.PreparedBy,
-                    x.borrowdetails.ReturnedDate,
+                    x.borrowissue.PreparedBy,
+                    x.borrowdetail.ReturnedDate,
                     x.borrowissue.ReturnBy,
-                    x.borrowdetails.IsApprovedReturned,
-                    x.borrowissue.StatusApprove
+                    x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.StatusApproved,
+                    x.borrowdetail.ConsumedQuantity,
+                    x.borrowdetail.TotalBorrowedQuantity,
+                    x.borrowissue.IsActive,
+                    //x.borrowdetail.UnitCost
 
 
 
@@ -1911,28 +1424,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
                     PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+                    ReturnedDate = x.Key.ReturnedDate,
                     ReturnBy = x.Key.ReturnBy,
-
-
-                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
-                    Consumed = x.Sum(x => x.borrowdetails.Consume),
-                    TotalReturned = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.Consume),
-
+                    TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
+                    ConsumedQuantity = x.Key.ConsumedQuantity,
+                    ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
                     IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    StatusApprove = x.Key.StatusApprove
+                    StatusApprove = x.Key.StatusApproved,
+                    IsActive = x.Key.IsActive,
+                    //UnitCost = x.Key.UnitCost,
+                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
 
 
                 });
 
-
-
-
-
             return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
         }
-
-
 
 
 
@@ -1941,57 +1448,76 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
 
             var employee = _context.Users.Where(x => x.Id == empid)
-                                   .FirstOrDefault();
+                                     .FirstOrDefault();
 
-            var borrowed = _context.BorrowedIssues.Where(x => x.IsReturned == true && x.IsActive == true)
-                                                           .GroupBy(x => new
-                                                           {
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true).GroupBy(x => new
+            {
+                x.BorrowedItemPkey,
 
-                                                               x.Id,
-                                                               x.CustomerCode,
-                                                               x.CustomerName,
-                                                               x.ReturnBy,
-                                                               x.IsApprovedReturned,
-                                                               x.StatusApproved,
-                                                               x.IsActive,
-                                                               x.PreparedBy
+            }).Select(x => new DtoGetConsumedItem
+            {
+                BorrowedItemPKey = x.Key.BorrowedItemPkey,
+                ConsumedQuantity = x.Sum(x => x.Consume)
 
-                                                               //x.IsApprovedReturned
-
-                                                           }).Select(x => new DtoGetAllReturnedItem
-                                                           {
-
-                                                               Id = x.Key.Id,
-                                                               CustomerCode = x.Key.CustomerCode,
-                                                               CustomerName = x.Key.CustomerName,
-                                                               ReturnBy = x.Key.ReturnBy,
-                                                               PreparedBy = x.Key.PreparedBy,
-
-                                                               IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                                                               StatusApprove = x.Key.StatusApproved,
-                                                               IsActive = x.Key.IsActive
-                                                               //IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false
-
-                                                           });
+            });
 
 
-            var BorrowIssue = _context.BorrowedIssueDetails
-                .GroupJoin(borrowed, borrowdetails => borrowdetails.BorrowedPKey, borrowedissue => borrowedissue.Id, (borrowdetails, borrowissue) => new { borrowdetails, borrowissue })
-                .SelectMany(x => x.borrowissue.DefaultIfEmpty(), (x, borrowissue) => new { x.borrowdetails, borrowissue })
+
+            var borrowed = _context.BorrowedIssueDetails.Where(x => x.IsReturned == true && x.IsActive == true)
+                             .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
+                             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                              .GroupBy(x => new
+                              {
+
+                                  x.borrow.BorrowedPKey,
+                                  x.borrow.PreparedBy,
+                                  x.borrow.ReturnedDate,
+                                  x.borrow.IsApprovedReturned,
+                                  x.borrow.IsApprovedReturnedDate,
+                                  x.borrow.ReturnBy,
+
+                                  //x.borrow.IsReturned,
+
+                              }).Select(x => new DtoGetAllReturnedItem
+                              {
+
+                                  Id = x.Key.BorrowedPKey,
+                                  PreparedBy = x.Key.PreparedBy,
+                                  IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                  ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  ReturnBy = x.Key.ReturnBy,
+                                  TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
+                                  //IsReturned = x.Key.IsReturned != null ? true : false,
+                                  ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
+                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
+
+
+                              });
+
+
+
+            var BorrowIssue = _context.BorrowedIssues
+                .GroupJoin(borrowed, borrowissue => borrowissue.Id, borrowdetail => borrowdetail.Id, (borrowissue, borrowdetail) => new { borrowissue, borrowdetail })
+                .SelectMany(x => x.borrowdetail.DefaultIfEmpty(), (x, borrowdetail) => new { x.borrowissue, borrowdetail })
                 .Where(x => x.borrowissue.PreparedBy == employee.FullName)
-                .Where(x => x.borrowissue.IsActive == true && x.borrowdetails.IsReturned == true && x.borrowdetails.IsApprovedReturned == status)
-                .OrderByDescending(x => x.borrowissue.IsApproveReturn)
+                .Where(x => x.borrowissue.IsActive == true && x.borrowissue.IsReturned == true && x.borrowdetail.IsApproveReturn == status)
+                .OrderByDescending(x => x.borrowdetail.IsApproveReturn)
                 .GroupBy(x => new
                 {
-                    //x.borrowdetails.BorrowedPKey,
-                    x.borrowissue.Id,
+
+                    x.borrowdetail.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
-                    x.borrowdetails.PreparedBy,
-                    x.borrowdetails.ReturnedDate,
+                    x.borrowissue.PreparedBy,
+                    x.borrowdetail.ReturnedDate,
                     x.borrowissue.ReturnBy,
-                    x.borrowdetails.IsApprovedReturned,
-                    x.borrowissue.StatusApprove
+                    x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.StatusApproved,
+                    x.borrowdetail.ConsumedQuantity,
+                    x.borrowdetail.TotalBorrowedQuantity,
+                    x.borrowissue.IsActive,
+                    //x.borrowdetail.UnitCost
 
 
 
@@ -2003,19 +1529,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
                     PreparedBy = x.Key.PreparedBy,
-                    ReturnedDate = x.Key.ReturnedDate.ToString(),
+                    ReturnedDate = x.Key.ReturnedDate,
                     ReturnBy = x.Key.ReturnBy,
-
-
-                    TotalBorrowedQuantity = x.Sum(x => x.borrowdetails.Quantity),
-                    Consumed = x.Sum(x => x.borrowdetails.Consume),
-                    TotalReturned = x.Sum(x => x.borrowdetails.Quantity) - x.Sum(x => x.borrowdetails.Consume),
-
+                    TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
+                    ConsumedQuantity = x.Key.ConsumedQuantity,
+                    ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
                     IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
-                    StatusApprove = x.Key.StatusApprove
+                    StatusApprove = x.Key.StatusApproved,
+                    IsActive = x.Key.IsActive,
+                    //UnitCost = x.Key.UnitCost,
+                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
 
 
-                }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower()));
+                })
+                .Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
@@ -2023,69 +1550,110 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
+
+        public async Task<bool> CancelReturnItem(BorrowedIssueDetails borrowed)
+        {
+
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.BorrowedPKey)
+                                                      .FirstOrDefaultAsync();
+
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.BorrowedPKey)
+                                                       .ToListAsync();
+
+
+            foreach(var items in borrow)
+            {
+
+                items.IsReturned = null;
+                items.ReturnedDate = null;
+                items.IsApprovedReturned = null;
+            }
+
+            issue.IsReturned = null;
+            issue.IsApprovedReturned = null;
+            issue.StatusApproved = "Borrowed Approve";
+
+            return true;
+
+        }
+
+
+
+
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
         {
 
-            var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
-                                              .Select(x => new GetAllDetailsInBorrowedIssueDto
+
+            var ConsumedBorrowed = _context.BorrowedConsumes.Where(x => x.IsActive == true)
+                .GroupBy(x => new
+                {
+                    x.BorrowedItemPkey,
+                    x.ItemCode,
+                   
+
+                }).Select(x => new DtoGetConsumedItem
+                {
+                    BorrowedItemPKey  = x.Key.BorrowedItemPkey,
+                    ItemCode = x.Key.ItemCode,
+                    ConsumedQuantity = x.Sum(x => x.Consume != null ? x.Consume : 0),
+                  
+
+                });
+
+
+            var borrowDetails = _context.BorrowedIssueDetails.Where(x => x.IsActive == true && x.IsReturned == true )
+                                    .GroupJoin(ConsumedBorrowed, borrow => borrow.Id , consume => consume.BorrowedItemPKey, (borrow , consume) => new {borrow , consume})
+                                    .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.borrow , consume})
+                                              .GroupBy(x => new 
                                               {
-                                                  Id = x.Id,
-                                                  Customer = x.CustomerName,
-                                                  CustomerCode = x.CustomerCode,
+                                                  x.borrow.Id,
+                                                  x.borrow.BorrowedPKey,
+                                                  x.borrow.ItemCode,
+                                                  x.borrow.ItemDescription,
+                                                  x.borrow.Uom,
+                                                  x.borrow.ReturnedDate,
 
-                                                  Remarks = x.Remarks,
-
-                                                  TransactionDate = x.TransactionDate.ToString(),
-
-                                                  CompanyCode = x.CompanyCode,
-                                                  CompanyName = x.CompanyName,
-                                                  DepartmentCode = x.DepartmentCode,
-                                                  DepartmentName = x.DepartmentName,
-                                                  LocationCode = x.LocationCode,
-                                                  LocationName = x.LocationName,
-                                                  AccountCode = x.AccountCode,
-                                                  AccountTitles = x.AccountTitles,
-                                                  IsActive = x.IsActive
+                                              }).Select(x => new DtoViewBorrewedReturnedDetails
+                                              {
+                                                  Id = x.Key.Id,
+                                                  BorrowedPKey = x.Key.BorrowedPKey,
+                                                  ItemCode = x.Key.ItemCode,
+                                                  ItemDescription = x.Key.ItemDescription,
+                                                  Uom = x.Key.Uom,
+                                                  BorrowedQuantity = x.Sum(x => x.borrow.Quantity),
+                                                  Consume = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
+                                                  ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                                  UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0)
+                                                  
 
                                               });
 
 
-            var borrow = _context.BorrowedIssueDetails
-                .GroupJoin(issueBorrowed, borrowed => borrowed.BorrowedPKey, issues => issues.Id, (borrowed, issues) => new { borrowed, issues })
-                .SelectMany(x => x.issues.DefaultIfEmpty(), (x, issues) => new { x.borrowed, issues })
-              .Where(x => x.borrowed.BorrowedPKey == id)
-              .Where(x => x.borrowed.IsReturned == true)
-              .Where(x => x.issues.IsActive == true)
+            var borrow = _context.BorrowedIssues
+                .GroupJoin(borrowDetails, issue => issue.Id, borrow => borrow.BorrowedPKey, (issue, borrow) => new { issue, borrow })
+                .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.issue, borrow })
+              .Where(x => x.borrow.BorrowedPKey == id)
+              .Where(x => x.issue.IsReturned == true)
+              .Where(x => x.issue.IsActive == true)
               .Select(x => new DtoViewBorrewedReturnedDetails
               {
-                  BorrowedPKey = x.borrowed.BorrowedPKey,
-                  Id = x.borrowed.Id,
-                  Customer = x.issues.Customer,
-                  CustomerCode = x.issues.CustomerCode,
-
-                  ItemCode = x.borrowed.ItemCode,
-                  ItemDescription = x.borrowed.ItemDescription,
-
-                  BorrowedQuantity = x.borrowed.Quantity,
-                  ReturnQuantity = x.borrowed.Quantity - x.borrowed.Consume,
-                  Consume = x.borrowed.Consume,
-
-                  ReturnedDate = x.borrowed.ReturnedDate.ToString(),
-                  PreparedBy = x.borrowed.PreparedBy,
-
-                  Remarks = x.issues.Remarks,
-
-                  TransactionDate = x.issues.TransactionDate.ToString(),
-                  CompanyCode = x.issues.CompanyCode,
-                  CompanyName = x.issues.CompanyName,
-                  DepartmentCode = x.issues.DepartmentCode,
-                  DepartmentName = x.issues.DepartmentName,
-                  LocationCode = x.issues.LocationCode,
-                  LocationName = x.issues.LocationName,
-                  AccountCode = x.issues.AccountCode,
-                  AccountTitles = x.issues.AccountTitles,
-
-                  Uom = x.borrowed.Uom
+                  BorrowedPKey = x.borrow.BorrowedPKey,
+                  Id = x.borrow.Id,
+                  CustomerCode = x.issue.CustomerCode,
+                  Customer = x.issue.CustomerName,
+                  ItemCode = x.borrow.ItemCode,
+                  ItemDescription = x.borrow.ItemDescription,
+                  Uom = x.borrow.Uom,
+                  BorrowedQuantity = x.borrow.BorrowedQuantity,
+                  ReturnQuantity = x.borrow.BorrowedQuantity - x.borrow.Consume,
+                  Consume = x.borrow.Consume,
+                  ReturnedDate = x.borrow.ReturnedDate,
+                  PreparedBy = x.issue.PreparedBy,
+                  Remarks = x.issue.Remarks,
+                  TransactionDate = x.issue.TransactionDate.ToString(),
+                  Reason = x.issue.Reason,
+                  UnitCost = x.borrow.UnitCost,
+                  TotalCost = x.borrow.UnitCost * x.borrow.Consume
 
               });
 
@@ -2093,9 +1661,102 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await borrow.ToListAsync();
         }
 
+        public async Task<IReadOnlyList<DtoViewConsumeForReturn>> ViewConsumeForReturn(int id)
+        {
+            var Consumed = _context.BorrowedConsumes.Where(x => x.BorrowedItemPkey == id && x.IsActive == true)
+                .Select(x => new DtoViewConsumeForReturn
+                {
+
+                    BorrowedItemPKey = x.BorrowedItemPkey,
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemDescription,
+                    Uom = x.Uom,
+                    Consume = x.Consume,
+                    CompanyCode = x.CompanyCode,
+                    CompanyName = x.CompanyName,
+                    DepartmentCode = x.DepartmentCode,
+                    DepartmentName = x.DepartmentName,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    AccountCode = x.AccountCode,
+                    AccountTitles = x.AccountTitles,
+                    FullName = x.FullName,
+                    EmpId = x.EmpId
+
+                });
+
+            return await Consumed.ToListAsync();
+        }
+
+        //================================================= Customer Reject ============================================================================
+
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomer(UserParams userParams, int empid)
+        {
+
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                        .FirstOrDefault();
+
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                         .Where(x => x.PreparedBy == employee.FullName)
+                                        .Where(x => x.IsRejectDate != null)
+                                        .Where(x => x.IsReturned == null)
+                                        .Where(x => x.IsReject == true)
+                                        .Where(x => x.IsApproved == false)
+                                        .Select(x => new GetRejectBorrowedPagination
+                                        {
+
+                                            BorrowedPKey = x.Id,
+                                            CustomerName = x.CustomerName,
+                                            CustomerCode = x.CustomerCode,
+                                            TotalQuantity = x.TotalQuantity,
+                                            //PreparedBy = x.PreparedBy,
+                                            RejectDate = x.IsRejectDate.ToString(),
+                                            Remarks = x.Reason,
+                                            RejectBy = x.RejectBy,
+                                            //BorrowedDate = x.PreparedDate.ToString(),
+                                            TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+                                
+
+                                        });
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
 
 
+        }
 
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationCustomerOrig(UserParams userParams, string search, int empid)
+        {
+
+            var employee = _context.Users.Where(x => x.Id == empid)
+                                     .FirstOrDefault();
+
+
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                 .Where(x => x.PreparedBy == employee.FullName)
+                                 .Where(x => x.IsRejectDate != null)
+
+                                 .Where(x => x.IsReturned == null)
+                                 .Where(x => x.IsReject == true)
+                                 .Where(x => x.IsApproved == false)
+                                 .Select(x => new GetRejectBorrowedPagination
+                                 {
+
+                                     BorrowedPKey = x.Id,
+                                     CustomerName = x.CustomerName,
+                                     CustomerCode = x.CustomerCode,
+                                     TotalQuantity = x.TotalQuantity,
+                                     //PreparedBy = x.PreparedBy,
+                                     RejectDate = x.IsRejectDate.ToString(),
+                                     Remarks = x.Reason,
+                                     RejectBy = x.RejectBy,
+                                     //BorrowedDate = x.PreparedDate.ToString(),
+                                     TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+        }
 
 
 
@@ -2103,22 +1764,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         // ================================================ Approver ====================================================================================
 
 
-        public async Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status)
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllForApprovalBorrowedWithPagination(UserParams userParams, bool status)
         {
 
             var details = _context.BorrowedIssueDetails
-                                                   .GroupBy(x => new
-                                                   {
-                                                       x.BorrowedPKey,
-                                                       x.IsActive,
+                                            .GroupBy(x => new
+                                            {
+                                                x.BorrowedPKey,
+                                                x.IsActive,
 
-                                                   }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
-                                                   {
-                                                       BorrowedPKey = x.Key.BorrowedPKey,
-                                                       IsActive = x.Key.IsActive,
-                                                       TotalQuantity = x.Sum(x => x.Quantity),
+                                            }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                                            {
+                                                BorrowedPKey = x.Key.BorrowedPKey,
+                                                IsActive = x.Key.IsActive,
+                                                TotalQuantity = x.Sum(x => x.Quantity),
+                                                //UnitCost = x.Sum(x => x.UnitPrice)
 
-                                                   });
+                                            });
 
             var borrow = _context.BorrowedIssues
                 .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
@@ -2140,8 +1802,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    //x.borrowed.UnitCost
 
-                }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
@@ -2149,40 +1812,43 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
-
+                    IsApproved = x.Key.IsApproved,
                     Remarks = x.Key.Remarks,
                     Reason = x.Key.Reason,
                     AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
                     BorrowedDate = x.Key.PreparedDate.ToString(),
                     TransactionDate = x.Key.TransactionDate.ToString(),
-                    StatusApprove = x.Key.StatusApproved
+                    ApproveDate = x.Key.IsApprovedDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved,
+                    //UnitCost = x.Key.UnitCost
 
                 });
 
 
 
-            return await PagedList<GetAllForApprovalBorrowedPaginationDTO>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+            return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
 
 
-        public async Task<PagedList<GetAllForApprovalBorrowedPaginationDTO>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
+        public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllForApprovalBorrowedWithPaginationOrig(UserParams userParams, string search, bool status)
         {
 
 
 
             var details = _context.BorrowedIssueDetails
-                                                 .GroupBy(x => new
-                                                 {
-                                                     x.BorrowedPKey,
-                                                     x.IsActive,
+                                          .GroupBy(x => new
+                                          {
+                                              x.BorrowedPKey,
+                                              x.IsActive,
 
-                                                 }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
-                                                 {
-                                                     BorrowedPKey = x.Key.BorrowedPKey,
-                                                     IsActive = x.Key.IsActive,
-                                                     TotalQuantity = x.Sum(x => x.Quantity),
+                                          }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
+                                          {
+                                              BorrowedPKey = x.Key.BorrowedPKey,
+                                              IsActive = x.Key.IsActive,
+                                              TotalQuantity = x.Sum(x => x.Quantity),
+                                              //UnitCost = x.Sum(x => x.UnitPrice)
 
-                                                 });
+                                          });
 
             var borrow = _context.BorrowedIssues
                 .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
@@ -2204,8 +1870,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    //x.borrowed.UnitCost
 
-                }).Select(x => new GetAllForApprovalBorrowedPaginationDTO
+                }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
@@ -2213,48 +1880,68 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
-
+                    IsApproved = x.Key.IsApproved,
                     Remarks = x.Key.Remarks,
                     Reason = x.Key.Reason,
                     AgingDays = x.Key.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now) : 0,
                     BorrowedDate = x.Key.PreparedDate.ToString(),
                     TransactionDate = x.Key.TransactionDate.ToString(),
-                    StatusApprove = x.Key.StatusApproved
+                    ApproveDate = x.Key.IsApprovedDate.ToString(),
+                    StatusApprove = x.Key.StatusApproved,
+                    //UnitCost = x.Key.UnitCost
 
                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
                                                     || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                                                       || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
 
 
-            return await PagedList<GetAllForApprovalBorrowedPaginationDTO>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+            return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
 
 
-
-        public async Task<IReadOnlyList<GetAllForApprovalDetailsInBorrowed>> GetAllForApprovalDetailsInBorrowed(int id)
+        public async Task<bool> ApprovedForBorrowed(BorrowedIssue borrowed)
         {
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                     .FirstOrDefaultAsync();
+
+
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                            .ToListAsync();
+
+
+            issue.IsActive = true;
+            issue.IsApproved = true;
+            issue.IsApprovedDate = DateTime.Now;
+            issue.ApproveBy = borrowed.ApproveBy;
+            issue.StatusApproved = "Borrowed Approve";
+
+
+            foreach (var item in borrow)
+            {
+
+                item.IsActive = true;
+                item.IsApproved = true;
+                item.IsApprovedDate = DateTime.Now;
+
+            }
+
+            return true;
+
+        }
+
+
+        public async Task<IReadOnlyList<GetAllDetailsInBorrowedIssueDto>> GetAllForApprovalDetailsInBorrowed(int id)
+        {
+
             var issueBorrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
-                                            .Select(x => new GetAllForApprovalDetailsInBorrowed
-                                            {
-                                                Id = x.Id,
-                                                Customer = x.CustomerName,
-                                                CustomerCode = x.CustomerCode,
+                                                       .Select(x => new DtoViewBorrewedReturnedDetails
+                                                       {
+                                                           Id = x.Id,
+                                                           Customer = x.CustomerName,
+                                                           CustomerCode = x.CustomerCode,
+                                                           TransactionDate = x.TransactionDate.ToString(),
 
-                                                Remarks = x.Remarks,
-
-
-                                                TransactionDate = x.TransactionDate.ToString(),
-                                                CompanyCode = x.CompanyCode,
-                                                CompanyName = x.CompanyName,
-                                                DepartmentCode = x.DepartmentCode,
-                                                DepartmentName = x.DepartmentName,
-                                                LocationCode = x.LocationCode,
-                                                LocationName = x.LocationName,
-                                                AccountCode = x.AccountCode,
-                                                AccountTitles = x.AccountTitles,
-
-
-                                            });
+                                                       });
 
             var warehouse = _context.BorrowedIssueDetails
                 .GroupJoin(issueBorrowed, borrowed => borrowed.BorrowedPKey, issues => issues.Id, (borrowed, issues) => new { borrowed, issues })
@@ -2264,12 +1951,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .ThenBy(x => x.borrowed.ItemCode)
               .ThenBy(x => x.borrowed.CustomerName)
               .Where(x => x.borrowed.BorrowedPKey == id)
-              .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsTransact == true)
-              .Where(x => x.borrowed.IsApproved == false)
               .Where(x => x.borrowed.IsReturned == null)
+              .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsActive == true)
-              .Select(x => new GetAllForApprovalDetailsInBorrowed
+
+              .Select(x => new GetAllDetailsInBorrowedIssueDto
               {
 
                   Id = x.borrowed.Id,
@@ -2277,25 +1964,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   BorrowedPKey = x.borrowed.BorrowedPKey,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
+                  Uom = x.borrowed.Uom,
                   PreparedDate = x.borrowed.PreparedDate.ToString(),
                   ItemCode = x.borrowed.ItemCode,
                   ItemDescription = x.borrowed.ItemDescription,
                   Quantity = x.borrowed.Quantity,
-                  PreparedBy = x.borrowed.PreparedBy,
-
                   Remarks = x.borrowed.Remarks,
-
-                  Uom = x.borrowed.Uom,
-
-                  TransactionDate = x.issues.TransactionDate.ToString(),
-                  CompanyCode = x.issues.CompanyCode,
-                  CompanyName = x.issues.CompanyName,
-                  DepartmentCode = x.issues.DepartmentCode,
-                  DepartmentName = x.issues.DepartmentName,
-                  LocationCode = x.issues.LocationCode,
-                  LocationName = x.issues.LocationName,
-                  AccountCode = x.issues.AccountCode,
-                  AccountTitles = x.issues.AccountTitles,
+                  PreparedBy = x.borrowed.PreparedBy,
+                  UnitCost = x.borrowed.UnitPrice,
+                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity
 
               });
 
@@ -2303,7 +1980,382 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
+        public async Task<bool> RejectForBorrowed(BorrowedIssue borrowed)
+        {
 
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                    .FirstOrDefaultAsync();
+
+
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                            .ToListAsync();
+
+
+            issue.IsActive = false;
+            issue.IsApproved = false;
+            issue.IsReject = true;
+            issue.IsApprovedDate = null;
+            issue.RejectBy = borrowed.RejectBy;
+            issue.Reason = borrowed.Reason;
+            issue.IsRejectDate = DateTime.Now;
+
+
+            foreach (var item in borrow)
+            {
+
+                item.IsActive = false;
+                item.IsApproved = false;
+                item.IsApprovedDate = null;
+                item.IsReject = true;
+                item.IsRejectDate = DateTime.Now;
+                //item.ReturnQuantity = 0;
+
+            }
+
+            return true;
+
+        }
+
+        //================================================================ Approver Reject ============================================================================================
+
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPagination(UserParams userParams)
+        {
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                             .Where(x => x.IsRejectDate != null)
+                                             .Where(x => x.IsReturned == null)
+                                             .Where(x => x.IsReject == true)
+                                             .Where(x => x.IsApproved == false)
+                                             .Select(x => new GetRejectBorrowedPagination
+                                             {
+
+                                                 BorrowedPKey = x.Id,
+                                                 CustomerName = x.CustomerName,
+                                                 CustomerCode = x.CustomerCode,
+                                                 TotalQuantity = x.TotalQuantity,
+                                                 //PreparedBy = x.PreparedBy,
+                                                 RejectDate = x.IsRejectDate.ToString(),
+                                                 Remarks = x.Reason,
+                                                 RejectBy = x.RejectBy,
+                                                 //BorrowedDate = x.PreparedDate.ToString(),
+                                                 TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                             });
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<PagedList<GetRejectBorrowedPagination>> GetAllRejectBorrowedWithPaginationOrig(UserParams userParams, string search)
+        {
+            var borrow = _context.BorrowedIssues.OrderByDescending(x => x.IsRejectDate)
+                                           .Where(x => x.IsRejectDate != null)
+                                           .Where(x => x.IsReturned == null)
+                                           .Where(x => x.IsReject == true)
+                                           .Where(x => x.IsApproved == false)
+                                           .Select(x => new GetRejectBorrowedPagination
+                                           {
+
+                                               BorrowedPKey = x.Id,
+                                               CustomerName = x.CustomerName,
+                                               CustomerCode = x.CustomerCode,
+                                               TotalQuantity = x.TotalQuantity,
+                                               //PreparedBy = x.PreparedBy,
+                                               RejectDate = x.IsRejectDate.ToString(),
+                                               Remarks = x.Remarks,
+                                               RejectBy = x.RejectBy,
+                                               //BorrowedDate = x.PreparedDate.ToString(),
+                                               TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+
+                                           }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
+                                                    || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
+                                                      || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
+
+
+            return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+
+        // ============================================================ Approver for Returned =================================================================
+
+
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItem(UserParams userParams, bool status)
+        {
+
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true).GroupBy(x => new
+            {
+                x.BorrowedItemPkey,
+
+            }).Select(x => new DtoGetConsumedItem
+            {
+                BorrowedItemPKey = x.Key.BorrowedItemPkey,
+                ConsumedQuantity = x.Sum(x => x.Consume)
+
+            });
+
+
+
+            var borrowed = _context.BorrowedIssueDetails.Where(x => x.IsReturned == true && x.IsActive == true)
+                             .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
+                             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                              .GroupBy(x => new
+                              {
+
+                                  x.borrow.BorrowedPKey,
+                                  x.borrow.PreparedBy,
+                                  x.borrow.ReturnedDate,
+                                  x.borrow.IsApprovedReturned,
+                                  x.borrow.IsApprovedReturnedDate,
+                                  x.borrow.ReturnBy,
+
+                                  //x.borrow.IsReturned,
+
+                              }).Select(x => new DtoGetAllReturnedItem
+                              {
+
+                                  Id = x.Key.BorrowedPKey,
+                                  PreparedBy = x.Key.PreparedBy,
+                                  IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                  ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  ReturnBy = x.Key.ReturnBy,
+                                  TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
+                                  //IsReturned = x.Key.IsReturned != null ? true : false,
+                                  ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
+                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
+
+
+                              });
+
+
+
+            var BorrowIssue = _context.BorrowedIssues
+                .GroupJoin(borrowed, borrowissue => borrowissue.Id, borrowdetail => borrowdetail.Id, (borrowissue, borrowdetail) => new { borrowissue, borrowdetail })
+                .SelectMany(x => x.borrowdetail.DefaultIfEmpty(), (x, borrowdetail) => new { x.borrowissue, borrowdetail })
+                .Where(x => x.borrowissue.IsActive == true && x.borrowissue.IsReturned == true && x.borrowdetail.IsApproveReturn == status)
+                .OrderByDescending(x => x.borrowdetail.IsApproveReturn)
+                .GroupBy(x => new
+                {
+
+                    x.borrowdetail.Id,
+                    x.borrowissue.CustomerCode,
+                    x.borrowissue.CustomerName,
+                    x.borrowissue.PreparedBy,
+                    x.borrowdetail.ReturnedDate,
+                    x.borrowissue.ReturnBy,
+                    x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.StatusApproved,
+                    x.borrowdetail.ConsumedQuantity,
+                    x.borrowdetail.TotalBorrowedQuantity,
+                    x.borrowissue.IsActive,
+                    //x.borrowdetail.UnitCost
+
+
+
+
+                }).Select(x => new DtoGetAllReturnedItem
+                {
+                    //TransactionId = x.Key.BorrowedPKey,
+                    Id = x.Key.Id,
+                    CustomerCode = x.Key.CustomerCode,
+                    CustomerName = x.Key.CustomerName,
+                    PreparedBy = x.Key.PreparedBy,
+                    ReturnedDate = x.Key.ReturnedDate,
+                    ReturnBy = x.Key.ReturnBy,
+                    TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
+                    ConsumedQuantity = x.Key.ConsumedQuantity,
+                    ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                    StatusApprove = x.Key.StatusApproved,
+                    IsActive = x.Key.IsActive,
+                    //UnitCost = x.Key.UnitCost,
+                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+
+
+                });
+
+
+
+            return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<PagedList<DtoGetAllReturnedItem>> GetAllForApproveReturnedItemOrig(UserParams userParams, string search, bool status)
+        {
+
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true).GroupBy(x => new
+            {
+                x.BorrowedItemPkey,
+
+            }).Select(x => new DtoGetConsumedItem
+            {
+                BorrowedItemPKey = x.Key.BorrowedItemPkey,
+                ConsumedQuantity = x.Sum(x => x.Consume)
+
+            });
+
+
+
+            var borrowed = _context.BorrowedIssueDetails.Where(x => x.IsReturned == true && x.IsActive == true)
+                             .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
+                             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                              .GroupBy(x => new
+                              {
+
+                                  x.borrow.BorrowedPKey,
+                                  x.borrow.PreparedBy,
+                                  x.borrow.ReturnedDate,
+                                  x.borrow.IsApprovedReturned,
+                                  x.borrow.IsApprovedReturnedDate,
+                                  x.borrow.ReturnBy,
+
+                                  //x.borrow.IsReturned,
+
+                              }).Select(x => new DtoGetAllReturnedItem
+                              {
+
+                                  Id = x.Key.BorrowedPKey,
+                                  PreparedBy = x.Key.PreparedBy,
+                                  IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                                  ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                  ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  ReturnBy = x.Key.ReturnBy,
+                                  TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
+                                  //IsReturned = x.Key.IsReturned != null ? true : false,
+                                  ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
+                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
+
+
+                              });
+
+
+
+            var BorrowIssue = _context.BorrowedIssues
+                .GroupJoin(borrowed, borrowissue => borrowissue.Id, borrowdetail => borrowdetail.Id, (borrowissue, borrowdetail) => new { borrowissue, borrowdetail })
+                .SelectMany(x => x.borrowdetail.DefaultIfEmpty(), (x, borrowdetail) => new { x.borrowissue, borrowdetail })
+                .Where(x => x.borrowissue.IsActive == true && x.borrowissue.IsReturned == true && x.borrowdetail.IsApproveReturn == status)
+                .OrderByDescending(x => x.borrowdetail.IsApproveReturn)
+                .GroupBy(x => new
+                {
+
+                    x.borrowdetail.Id,
+                    x.borrowissue.CustomerCode,
+                    x.borrowissue.CustomerName,
+                    x.borrowissue.PreparedBy,
+                    x.borrowdetail.ReturnedDate,
+                    x.borrowissue.ReturnBy,
+                    x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.StatusApproved,
+                    x.borrowdetail.ConsumedQuantity,
+                    x.borrowdetail.TotalBorrowedQuantity,
+                    x.borrowissue.IsActive,
+                    //x.borrowdetail.UnitCost
+
+
+
+
+                }).Select(x => new DtoGetAllReturnedItem
+                {
+                    //TransactionId = x.Key.BorrowedPKey,
+                    Id = x.Key.Id,
+                    CustomerCode = x.Key.CustomerCode,
+                    CustomerName = x.Key.CustomerName,
+                    PreparedBy = x.Key.PreparedBy,
+                    ReturnedDate = x.Key.ReturnedDate,
+                    ReturnBy = x.Key.ReturnBy,
+                    TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
+                    ConsumedQuantity = x.Key.ConsumedQuantity,
+                    ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
+                    IsApproveReturn = x.Key.IsApprovedReturned != null ? true : false,
+                    StatusApprove = x.Key.StatusApproved,
+                    IsActive = x.Key.IsActive,
+                    //UnitCost = x.Key.UnitCost,
+                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+
+
+                }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
+                          || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
+                          || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
+
+
+
+            return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
+
+
+        }
+
+        public async Task<bool> ApproveForReturned(BorrowedIssue borrowed)
+        {
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                     .FirstOrDefaultAsync();
+
+
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                            .ToListAsync();
+
+
+            issue.IsActive = true;
+            issue.IsApprovedReturned = true;
+            issue.IsApprovedReturnedDate = DateTime.Now;
+            issue.ApprovedReturnedBy = borrowed.ApprovedReturnedBy;
+            issue.IsReturned = true;
+            issue.StatusApproved = "Return approved";
+
+
+            foreach (var item in borrow)
+            {
+
+                item.IsActive = true;
+                item.IsApprovedReturned = true;
+                item.IsApprovedReturnedDate = DateTime.Now;
+                item.IsReturned = true;
+
+            }
+
+
+            var borrowWithAgingDays = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                               .Select(x => new
+                                                               {
+                                                                   AgingDays = x.IsApprovedDate != null ? EF.Functions.DateDiffDay(x.IsApprovedDate.Value, DateTime.Now) : 0
+                                                               }).FirstOrDefaultAsync();
+
+            if (borrowWithAgingDays != null)
+            {
+                issue.AgingDays = borrowWithAgingDays.AgingDays;
+            }
+
+            await _context.SaveChangesAsync();
+
+
+
+            return true;
+        }
+
+
+        public async Task<bool> CancelForReturned(BorrowedIssue borrowed)
+        {
+            var issue = await _context.BorrowedIssues.Where(x => x.Id == borrowed.Id)
+                                                     .FirstOrDefaultAsync();
+
+
+            var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
+                                                             .ToListAsync();
+
+
+            foreach (var item in borrow)
+            {
+
+                item.IsReturned = null;
+                item.ReturnedDate = null;
+                item.IsApprovedReturned = null;
+                //item.ReturnQuantity = 0;
+            }
+
+            issue.IsReturned = null;
+            issue.IsApprovedReturned = false;
+            issue.Reason = borrowed.Reason;
+
+            return true;
+
+        }
 
 
 

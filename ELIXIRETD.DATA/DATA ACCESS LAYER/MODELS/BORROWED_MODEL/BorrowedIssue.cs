@@ -30,17 +30,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
 
         public bool? IsReturned { get; set; }
 
-        public string CompanyCode { get; set; }
-        public string CompanyName { get; set; }
-
-        public string DepartmentCode { get; set; }
-        public string DepartmentName { get; set; }
-
-        public string LocationCode { get; set; }
-        public string LocationName { get; set; }
-
-        public string AccountCode { get; set; }
-        public string AccountTitles { get; set; }
+       
 
 
         // Update Borrowed

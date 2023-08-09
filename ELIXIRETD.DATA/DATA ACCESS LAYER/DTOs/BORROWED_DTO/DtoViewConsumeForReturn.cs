@@ -4,20 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
+namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO.BorrowedNotification
 {
-    public class BorrowedConsume : BaseEntity
+    public class DtoViewConsumeForReturn
     {
-       
 
+        public int BorrowedItemPKey { get; set; }
         public string ItemCode { get; set; }
-
-        public int BorrowedItemPkey { get; set; }
-
         public string ItemDescription { get; set; }
-
         public string Uom { get; set; }
-
         public decimal Consume { get; set; }
 
         public string CompanyCode { get; set; }
@@ -32,17 +27,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
-        public string EmpId { get; set; }
-
         public string FullName { get; set; }
 
-        public bool ? IsApproveReturn { get; set; }
-
-        public bool IsActive { get; set; }
+        public string EmpId { get; set; }
 
 
-       
-        
+
 
     }
 }

@@ -13,22 +13,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string CustomerName { get; set; }
         public string CustomerCode {get; set;}
         public string PreparedBy { get; set; }
-        public decimal Consumed { get; set; }
+        public decimal ConsumedQuantity { get; set; }
         public string ReturnedDate { get; set; }
-        public decimal TotalReturned { get; set; }
         public decimal TotalBorrowedQuantity { get; set; }
+
+        public decimal ReturnedBorrow { get; set; }
 
         public string ReturnBy { get; set; }
 
         public bool IsApproveReturn { get; set; }
 
-
+        public bool IsReturned { get; set; }
         public string ApproveReturnDate { get; set; }
 
 
         public string StatusApprove { get; set; }
 
         public bool IsActive { get; set; }
+
+        //public decimal UnitCost { get; set; }
+
+        //public decimal TotalCost { get; set; }
 
     }
 }

@@ -586,7 +586,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
 
-            var getUnitpriceTotal = getUnitPrice.GroupBy(x => new
+            var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice != 0).GroupBy(x => new
             {
                 x.ItemCode,
 
@@ -594,16 +594,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             }).Select(x => new WarehouseInventory
             {
                 ItemCode = x.Key.ItemCode,
-                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / (x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) != 0 ? x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) : 1),
+                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),
                 ActualGood = x.Sum(x => x.ActualGood),
                 TotalUnitPrice = x.Sum(x => x.UnitPrice)
 
 
             });
-
-
-
-
 
 
 
@@ -1285,7 +1281,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
 
-            var getUnitpriceTotal = getUnitPrice.GroupBy(x => new
+
+            var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice != 0).GroupBy(x => new
             {
                 x.ItemCode,
 
@@ -1293,15 +1290,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             }).Select(x => new WarehouseInventory
             {
                 ItemCode = x.Key.ItemCode,
-                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / (x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) != 0 ? x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) : 1),
+                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),
                 ActualGood = x.Sum(x => x.ActualGood),
                 TotalUnitPrice = x.Sum(x => x.UnitPrice)
 
 
             });
-
-
-
 
 
 
@@ -1987,24 +1981,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
 
-            var getUnitpriceTotal = getUnitPrice.GroupBy(x => new
+
+            var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice != 0).GroupBy(x => new
             {
                 x.ItemCode,
-           
+
 
             }).Select(x => new WarehouseInventory
             {
                 ItemCode = x.Key.ItemCode,
-                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / (x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) != 0 ? x.Sum(x => x.ActualGood != null ? x.ActualGood : 0) : 1),
-                ActualGood = x.Sum(x => x.ActualGood),  
+                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),
+                ActualGood = x.Sum(x => x.ActualGood),
                 TotalUnitPrice = x.Sum(x => x.UnitPrice)
 
 
             });
-
-           
-
-
 
 
 

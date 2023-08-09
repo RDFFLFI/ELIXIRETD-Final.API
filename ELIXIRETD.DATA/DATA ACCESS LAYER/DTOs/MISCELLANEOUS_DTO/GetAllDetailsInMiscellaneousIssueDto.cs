@@ -5,6 +5,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO
     public class GetAllDetailsInMiscellaneousIssueDto
     {
 
+        public int Id { get; set; }
         public int IssuePKey { get; set; }
 
         public string Customer { get; set; }

@@ -41,6 +41,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public string StatusApprove { get; set; }
 
+        //public decimal UnitCost { get; set; }
+
 
     }
 }

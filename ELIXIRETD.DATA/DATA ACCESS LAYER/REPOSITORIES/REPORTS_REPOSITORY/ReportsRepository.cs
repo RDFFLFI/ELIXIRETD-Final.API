@@ -320,14 +320,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                IsApproveReturnDate = borrowed.IsApprovedReturnedDate.ToString(),
                                IsApproveReturnedBy = borrowed.ApprovedReturnedBy,
 
-                               CompanyCode = borrowed.CompanyCode,
-                               CompanyName = borrowed.CompanyName,
-                               DepartmentCode = borrowed.DepartmentCode,
-                               DepartmentName = borrowed.DepartmentName,
-                               LocationCode = borrowed.LocationCode,
-                               LocationName = borrowed.LocationName,
-                               AccountCode = borrowed.AccountCode,
-                               AccountTitles = borrowed.AccountTitles,
+                               //CompanyCode = borrowed.CompanyCode,
+                               //CompanyName = borrowed.CompanyName,
+                               //DepartmentCode = borrowed.DepartmentCode,
+                               //DepartmentName = borrowed.DepartmentName,
+                               //LocationCode = borrowed.LocationCode,
+                               //LocationName = borrowed.LocationName,
+                               //AccountCode = borrowed.AccountCode,
+                               //AccountTitles = borrowed.AccountTitles,
 
                            });
 

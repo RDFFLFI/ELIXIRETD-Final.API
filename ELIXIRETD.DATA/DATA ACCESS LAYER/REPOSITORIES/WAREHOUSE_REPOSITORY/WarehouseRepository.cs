@@ -503,22 +503,41 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                                                          });
 
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+                                                      .GroupBy(x => new
+                                                      {
+                                                          x.ItemCode,
+                                                          x.BorrowedItemPkey
+
+                                                      }).Select(x => new ItemStocksDto
+                                                      {
+                                                          ItemCode = x.Key.ItemCode,
+                                                          BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                                          Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                                                      });
+
+
+
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsReturned == true)
-                                                              .Where(x => x.IsApprovedReturned == true)
-                                                              .GroupBy(x => new
-                                                              {
-                                                                  x.ItemCode,
-                                                                  x.WarehouseId,
+                                                             .Where(x => x.IsReturned == true)
+                                                             .Where(x => x.IsApprovedReturned == true)
+                                                             .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
+                                                             .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
+                                                             .GroupBy(x => new
+                                                             {
+                                                                 x.returned.ItemCode,
+                                                                 x.returned.WarehouseId,
+                                                                 //x.itemconsume.Consume
 
-                                                              }).Select(x => new ItemStocksDto
-                                                              {
+                                                             }).Select(x => new ItemStocksDto
+                                                             {
 
-                                                                  ItemCode = x.Key.ItemCode,
-                                                                  In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
-                                                                  warehouseId = x.Key.WarehouseId,
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
+                                                                 warehouseId = x.Key.WarehouseId,
 
-                                                              });
+                                                             });
 
 
             var warehouseInventory = _context.WarehouseReceived
@@ -612,22 +631,41 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                                                          });
 
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+                                                    .GroupBy(x => new
+                                                    {
+                                                        x.ItemCode,
+                                                        x.BorrowedItemPkey
+
+                                                    }).Select(x => new ItemStocksDto
+                                                    {
+                                                        ItemCode = x.Key.ItemCode,
+                                                        BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                                        Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                                                    });
+
+
+
             var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsReturned == true)
-                                                              .Where(x => x.IsApprovedReturned == true)
-                                                              .GroupBy(x => new
-                                                              {
-                                                                  x.ItemCode,
-                                                                  x.WarehouseId,
+                                                             .Where(x => x.IsReturned == true)
+                                                             .Where(x => x.IsApprovedReturned == true)
+                                                             .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
+                                                             .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
+                                                             .GroupBy(x => new
+                                                             {
+                                                                 x.returned.ItemCode,
+                                                                 x.returned.WarehouseId,
+                                                                 //x.itemconsume.Consume
 
-                                                              }).Select(x => new ItemStocksDto
-                                                              {
+                                                             }).Select(x => new ItemStocksDto
+                                                             {
 
-                                                                  ItemCode = x.Key.ItemCode,
-                                                                  In = x.Sum(x => x.Quantity) - x.Sum(x => x.Consume),
-                                                                  warehouseId = x.Key.WarehouseId,
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
+                                                                 warehouseId = x.Key.WarehouseId,
 
-                                                              });
+                                                             });
 
 
             var warehouseInventory = _context.WarehouseReceived
