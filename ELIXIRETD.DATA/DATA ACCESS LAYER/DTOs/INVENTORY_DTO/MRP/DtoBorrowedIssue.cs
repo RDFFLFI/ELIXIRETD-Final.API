@@ -12,6 +12,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public string ItemCode { get; set; }
         public decimal Quantity { get; set; }   
         public decimal ReturnQuantity { get; set; }
+        public string PreparedDate { get; set; }
+        public decimal ConsumeQuantity { get; set; }
 
     }
 }

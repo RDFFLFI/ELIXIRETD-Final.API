@@ -67,7 +67,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             await _context.Users.AddAsync(user);
 
-      
             return true;
         }
 
@@ -85,6 +84,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
           
             existingUser.UserRoleId = user.UserRoleId;
+            existingUser.Department = user.Department;
             existingUser.Password = user.Password; // remove it if use encrypted password
 
             return true;
@@ -283,21 +283,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task <string> GenerateUsername(string fullName)
         {
-            //if (string.IsNullOrEmpty(fullName))
-            //{
-            //    throw new ArgumentException("FullName must not be null or empty.");
-            //}
-
+         
 
             string[] nameParts = fullName.Split(',');
 
-            //if (nameParts.Length < 2)
-            //{
-            //    throw new ArgumentException("FullName should contain at least a last name and a first name separated by a comma.");
-                
-            //}
-
-
+         
             string lastName = nameParts[0].Trim();
             string firstName = nameParts[1].Trim();
 
@@ -311,7 +301,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         {
             if (user == null)
             {
-                throw new ArgumentNullException(nameof(user), "User parameter must not be null.");
+                throw new ArgumentNullException(nameof(user), "User parameter must not be empty or null");
             }
 
             user.UserName = await GenerateUsername(user.FullName);
