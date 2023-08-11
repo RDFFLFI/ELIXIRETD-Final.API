@@ -362,22 +362,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                Consumed = x.returned.Consumed,
                                ReturnedQuantity = x.returned.BorrowedQuantity - x.returned.Consumed,
                                ReturnedDate = x.returned.ReturnedDate,
-
                                TransactedBy = x.borrowed.PreparedBy,
                                BorrowedDate = x.borrowed.PreparedDate.ToString(),
-
                                Remarks = x.borrowed.Remarks,
                                Details = x.borrowed.Details,
-
-
                                StatusApprove = x.borrowed.StatusApproved,
-
                                IsApproveDate = x.borrowed.IsApprovedDate.ToString(),
                                IsApproveBy = x.borrowed.ApproveBy,
-
                                IsApproveReturnDate = x.borrowed.IsApprovedReturnedDate.ToString(),
                                IsApproveReturnedBy = x.borrowed.ApprovedReturnedBy,
-
                                CompanyCode = x.returned.CompanyCode,
                                CompanyName = x.returned.CompanyName,
                                DepartmentCode = x.returned.DepartmentCode,

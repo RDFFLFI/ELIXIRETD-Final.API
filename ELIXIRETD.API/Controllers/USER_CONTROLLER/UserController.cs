@@ -75,9 +75,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> UpdateUserInfo(User user)
         {
 
-         
-            //if(user.Password == user.UserName)
-            //    return BadRequest("Password must not be equal to the username!");
+
+            if (user.Password == user.UserName)
+                return BadRequest("Password must not be equal to the username!");
 
             //var validate = await _unitOfWork.Users.ValidationPassword(user);
 
