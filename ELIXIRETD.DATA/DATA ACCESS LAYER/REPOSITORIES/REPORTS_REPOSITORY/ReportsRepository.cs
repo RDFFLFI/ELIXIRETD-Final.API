@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -278,56 +279,115 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoMiscIssue>.CreateAsync(issues, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams ,string DateFrom, string DateTo)
+
+
+        public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo)
         {
 
 
-            var Reports = (from borrowed in _context.BorrowedIssues
-                           where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo)  
-                           where borrowed.IsActive == true || borrowed.IsReject != null
-                           join returned in _context.BorrowedIssueDetails
-                           on borrowed.Id equals returned.BorrowedPKey
-                           into leftJ
-                           from returned in leftJ.DefaultIfEmpty()
+            var ConsumeQuantity = _context.BorrowedConsumes.Where(x => x.IsActive == true)
+                                   .Select(x => new DtoBorrowedAndReturned
+                                   {
+                                       BorrowedId = x.BorrowedItemPkey,
+                                       ItemCode = x.ItemCode,
+                                       Consumed = x.Consume,
+                                       CompanyCode = x.CompanyCode,
+                                       CompanyName = x.CompanyName,
+                                       DepartmentCode = x.DepartmentCode,
+                                       DepartmentName = x.DepartmentName,
+                                       LocationCode = x.LocationCode,
+                                       LocationName = x.LocationName,
+                                       AccountCode = x.AccountCode,
+                                       AccountTitles = x.AccountTitles,
+                                       EmpId = x.EmpId,
+                                       FullName = x.FullName
 
-                           select new DtoBorrowedAndReturned
+                                   });
+
+
+            var details = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                         .GroupJoin(ConsumeQuantity, borrow => borrow.Id, consume => consume.BorrowedId, (borrow, consume) => new { borrow, consume })
+                         .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
+                         .Select(x => new DtoBorrowedAndReturned
+                         {
+                           
+                             BorrowedId = x.borrow.BorrowedPKey,
+                             ItemCode = x.borrow.ItemCode,
+                             ItemDescription = x.borrow.ItemDescription,
+                             Uom = x.borrow.Uom,
+                             BorrowedQuantity = x.borrow.Quantity != null ? x.borrow.Quantity : 0,
+                             Consumed = x.consume.Consumed != null ? x.consume.Consumed : 0,
+                             ReturnedDate = x.borrow.ReturnedDate.ToString(),
+                             CompanyCode = x.consume.CompanyCode,
+                             CompanyName = x.consume.CompanyName,
+                             DepartmentCode = x.consume.DepartmentCode,
+                             DepartmentName = x.consume.DepartmentName,
+                             LocationCode = x.consume.LocationCode,
+                             LocationName = x.consume.LocationName,
+                             AccountCode = x.consume.AccountCode,
+                             AccountTitles = x.consume.AccountTitles,
+                             EmpId = x.consume.EmpId,
+                             FullName = x.consume.FullName
+
+
+
+                         });
+
+
+
+            //var Reports = (from borrowed in _context.BorrowedIssues
+            //               where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo)  
+            //               where borrowed.IsActive == true || borrowed.IsReject != null
+            //               join returned in details
+            //               on borrowed.Id equals returned.BorrowedId
+            //               into leftJ
+            //               from returned in leftJ.DefaultIfEmpty()
+
+
+              var Reports = _context.BorrowedIssues
+                           .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo))
+                           .Where(x => x.IsActive == true || x.IsReject != null)
+                           .GroupJoin(details ,borrowed => borrowed.Id , returned => returned.BorrowedId , (borrowed , returned) => new {borrowed , returned})
+                           .SelectMany(x => x.returned.DefaultIfEmpty() , (x , returned) => new {x.borrowed , returned})
+                           .Select(x => new DtoBorrowedAndReturned
                            {
 
-                               BorrowedId = borrowed.Id,
-                               CustomerCode = borrowed.CustomerCode,
-                               CustomerName = borrowed.CustomerName,
-                               ItemCode = returned.ItemCode,
-                               ItemDescription = returned.ItemDescription,
-                               BorrowedQuantity = returned.Quantity != null ? returned.Quantity : 0,
-                               //Consumed = (returned.Quantity != null ? returned.Quantity : 0) - (returned.ReturnQuantity != null ? returned.ReturnQuantity : 0),
-                               //ReturnedQuantity = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
-                               ReturnedDate = returned.ReturnedDate.ToString(),
-                               Uom = returned.Uom,
-                               TransactedBy = borrowed.PreparedBy,
-                               BorrowedDate = borrowed.PreparedDate.ToString(),
+                               BorrowedId = x.borrowed.Id,
+                               CustomerCode = x.borrowed.CustomerCode,
+                               CustomerName = x.borrowed.CustomerName,
+                               ItemCode = x.returned.ItemCode,
+                               ItemDescription = x.returned.ItemDescription,
+                               Uom = x.returned.Uom,
+                               BorrowedQuantity = x.returned.BorrowedQuantity,
+                               Consumed = x.returned.Consumed,
+                               ReturnedQuantity = x.returned.BorrowedQuantity - x.returned.Consumed,
+                               ReturnedDate = x.returned.ReturnedDate,
 
-                               Remarks = borrowed.Remarks,
-                               Details = borrowed.Details,
+                               TransactedBy = x.borrowed.PreparedBy,
+                               BorrowedDate = x.borrowed.PreparedDate.ToString(),
 
-                               IsReject = borrowed.IsReject,
-                               StatusApprove = borrowed.StatusApproved,
-                               AgingDays = borrowed.AgingDays,
+                               Remarks = x.borrowed.Remarks,
+                               Details = x.borrowed.Details,
 
-                               //IsApprove = borrowed.IsApproved,
-                               IsApproveDate = borrowed.IsApprovedDate.ToString(),
-                               IsApproveBy = borrowed.ApproveBy,
-                               //IsApproveReturned = borrowed.IsApprovedReturned != null ? true : false,
-                               IsApproveReturnDate = borrowed.IsApprovedReturnedDate.ToString(),
-                               IsApproveReturnedBy = borrowed.ApprovedReturnedBy,
 
-                               //CompanyCode = borrowed.CompanyCode,
-                               //CompanyName = borrowed.CompanyName,
-                               //DepartmentCode = borrowed.DepartmentCode,
-                               //DepartmentName = borrowed.DepartmentName,
-                               //LocationCode = borrowed.LocationCode,
-                               //LocationName = borrowed.LocationName,
-                               //AccountCode = borrowed.AccountCode,
-                               //AccountTitles = borrowed.AccountTitles,
+                               StatusApprove = x.borrowed.StatusApproved,
+
+                               IsApproveDate = x.borrowed.IsApprovedDate.ToString(),
+                               IsApproveBy = x.borrowed.ApproveBy,
+
+                               IsApproveReturnDate = x.borrowed.IsApprovedReturnedDate.ToString(),
+                               IsApproveReturnedBy = x.borrowed.ApprovedReturnedBy,
+
+                               CompanyCode = x.returned.CompanyCode,
+                               CompanyName = x.returned.CompanyName,
+                               DepartmentCode = x.returned.DepartmentCode,
+                               DepartmentName = x.returned.DepartmentName,
+                               LocationCode = x.returned.LocationCode,
+                               LocationName = x.returned.LocationName,
+                               AccountCode = x.returned.AccountCode,
+                               AccountTitles = x.returned.AccountTitles,
+                               EmpId = x.returned.EmpId,
+                               FullName = x.returned.FullName
 
                            });
 

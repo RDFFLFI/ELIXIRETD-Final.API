@@ -1950,6 +1950,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.CompanyCode,
                 x.LocationCode,
                 x.LocationName,
+
                 x.Rush
 
 
@@ -1977,7 +1978,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 LocationCode = x.Key.LocationCode,
                 LocationName = x.Key.LocationName,
                     
-                IsRush = x.Key.Rush != null ? true : false,
+                IsRush = x.Key.Rush != null  ? true : false,
                 Rush = x.Key.Rush,
 
             }).Where(x => x.IsRush == status)

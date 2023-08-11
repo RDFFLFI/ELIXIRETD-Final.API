@@ -69,6 +69,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public bool ? IsReject { get; set; }
 
+        //public decimal ConsumeQuantity { get; set; }
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
+
+
 
 
 
