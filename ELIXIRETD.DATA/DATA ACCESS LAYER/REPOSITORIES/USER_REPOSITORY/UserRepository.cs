@@ -4,6 +4,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 {
     public class UserRepository : IUserRepository
@@ -264,10 +266,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         }
 
 
-
-
-
-
         // Import
 
 
@@ -283,16 +281,47 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task <string> GenerateUsername(string fullName)
         {
-         
 
             string[] nameParts = fullName.Split(',');
 
-         
+            if (nameParts == null || nameParts.Length != 2 ||
+                string.IsNullOrWhiteSpace(nameParts[1]) || string.IsNullOrWhiteSpace(nameParts[0]))
+            {
+                return null; 
+            }
+
             string lastName = nameParts[0].Trim();
-            string firstName = nameParts[1].Trim();
+            string[] firstNames = nameParts[1].Trim().Split(' ');
+
+            string username = "";
+
+            //foreach (string firstNamePart in firstNames)
+            //{
+            //    if (!string.IsNullOrWhiteSpace(firstNamePart))
+            //    {
+
+            //        username += firstNamePart.Substring(0, 1);
+            //    }
+
+            //}
+
+            foreach (string firstNamePart in firstNames)
+            {
+                if (!string.IsNullOrWhiteSpace(firstNamePart))
+                {
+                    username += firstNamePart.Substring(0, 1);
+                    if (username.Length > 1) 
+                    {
+                        break;
+                    }
+                }
+            }
 
 
-            string username = firstName.Substring(0, 1) + lastName;
+
+            username = username.Replace(" ", "");
+
+            username += lastName;
 
             return username;
         }
@@ -304,9 +333,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 throw new ArgumentNullException(nameof(user), "User parameter must not be empty or null");
             }
 
-            user.UserName = await GenerateUsername(user.FullName);
+            //user.UserName = await GenerateUsername(user.FullName);
 
-            user.Password = user.UserName;
+            //user.Password = user.UserName;
             
              await _context.Users.AddAsync(user);
 

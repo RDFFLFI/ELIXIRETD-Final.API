@@ -216,7 +216,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                         continue;
                     }
 
-                 
+                    string username = await _unitOfWork.Users.GenerateUsername(items.FullName);
+                    items.UserName = username;
+                    items.Password = username;
 
 
                     var validateDuplicate = await _unitOfWork.Users.ValidateEmpIdAndFullName(items.EmpId, items.FullName);
@@ -227,6 +229,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                     string[] nameParts = fullName?.Split(',');
 
                     //string[] nameParts = items.FullName.Split(',');
+
 
 
                     if (items.EmpId == string.Empty || items.EmpId == null)
@@ -240,14 +243,21 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                         FullNameNULL.Add(items);
                         continue;
                     }
-                    
-                    if(items.Department == string.Empty || items.Department == null)
+
+                    //if (!fullName.Contains(","))
+                    //{
+                    //    FullNameIncomplete.Add(items);
+                    //    continue;
+                    //}
+
+
+                    if (items.Department == string.Empty || items.Department == null)
                     {
                         DepartmentNULL.Add(items);
                         continue;
                     }
 
-                    if (nameParts.Length < 2 || nameParts[1].Trim().Length == 0 || nameParts[0].Trim().Length == 0)
+                    if (nameParts.Length != 2 || nameParts[1].Trim().Length == 0 || nameParts[0].Trim().Length == 0 || nameParts == null)
                     {
                         FullNameIncomplete.Add(items);
                         continue;
@@ -259,6 +269,7 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
                        DuplicateList.Add(items);
                     }
 
+                  
 
                     else
                     {
