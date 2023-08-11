@@ -2627,6 +2627,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.LocationName = order.LocationName;
                 x.AccountCode = order.AccountCode;
                 x.AccountTitles = order.AccountTitles;
+                x.EmpId = order.EmpId;
+                x.FullName = order.FullName;
                 x.RejectBy = null;
                 x.RejectedDate = null;
                 x.RejectedDateTempo = null;
@@ -2834,6 +2836,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.MoveOrders.AccountCode,
                     x.MoveOrders.AccountTitles,
                     x.MoveOrders.ItemRemarks,
+                    x.MoveOrders.EmpId,
+                    x.MoveOrders.FullName
 
 
 
@@ -2858,6 +2862,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     AccountTitles = x.Key.AccountTitles,
                     ItemRemarks = x.Key.ItemRemarks,
                     UnitCost = x.Key.UnitCost,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName
 
                 });
 

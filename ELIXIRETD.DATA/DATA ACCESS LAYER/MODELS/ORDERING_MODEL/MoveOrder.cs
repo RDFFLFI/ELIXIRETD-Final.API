@@ -83,6 +83,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public decimal UnitPrice { get; set; }
 
+        public string EmpId { get; set; }
+
+        public string FullName { get; set; }
+
 
     }
 }
