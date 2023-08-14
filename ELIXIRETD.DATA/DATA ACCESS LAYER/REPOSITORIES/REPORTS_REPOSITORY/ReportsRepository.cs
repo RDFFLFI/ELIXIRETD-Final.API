@@ -8,6 +8,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.Xml;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 {
@@ -83,6 +84,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              LocationName = x.moveorder.LocationName,
                              AccountCode = x.moveorder.AccountCode,
                              AccountTitles = x.moveorder.AccountTitles,
+                             Empid = x.moveorder.EmpId,
+                             FullName = x.moveorder.FullName,
+                             
                              CustomerType = x.moveorder.CustomerType,
                              ItemRemarks = x.moveorder.ItemRemarks,
                              UnitCost = x.moveorder.UnitPrice,
@@ -142,6 +146,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.AccountTitles,
                              moveorder.ItemRemarks,
                              moveorder.UnitPrice,
+                             moveorder.EmpId,
+                             moveorder.FullName,
 
                               customer.CustomerType,
 
@@ -176,6 +182,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               LocationName = total.Key.LocationName,
                               AccountCode = total.Key.AccountCode,
                               AccountTitles = total.Key.AccountTitles,
+                              EmpId = total.Key.EmpId,
+                              FullName = total.Key.FullName,
+
                               ItemRemarks = total.Key.ItemRemarks,
                               UnitCost = total.Key.UnitPrice,
                               TotalCost = total.Key.UnitPrice * total.Key.QuantityOrdered

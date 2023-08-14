@@ -43,6 +43,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
+        public string Empid { get; set; }   
+
+        public string FullName { get; set; }
+
         public string CustomerType { get; set; }
 
         public string ItemRemarks { get; set; }
