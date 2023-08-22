@@ -1137,6 +1137,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return true;
         }
 
+
         public async Task<bool> Cancelborrowedfortransact(BorrowedIssueDetails borrowed)
         {
             var borrow = await _context.BorrowedIssueDetails.Where(x => x.Id == borrowed.Id)
@@ -1153,7 +1154,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         // ============================================================ Customer Returned ====================================================================
 
-
+      
 
         public async Task<bool> AddBorrowConsume(BorrowedConsume consumes)
         {
@@ -2357,8 +2358,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-
-
+     
     }
 
 }

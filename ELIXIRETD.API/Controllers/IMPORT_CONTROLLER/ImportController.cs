@@ -29,7 +29,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 List<PoSummary> itemcodeNotExist = new List<PoSummary>(); 
                 List<PoSummary> uomCodeNotExist = new List<PoSummary>();
                 List<PoSummary> quantityInValid = new List<PoSummary>();
-                List<PoSummary> itemdescriptionNotExist = new List<PoSummary>();
+                List<PoSummary> itemcodeanduomNotExist = new List<PoSummary>();
 
 
 
@@ -53,7 +53,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
                         var validateUom = await _unitOfWork.Imports.CheckUomCode(items.Uom);
                         var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
-                        var validateItemDescription = await _unitOfWork.Imports.CheckItemDescription(items.ItemCode , items.ItemDescription , items.Uom);
+                        var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode /*, items.ItemDescription */, items.Uom);
 
 
                         if (validatePoandItem == true)
@@ -75,9 +75,9 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         {
                             itemcodeNotExist.Add(items);
                         }
-                        else if (validateItemDescription == false)
+                        else if (validateItemcodeAndUom == false)
                         {
-                            itemdescriptionNotExist.Add(items);
+                        itemcodeanduomNotExist.Add(items);
                         }
                         else if(validateQuantity == false)
                              quantityInValid.Add(items);
@@ -98,10 +98,10 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     itemcodeNotExist,
                     uomCodeNotExist,
                     quantityInValid,
-                    itemdescriptionNotExist,
+                    itemcodeanduomNotExist,
                 };
 
-                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && uomCodeNotExist.Count == 0 && quantityInValid.Count == 0 && itemdescriptionNotExist.Count == 0)
+                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && uomCodeNotExist.Count == 0 && quantityInValid.Count == 0 && itemcodeanduomNotExist.Count == 0)
                 {
                     await _unitOfWork.CompleteAsync();
                     return Ok("Successfully Add!");

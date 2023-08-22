@@ -35,7 +35,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
         Task<IReadOnlyList<GetAllDetailsInBorrowedIssueDto>> GetAllDetailsInBorrowedIssue(int id);
         Task<IReadOnlyList<GetAllAvailableBorrowIssueDto>> GetAllAvailableIssue(int empid);
 
+        //Task<IReadOnlyList<DtoGetForBorrowedPrint>> GetForBorrowedPrint(int id);
+
+
         Task<IReadOnlyList<DTOGetItemForReturned>> GetItemForReturned(int id);
+
 
         Task<bool> EditReturnQuantity(BorrowedConsume consumes);
 

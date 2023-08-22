@@ -85,8 +85,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              AccountCode = x.moveorder.AccountCode,
                              AccountTitles = x.moveorder.AccountTitles,
                              Empid = x.moveorder.EmpId,
-                             FullName = x.moveorder.FullName,
-                             
+                             FullName = x.moveorder.FullName,            
                              CustomerType = x.moveorder.CustomerType,
                              ItemRemarks = x.moveorder.ItemRemarks,
                              UnitCost = x.moveorder.UnitPrice,
@@ -135,7 +134,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactionDate = transact.PreparedDate.ToString(),
                               DeliveryDate = transact.DeliveryDate.ToString(),
                               transact.IsActive,
-
                              moveorder.CompanyCode,
                              moveorder.CompanyName,
                              moveorder.DepartmentCode,
@@ -148,7 +146,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.UnitPrice,
                              moveorder.EmpId,
                              moveorder.FullName,
-
                               customer.CustomerType,
 
 
@@ -170,10 +167,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               TransactionType = total.Key.IsActive,
                               TransactedDate = total.Key.TransactionDate,
                               DeliveryDate = total.Key.DeliveryDate,
-
-
                               CustomerType = total.Key.CustomerType,
-
                                CompanyCode = total.Key.CompanyCode,
                               CompanyName = total.Key.CompanyName,
                               DepartmentCode = total.Key.DepartmentCode,
@@ -184,7 +178,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               AccountTitles = total.Key.AccountTitles,
                               EmpId = total.Key.EmpId,
                               FullName = total.Key.FullName,
-
                               ItemRemarks = total.Key.ItemRemarks,
                               UnitCost = total.Key.UnitPrice,
                               TotalCost = total.Key.UnitPrice * total.Key.QuantityOrdered
@@ -225,8 +218,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 TransactBy = receiptHeader.PreparedBy,
                                 TransactDate = receiptHeader.TransactionDate.ToString(),
                                 ReceivingDate = receipt.ReceivingDate.ToString(),
-                                
-
                                 CompanyCode = receiptHeader.CompanyCode,
                                 CompanyName = receiptHeader.CompanyName,
                                 DepartmentCode = receiptHeader.DepartmentCode,
@@ -260,16 +251,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            CustomerName = x.receipt.Customer,
                            Details = x.receipt.Details,
                            Remarks = x.receipt.Remarks,
-                           
                            ItemCode = x.issue !=null ? x.issue.ItemCode : null ,
                            ItemDescription = x.issue !=null ? x.issue.ItemDescription : null ,
                            Uom = x.issue != null    ? x.issue.Uom : null ,  
                            Quantity = x.issue != null ? x.issue.Quantity : 0,
                            TransactBy = x.receipt.PreparedBy ,
                            TransactDate = x.issue.PreparedDate.ToString() ,
-
                            PreparedDate = x.issue.PreparedDate.ToString(),
-
                            CompanyCode = x.receipt.CompanyCode,
                            CompanyName = x.receipt.CompanyName,
                            DepartmentCode = x.receipt.DepartmentCode,

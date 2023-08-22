@@ -295,16 +295,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             string username = "";
 
-            //foreach (string firstNamePart in firstNames)
-            //{
-            //    if (!string.IsNullOrWhiteSpace(firstNamePart))
-            //    {
-
-            //        username += firstNamePart.Substring(0, 1);
-            //    }
-
-            //}
-
+         
             foreach (string firstNamePart in firstNames)
             {
                 if (!string.IsNullOrWhiteSpace(firstNamePart))

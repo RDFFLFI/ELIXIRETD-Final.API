@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <None Remove="CORE\INTERFACES\BORROWED_INTERFACE\IBorrowedItem.cs~RF1c1a56f.TMP" />
+    <None Remove="DATA ACCESS LAYER\DTOs\BORROWED_DTO\DtoGetForBorrowedPrint.cs~RF595264.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\ORDERING_MODEL\Ordering.cs~RF45e8aa.TMP" />
     <None Remove="DATA ACCESS LAYER\REPOSITORIES\BORROWED_REPOSITORY\0c0e30pq.23p~" />
