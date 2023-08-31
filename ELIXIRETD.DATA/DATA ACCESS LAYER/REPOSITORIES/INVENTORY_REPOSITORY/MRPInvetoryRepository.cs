@@ -737,6 +737,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ14
                              from unitprice in leftJ14.DefaultIfEmpty()
 
+                             orderby material.ItemCode
+
                              group new
                              {
 
@@ -1501,6 +1503,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              on material.ItemCode equals unitprice.ItemCode
                              into leftJ14
                              from unitprice in leftJ14.DefaultIfEmpty()
+
+                             orderby material.ItemCode
 
                              group new
                              {
@@ -2269,6 +2273,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              on material.ItemCode equals unitprice.ItemCode
                              into leftJ14
                              from unitprice in leftJ14.DefaultIfEmpty()
+
+                             orderby material.ItemCode
 
                              group new
                              {
