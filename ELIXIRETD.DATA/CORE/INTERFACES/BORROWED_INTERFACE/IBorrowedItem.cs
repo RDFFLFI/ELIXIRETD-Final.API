@@ -59,6 +59,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> CancelReturnItem(BorrowedIssueDetails borrowed);
 
+        Task<bool> CancelAllConsumeItem(BorrowedConsume consume);
+
         Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id);
 
         Task<IReadOnlyList<DtoViewConsumeForReturn>> ViewConsumeForReturn(int id);

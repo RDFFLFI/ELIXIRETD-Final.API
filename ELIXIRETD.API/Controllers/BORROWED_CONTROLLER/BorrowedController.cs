@@ -224,6 +224,22 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
+        [HttpPut]
+        [Route("CancelAllConsumeItem")]
+        public async Task<IActionResult> CancelAllConsumeItem([FromBody] BorrowedConsume consumes)
+        {
+
+                await _unitofwork.Borrowed.CancelAllConsumeItem(consumes);
+                await _unitofwork.CompleteAsync();
+            
+
+            return new JsonResult("Transaction has been cancelled!");
+        }
+
+
+
+
+
         [HttpGet]
         [Route("GetItemForReturned")]
         public async Task<IActionResult> GetItemForReturned(int id)

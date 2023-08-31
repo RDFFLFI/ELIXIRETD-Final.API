@@ -1309,6 +1309,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
+        public async Task<bool> CancelAllReturnItem(BorrowedConsume consume)
+        {
+           
+            var consumed = await _context.BorrowedConsumes.Where(x => x.BorrowedItemPkey == consume.BorrowedItemPkey)
+                                                         .ToListAsync();
+
+            
+            foreach(var items in consumed)
+            {
+                items.IsActive = false;
+            }
+
+
+            return true;
+
+        }
+
+
+
+
         public async Task<bool> SaveReturnedQuantity(BorrowedIssueDetails borrowed)
         {
             var returned = await _context.BorrowedIssues
@@ -2358,7 +2378,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-     
+       
     }
 
 }
