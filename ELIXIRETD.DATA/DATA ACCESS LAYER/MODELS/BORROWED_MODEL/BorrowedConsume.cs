@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components.Web;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public bool ? IsApproveReturn { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int BorrowedPkey { get; set; }
 
 
        
