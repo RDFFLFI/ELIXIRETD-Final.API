@@ -198,8 +198,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (existingMaterialsAndItemCode == true)
                 return BadRequest("Item code and item description already exist, Please try something else!");
 
-            if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription, material.SubCategoryId))
-                return BadRequest("Item description, item category and sub category already exist, Please try something else!");
+            int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
+
+            if (count > 1)
+            {
+                return BadRequest("Item description, item category and sub category already exist. Please try something else!");
+            }
 
             if (uomId == false)
                     return BadRequest("UOM doesn't exist");
@@ -230,8 +234,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             }
 
 
-            if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription , material.SubCategoryId))
-                return BadRequest("Item description, item category and sub category already exist, Please try something else!");
+            int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
+
+            if (count > 1)
+            {
+                return BadRequest("Item description, item category and sub category already exist. Please try something else!");
+            }
+
+
 
 
             await _unitOfWork.Materials.UpdateMaterial(material);

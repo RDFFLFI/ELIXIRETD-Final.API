@@ -693,6 +693,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
         public async Task<bool> ValidateMaterialAndSubAndItem(string material, int Subcateg)
         {
+            
+
+
             return await _context.Materials.AnyAsync(x => x.ItemDescription == material && x.SubCategoryId == Subcateg);
         }
 
@@ -893,6 +896,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                 return false;
 
             return true;
+        }
+
+        public Task<int> CountMatchingMaterials(string material, int Subcateg)
+        {
+            throw new NotImplementedException();
         }
     }
  
