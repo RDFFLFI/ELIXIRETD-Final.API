@@ -898,10 +898,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public Task<int> CountMatchingMaterials(string material, int Subcateg)
+        public async Task<int> CountMatchingMaterials(string material, int Subcateg)
         {
-            throw new NotImplementedException();
+            return await _context.Materials
+        .CountAsync(x => x.ItemDescription == material && x.SubCategoryId == Subcateg);
         }
     }
+    
  
 }
