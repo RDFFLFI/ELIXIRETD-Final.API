@@ -16,6 +16,7 @@ using NetTopologySuite.Index.HPRtree;
 //using System.Data.Entity;
 using System.Data.OleDb;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 {
@@ -198,14 +199,18 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (existingMaterialsAndItemCode == true)
                 return BadRequest("Item code and item description already exist, Please try something else!");
 
-            int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
 
-            if (count > 1)
-            {
+            if (await _unitOfWork.Materials.ValidateMaterialAndSubAndItem(material.ItemDescription, material.SubCategoryId))
                 return BadRequest("Item description, item category and sub category already exist. Please try something else!");
-            }
 
-            if (uomId == false)
+                //int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
+
+                //if (count > 1)
+                //{
+                //    return BadRequest("Item description, item category and sub category already exist. Please try something else!");
+                //}
+
+                if (uomId == false)
                     return BadRequest("UOM doesn't exist");
 
                 if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
@@ -233,18 +238,32 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest("ItemCode was in use!");
             }
 
+            var countCount = await _unitOfWork.Materials.CountMatchingMaterials(material.Id, material.ItemDescription, material.SubCategoryId);
 
-            int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
-
-            if (count > 1)
+            if (countCount != 0)
             {
-                return BadRequest("Item description, item category and sub category already exist. Please try something else!");
+                countCount = (material.Id == countCount) ? countCount + 0 : 1; 
             }
 
+            var countCountDescription = await _unitOfWork.Materials.CountMatchingMaterialsByItemdescription(material.ItemDescription , material.SubCategoryId); 
 
+            if(countCountDescription != 0)
+            {
+                bool isMatch = (material.ItemDescription == countCountDescription.ToString()) && (material.SubCategoryId == countCountDescription);
+                countCountDescription = isMatch ? countCountDescription + 0 : 1;
+            }
 
+            var totalcount = countCount + countCountDescription;
+
+            if (totalcount < 2 && totalcount != 0)
+            {
+                return BadRequest("Item description, item category, and subcategory combination already exists. Please try something else!");
+            }
 
             await _unitOfWork.Materials.UpdateMaterial(material);
+
+          
+
             await _unitOfWork.CompleteAsync();
             return Ok(material);
         }
@@ -314,6 +333,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             var materialResult = new
             {
+
                 materials,
                 materials.CurrentPage,
                 materials.PageSize,
