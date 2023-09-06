@@ -538,12 +538,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await borrowed.ToListAsync();
         }
 
-
-
-
-
-
-
         public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationBorrowedApprove(int empid)
         {
 
@@ -1267,7 +1261,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrowed = _context.BorrowedIssueDetails
                   .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
                   .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
-                  .Where(x => x.borrow.BorrowedPKey == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned == null)
+                  .Where(x => x.borrow.Id == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned == null)
                   .Select(x => new DtoGetConsumedItem
                   {
                       Id = x.consume.Id,
