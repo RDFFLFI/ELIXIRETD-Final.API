@@ -4,8 +4,12 @@
     {
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
-        public SubCategory SubCategory { get; set; }
-        public int SubCategoryId { get; set; }
+        //public SubCategory SubCategory { get; set; }
+        //public int SubCategoryId { get; set; }
+
+        public AccountTitle AccountTitle { get; set; }
+        public int AccountTitleId { get; set; }
+
         public Uom Uom { get; set; }
         public int UomId { get; set; }
         public int BufferLevel { get; set; }
@@ -16,7 +20,7 @@
 
 
         public string UomCode { get; set; }
-        public string SubCategoryName { get; set; }
+        public string AccountPName { get; set; }
         public string ItemCategoryName { get; set; }
 
     }

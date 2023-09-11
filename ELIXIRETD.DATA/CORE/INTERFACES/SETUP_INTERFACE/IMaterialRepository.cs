@@ -27,12 +27,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ItemCodeExist(string itemcode);
         Task<bool> ItemCategoryExist(string category);
         Task<bool> ValidateDescritionAndUom(Material materials);
-        Task<bool> ExistingSubCateg(string subcateg);
-        Task<bool> ValidateSubcategInUse(int subcateg);
+        //Task<bool> ExistingSubCateg(string subcateg);
+        Task<bool> ValidateAccountInUse(int subcateg);
 
 
-        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int subCategory);
-        Task<bool> ValidateSubcategories(int subcategories);
+        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int account);
+        //Task<bool> ValidateSubcategories(int subcategories);
 
         Task<bool> ValildateItemCodeForPoSummary(string itemCode);
         Task<bool> ValildateItemCodeForReceiving(string itemCode);
@@ -46,13 +46,13 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
         Task<bool>AddMaterialImport(Material material);
-        Task<SubCategory> GetByNameAndItemCategoryIdAsync(string subCategoryName, int itemCategoryId);
+        Task<AccountTitle> GetByNameAndItemCategoryIdAsync(string AccountPName, int itemCategoryId);
         Task<ItemCategory> GetByNameAsync(string itemCategoryName);
 
 
-        Task<bool> ExistSubCategory(SubCategory category);
+        //Task<bool> ExistAccountTitle(AccountTitle category);
         Task<bool> ValidateItemCategory(int ItemCateg);
-        Task<bool> ValidationSubCategory(int Subcategory);
+        //Task<bool> ValidationSubCategory(int Subcategory);
         Task<IReadOnlyList<ItemCategoryDto>> GetAllActiveItemCategory();
         Task<IReadOnlyList<ItemCategoryDto>> GetAllInActiveItemCategory();
         Task<bool> AddNewItemCategory(ItemCategory category);
@@ -63,8 +63,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<PagedList<ItemCategoryDto>> GetItemCategoryWithPaginationOrig(UserParams userParams, bool status, string search);
 
 
-        Task<bool> ExistSubCategoryId(int subCategoryId);
-        Task<bool> DuplicateSubCategoryAndItemCategories(SubCategory category);
+        //Task<bool> ExistSubCategoryId(int subCategoryId);
+        Task<bool> DuplicateAccountTitleAndItemCategories(AccountTitle category);
         Task<bool> ValidateItemCategInUse(int ItemCateg);
         Task<bool> ExistItemCateg(string itemcateg);
 
@@ -75,15 +75,15 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         //====================================================== Sub Category =========================================================
 
-        Task<IReadOnlyList<SubCategoryDto>> GetAllActiveSubCategory();
-        Task<IReadOnlyList<SubCategoryDto>> GetInActiveSubCategory();
-        Task<bool> AddNewSubCategory(SubCategory category);
-        Task<bool> UpdateSubCategory(SubCategory category);
-        Task<bool> ActivateSubCategory(SubCategory category);
-        Task<bool> InActiveSubCategory(SubCategory category);
+        Task<IReadOnlyList<AccountTitlesDto>> GetAllActiveAccountTitles();
+        Task<IReadOnlyList<AccountTitlesDto>> GetInActiveAccountTitles();
+        Task<bool> AddNewAccountTitles(AccountTitle category);
+        Task<bool> UpdateAccountTitles(AccountTitle category);
+        Task<bool> ActivateAccountTitles(AccountTitle category);
+        Task<bool> InActiveAccountTitles(AccountTitle category);
 
-        Task<PagedList<SubCategoryDto>> GetAllSubCategoryPagination(bool status, UserParams userParams);
-        Task<PagedList<SubCategoryDto>> GetSubCategoryPaginationOrig(UserParams userParams, bool status, string search);
+        Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPagination(bool status, UserParams userParams);
+        Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPaginationOrig(UserParams userParams, bool status, string search);
 
 
 
@@ -93,18 +93,18 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ValidateMaterialExist(string materialname);
 
         Task<bool> ValidateItemCategorySame(ItemCategory category);
-        Task<bool> ValidateSubCategorySame(SubCategory category);
+        //Task<bool> ValidateSubCategorySame(SubCategory category);
 
 
 
-        Task<bool> ValidateMaterialAndSubAndItem(string material, int Subcateg);
+        Task<bool> ValidateMaterialAndAccountAndItem(string material, int account);
 
-        Task<int> CountMatchingMaterials(int id ,string material, int Subcateg);
+        Task<int> CountMatchingMaterials(int id ,string material, int account);
 
-        Task<int> CountMatchingMaterialsByItemdescription(string material, int Subcateg);
+        Task<int> CountMatchingMaterialsByItemdescription(string material, int account);
 
 
-        Task<IReadOnlyList<DtoItemcategDropdown>> GetAllSubCategmaterial();
+        Task<IReadOnlyList<DtoItemcategDropdown>> GetAllAccountmaterial();
 
 
 
