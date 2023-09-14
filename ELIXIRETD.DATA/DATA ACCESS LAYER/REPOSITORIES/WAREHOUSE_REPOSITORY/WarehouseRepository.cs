@@ -425,7 +425,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                     Uom = x.Uom,
                     LotSection = x.LotSection,
                     UnitPrice = x.UnitPrice,
-                    TotalUnitPrice = x.UnitPrice * x.ActualDelivered
+                    TotalUnitPrice = x.UnitPrice * x.ActualDelivered,
+                    SINumber = x.SINumber
+                    
 
                 });
 
@@ -447,11 +449,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                    Uom = x.Uom,
                    LotSection = x.LotSection,
                    UnitPrice = x.UnitPrice,
-                   TotalUnitPrice = x.UnitPrice * x.ActualDelivered
+                   TotalUnitPrice = x.UnitPrice * x.ActualDelivered,
+                   SINumber = x.SINumber
 
                }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
-               || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower()));
+               || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower())
+               || Convert.ToString(x.SINumber).ToLower().Contains(search.Trim().ToLower())
+               || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
+               );
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(warehouseInventory, userParams.PageNumber, userParams.PageSize);
         }

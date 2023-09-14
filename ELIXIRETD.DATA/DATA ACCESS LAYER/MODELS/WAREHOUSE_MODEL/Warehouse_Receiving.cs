@@ -35,6 +35,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public string AddedBy { get; set; }
         public DateTime ActualReceivingDate { get; set; } = DateTime.Now;
 
+        public string SINumber { get; set; }
         public decimal UnitPrice { get; set; }
 
 
