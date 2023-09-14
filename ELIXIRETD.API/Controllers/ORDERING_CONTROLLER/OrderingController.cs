@@ -1104,11 +1104,22 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         }
 
+        [HttpGet]
+        [Route("TrackingofOrderingTransaction")]
+        public async Task<IActionResult> TrackingofOrderingTransaction()
+        {
+            var orders = await _unitofwork.Orders.TrackingofOrderingTransaction();
 
+            return Ok(orders);
+        }
 
+        [HttpGet("ListofServedDto")]
+        public async Task<IActionResult> ListofServedDto()
+        {
+            var order = await _unitofwork.Orders.ListofServedDto();
 
-
-
+            return Ok(order);
+        }
 
     }
 }

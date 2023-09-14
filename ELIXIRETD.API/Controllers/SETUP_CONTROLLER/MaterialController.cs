@@ -509,7 +509,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             return Ok(categoryResult);
         }
 
-        // ============================================== Sub Category =================================================================
+        // ============================================== AccountTitle Category =================================================================
 
         [HttpGet]
         [Route("GetAllActiveAccountTitles")]
@@ -553,7 +553,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             //if (validate == true)
             //    return BadRequest("The sub category cannot be changed because you entered the same sub category!");
             if (await _unitOfWork.Materials.ValidateAccountInUse(category.Id))
-                return BadRequest("Sub category is in use!");
+                return BadRequest("(AccountTitles(Per Item) is in use!");
 
             var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateAccountTitleAndItemCategories(category);
 
@@ -587,12 +587,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> InActiveAccountTitles(AccountTitle category)
         {
             var valid = await _unitOfWork.Materials.InActiveAccountTitles(category);
-
             if (valid == false)
                 return BadRequest("No Item category existing! Please try another ");
 
             if (await _unitOfWork.Materials.ValidateAccountInUse(category.Id))
-                return BadRequest("Sub category is in use!");
+                return BadRequest("(AccountTitles(Per Item) is in use!");
 
             await _unitOfWork.Materials.InActiveAccountTitles(category);
             await _unitOfWork.CompleteAsync();

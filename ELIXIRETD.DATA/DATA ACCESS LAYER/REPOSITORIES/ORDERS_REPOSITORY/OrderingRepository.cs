@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using System;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.ListofServedDto;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 {
@@ -71,21 +72,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 QuantityOrdered = x.Sum(x => x.QuantityOrdered)
             });
 
-            //var getIssueReceipt = _context.WarehouseReceived.Where(x => x.TransactionType == "MiscellaneousReceipt")
-            //                                                .Where(x => x.IsWarehouseReceived == true)
-            //                                                .Where(x => x.IsActive == true)
-            //                                                .GroupBy(x => new
-            //                                                {
-            //                                                    x.ItemCode,
-
-            //                                                }).Select(x => new IssueInventoryDto
-            //                                                {
-
-            //                                                    ItemCode = x.Key.ItemCode,
-            //                                                    Quantity = x.Sum(x => x.ActualGood)
-            //                                                });
-
-
+        
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                                .Where(x => x.IsTransact == true)
                                                                .GroupBy(x => new
@@ -3547,6 +3534,116 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
+        public async Task<IReadOnlyList<TrackingofOrderingTransactionDto>> TrackingofOrderingTransaction()
+        {
+            var orders = _context.Orders.Where(x => x.IsActive == true).GroupBy(x => new
+            {
+                x.TrasactId,
+                x.Customercode,
+                x.CustomerName,
+                x.IsPrepared,
+                x.IsApproved,
 
+
+            }).Select(x => new ListofOrderDto
+            {
+               TransactId = x.Key.TrasactId,
+                CustomerCode = x.Key.Customercode,
+               CustomerName = x.Key.CustomerName,
+                IsPrepared = x.Key.IsPrepared,
+                IsApproved = x.Key.IsApproved
+
+            });
+
+
+            var moveorders = orders
+            .GroupJoin(_context.MoveOrders, order => order.TransactId, moveorder => moveorder.OrderNo, (order, moveorder) => new { order, moveorder })
+            .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.order, moveorder })
+            .GroupBy(x => new
+            {
+             
+                x.order.TransactId,
+                x.order.CustomerCode,
+                x.order.CustomerName,
+                x.order.IsPrepared,
+                x.order.IsApproved,
+                x.moveorder.IsApprove,
+
+
+            }).Select(x => new ListofOrderDto
+            {
+                TransactId = x.Key.TransactId,
+                CustomerCode = x.Key.CustomerCode,
+                CustomerName = x.Key.CustomerName,
+                IsPrepared = x.Key.IsPrepared,
+                IsApproved = x.Key.IsApproved,
+                IsServed = x.Key.IsApprove
+
+
+            });
+
+            var List = moveorders.GroupBy(x => new
+            {
+                x.TransactId,
+                x.CustomerCode,
+                x.CustomerName,
+                x.IsPrepared,
+                x.IsApproved,
+                x.IsServed,
+
+            }).Select(x => new TrackingofOrderingTransactionDto
+            {
+               TransactId = x.Key.TransactId,
+               CustomerCode = x.Key.CustomerCode,
+               CustomerName = x.Key.CustomerName,
+                OrderStatus = (x.Key.IsPrepared && x.Key.IsApproved.HasValue && x.Key.IsServed.HasValue && x.Key.IsServed.Value) ? "Served" :
+                  (x.Key.IsPrepared && x.Key.IsApproved.HasValue && (!x.Key.IsServed.HasValue || !x.Key.IsServed.Value)) ? "Approved" :
+                  (x.Key.IsPrepared && (!x.Key.IsApproved.HasValue || (x.Key.IsServed.HasValue && !x.Key.IsServed.Value))) ? "Preparing" :
+                  "For Preparation"
+
+            });
+
+          
+            return await List.ToListAsync();   
+        }
+
+        public async Task<IList<ListofServedDto>> ListofServedDto()
+        {
+
+            var orders = _context.Orders
+                  .GroupJoin(_context.MoveOrders , ordering => ordering.TrasactId , moveorder => moveorder.OrderNo , (ordering, moveorder) => new {ordering , moveorder})
+                  .SelectMany(x => x.moveorder.DefaultIfEmpty() , (x , moveorder) => new {x.ordering , moveorder})
+                  .GroupBy(order => order.ordering.TrasactId)
+                 .Select(group => new ListofServedDto
+                 {
+                     TransactId = group.Key,
+                     DateNeeded = group.First().ordering.DateNeeded.ToString(),
+                     OrderDate = group.First().ordering.OrderDate.ToString(),
+                     CustomerCode = group.First().ordering.Customercode,
+                     CustomerName = group.First().ordering.CustomerName,
+                     Order = group.Select(x => new ListofServedDto.Orders
+                     {
+                         OrderNo = x.ordering.OrderNo,
+                         CustomerType = x.ordering.CustomerType,
+                         ItemCode = x.ordering.ItemCode,
+                         ItemCategory =  x.ordering.Category,
+                         Uom = x.ordering.Uom,
+                         QuantityOrdered = x.ordering.QuantityOrdered,
+                         CompanyCode = x.ordering.CompanyCode,
+                         CompanyName = x.ordering.CompanyName,
+                         DepartmentCode = x.ordering.DepartmentCode,
+                         DepartmentName = x.ordering.Department,
+                         LocationCode = x.ordering.LocationCode,
+                         QuantityUnServed = x.ordering.IsActive == false ? x.ordering.QuantityOrdered : (int?)null,
+                         QuantityServed = x.moveorder.IsApprove == true ? x.moveorder.QuantityOrdered : (int?)null,
+                         LocationName = x.ordering.LocationName,
+                         Rush = x.ordering.Rush,
+                         ItemRemarks = x.ordering.ItemRemarks,
+                     }).ToList()
+                 });
+
+
+            return await orders.ToListAsync();
+        }
     }
 }

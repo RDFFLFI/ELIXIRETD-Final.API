@@ -170,5 +170,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
 
 
+
+        Task<IReadOnlyList<TrackingofOrderingTransactionDto>> TrackingofOrderingTransaction();
+
+        Task<IList<ListofServedDto>> ListofServedDto();
+
+
     }
 }
