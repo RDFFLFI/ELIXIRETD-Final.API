@@ -1178,37 +1178,37 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var Borrowed = _context.BorrowedIssueDetails
             .GroupJoin(Consume, borrowed => borrowed.BorrowedPKey, consume => consume.BorrowedPKey, (borrowed, consume) => new { borrowed, consume })
             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrowed, consume })
-            .GroupJoin(_context.BorrowedIssues, borrowed => borrowed.borrowed.BorrowedPKey , issue => issue.Id , (borrowed , issue) => new {borrowed,issue} )
-            .SelectMany(x => x.issue.DefaultIfEmpty(),  (x , issue) => new {x.borrowed , issue})
+            .GroupJoin(_context.BorrowedIssues, borrowed => borrowed.borrowed.BorrowedPKey, issue => issue.Id, (borrowed, issue) => new { borrowed, issue })
+            .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.borrowed, issue })
             .Where(x => x.borrowed.borrowed.IsActive == true && x.borrowed.borrowed.IsApproved == true && x.borrowed.borrowed.IsReturned == null && x.borrowed.borrowed.BorrowedPKey == id)
             .GroupBy(x => new
             {
-              x.borrowed.consume.BorrowedItemPkey, 
-              x.issue.Id,
-              x.issue.CustomerCode,
-              x.issue.CustomerName,
-              x.issue.PreparedDate,
-              x.borrowed.borrowed.ItemCode,
-              x.borrowed.borrowed.ItemDescription,
-              x.borrowed.borrowed.Uom,
-              x.borrowed.borrowed.Quantity,
-              Consumed = x.borrowed.consume.ConsumedQuantity != null ? x.borrowed.consume.ConsumedQuantity : 0 ,
-              
+                x.borrowed.borrowed.Id,
+                x.borrowed.borrowed.BorrowedPKey,
+                x.issue.CustomerCode,
+                x.issue.CustomerName,
+                x.issue.PreparedDate,
+                x.borrowed.borrowed.ItemCode,
+                x.borrowed.borrowed.ItemDescription,
+                x.borrowed.borrowed.Uom,
+                x.borrowed.borrowed.Quantity,
+                Consumed = x.borrowed.consume.ConsumedQuantity != null ? x.borrowed.consume.ConsumedQuantity : 0,
+
             }).Select(x => new DTOGetItemForReturned
             {
 
-              Id = x.Key.BorrowedItemPkey,
-              BorrowedPKey = x.Key.Id,
-              CustomerCode = x.Key.CustomerCode,
-              CustomerName = x.Key.CustomerName,
-              BorrowedDate = x.Key.PreparedDate.ToString(),
-              ItemCode = x.Key.ItemCode,
-              ItemDescription = x.Key.ItemDescription,
-              Uom = x.Key.Uom,
-              BorrowedQuantity = x.Key.Quantity,
-              ConsumedQuantity = x.Key.Consumed,
-              RemainingQuantity = Math.Max(0, x.Key.Quantity - x.Key.Consumed),
-              UnitCost = x.Sum(x => x.borrowed.borrowed.UnitPrice)
+                Id = x.Key.BorrowedPKey,
+                BorrowedPKey = x.Key.Id,
+                CustomerCode = x.Key.CustomerCode,
+                CustomerName = x.Key.CustomerName,
+                BorrowedDate = x.Key.PreparedDate.ToString(),
+                ItemCode = x.Key.ItemCode,
+                ItemDescription = x.Key.ItemDescription,
+                Uom = x.Key.Uom,
+                BorrowedQuantity = x.Key.Quantity,
+                ConsumedQuantity = x.Key.Consumed,
+                RemainingQuantity = Math.Max(0, x.Key.Quantity - x.Key.Consumed),
+                UnitCost = x.Sum(x => x.borrowed.borrowed.UnitPrice)
 
             });
 
