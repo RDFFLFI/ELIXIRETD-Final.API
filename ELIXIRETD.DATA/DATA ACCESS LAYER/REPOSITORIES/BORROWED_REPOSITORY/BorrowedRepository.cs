@@ -1164,19 +1164,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                     {
                                                         x.ItemCode,
                                                         x.BorrowedItemPkey,
-                                                        x.BorrowedPkey
+                                                        //x.BorrowedPkey
 
                                                     }).Select(x => new DTOGetItemForReturned
                                                     {
                                                         BorrowedItemPkey = x.Key.BorrowedItemPkey,
-                                                        BorrowedPKey = x.Key.BorrowedPkey,
+                                                        //BorrowedPKey = x.Key.BorrowedPkey,
                                                         ItemCode = x.Key.ItemCode,
                                                         ConsumedQuantity = x.Sum(x => x.Consume),
 
                                                     });
 
             var Borrowed = _context.BorrowedIssueDetails
-            .GroupJoin(Consume, borrowed => borrowed.BorrowedPKey, consume => consume.BorrowedPKey, (borrowed, consume) => new { borrowed, consume })
+            .GroupJoin(Consume, borrowed => borrowed.Id, consume => consume.BorrowedItemPkey, (borrowed, consume) => new { borrowed, consume })
             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrowed, consume })
             .GroupJoin(_context.BorrowedIssues, borrowed => borrowed.borrowed.BorrowedPKey, issue => issue.Id, (borrowed, issue) => new { borrowed, issue })
             .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.borrowed, issue })
@@ -1197,8 +1197,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             }).Select(x => new DTOGetItemForReturned
             {
 
-                Id = x.Key.BorrowedPKey,
-                BorrowedPKey = x.Key.Id,
+                Id = x.Key.Id,
+                BorrowedPKey = x.Key.BorrowedPKey,
                 CustomerCode = x.Key.CustomerCode,
                 CustomerName = x.Key.CustomerName,
                 BorrowedDate = x.Key.PreparedDate.ToString(),
@@ -1217,7 +1217,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-    
+
         public async Task<bool> EditReturnQuantity(BorrowedConsume consumes)
         {
 

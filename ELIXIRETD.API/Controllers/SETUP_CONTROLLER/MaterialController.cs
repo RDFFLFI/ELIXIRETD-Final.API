@@ -227,16 +227,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
-            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(material.ItemCode);
-            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(material.ItemCode);
-            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(material.ItemCode);
-            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(material.ItemCode);
-            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(material.ItemCode);
+            //var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(material.ItemCode);
+            //var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(material.ItemCode);
+            //var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(material.ItemCode);
+            //var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(material.ItemCode);
+            //var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(material.ItemCode);
 
-            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true ||  validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true )
-            {
-                return BadRequest("ItemCode was in use!");
-            }
+            //if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true ||  validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true )
+            //{
+            //    return BadRequest("ItemCode was in use!");
+            //}
 
             var countCount = await _unitOfWork.Materials.CountMatchingMaterials(material.Id, material.ItemDescription, material.AccountTitleId);
 
@@ -289,16 +289,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
-            var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(items);
-            var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(items);
-            var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(items);
-            var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(items);
-            var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(items);
+            //var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(items);
+            //var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(items);
+            //var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(items);
+            //var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(items);
+            //var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(items);
 
-            if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
-            {
-                return BadRequest("ItemCode is in Use!");
-            }
+            //if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
+            //{
+            //    return BadRequest("ItemCode is in Use!");
+            //}
 
 
 
