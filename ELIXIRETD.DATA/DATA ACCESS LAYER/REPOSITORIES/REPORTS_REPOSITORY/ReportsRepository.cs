@@ -278,6 +278,46 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
 
+
+
+        public async Task<PagedList<BorrowedTransactionReportsDto>> BorrowedTransactionReports(UserParams userParams, string DateFrom, string DateTo)
+        {
+
+            var borrowed = _context.BorrowedIssues
+                .GroupJoin(_context.BorrowedIssueDetails, issue => issue.Id, borrow => borrow.BorrowedPKey, (issue, borrow) => new { issue, borrow })
+                .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.issue, borrow })
+                .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo))
+                .GroupBy(x => x.issue.Id)
+                .Select(x => new BorrowedTransactionReportsDto
+                {
+                    BorrowedId = x.Key,
+                    CustomerCode = x.First().issue.CustomerCode,
+                    CustomerName = x.First().issue.CustomerName,
+                    TransactedBy = x.First().issue.PreparedBy,
+                    BorrowedDate = x.First().issue.PreparedDate.ToString(),
+                    Details = x.First().issue.Details,
+                    Remarks = x.First().issue.Remarks,
+                    Status = (x.First().issue.IsApproved == true) ? "Approve" :
+                            (x.First().issue.IsApproved == false) ? "For Approval" : "Unknown",
+                        BorrowedItemPkey = x.First().borrow.Id,
+                        ItemCode = x.First().borrow.ItemCode,
+                        ItemDescription = x.First().borrow.ItemDescription,
+                        Uom = x.First().borrow.ItemDescription,
+                        BorrowedQuantity = x.First().borrow.Quantity != null ? x.First().borrow.Quantity : 0,
+
+
+
+                });
+
+
+            return await PagedList<BorrowedTransactionReportsDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
+
+        }
+
+
+
+
+
         public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo)
         {
 
@@ -325,9 +365,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              AccountTitles = x.consume.AccountTitles,
                              EmpId = x.consume.EmpId,
                              FullName = x.consume.FullName
-
-
-
                          });
 
 
@@ -872,7 +909,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
-       
+      
     }
 
 }

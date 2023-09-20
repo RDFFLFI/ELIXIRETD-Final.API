@@ -19,7 +19,14 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
         Task<PagedList<DtoMiscIssue>> MiscIssue (UserParams userParams, string DateFrom, string DateTo);
 
+
+
+        Task<PagedList<BorrowedTransactionReportsDto>> BorrowedTransactionReports(UserParams userParams, string DateFrom, string DateTo);
+
         Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports (UserParams userParams, string DateFrom, string DateTo);
+
+
+
 
 
         Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams, string DateFrom , string DateTo);
