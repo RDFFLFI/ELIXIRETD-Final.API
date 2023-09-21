@@ -426,7 +426,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                     LotSection = x.LotSection,
                     UnitPrice = x.UnitPrice,
                     TotalUnitPrice = x.UnitPrice * x.ActualDelivered,
-                    SINumber = x.SINumber
+                    SINumber = x.SINumber,
+                    TransactionType = x.TransactionType
                     
 
                 });
@@ -450,7 +451,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                    LotSection = x.LotSection,
                    UnitPrice = x.UnitPrice,
                    TotalUnitPrice = x.UnitPrice * x.ActualDelivered,
-                   SINumber = x.SINumber
+                   SINumber = x.SINumber,
+                   TransactionType = x.TransactionType
 
                }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())

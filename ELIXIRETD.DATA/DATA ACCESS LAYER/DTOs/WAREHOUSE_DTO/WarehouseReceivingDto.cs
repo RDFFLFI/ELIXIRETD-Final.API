@@ -37,6 +37,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
         
         public decimal TotalUnitPrice { get; set; }
 
+        public string TransactionType { get; set; }
+
 
 
     }
