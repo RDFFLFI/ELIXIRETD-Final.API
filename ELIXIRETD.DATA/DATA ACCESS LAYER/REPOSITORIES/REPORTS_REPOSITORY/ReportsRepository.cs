@@ -354,7 +354,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              Uom = x.borrow.Uom,
                              BorrowedQuantity = x.borrow.Quantity != null ? x.borrow.Quantity : 0,
                              Consumed = x.consume.Consumed != null ? x.consume.Consumed : 0,
-                             ReturnedDate = x.borrow.ReturnedDate.ToString(),
                              CompanyCode = x.consume.CompanyCode,
                              CompanyName = x.consume.CompanyName,
                              DepartmentCode = x.consume.DepartmentCode,
@@ -395,16 +394,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                BorrowedQuantity = x.returned.BorrowedQuantity,
                                Consumed = x.returned.Consumed,
                                ReturnedQuantity = x.returned.BorrowedQuantity - x.returned.Consumed,
-                               ReturnedDate = x.returned.ReturnedDate,
                                TransactedBy = x.borrowed.PreparedBy,
                                BorrowedDate = x.borrowed.PreparedDate.ToString(),
                                Remarks = x.borrowed.Remarks,
                                Details = x.borrowed.Details,
-                               StatusApprove = x.borrowed.StatusApproved,
-                               IsApproveDate = x.borrowed.IsApprovedDate.ToString(),
-                               IsApproveBy = x.borrowed.ApproveBy,
+                               Status = x.borrowed.StatusApproved,
                                IsApproveReturnDate = x.borrowed.IsApprovedReturnedDate.ToString(),
-                               IsApproveReturnedBy = x.borrowed.ApprovedReturnedBy,
                                CompanyCode = x.returned.CompanyCode,
                                CompanyName = x.returned.CompanyName,
                                DepartmentCode = x.returned.DepartmentCode,
@@ -418,11 +413,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                            });
 
+           
+
             return await PagedList<DtoBorrowedAndReturned>.CreateAsync(Reports, userParams.PageNumber, userParams.PageSize);
 
         }
 
-
+        
 
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo )
         {

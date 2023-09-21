@@ -15,22 +15,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string CustomerCode { get; set; }
 
-        public string ItemCode { get; set; }
+        public string BorrowedDate { get; set; }
 
-        public string ItemDescription { get; set; }
-        public decimal BorrowedQuantity { get; set; }
+        public string Remarks { get; set; }
 
-        public decimal Consumed { get; set; }
+        public string Details { get; set; }
+
+        public string Status { get; set; }
 
         public string TransactedBy { get; set; }
 
-        public string Uom { get; set; }
+         public string ItemCode { get; set; }
 
-        public string ReturnedDate { get; set; }
+         public string ItemDescription { get; set; }
+         public string Uom { get; set; }
 
-        public decimal ReturnedQuantity { get; set; }
+        public decimal BorrowedQuantity { get; set; }
+        public decimal Consumed { get; set; }
+       public decimal ReturnedQuantity { get; set; }
 
-        public string BorrowedDate { get; set; }
+        public string IsApproveReturnDate { get; set; }
 
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
@@ -44,32 +48,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
-        public string AddressOrder { get; set; }
-
-        public string Remarks { get; set; }
-
-        public string Details { get; set; }
-
-        public string StatusApprove { get; set; }
-
-        //public bool IsApprove { get; set; }
-
-        public string IsApproveDate { get; set; }
-
-        public string IsApproveBy { get; set; }
-
-
-        //public bool IsApproveReturned { get; set; } 
-
-        public string IsApproveReturnDate { get; set; }
-
-        public string IsApproveReturnedBy { get; set; }
-
-        public int AgingDays { get; set; }
-
-        public bool ? IsReject { get; set; }
-
-        //public decimal ConsumeQuantity { get; set; }
         public string EmpId { get; set; }
         public string FullName { get; set; }
 

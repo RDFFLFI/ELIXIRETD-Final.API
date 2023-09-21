@@ -549,16 +549,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateAccountTitles(AccountTitle category)
         {
 
-            //var validate = await _unitOfWork.Materials.ValidateSubCategorySame(category);
-            //if (validate == true)
-            //    return BadRequest("The sub category cannot be changed because you entered the same sub category!");
             if (await _unitOfWork.Materials.ValidateAccountInUse(category.Id))
-                return BadRequest("(AccountTitles(Per Item) is in use!");
+                return BadRequest("AccountTitles(Per Item) is in use!");
 
             var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateAccountTitleAndItemCategories(category);
 
             if (existingSubCategAndItemCateg == true)
-                return BadRequest("(AccountTitles(Per Item) and item category already exist, Please try something else!");
+                return BadRequest("AccountTitles(Per Item) and item category already exist, Please try something else!");
 
             await _unitOfWork.Materials.UpdateAccountTitles(category);
             await _unitOfWork.CompleteAsync();
@@ -663,7 +660,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("GetAllAccountmaterial")]
         public async Task<IActionResult> GetAllAccountmaterial()
         {
-            var categ = await _unitOfWork.Materials.GetAllAccountmaterial();
+            var categ = await _unitOfWork.Materials.GetallActiveSubcategoryDropDown();
 
             return Ok(categ);
         }
