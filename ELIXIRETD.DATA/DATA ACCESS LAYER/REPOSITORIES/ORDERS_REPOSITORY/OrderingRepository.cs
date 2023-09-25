@@ -1276,6 +1276,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            x.DateNeeded,
                                            x.OrderDate,
                                            x.Rush,
+                                           x.ItemRemarks
 
                                        }).Select(x => new GetAllListOfMirDto
                                        {
@@ -1288,7 +1289,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            DateNeeded = x.Key.DateNeeded.ToString(),
                                            OrderedDate = x.Key.OrderDate.ToString(),
                                            IsRush = x.Key.Rush != null ? true : false,
-                                           Rush = x.Key.Rush
+                                           Rush = x.Key.Rush,
+                                           ItemRemarks = x.Key.ItemRemarks
 
                                        }).Where(x => x.IsRush == status);
 
@@ -1323,6 +1325,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             x.DateNeeded,
                                             x.OrderDate,
                                             x.Rush,
+                                            x.ItemRemarks
 
                                         }).Select(x => new GetAllListOfMirDto
                                         {
@@ -1335,7 +1338,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             DateNeeded = x.Key.DateNeeded.ToString(),
                                             OrderedDate = x.Key.OrderDate.ToString(),
                                             IsRush = x.Key.Rush != null ? true : false,
-                                            Rush = x.Key.Rush
+                                            Rush = x.Key.Rush,
+                                            ItemRemarks = x.Key.ItemRemarks
 
                                         }).Where(x => x.IsRush == status)
                                           .Where(x => Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())

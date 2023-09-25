@@ -302,7 +302,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         BorrowedItemPkey = x.First().borrow.Id,
                         ItemCode = x.First().borrow.ItemCode,
                         ItemDescription = x.First().borrow.ItemDescription,
-                        Uom = x.First().borrow.ItemDescription,
+                        Uom = x.First().borrow.Uom,
                         BorrowedQuantity = x.First().borrow.Quantity != null ? x.First().borrow.Quantity : 0,
 
 
