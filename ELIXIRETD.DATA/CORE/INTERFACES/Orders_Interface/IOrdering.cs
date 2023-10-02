@@ -143,7 +143,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<bool> PreparationOfSchedule ( Ordering orderspreparation);
 
-        Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule(bool status);
+        //Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule(bool status);
+        Task<IReadOnlyList<GetallApproveListDto>> GetAllListForApprovalOfSchedule(bool status);
 
 
 
@@ -158,8 +159,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(UserParams userParams, bool status , string search);
 
 
-        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status);
-        Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
+        //Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status);
+        //Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search, bool status);
+
+        Task<IReadOnlyList<ForApprovalMoveOrderListDto>> ForApprovalMoveOrderPagination( bool status);
+        Task<IReadOnlyList<ForApprovalMoveOrderListDto>> ForApprovalMoveOrderPaginationOrig( string search, bool status);
 
 
         Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination(UserParams userParams, bool status);

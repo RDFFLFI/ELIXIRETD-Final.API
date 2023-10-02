@@ -79,8 +79,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("ClientPermission");
-
 app.UseAuthentication();
+
 
 app.UseAuthorization();
 
