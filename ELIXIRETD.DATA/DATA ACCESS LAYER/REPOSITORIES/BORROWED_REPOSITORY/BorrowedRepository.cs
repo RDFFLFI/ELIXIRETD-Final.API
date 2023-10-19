@@ -735,6 +735,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 CustomerCode = x.CustomerCode,
                                                 Remarks = x.Remarks,
                                                 TransactionDate = x.TransactionDate.ToString(),
+                                                Details = x.Details
                                                 
                                             });
 
@@ -757,6 +758,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   PreparedBy = x.borrowed.PreparedBy,
                   Remarks = x.issues.Remarks,
                   TransactionDate = x.issues.TransactionDate.ToString(),
+                  Details = x.issues.Details
    
 
               });
@@ -1066,6 +1068,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Customer = x.CustomerName,
                                                    CustomerCode = x.CustomerCode,
                                                    TransactionDate = x.TransactionDate.ToString(),
+                                                   Details = x.Details
 
                                                });
 
@@ -1098,7 +1101,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Remarks = x.borrowed.Remarks,
                   PreparedBy = x.borrowed.PreparedBy,
                   UnitCost = x.borrowed.UnitPrice,
-                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity
+                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity,
+                  Details = x.issues.Details
 
 
          
