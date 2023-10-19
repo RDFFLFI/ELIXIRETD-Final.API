@@ -954,6 +954,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    x.issues.Details
                     //x.borrowed.UnitCost
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
@@ -972,6 +973,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
+                    Details = x.Key.Details
                     //UnitCost = x.Key.UnitCost
 
                 });
@@ -1024,6 +1026,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
+                    x.issues.Details
                     ////x.borrowed.UnitCost
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
@@ -1042,6 +1045,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
+                    Details = x.Key.Details
                     //UnitCost = x.Key.UnitCost
 
                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
@@ -1444,6 +1448,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
                     //x.borrowdetail.UnitCost
+                    x.borrowissue.Details
 
 
                     
@@ -1465,6 +1470,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsActive = x.Key.IsActive,
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+                    Details = x.Key.Details 
 
 
                 }).Where(x => x.IsApproveReturn  == status);
@@ -1549,6 +1555,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
                     //x.borrowdetail.UnitCost
+                    x.borrowissue.Details
 
 
 
@@ -1570,6 +1577,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsActive = x.Key.IsActive,
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+                    Details = x.Key.Details
 
 
                 }).Where(x => x.IsApproveReturn == status)
@@ -1834,6 +1842,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
                     //x.borrowed.UnitCost
+                    x.issues.Details
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
@@ -1852,6 +1861,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
                     //UnitCost = x.Key.UnitCost
+                    Details = x.Key.Details
 
                 });
 
@@ -1902,6 +1912,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
                     //x.borrowed.UnitCost
+                    x.issues.Details
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
@@ -1920,6 +1931,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
                     //UnitCost = x.Key.UnitCost
+                    Details = x.Key.Details
 
                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
                                                     || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
@@ -2179,6 +2191,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
                     //x.borrowdetail.UnitCost
+                    x.borrowissue.Details
 
 
 
@@ -2200,6 +2213,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsActive = x.Key.IsActive,
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+                    Details = x.Key.Details
 
 
                 }).Where(x => x.IsApproveReturn == status);
@@ -2279,6 +2293,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
                     //x.borrowdetail.UnitCost
+                    x.borrowissue.Details
 
 
 
@@ -2300,6 +2315,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsActive = x.Key.IsActive,
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
+                    Details = x.Key.Details
 
 
                 }).Where(x => x.IsApproveReturn == status).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())

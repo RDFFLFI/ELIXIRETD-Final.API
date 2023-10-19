@@ -21,6 +21,8 @@
 
         public string TransactionDate { get; set; }
 
+        public string Details { get; set; }
+
 
     }
 }

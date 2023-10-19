@@ -115,7 +115,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
 
                                                             Remarks = x.Remarks,
-                                                            IsActive= x.IsActive
+                                                            IsActive= x.IsActive,
+                                                            Details = x.Details
+                                                            
                                                             
                                                         });
 
@@ -140,7 +142,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
 
                                                             Remarks = x.Remarks,
-                                                            IsActive = x.IsActive
+                                                            IsActive = x.IsActive,
+                                                            Details = x.Details,
 
                                                         }).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                                                        || (Convert.ToString(x.SupplierCode)).ToLower().Contains(search.Trim().ToLower())
@@ -591,7 +594,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         Remarks = x.Remarks,
                                                         PreparedBy = x.PreparedBy,
                                                         IsActive = x.IsActive,
-                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+                                                        Details = x.Details
                                                     
 
                                                     });
@@ -614,7 +618,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         Remarks = x.Remarks,
                                                         PreparedBy = x.PreparedBy,
                                                         IsActive = x.IsActive,
-                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
+                                                        TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
+                                                        Details = x.Details
 
 
                                                     }).Where(x => (Convert.ToString(x.IssuePKey)).ToLower().Contains(search.Trim().ToLower())

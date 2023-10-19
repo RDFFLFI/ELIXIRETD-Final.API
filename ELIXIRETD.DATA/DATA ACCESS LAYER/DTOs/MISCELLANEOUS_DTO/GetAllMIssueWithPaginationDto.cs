@@ -24,6 +24,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO
 
         public string TransactionDate { get; set; }
 
+        public string Details { get; set; }
+
 
     }
 }
