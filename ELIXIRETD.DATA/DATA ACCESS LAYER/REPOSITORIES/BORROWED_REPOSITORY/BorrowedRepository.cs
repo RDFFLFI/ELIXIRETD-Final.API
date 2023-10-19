@@ -1692,8 +1692,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   TransactionDate = x.issue.TransactionDate.ToString(),
                   Reason = x.issue.Reason,
                   UnitCost = x.borrow.UnitCost,
-                  TotalCost = x.borrow.UnitCost * x.borrow.Consume
-
+                  TotalCost = x.borrow.UnitCost * x.borrow.Consume,
+                  Details = x.issue.Details
               });
 
 
@@ -1983,6 +1983,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            Customer = x.CustomerName,
                                                            CustomerCode = x.CustomerCode,
                                                            TransactionDate = x.TransactionDate.ToString(),
+                                                           Details = x.Details
 
                                                        });
 
@@ -2015,7 +2016,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Remarks = x.borrowed.Remarks,
                   PreparedBy = x.borrowed.PreparedBy,
                   UnitCost = x.borrowed.UnitPrice,
-                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity
+                  TotalCost = x.borrowed.UnitPrice * x.borrowed.Quantity,
+                  Details = x.issues.Details
+                  
 
               });
 

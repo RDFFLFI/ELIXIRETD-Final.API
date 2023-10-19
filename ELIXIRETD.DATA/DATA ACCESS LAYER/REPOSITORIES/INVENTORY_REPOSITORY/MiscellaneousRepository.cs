@@ -188,6 +188,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           LocationName = x.receiptparents.LocationName,
                           AccountCode = x.receiptparents.AccountCode,
                           AccountTitles = x.receiptparents.AccountTitles,
+                          Details = x.receiptparents.Details
 
 
                           //TransactionType = x.receiptparents.TransactionType,
@@ -692,6 +693,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                  LocationName = x.LocationName,
                                                  AccountCode = x.AccountCode,
                                                  AccountTitles = x.AccountTitles,
+                                                 Details  = x.Details,
 
                                              });
 
@@ -725,7 +727,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     AccountTitles = x.issue.AccountTitles,
 
                     UnitCost = x.misc.UnitPrice,
-                    TotalCost  = x.misc.UnitPrice * x.misc.Quantity
+                    TotalCost  = x.misc.UnitPrice * x.misc.Quantity,
+                    Details = x.issue.Details
+                    
                     
 
 

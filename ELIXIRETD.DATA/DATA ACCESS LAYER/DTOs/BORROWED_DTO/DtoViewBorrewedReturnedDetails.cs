@@ -53,6 +53,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public decimal UnitCost { get; set; }
         public decimal TotalCost { get; set; }
 
+        public string Details { get; set; }
+
 
 
 

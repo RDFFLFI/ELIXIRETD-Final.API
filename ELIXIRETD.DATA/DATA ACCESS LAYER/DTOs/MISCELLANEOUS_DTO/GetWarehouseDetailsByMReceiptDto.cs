@@ -51,5 +51,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
 
 
         //public string TransactionType { get; set; } 
+
+        public string Details { get; set; }
     }
 }

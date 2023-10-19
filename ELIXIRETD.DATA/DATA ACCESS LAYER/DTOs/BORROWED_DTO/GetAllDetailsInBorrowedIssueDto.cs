@@ -49,7 +49,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public decimal TotalCost { get; set; }
 
-      
+        public string Details { get; set; }
 
 
     }
