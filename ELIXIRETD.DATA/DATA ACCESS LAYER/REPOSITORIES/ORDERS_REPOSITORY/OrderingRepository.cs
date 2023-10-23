@@ -3171,7 +3171,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     DepartmentCode = x.Key.DepartmentCode,
                     DepartmentName = x.Key.DepartmentName,
                     LocationCode = x.Key.LocationCode,
-                    LocationName = x.Key.LocationCode,
+                    LocationName = x.Key.LocationName,
                     AccountCode = x.Key.AccountCode,
                     AccountTitles = x.Key.AccountTitles,
                     ItemRemarks = x.Key.ItemRemarks,
