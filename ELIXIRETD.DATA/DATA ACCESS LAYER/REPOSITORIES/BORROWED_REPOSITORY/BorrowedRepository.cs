@@ -1614,7 +1614,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             issue.IsReturned = null;
             issue.IsApprovedReturned = null;
-            issue.StatusApproved = "Borrowed Approve";
+            issue.StatusApproved = "Borrow Approved";
 
             return true;
 
@@ -1960,7 +1960,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             issue.IsApproved = true;
             issue.IsApprovedDate = DateTime.Now;
             issue.ApproveBy = borrowed.ApproveBy;
-            issue.StatusApproved = "Borrowed Approve";
+            issue.StatusApproved = "Borrow Approved";
 
 
             foreach (var item in borrow)
