@@ -940,7 +940,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
                 .Where(x => x.issues.PreparedBy == employee.FullName)
                 .Where(x => x.issues.IsActive == true)
-                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned != true && x.issues.IsReject == null)
                 .GroupBy(x => new
                 {
                     x.borrowed.BorrowedPKey,
@@ -1012,7 +1012,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
                 .Where(x => x.issues.PreparedBy == employee.FullName)
                 .Where(x => x.issues.IsActive == true)
-                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned != true && x.issues.IsReject == null)
                 .GroupBy(x => new
                 {
                     x.borrowed.BorrowedPKey,
@@ -1081,7 +1081,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .ThenBy(x => x.borrowed.CustomerName)
               .Where(x => x.borrowed.BorrowedPKey == id)
               .Where(x => x.borrowed.IsTransact == true)
-              .Where(x => x.borrowed.IsReturned == null)
+              .Where(x => x.borrowed.IsReturned != true )
               .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsActive == true)
 
@@ -1612,7 +1612,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 items.IsApprovedReturned = null;
             }
 
-            issue.IsReturned = null;
+            issue.IsReturned = false;
             issue.IsApprovedReturned = null;
             issue.StatusApproved = "Borrow Approved";
 
@@ -1829,7 +1829,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
                 .Where(x => x.issues.IsActive == true)
-                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned != true && x.issues.IsReject == null)
                 .GroupBy(x => new
                 {
                     x.borrowed.BorrowedPKey,
@@ -1899,7 +1899,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .GroupJoin(details, issues => issues.Id, borrowed => borrowed.BorrowedPKey, (issues, borrowed) => new { issues, borrowed })
                 .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.issues, borrowed })
                 .Where(x => x.issues.IsActive == true)
-                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned == null && x.issues.IsReject == null)
+                .Where(x => x.issues.IsApproved == status && x.issues.IsReturned != true && x.issues.IsReject == null)
                 .GroupBy(x => new
                 {
                     x.borrowed.BorrowedPKey,
@@ -2000,7 +2000,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
               .ThenBy(x => x.borrowed.CustomerName)
               .Where(x => x.borrowed.BorrowedPKey == id)
               .Where(x => x.borrowed.IsTransact == true)
-              .Where(x => x.borrowed.IsReturned == null)
+              .Where(x => x.borrowed.IsReturned != true)
               .Where(x => x.borrowed.IsReject == null)
               .Where(x => x.borrowed.IsActive == true)
 
@@ -2401,9 +2401,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.ReturnedDate = null;
                 item.IsApprovedReturned = null;
                 //item.ReturnQuantity = 0;
+                
             }
 
-            issue.IsReturned = null;
+            issue.IsReturned = false;
             issue.IsApprovedReturned = false;
             issue.Reason = borrowed.Reason;
 
