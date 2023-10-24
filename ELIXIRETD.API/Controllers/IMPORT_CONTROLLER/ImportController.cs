@@ -30,6 +30,8 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 List<PoSummary> uomCodeNotExist = new List<PoSummary>();
                 List<PoSummary> quantityInValid = new List<PoSummary>();
                 List<PoSummary> itemcodeanduomNotExist = new List<PoSummary>();
+                //List<PoSummary> unitPriceInvalid = new List<PoSummary>();
+              
 
 
 
@@ -40,6 +42,11 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     {
                         quantityInValid.Add(items);
                     }
+
+                    //if(items.UnitPrice == 0 )
+                    //{
+                    //    unitPriceInvalid.Add(items);
+                    //}
 
                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
                     {
@@ -99,9 +106,10 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     uomCodeNotExist,
                     quantityInValid,
                     itemcodeanduomNotExist,
+                    //unitPriceInvalid
                 };
 
-                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && uomCodeNotExist.Count == 0 && quantityInValid.Count == 0 && itemcodeanduomNotExist.Count == 0)
+                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && uomCodeNotExist.Count == 0 && quantityInValid.Count == 0 && itemcodeanduomNotExist.Count == 0 /*&& unitPriceInvalid.Count == 0*/)
                 {
                     await _unitOfWork.CompleteAsync();
                     return Ok("Successfully Add!");

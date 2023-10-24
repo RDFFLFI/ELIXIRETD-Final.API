@@ -510,7 +510,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
        public async Task<IReadOnlyList<GetNotificationForBorrowedApprovalDto>> GetNotificationAllBorrowedNoParameters()
         {
             var borrowed = _context.BorrowedIssues
-                                                .Where(x => x.IsReturned == null)
+                                                .Where(x => x.IsReturned != true)
                                                  .Where(x => x.IsActive == true && x.IsApproved == false || x.IsReject != null)
                                               
                             
@@ -546,7 +546,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var borrowed = _context.BorrowedIssues.Where(x => x.IsActive == true)
                                                 .Where(x => x.IsApproved == true)
-                                                .Where(x => x.IsReturned == null)
+                                                .Where(x => x.IsReturned != true)
                                                 .Where(x => x.PreparedBy == employee.FullName)
 
                                                .GroupBy(x => new
