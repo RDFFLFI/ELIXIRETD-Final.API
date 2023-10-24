@@ -1325,6 +1325,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+        public async Task<bool> ResetConsumePerItemCode(BorrowedConsume consumes)
+        {
+           var reset = await _context.BorrowedConsumes.Where(x => x.BorrowedItemPkey == consumes.BorrowedItemPkey && x.IsActive == true)
+                                                      .ToListAsync();
+
+            foreach(var item in reset)
+            {
+                item.IsActive = false;
+            }
+
+
+            return true;
+        }
+
 
         public async Task<bool> CancelAllConsumeItem(BorrowedConsume consume)
         {

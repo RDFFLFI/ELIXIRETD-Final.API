@@ -223,6 +223,20 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             return new JsonResult("Successfully cancelled transaction!");
         }
 
+        [HttpPut]
+        [Route("ResetConsumePerItemCode")]
+        public async Task<IActionResult> ResetConsumePerItemCode([FromBody] BorrowedConsume consumes)
+        {
+
+
+                await _unitofwork.Borrowed.ResetConsumePerItemCode(consumes);
+                await _unitofwork.CompleteAsync();
+
+
+            return new JsonResult("Successfully cancelled consume!");
+        }
+
+
 
         [HttpPut]
         [Route("CancelAllConsumeItem")]
