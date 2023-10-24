@@ -1325,6 +1325,45 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
+
+        public async Task<bool> EditConsumeQuantity(BorrowedConsume consumes)
+        {
+
+            var borrowedconsume = await _context.BorrowedConsumes.Where(x => x.Id == consumes.Id && x.IsActive == true)
+                                                           .FirstOrDefaultAsync();
+
+            var borrowed = await _context.BorrowedIssueDetails
+                                       .FirstOrDefaultAsync(x => x.Id == consumes.BorrowedItemPkey);
+
+            var remainingItems = await GetItemForReturned(borrowed.BorrowedPKey);
+
+            var remainingItem = remainingItems.FirstOrDefault(item => item.Id == consumes.BorrowedItemPkey);
+
+
+
+          
+
+            if (remainingItem != null && borrowedconsume.Consume + remainingItem.RemainingQuantity >= consumes.Consume && consumes.Consume >= 0)
+            {
+
+                borrowedconsume.Consume = consumes.Consume;
+                borrowedconsume.DepartmentCode = consumes.DepartmentCode;
+                borrowedconsume.DepartmentName = consumes.DepartmentName;
+                borrowedconsume.CompanyCode = consumes.CompanyCode;
+                borrowedconsume.LocationCode = consumes.LocationCode;
+                borrowedconsume.LocationName = consumes.LocationName;
+                borrowedconsume.AccountCode = consumes.AccountCode;
+                borrowedconsume.AccountTitles = consumes.AccountTitles;
+                borrowedconsume.EmpId = consumes.EmpId;
+                borrowedconsume.FullName = consumes.FullName;
+                return true;
+
+            }
+
+            return false;
+
+        }
+
         public async Task<bool> ResetConsumePerItemCode(BorrowedConsume consumes)
         {
            var reset = await _context.BorrowedConsumes.Where(x => x.BorrowedItemPkey == consumes.BorrowedItemPkey && x.IsActive == true)
@@ -2426,7 +2465,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         }
 
-       
+     
     }
 
 }

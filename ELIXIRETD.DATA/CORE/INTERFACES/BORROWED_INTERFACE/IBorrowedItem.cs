@@ -47,6 +47,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE
 
         Task<bool> CancelIssuePerItemCode(BorrowedConsume consumes);
 
+        Task<bool> EditConsumeQuantity(BorrowedConsume consumes);
+
         Task<bool> ResetConsumePerItemCode (BorrowedConsume consumes);
 
         Task<bool> SaveReturnedQuantity(BorrowedIssueDetails borrowed);

@@ -251,9 +251,6 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
         }
 
 
-
-
-
         [HttpGet]
         [Route("GetItemForReturned")]
         public async Task<IActionResult> GetItemForReturned(int id)
@@ -279,9 +276,30 @@ namespace ELIXIRETD.API.Controllers.BORROWED_CONTROLLER
             await _unitofwork.Borrowed.EditReturnQuantity(consumes);
             await _unitofwork.CompleteAsync();
 
-            return Ok("Successfully edit returned quantity!");
+            return Ok("Successfully edit consume quantity!");
 
         }
+
+
+
+        [HttpPut]
+        [Route("EditConsumeQuantity")]
+        public async Task<IActionResult> EditConsumeQuantity(BorrowedConsume consumes)
+        {
+
+            var edit = await _unitofwork.Borrowed.EditConsumeQuantity(consumes);
+
+            if (edit == false)
+                return BadRequest("Invalid Input or Consumed must not be greater than borrowed quantity");
+
+            await _unitofwork.Borrowed.EditConsumeQuantity(consumes);
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully edit consume quantity!");
+
+        }
+
+
 
 
         [HttpGet]
