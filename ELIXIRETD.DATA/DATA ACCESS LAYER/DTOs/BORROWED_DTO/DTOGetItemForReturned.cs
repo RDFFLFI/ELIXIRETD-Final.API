@@ -32,6 +32,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public decimal RemainingQuantity { get; set; }
 
         //////public string ReturnedDate { get; set; }
+        ///
+        public bool ? IsReturned { get; set; }
 
     }
 }

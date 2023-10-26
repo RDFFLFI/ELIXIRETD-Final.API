@@ -1200,7 +1200,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 x.borrowed.borrowed.ItemDescription,
                 x.borrowed.borrowed.Uom,
                 x.borrowed.borrowed.Quantity,
+                x.borrowed.borrowed.IsReturned,
                 Consumed = x.borrowed.consume.ConsumedQuantity != null ? x.borrowed.consume.ConsumedQuantity : 0,
+
 
             }).Select(x => new DTOGetItemForReturned
             {
@@ -1215,6 +1217,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 Uom = x.Key.Uom,
                 BorrowedQuantity = x.Key.Quantity,
                 ConsumedQuantity = x.Key.Consumed,
+                IsReturned = x.Key.IsReturned,
                 RemainingQuantity = Math.Max(0, x.Key.Quantity - x.Key.Consumed),
                 UnitCost = x.Sum(x => x.borrowed.borrowed.UnitPrice)
 
@@ -1335,8 +1338,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrowed = await _context.BorrowedIssueDetails
                                        .FirstOrDefaultAsync(x => x.Id == consumes.BorrowedItemPkey);
 
-            var remainingItems = await GetItemForReturned(borrowed.BorrowedPKey);
-
+            var remainingItems = await GetItemForReturned(borrowed.BorrowedPKey); 
             var remainingItem = remainingItems.FirstOrDefault(item => item.Id == consumes.BorrowedItemPkey);
 
 
