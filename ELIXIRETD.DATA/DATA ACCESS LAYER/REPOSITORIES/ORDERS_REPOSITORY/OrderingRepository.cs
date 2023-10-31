@@ -1531,7 +1531,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemCode,
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
-                    x.ordering.ItemRemarks,
+                    //x.ordering.ItemRemarks,
                     //x.ordering.IsActive,
                     //x.ordering.IsPrepared,
                     x.ordering.StandartQuantity,
@@ -1551,7 +1551,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ItemDescription = total.Key.ItemdDescription,
                     Uom = total.Key.Uom,
                     QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
-                    ItemRemarks = total.Key.ItemRemarks,
+                    //ItemRemarks = total.Key.ItemRemarks,
                     //IsActive = total.Key.IsActive,
                     ////IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0,
@@ -2545,8 +2545,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     PrepareDate = x.PreparedDate.ToString(),
 
                     CustomerType = x.CustomerType,
-                    Rush = x.Rush,
-                    ItemRemarks = x.ItemRemarks
+                    Rush = x.Rush,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                    ItemRemarks = x.ItemRemarks,
+                    Cip_no = x.Cip_No
 
 
 

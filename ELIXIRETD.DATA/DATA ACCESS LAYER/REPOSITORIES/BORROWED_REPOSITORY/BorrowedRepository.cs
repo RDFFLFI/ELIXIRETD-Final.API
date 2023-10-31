@@ -1188,7 +1188,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrowed, consume })
             .GroupJoin(_context.BorrowedIssues, borrowed => borrowed.borrowed.BorrowedPKey, issue => issue.Id, (borrowed, issue) => new { borrowed, issue })
             .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.borrowed, issue })
-            .Where(x => x.borrowed.borrowed.IsActive == true && x.borrowed.borrowed.IsApproved == true && x.borrowed.borrowed.IsReturned == null && x.borrowed.borrowed.BorrowedPKey == id)
+            .Where(x => x.borrowed.borrowed.IsActive == true && x.borrowed.borrowed.IsApproved == true && x.borrowed.borrowed.IsReturned != true  && x.borrowed.borrowed.BorrowedPKey == id)
             .GroupBy(x => new
             {
                 x.borrowed.borrowed.Id,
@@ -1285,7 +1285,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrowed = _context.BorrowedIssueDetails
                   .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
                   .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
-                  .Where(x => x.borrow.Id == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned == null)
+                  .Where(x => x.borrow.Id == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned != true)
                   .Select(x => new DtoGetConsumedItem
                   {
                       Id = x.consume.Id,
@@ -2456,6 +2456,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.ReturnedDate = null;
                 item.IsApprovedReturned = null;
                 //item.ReturnQuantity = 0;
+                item.IsReturned = false;
                 
             }
 

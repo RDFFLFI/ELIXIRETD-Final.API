@@ -89,7 +89,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              CustomerType = x.moveorder.CustomerType,
                              ItemRemarks = x.moveorder.ItemRemarks,
                              UnitCost = x.moveorder.UnitPrice,
-                             TotalCost = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered
+                             LineAmount = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered,
+                             Cip_No = x.moveorder.Cip_No
+
 
 
                          });
@@ -147,6 +149,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.EmpId,
                              moveorder.FullName,
                               customer.CustomerType,
+                              moveorder.Cip_No,
+                              moveorder.IsTransact,
+                              moveorder.Category
+                             
+
+                              
 
 
 
@@ -180,7 +188,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               FullName = total.Key.FullName,
                               ItemRemarks = total.Key.ItemRemarks,
                               UnitCost = total.Key.UnitPrice,
-                              TotalCost = total.Key.UnitPrice * total.Key.QuantityOrdered
+                              LineAmount = total.Key.UnitPrice * total.Key.QuantityOrdered,
+                              Cip_No = total.Key.Cip_No,
+                              Status = total.Key.IsTransact == true ? "Transacted" :"For Approval",
+                              Category = total.Key.Category
+                              
+                              
+                              
+                              
+
 
 
 

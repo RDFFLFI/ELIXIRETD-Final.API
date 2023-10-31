@@ -87,6 +87,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string FullName { get; set; }
 
+        public string Cip_No { get; set; }
+
 
     }
 }

@@ -740,6 +740,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             order.ItemRemarks = details.ItemRemarks;
 
+            order.Cip_No = details.Cip_no;
+
+
+            
+
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();
 
