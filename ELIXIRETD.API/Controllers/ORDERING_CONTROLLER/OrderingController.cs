@@ -105,22 +105,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         {
                             UomNotExist.Add(items);
                         }
-                        //else if (validateQuantity == false)
-                        //{
-                        //    QuantityInValid.Add(items);
-                        //}
-                        //else if (validateDepartmentCodeAndName == false)
-                        //{
-                        //    DepartmentCodeanNameNotExist.Add(items);
-                        //}
-                        //else if (validateCompanyCodeAndName == false)
-                        //{
-                        //    CompanyCodeanNameNotExist.Add(items);
-                        //}
-                        //else if (validateLocationCodeAndName == false)
-                        //{
-                        //    LocationCodeanNameNotExist.Add(items);
-                        //}
                        
                         else
                         {
@@ -138,22 +122,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    AvailableImport,
                    DuplicateList,
                    ItemCodesExist,
-                   //ItemDescriptionNotExist, 
                    UomNotExist,
                    CustomerNameNotExist,
-                   //CustomerCodeNotExist,
                    PreviousDateNeeded,
-                   //QuantityInValid,
-                   //DepartmentCodeanNameNotExist,
-                   //CompanyCodeanNameNotExist,
-                   //LocationCodeanNameNotExist
+
 
                   
                 };
 
-                if ( DuplicateList.Count == 0/* && CustomerCodeNotExist.Count == 0*/ && CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0 
-                   /* && ItemDescriptionNotExist.Count == 0*/ && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0/* && QuantityInValid.Count == 0 */
-                   /* && DepartmentCodeanNameNotExist.Count == 0*/ /*&& CompanyCodeanNameNotExist.Count == 0 && LocationCodeanNameNotExist.Count == 0*/)
+                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();
                     return Ok("Successfully Add!");
@@ -282,33 +259,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
      
-        // =============================================== MoveOrder =====================================================================
-
-     
-
-       
-
-        //============================================= Move Order Preparation ===================================================
-
-     
-
-     
-   
-     
-        //==================================== Transact move Order ==================================================
 
         
-
-    
-
-
         //=================================================================== MIR Ordering Preparation Schedule =======================================================
 
         [HttpGet]
         [Route("GetAllListofOrdersPagination")]
-        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams/*, bool status*/)
+        public async Task<ActionResult<IEnumerable<GetAllListofOrdersPaginationDto>>> GetAlllistofOrdersPagination([FromQuery] UserParams userParams)
         {
-            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams /*, status*/);
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPagination(userParams );
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
 
@@ -336,9 +295,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             if (search == null)
 
-                return await GetAlllistofOrdersPagination(userParams/*, status*/);
+                return await GetAlllistofOrdersPagination(userParams);
 
-            var orders = await _unitofwork.Orders.GetAllListofOrdersPaginationOrig(userParams, search/* , status*/);
+            var orders = await _unitofwork.Orders.GetAllListofOrdersPaginationOrig(userParams, search);
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
 
@@ -361,9 +320,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         [Route("GetAllListOfMirNoSearch")]
         public async Task<ActionResult<IEnumerable<GetAllListOfMirDto>>> GetAllListOfMirNoSearch( [FromQuery]UserParams userParams, [FromQuery] bool status )
         {
-            //if (search == null)
 
-            var orders = await _unitofwork.Orders.GetAllListOfMirNoSearch(userParams, status /*, status*/);
+            var orders = await _unitofwork.Orders.GetAllListOfMirNoSearch(userParams, status );
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
 
@@ -390,9 +348,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         {
             if(search == null)
             
-                return await GetAllListOfMirNoSearch(userParams,  status/*, status*/);
+                return await GetAllListOfMirNoSearch(userParams,  status);
 
-            var orders = await _unitofwork.Orders.GetAllListOfMir(userParams, status, search /*, status*/);
+            var orders = await _unitofwork.Orders.GetAllListOfMir(userParams, status, search );
 
             Response.AddPaginationHeader(orders.CurrentPage, orders.PageSize, orders.TotalCount, orders.TotalPages, orders.HasNextPage, orders.HasPreviousPage);
 
@@ -420,9 +378,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         [HttpGet("GetAllListOfMirOrdersByMirIds")]
-        public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds/*, [FromQuery] string customerName*/)
+        public async Task<IActionResult> GetAllListOfMirOrdersByMirId([FromQuery] int[] listofMirIds)
         {
-            var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds/*, customerName*/);
+            var orders = await _unitofwork.Orders.GetAllListOfMirOrdersbyMirId(listofMirIds);
             return Ok(orders);
         }
 
@@ -434,13 +392,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             foreach (Ordering items in orderspreparation)
             {
-                ///*  var result =*/ await _unitofwork.Orders.PreparationOfSchedule(items);
-                //if (!result.Success)
-                //{
-                //    return BadRequest(result.Message);
-                //}
-
-              
+                
                 if (!await _unitofwork.Orders.ValidatePrepareDate(items))
                 {
                     return BadRequest("Date needed must be in the future.");
@@ -461,9 +413,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
         {
 
-            //var editquantity = await _unitofwork.Orders.EditQuantityOrder(order);
-            //if (editquantity == false)
-            //    return BadRequest("Invalid request!, Quantity must be in whole number");
+
 
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();
@@ -721,8 +671,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.CompanyName = details.CompanyName;
             order.LocationCode = details.LocationCode;
             order.LocationName = details.LocationName;
-            //order.AccountTitles = details.AccountTitles;
-            //order.AccountCode = details.AccountCode;
 
             order.CustomerName = details.CustomerName;
             order.Customercode = details.CustomerCode;
@@ -743,7 +691,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.Cip_No = details.Cip_no;
 
 
-            
+            order.PreparedBy = User.Identity.Name;
 
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();
@@ -837,54 +785,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
 
         }
-
-        //[HttpGet]
-        //[Route("GetAllForApprovalMoveOrderPagination")]
-        //public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GEtAllForApprovalMoveOrderPagination([FromQuery] UserParams userParams, bool status)
-        //{
-        //    var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPagination(userParams, status);
-        //    Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-        //    var moveorderResult = new
-        //    {
-        //        moveorder,
-        //        moveorder.CurrentPage,
-        //        moveorder.PageSize,
-        //        moveorder.TotalCount,
-        //        moveorder.TotalPages,
-        //        moveorder.HasNextPage,
-        //        moveorder.HasPreviousPage
-
-        //    };
-
-        //    return Ok(moveorderResult);
-        //}
-
-        //[HttpGet]
-        //[Route("GetAllForApprovalMoveOrderPaginationOrig")]
-        //public async Task<ActionResult<IEnumerable<ForApprovalMoveOrderPaginationDto>>> GetallForApprovalMoveOrderPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search, [FromQuery] bool status)
-        //{
-        //    if (search == null)
-        //        return await GEtAllForApprovalMoveOrderPagination(userParams, status);
-
-        //    var moveorder = await _unitofwork.Orders.ForApprovalMoveOrderPaginationOrig(userParams, search, status);
-
-        //    Response.AddPaginationHeader(moveorder.CurrentPage, moveorder.PageSize, moveorder.TotalCount, moveorder.TotalPages, moveorder.HasNextPage, moveorder.HasPreviousPage);
-
-        //    var moveorderResult = new
-        //    {
-        //        moveorder,
-        //        moveorder.CurrentPage,
-        //        moveorder.PageSize,
-        //        moveorder.TotalCount,
-        //        moveorder.TotalPages,
-        //        moveorder.HasNextPage,
-        //        moveorder.HasPreviousPage
-
-        //    };
-
-        //    return Ok(moveorderResult);
-        //}
 
 
         [HttpGet]
@@ -1120,6 +1020,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 items.IsTransact = true;
                 items.IsActive = true;
                 items.PreparedDate = DateTime.Now;
+                items.PreparedBy = User.Identity.Name;
 
                 if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
                     return BadRequest("no order exist");

@@ -25,6 +25,10 @@ using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using System;
 using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.ListofServedDto;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
+using System.Security.Claims;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Identity;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 {
@@ -1370,7 +1374,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             x.DateNeeded,
                                             x.OrderDate,
                                             x.Rush,
-                                            x.ItemRemarks
+                                            //x.ItemRemarks
 
                                         }).Select(x => new GetAllListOfMirDto
                                         {
@@ -1384,7 +1388,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             OrderedDate = x.Key.OrderDate.ToString(),
                                             IsRush = x.Key.Rush != null ? true : false,
                                             Rush = x.Key.Rush,
-                                            ItemRemarks = x.Key.ItemRemarks
+                                            //ItemRemarks = x.Key.ItemRemarks
                                            
 
                                         }).ToListAsync();
@@ -1531,7 +1535,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemCode,
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
-                    //x.ordering.ItemRemarks,
+                    x.ordering.ItemRemarks,
                     //x.ordering.IsActive,
                     //x.ordering.IsPrepared,
                     x.ordering.StandartQuantity,
@@ -1551,7 +1555,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ItemDescription = total.Key.ItemdDescription,
                     Uom = total.Key.Uom,
                     QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
-                    //ItemRemarks = total.Key.ItemRemarks,
+                    ItemRemarks = total.Key.ItemRemarks,
                     //IsActive = total.Key.IsActive,
                     ////IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0,
@@ -2567,10 +2571,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            .Where(x => x.IsActive == orders.IsActive)
                                                            .FirstOrDefaultAsync();
 
-            orders.UnitPrice = UnitCost.UnitPrice;
-
+            UnitCost.UnitPrice = orders.UnitPrice;
 
             await _context.MoveOrders.AddAsync(orders);
+
             return true;
 
         }

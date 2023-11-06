@@ -69,7 +69,8 @@ namespace ELIXIRETD.DATA.SERVICES
             {
 
                 Subject = new ClaimsIdentity(new Claim[] {
-                    new Claim("id", user.Id.ToString())
+                    new Claim("id", user.Id.ToString()),
+                    new Claim(ClaimTypes.Name , user.FullName)
 
                 }),
                 Expires = DateTime.UtcNow.AddDays(1),

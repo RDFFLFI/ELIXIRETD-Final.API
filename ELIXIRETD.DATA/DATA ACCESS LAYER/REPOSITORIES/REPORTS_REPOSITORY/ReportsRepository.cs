@@ -73,7 +73,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              Quantity = x.moveorder.QuantityOrdered,
                              MoveOrderBy = x.moveorder.PreparedBy,
                              MoveOrderDate = x.moveorder.PreparedDate.ToString(),
-                             TransactedBy = x.transact.PreparedBy,
                              TransactedDate = x.transact.PreparedDate.ToString(),
                              IsActive = x.moveorder.IsActive,
                              CompanyCode = x.moveorder.CompanyCode,
@@ -151,7 +150,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               customer.CustomerType,
                               moveorder.Cip_No,
                               moveorder.IsTransact,
-                              moveorder.Category
+                              moveorder.Category,
+                             
+                             
                              
 
                               
