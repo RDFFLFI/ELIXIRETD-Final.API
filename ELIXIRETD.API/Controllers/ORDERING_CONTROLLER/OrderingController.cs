@@ -1029,8 +1029,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             await _unitofwork.CompleteAsync();
 
-
-
             return Ok(transact);
 
         }

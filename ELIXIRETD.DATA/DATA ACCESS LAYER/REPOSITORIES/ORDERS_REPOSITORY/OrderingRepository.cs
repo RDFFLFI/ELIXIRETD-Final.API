@@ -2571,7 +2571,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            .Where(x => x.IsActive == orders.IsActive)
                                                            .FirstOrDefaultAsync();
 
-            UnitCost.UnitPrice = orders.UnitPrice;
+            orders.UnitPrice = UnitCost.UnitPrice;
+
+            orders.PreparedBy = orders.PreparedBy;
 
             await _context.MoveOrders.AddAsync(orders);
 
@@ -3846,8 +3848,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var existingtransact = await _context.TransactOrder.Where(x => x.OrderNo == transact.OrderNo)
                                                        .ToListAsync();
 
-
-
+            transact.PreparedBy = transact.PreparedBy
+            
 
 
             await _context.TransactOrder.AddAsync(transact);
