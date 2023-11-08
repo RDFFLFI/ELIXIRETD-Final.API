@@ -270,7 +270,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                             .GroupBy(x => new
                                             {
                                                 x.ItemCode,
-                                                x.QuantityOrdered,
+                                                
 
                                             }).Select(x => new MoveOrderInventory
                                             {
@@ -307,7 +307,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                             });
 
             var borrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                           .Where(x => x.IsApproved == false)
+
                                                            .GroupBy(x => new
                                                            {
 
@@ -409,12 +409,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 x.ItemCode,
                 x.ItemDescription,
                 x.Uom,
+                x.RemainingStocks
 
             }).Select(x => new GetAvailableStocksForIssueDto
             {
                 ItemCode = x.Key.ItemCode,
                 ItemDescription = x.Key.ItemDescription,
                 Uom = x.Key.Uom,
+                RemainingStocks = x.Key.RemainingStocks
 
             });
 
@@ -654,87 +656,87 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   ReceivingDate = total.Key.ReceivingDate,
                                   UnitCost = total.Key.UnitCost
 
-                              });
-                        var getReserve = (from warehouse in getSumWareHouseStocks
-                              join reserve in reserveOut
-                              on warehouse.ItemCode equals reserve.ItemCode
-                              into leftJ1
-                              from reserve in leftJ1.DefaultIfEmpty()
+                              }).Where(x => x.RemainingStocks >= 1)
+                                .Where(x => x.ItemCode == itemcode);
 
-                              join issue in issueSumOut
-                              on warehouse.ItemCode equals issue.ItemCode
-                              into leftJ2
-                              from issue in leftJ2.DefaultIfEmpty()
+            //            var getReserve = (from warehouse in getSumWareHouseStocks
+            //                  join reserve in reserveOut
+            //                  on warehouse.ItemCode equals reserve.ItemCode
+            //                  into leftJ1
+            //                  from reserve in leftJ1.DefaultIfEmpty()
 
-                              join borrowOut in BorrowedSumOut
-                              on warehouse.ItemCode equals borrowOut.ItemCode
-                              into leftJ3
-                              from borrowOut in leftJ3.DefaultIfEmpty()
+            //                  join issue in issueSumOut
+            //                  on warehouse.ItemCode equals issue.ItemCode
+            //                  into leftJ2
+            //                  from issue in leftJ2.DefaultIfEmpty()
 
-                              join returned in BorrowedSumReturn
-                              on warehouse.ItemCode equals returned.ItemCode
-                              into LeftJ4
-                              from returned in LeftJ4.DefaultIfEmpty()
+            //                  join borrowOut in BorrowedSumOut
+            //                  on warehouse.ItemCode equals borrowOut.ItemCode
+            //                  into leftJ3
+            //                  from borrowOut in leftJ3.DefaultIfEmpty()
 
-                              group new
-                              {
+            //                  join returned in BorrowedSumReturn
+            //                  on warehouse.ItemCode equals returned.ItemCode
+            //                  into LeftJ4
+            //                  from returned in LeftJ4.DefaultIfEmpty()
 
-                                  warehouse,
-                                  issue,
-                                  borrowOut,
-                                  returned,
-                                  reserve
-                              }
+            //                  group new
+            //                  {
 
-                                by new
-                                {
+            //                      warehouse,
+            //                      issue,
+            //                      borrowOut,
+            //                      returned,
+            //                      reserve
+            //                  }
 
-                                    warehouse.ItemCode,
-                                    WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
-                                    reserveOut = reserve.QuantityOrdered != null ? reserve.QuantityOrdered : 0,
-                                    IssueOut = issue.Out != null ? issue.Out : 0,
-                                    BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
-                                    borrowedreturn = returned.In != null ? returned.In : 0,
+            //                    by new
+            //                    {
+
+            //                        warehouse.ItemCode,
+            //                        WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
+            //                        reserveOut = reserve.QuantityOrdered != null ? reserve.QuantityOrdered : 0,
+            //                        IssueOut = issue.Out != null ? issue.Out : 0,
+            //                        BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
+            //                        borrowedreturn = returned.In != null ? returned.In : 0,
 
 
-                                } into total
+            //                    } into total
 
-                              select new GetAvailableStocksForBorrowedIssue_Dto
-                              {
+            //                  select new GetAvailableStocksForBorrowedIssue_Dto
+            //                  {
 
-                                  ItemCode = total.Key.ItemCode,
-                                  ActualRemaining = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.reserveOut - total.Key.IssueOut - total.Key.BorrowedOut,
-
-                                  
-
-                              });
-
-            var getAvailable = getRemaining
-                .GroupJoin(getReserve, soh => soh.ItemCode, reserve => reserve.ItemCode, (soh, reserve) => new { soh, reserve })
-                .SelectMany(x => x.reserve.DefaultIfEmpty(), (x, reserve) => new { x.soh, reserve })
-                .GroupBy(x => new
-                {
-                    x.soh.WarehouseId,
-                    x.soh.ItemCode,
-                    x.soh.ReceivingDate,
-                    x.soh.RemainingStocks,
-                    x.reserve.ActualRemaining
-
-                })
-               .Select(x => new GetAvailableStocksForIssueDto
-               {
-                   WarehouseId = x.Key.WarehouseId,
-                   ItemCode =x.Key.ItemCode,
-                   ReceivingDate = x.Key.ReceivingDate,
-                   RemainingStocks = x.Key.RemainingStocks,
-                   ActualRemaining = x.Key.ActualRemaining
-                }).Where(x => x.RemainingStocks >=1)
-                  .Where(x => x.ItemCode == itemcode);
+            //                      ItemCode = total.Key.ItemCode,
+            //                      ActualRemaining = total.Key.WarehouseActualGood + total.Key.borrowedreturn - total.Key.reserveOut - total.Key.IssueOut - total.Key.BorrowedOut,
 
 
 
+            //                  });
 
-            return await getAvailable.ToListAsync();
+            //var getAvailable = getRemaining
+            //    .GroupJoin(getReserve, soh => soh.ItemCode, reserve => reserve.ItemCode, (soh, reserve) => new { soh, reserve })
+            //    .SelectMany(x => x.reserve.DefaultIfEmpty(), (x, reserve) => new { x.soh, reserve })
+            //    .GroupBy(x => new
+            //    {
+            //        x.soh.WarehouseId,
+            //        x.soh.ItemCode,
+            //        x.soh.ReceivingDate,
+            //        x.soh.RemainingStocks,
+            //        x.reserve.ActualRemaining
+
+            //    })
+            //   .Select(x => new GetAvailableStocksForIssueDto
+            //   {
+            //       WarehouseId = x.Key.WarehouseId,
+            //       ItemCode =x.Key.ItemCode,
+            //       ReceivingDate = x.Key.ReceivingDate,
+            //       RemainingStocks = x.Key.RemainingStocks,
+            //       ActualRemaining = x.Key.ActualRemaining
+            //    }).Where(x => x.RemainingStocks >=1)
+            //      .Where(x => x.ItemCode == itemcode);
+
+
+            return await getRemaining.ToListAsync();
 
         }
 

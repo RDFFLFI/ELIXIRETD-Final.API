@@ -1579,8 +1579,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            
                                           }).ToList()
                                           
-
-
                                       }).Where(x => x.IsRush == status);
                                     
 
@@ -1649,7 +1647,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             {
                 items.IsReject = true;
                 items.RejectBy = orders.RejectBy;
-                items.IsActive = true;
 
                 items.Remarks = orders.Remarks;
                 items.RejectedDate = DateTime.Now;
