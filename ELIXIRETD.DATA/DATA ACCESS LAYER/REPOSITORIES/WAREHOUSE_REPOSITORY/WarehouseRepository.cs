@@ -664,7 +664,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                              {
                                                                  x.returned.ItemCode,
                                                                  x.returned.WarehouseId,
-                                                                 //x.itemconsume.Consume
 
                                                              }).Select(x => new ItemStocksDto
                                                              {

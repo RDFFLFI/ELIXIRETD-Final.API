@@ -148,16 +148,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
        
 
-        [HttpGet]
-        [Route("GetAllListofOrders")]
-        public async Task<IActionResult> GetAllListofOrders([FromQuery] string customer)
-        {
-            
-            var orders = await _unitofwork.Orders.GetAllListofOrders(customer);
-
-            return Ok(orders);
-        }
-
         [HttpPut]
         [Route("SchedulePreparedOrderedDate")]
         public async Task<IActionResult> SchedulePreparedOrderedDate([FromBody] Ordering[] orders)

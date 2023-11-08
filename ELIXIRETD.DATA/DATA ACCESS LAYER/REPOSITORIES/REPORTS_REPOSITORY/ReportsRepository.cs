@@ -314,7 +314,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     BorrowedDate = x.First().issue.PreparedDate.ToString(),
                     Details = x.First().issue.Details,
                     Remarks = x.First().issue.Remarks,
-                    Status = (x.First().issue.IsApproved == true) ? "Approve" :
+                    Status = (x.First().issue.IsApproved == true) ? "Approved" :
                             (x.First().issue.IsApproved == false) ? "For Approval" : "Unknown",
                         BorrowedItemPkey = x.First().borrow.Id,
                         ItemCode = x.First().borrow.ItemCode,

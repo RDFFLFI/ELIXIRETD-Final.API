@@ -9,9 +9,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
     public class GetallOrderfroScheduleApproveDto
     {
         public int MIRId { get; set; }
-        public string DateNeeded { get; set; }
+        //public string DateNeeded { get; set; }
         public int OrderId { get; set; }
-        public string OrderDate { get; set; }
+        //public string OrderDate { get; set; }
 
         public string Department { get; set; }
         public string CustomerName { get; set; }

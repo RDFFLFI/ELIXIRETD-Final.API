@@ -14,7 +14,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
         public string CustomerCode { get; set; }
         public decimal TotalOrders { get; set; }
         public string PreparedDate { get; set; }
+
+        public string OrderDate { get; set; }
+        public string DateNeeded { get; set; }
         public bool IsRush { get; set; }
+
 
         public string Status { get; set; }
 
@@ -25,7 +29,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
         {
             public int OrderNo { get; set; }
 
-            public string DateNeeded { get; set; }
+            //public string DateNeeded { get; set; }
 
             public string ItemCode { get; set; }
 
