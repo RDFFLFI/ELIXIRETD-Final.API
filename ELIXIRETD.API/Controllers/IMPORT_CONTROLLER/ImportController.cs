@@ -20,7 +20,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
         {
 
             if (!ModelState.IsValid) 
-            return new JsonResult("Something went Wrong!") { StatusCode = 500 };
+            return new JsonResult("Something went Wrong!") { StatusCode = StatusCodes.Status500InternalServerError };
             {
 
                 List<PoSummary> duplicateList = new List<PoSummary>();
@@ -30,7 +30,6 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 List<PoSummary> uomCodeNotExist = new List<PoSummary>();
                 List<PoSummary> quantityInValid = new List<PoSummary>();
                 List<PoSummary> itemcodeanduomNotExist = new List<PoSummary>();
-                //List<PoSummary> unitPriceInvalid = new List<PoSummary>();
               
 
 
@@ -43,10 +42,6 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         quantityInValid.Add(items);
                     }
 
-                    //if(items.UnitPrice == 0 )
-                    //{
-                    //    unitPriceInvalid.Add(items);
-                    //}
 
                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
                     {

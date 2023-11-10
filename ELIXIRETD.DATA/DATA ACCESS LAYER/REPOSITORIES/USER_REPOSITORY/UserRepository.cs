@@ -64,8 +64,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         public async Task<bool> AddNewUser(User user)
         {
 
-            //user.Password = user.UserName;
-            //user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); // use for add encrypted password 
 
             await _context.Users.AddAsync(user);
 
@@ -110,10 +108,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                                             //.Where(x => x.UserRoleId == user.UserRoleId)
                                             .FirstOrDefaultAsync();
 
-            //if( Users == null)
-            //{
-            //    return false;
-            //}
+
 
             Users.IsActive = true;
 

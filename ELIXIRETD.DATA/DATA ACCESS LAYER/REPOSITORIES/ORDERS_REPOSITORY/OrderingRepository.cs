@@ -1335,15 +1335,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                              .GroupBy(x => new
                                                              {
                                                                  x.returned.ItemCode,
-                                                                 //x.returned.WarehouseId,
-                                                                 //x.itemconsume.Consume
+
 
                                                              }).Select(x => new ItemStocksDto
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
                                                                  In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
-                                                                 //warehouseId = x.Key.WarehouseId,
 
                                                              });
 
@@ -1389,8 +1387,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
                     x.ordering.ItemRemarks,
-                    //x.ordering.IsActive,
-                    //x.ordering.IsPrepared,
+
                     x.ordering.StandartQuantity,
 
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
@@ -1409,8 +1406,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Uom = total.Key.Uom,
                     QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
                     ItemRemarks = total.Key.ItemRemarks,
-                    //IsActive = total.Key.IsActive,
-                    ////IsPrepared = total.Key.IsPrepared,
                     StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0,
                     StandardQuantity = total.Key.StandartQuantity
 
@@ -1475,10 +1470,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
 
-            //if (existingOrder.QuantityOrdered != Math.Floor(existingOrder.QuantityOrdered))
-            //{
-            //    return false;
-            //}
 
             return true;
         }
@@ -1505,47 +1496,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         //=============================================== MIR Update In Ordering For Approval =======================================================================
 
 
-        //public async Task<IReadOnlyList<GetallApproveDto>> GetAllListForApprovalOfSchedule(bool status)
-        //{
 
-        //    var orders = _context.Orders
-        //                              .Where(x => x.IsApproved == null)
-        //                              .Where(x => x.PreparedDate != null)
-        //                              .OrderBy(x => x.PreparedDate)
-        //                              .Where(x => x.IsActive == true)
-        //                              .GroupBy(x => new
-        //                              {
-        //                                  x.TrasactId,
-        //                                  x.Department,
-        //                                  x.CustomerName,
-        //                                  x.Customercode,
-        //                                  x.PreparedDate,
-        //                                  x.IsApproved,
-        //                                  x.IsActive,
-        //                                  x.Rush,
-
-
-        //                              })//}).Where(x => x.Key.IsApproved == null)
-        //                                //    .Where(x => x.Key.PreparedDate != null)
-        //                                //    .Where(x => x.Key.IsActive == true)
-
-        //    .Select(x => new GetallApproveDto
-        //    {
-        //        MIRId = x.Key.TrasactId,
-        //        Department = x.Key.Department,
-        //        CustomerName = x.Key.CustomerName,
-        //        CustomerCode = x.Key.Customercode,
-        //        TotalOrders = x.Sum(x => x.QuantityOrdered),
-        //        PreparedDate = x.Key.PreparedDate.ToString(),
-        //        IsRush = x.Key.Rush != null ? true : false,
-        //        Rush = x.Key.Rush
-
-
-        //    }).Where(x => x.IsRush == status);
-
-        //    return await orders.ToListAsync();
-
-        //}
 
         public async Task<IReadOnlyList<GetallApproveListDto>> GetAllListForApprovalOfSchedule(bool status)
         {
@@ -1600,8 +1551,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         {
                                             MIRId = x.TrasactId,
                                             OrderId = x.Id, 
-                                            //OrderDate = x.OrderDate.ToString("MM/dd/yyyy"),
-                                            //DateNeeded = x.DateNeeded.ToString("MM/dd/yyyy"),
                                             Department = x.Department,
                                             CustomerName = x.CustomerName,
                                             CustomerCode = x.Customercode,
@@ -1611,8 +1560,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             Uom = x.Uom,
                                             QuantityOrder = x.QuantityOrdered,
                                             ItemRemarks = x.ItemRemarks,
-                                            //IsApproved = x.IsApproved != null,
-                                            //Rush = x.Rush
 
                                         });
 
@@ -1652,14 +1599,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.RejectedDate = DateTime.Now;
                 items.PreparedDate = null;
                 items.IsPrepared = false;
-                //items.OrderNoPKey = 0;
-                //items.IsRush = null;
             }
 
-            //var orderPkey = await _context.GenerateOrders.Where(x => x.Id == orders.OrderNoPKey)
-            //                                .FirstOrDefaultAsync();
-
-            //orderPkey.IsActive = false;
 
             return true;
         }
@@ -1915,41 +1856,28 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.Department,
                        x.ordering.CustomerName,
                        x.ordering.Customercode,
-                       //x.ordering.Category,
                        x.ordering.ItemCode,
                        x.ordering.ItemdDescription,
                        x.ordering.Uom,
                        x.ordering.ItemRemarks,
                        x.ordering.Remarks,
 
-                       //x.ordering.Rush
-                       //x.ordering.IsApproved,
-
                    })
-                   //}).OrderBy(x => x.Key.Rush == null)
-                   // .ThenBy(x => x.Key.Rush)
+
                    .Select(total => new ListOfOrdersForMoveOrderDto
                    {
                        Id = total.Key.Id,
                        MIRId = total.Key.TrasactId,
                        OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
                        DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
-
-                       //Department = total.Key.Department,
-                       //CustomerName = total.Key.CustomerName,
-                       //CustomerCode = total.Key.Customercode,
-                       //Category = total.Key.Category,
-
                        ItemCode = total.Key.ItemCode,
                        ItemDescription = total.Key.ItemdDescription,
                        Uom = total.Key.Uom,
                        QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
                        ItemRemarks = total.Key.ItemRemarks,
                        Remarks = total.Key.Remarks,
-                       //IsApproved = total.Key.IsApproved != null,
-
                        PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
-                       //Rush = total.Key.Rush
+
                    });
 
             return await orders.ToListAsync();
@@ -1978,12 +1906,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
                                                  .GroupBy(x => new
                                                  {
-                                                     //x.ItemCode,
+                                                   
                                                      x.BorrowedItemPkey
 
                                                  }).Select(x => new ItemStocksDto
                                                  {
-                                                     //ItemCode = x.Key.ItemCode,
+
                                                      BorrowedItemPkey = x.Key.BorrowedItemPkey,
                                                      Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
 
@@ -2084,7 +2012,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                //.Where(x => x.IsApproved == false)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -2125,7 +2052,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                              {
                                                                  x.returned.ItemCode,
                                                                  x.returned.WarehouseId,
-                                                                 //x.itemconsume.Consume
+
 
                                                              }).Select(x => new ItemStocksDto
                                                              {
@@ -2371,8 +2298,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
         {
             var orders = _context.Orders.Where(x => x.IsMove == false)
-                //.OrderBy(x => x.Rush == null)
-                // .ThenBy(x => x.Rush)
                 .Where(x => x.IsActive == true)
                 .Select(x => new GetMoveOrderDetailsForMoveOrderDto
                 {
@@ -2466,8 +2391,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
             var orders = _context.MoveOrders
                 .Where(x => x.IsPrepared == true)
-                //.OrderBy(x => x.Rush == null)
-                // .ThenBy(x => x.Rush)
+
                  .Select(x => new ListOfPreparedItemsForMoveOrderDto
                  {
                      Id = x.Id,
@@ -2480,9 +2404,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      Rush = x.Rush,
                      UnitCost = x.UnitPrice,
                      TotalCost = x.UnitPrice * x.QuantityOrdered
-                     //ItemRemarks = x.ItemRemarks
-
-
 
                  });
 
@@ -2558,117 +2479,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         // ================================================== MIR MoveOrder For Approval ========================================================
 
-
-
-        //public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPagination(UserParams userParams, bool status)
-        //{
-
-        //    var orderingvalidation =  _context.Orders.GroupBy(x => new
-        //    {
-
-        //        x.TrasactId,
-        //        x.IsMove
-
-
-        //    }).Select(x => new ForApprovalMoveOrderPaginationDto
-        //    {
-
-        //        MIRId = x.Key.TrasactId,
-        //        IsMove = x.Key.IsMove
-
-        //    });
-
-
-
-
-        //    var order = _context.MoveOrders
-        //        .GroupJoin(orderingvalidation, moveorders => moveorders.OrderNo, ordering => ordering.MIRId, (moveorders, ordering) => new { moveorders, ordering })
-        //        .SelectMany(x => x.ordering.DefaultIfEmpty(), (x, ordering) => new { x.moveorders, ordering })
-        //        .Where(x => x.moveorders.IsActive == true && x.moveorders.IsReject == null && x.moveorders.IsApprove == null && x.moveorders.IsPrepared == true && x.ordering.IsMove == true)
-        //        .GroupBy(x => new
-        //        {
-
-        //            x.moveorders.OrderNo,
-        //            x.moveorders.Customercode,
-        //            x.moveorders.CustomerName,
-        //            x.moveorders.Remarks,
-        //            x.moveorders.PreparedDate,
-        //            x.moveorders.Rush
-        //        }).Select(x => new ForApprovalMoveOrderPaginationDto
-        //        {
-        //            MIRId = x.Key.OrderNo,
-        //            CustomerName = x.Key.CustomerName,
-        //            Customercode = x.Key.Customercode,
-        //            Remarks = x.Key.Remarks,
-        //            Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
-        //            PreparedDate = x.Key.PreparedDate.ToString(),
-        //            IsRush = x.Key.Rush != null ? true : false,
-        //            Rush = x.Key.Rush,
-        //        }).Where(x => x.IsRush == status);
-
-
-
-
-
-        //    return await PagedList<ForApprovalMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
-        //}
-
-
-        //public async Task<PagedList<ForApprovalMoveOrderPaginationDto>> ForApprovalMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
-        //{
-        //    var orderingvalidation = _context.Orders.GroupBy(x => new
-        //    {
-
-        //        x.TrasactId,
-        //        x.IsMove
-
-
-        //    }).Select(x => new ForApprovalMoveOrderPaginationDto
-        //    {
-
-        //        MIRId = x.Key.TrasactId,
-        //        IsMove = x.Key.IsMove
-
-        //    });
-
-
-
-        //    var order = _context.MoveOrders
-        //        .GroupJoin(orderingvalidation, moveorders => moveorders.OrderNo, ordering => ordering.MIRId, (moveorders, ordering) => new { moveorders, ordering })
-        //        .SelectMany(x => x.ordering.DefaultIfEmpty(), (x, ordering) => new { x.moveorders, ordering })
-        //        .Where(x => x.moveorders.IsActive == true && x.moveorders.IsReject == null && x.moveorders.IsApprove == null && x.moveorders.IsPrepared == true && x.ordering.IsMove == true)
-        //        .GroupBy(x => new
-        //        {
-
-        //            x.moveorders.OrderNo,
-        //            x.moveorders.Customercode,
-        //            x.moveorders.CustomerName,
-        //            x.moveorders.Remarks,
-        //            x.moveorders.PreparedDate,
-        //            x.moveorders.Rush
-        //        }).Select(x => new ForApprovalMoveOrderPaginationDto
-        //        {
-        //            MIRId = x.Key.OrderNo,
-        //            CustomerName = x.Key.CustomerName,
-        //            Customercode = x.Key.Customercode,
-        //            Remarks = x.Key.Remarks,
-        //            Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
-        //            PreparedDate = x.Key.PreparedDate.ToString(),
-        //            IsRush = x.Key.Rush != null ? true : false,
-        //            Rush = x.Key.Rush,
-        //        }).Where(x => x.IsRush == status)
-        //          .Where(x => Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
-        //          || Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
-        //          || Convert.ToString(x.Customercode).ToLower().Contains(search.Trim().ToLower()));
-
-
-
-
-        //    return await PagedList<ForApprovalMoveOrderPaginationDto>.CreateAsync(order, userParams.PageNumber, userParams.PageSize);
-        //}
-
-
-
         public async Task<IReadOnlyList<ForApprovalMoveOrderListDto>> ForApprovalMoveOrderPagination(bool status)
         {
 
@@ -2713,7 +2523,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
-                //MIRId = x.Key.MIRId,
                 ItemCode = x.Key.ItemCode,
                 ItemDescription = x.Key.ItemDescription,
                 Uom = x.Key.Uom,
@@ -2749,7 +2558,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.order.moveorder.Rush,
                 x.order.moveorder.IsPrepared,
                 x.order.moveorder.IsApprove,
-                //x.unitcost.ItemCode,
 
             })
             .Select(x => new ForApprovalMoveOrderListDto
@@ -2835,7 +2643,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var UnitPriceTotal = unitcostId.GroupBy(x => new
             {
-                //x.MIRId,
+
                 x.ItemCode,
                 x.ItemDescription,
                 x.Uom,
@@ -2845,7 +2653,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
-                //MIRId = x.Key.MIRId,
+
                 ItemCode = x.Key.ItemCode,
                 ItemDescription = x.Key.ItemDescription,
                 Uom = x.Key.Uom,
@@ -2960,6 +2768,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Id = x.Key.Id,
                 ItemCode = x.Key.ItemCode,
                 UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+
                 Quantity = x.Key.QuantityOrdered,
                 
 
@@ -2977,6 +2786,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 //MIRId = x.Key.MIRId,
                 ItemCode = x.Key.ItemCode,
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                TotalCost = x.Sum(x => x.UnitCost),
                 Quantity = x.Sum(x => x.Quantity)
 
             });
@@ -2997,6 +2807,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.MoveOrders.CustomerName,
                     x.MoveOrders.ApprovedDate,
                     x.unitprice.UnitCost,
+                    x.unitprice.TotalCost,
                     x.unitprice.Quantity,
                     x.MoveOrders.CompanyCode,
                     x.MoveOrders.CompanyName,
@@ -3034,6 +2845,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     AccountTitles = x.Key.AccountTitles,
                     ItemRemarks = x.Key.ItemRemarks,
                     UnitCost = x.Key.UnitCost,
+                    TotalCost = x.Key.TotalCost,
                     EmpId = x.Key.EmpId,
                     FullName = x.Key.FullName
 
@@ -3231,24 +3043,24 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
 
             var UnitPriceById = _context.MoveOrders.Where(x => x.IsActive == true)
-     .GroupBy(x => new
-     {
-         x.OrderNo,
-         x.Id,
-         x.ItemCode,
-         x.QuantityOrdered,
-         x.UnitPrice
+               .GroupBy(x => new
+               {
+                   x.OrderNo,
+                   x.Id,
+                   x.ItemCode,
+                   x.QuantityOrdered,
+                   x.UnitPrice
 
-     }).Select(x => new ViewMoveOrderForApprovalDto
-     {
-         MIRId = x.Key.OrderNo,
-         Id = x.Key.Id,
-         ItemCode = x.Key.ItemCode,
-         UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
-         Quantity = x.Key.QuantityOrdered,
+               }).Select(x => new ViewMoveOrderForApprovalDto
+               {
+                   MIRId = x.Key.OrderNo,
+                   Id = x.Key.Id,
+                   ItemCode = x.Key.ItemCode,
+                   UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+                   Quantity = x.Key.QuantityOrdered,
 
 
-     });
+               });
 
 
             var UnitPriceTotal = UnitPriceById.GroupBy(x => new
@@ -3262,6 +3074,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 //MIRId = x.Key.MIRId,
                 ItemCode = x.Key.ItemCode,
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                TotalCost = x.Sum(x => x.UnitCost),
                 Quantity = x.Sum(x => x.Quantity)
 
             });
@@ -3287,7 +3100,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.MoveOrders.Rush,
                     x.MoveOrders.ItemRemarks,
                     x.unitprice.UnitCost,
-                    x.unitprice.Quantity
+                    x.unitprice.Quantity,
+                    x.unitprice.TotalCost
 
                 }).Where(x => x.Key.IsApprove == true).Select(x => new GetAllApprovedMoveOrderDto
                 {
@@ -3308,7 +3122,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Rush = x.Key.Rush,
                     ItemRemarks = x.Key.ItemRemarks,
                     UnitCost = x.Key.UnitCost,
-                    TotalCost = x.Key.UnitCost * x.Key.Quantity
+                    TotalCost = x.Key.TotalCost
                 }).Where(x => x.MIRId == id);
 
 
@@ -3606,6 +3420,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 //MIRId = x.Key.MIRId,
                 ItemCode = x.Key.ItemCode,
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
+                TotalCost= x.Sum(x => x.UnitCost),
                 Quantity = x.Sum(x => x.Quantity)
 
             });
@@ -3631,6 +3446,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   x.MoveOrders.ItemDescription,
                   x.MoveOrders.Uom,
                   x.unitprice.UnitCost,
+                  x.unitprice.TotalCost,
                   x.unitprice.Quantity,
                   x.MoveOrders.IsApprove,
                   x.MoveOrders.ItemRemarks
@@ -3651,7 +3467,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   Quantity = x.Key.Quantity,
                   ItemRemarks = x.Key.ItemRemarks,
                   UnitCost = x.Key.UnitCost,
-                  TotalCost = x.Key.UnitCost * x.Key.Quantity
+                  TotalCost = x.Key.TotalCost
 
               });
 

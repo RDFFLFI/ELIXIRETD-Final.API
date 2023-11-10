@@ -910,7 +910,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   PreparedBy = x.borrowed.PreparedBy,
                   Remarks = x.issues.Remarks,
                   TransactionDate = x.issues.TransactionDate.ToString(),
-                  Details = x.issues.Details
+                  Details = x.issues.Details,
+                  BorrowedQuantity = x.borrowed.Quantity
    
 
               });

@@ -92,17 +92,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             return true;
 
-            //var existingUom = await _context.Uoms.Where(x => x.Id == uoms.Id).FirstOrDefaultAsync();
-
-            //// Check if the updated Uom already exists in the database
-            //var uomExists = await UomDescriptionExist(uoms.UomDescription) && existingUom.UomDescription != uoms.UomDescription;
-
-            //if (uomExists)
-            //    return false;
-
-            //existingUom.UomDescription = uoms.UomDescription;
-
-            //return true;
         }
 
         public async Task<PagedList<UomDto>> GetAllUomWithPagination(bool status, UserParams userParams)

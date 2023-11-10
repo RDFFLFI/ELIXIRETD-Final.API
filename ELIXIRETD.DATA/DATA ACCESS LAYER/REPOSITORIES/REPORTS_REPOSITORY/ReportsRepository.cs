@@ -385,14 +385,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
 
-            //var Reports = (from borrowed in _context.BorrowedIssues
-            //               where borrowed.PreparedDate >= DateTime.Parse(DateFrom) && borrowed.PreparedDate <= DateTime.Parse(DateTo)  
-            //               where borrowed.IsActive == true || borrowed.IsReject != null
-            //               join returned in details
-            //               on borrowed.Id equals returned.BorrowedId
-            //               into leftJ
-            //               from returned in leftJ.DefaultIfEmpty()
-
 
               var Reports = _context.BorrowedIssues
                            .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo))
@@ -556,7 +548,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                     }).Select(x => new DtoBorrowedIssue
                                                                     {
                                                                         ItemCode = x.Key.ItemCode,
-                                                                        //Quantity = x.Sum(x => x.Quantity != null ? x.Quantity : 0) - x.Sum(x => x.ReturnQuantity)
+
 
                                                                     });
 

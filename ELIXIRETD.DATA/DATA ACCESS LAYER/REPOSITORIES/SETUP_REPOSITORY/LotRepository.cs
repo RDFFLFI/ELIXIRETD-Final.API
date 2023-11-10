@@ -83,25 +83,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
 
 
-            //var lotsection = await _context.LotSections.Where(x => x.Id == lotname.Id)
-            //                             .Where(x => x.LotNamesId == lotname.LotNamesId)
-            //                             .FirstOrDefaultAsync();
-
-            //if (lotsection == null)
-            //{
-            //    return false;
-            //}
-            //lotsection.IsActive = true;
-
-
-            //var lotnames = await _context.Lotnames.Where(x => x.Id == lotname.LotNamesId)
-            //                                   .FirstOrDefaultAsync();
-
-
-            //lotnames.IsActive = true;
-
-            //return true;
-
         }
 
         public async Task<bool> InActiveLotName(LotSection lotname)
