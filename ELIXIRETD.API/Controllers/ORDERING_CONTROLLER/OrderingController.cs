@@ -331,8 +331,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         [HttpGet]
-        [Route("ViewListOfMirOrdersViewListOfMirOrders")]
-        public async Task<IActionResult> ViewListOfMirOrdersViewListOfMirOrders([FromQuery] int id)
+        [Route("ViewListOfMirOrders")]
+        public async Task<IActionResult> ViewListOfMirOrders([FromQuery] int id)
         {
 
             var orders = await _unitofwork.Orders.ViewListOfMirOrders(id);

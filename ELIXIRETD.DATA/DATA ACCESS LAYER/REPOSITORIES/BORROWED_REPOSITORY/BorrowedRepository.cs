@@ -1433,25 +1433,51 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   .GroupJoin(consumed, borrow => borrow.Id, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
                   .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
                   .Where(x => x.borrow.Id == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned != true)
+                  .GroupBy(x =>  new
+                  {
+                      x.consume.Id,
+                      x.consume.BorrowedItemPKey,
+                      x.borrow.ItemCode,
+                      x.borrow.ItemDescription,
+                      x.borrow.Uom,
+                      x.borrow.Quantity,
+                      x.consume.ConsumedQuantity,
+                      x.consume.CompanyCode,
+                      x.consume.CompanyName,
+                      x.consume.DepartmentCode,
+                      x.consume.DepartmentName,
+                      x.consume.LocationCode,
+                      x.consume.LocationName,
+                      x.consume.AccountCode,
+                      x.consume.AccountTitles,
+                      x.consume.FullName,
+                      x.consume.EmpId,
+                      x.consume.IsActive
+
+
+
+                  })
                   .Select(x => new DtoGetConsumedItem
                   {
-                      Id = x.consume.Id,
-                      BorrowedItemPKey = x.borrow.Id,
-                      ItemCode = x.consume.ItemCode,
-                      ItemDescription = x.borrow.ItemDescription,
-                      Uom = x.borrow.Uom,
-                      ConsumedQuantity = x.consume.ConsumedQuantity,
-                      CompanyCode = x.consume.CompanyCode,
-                      CompanyName = x.consume.CompanyName,
-                      DepartmentCode = x.consume.DepartmentCode,
-                      DepartmentName = x.consume.DepartmentName,
-                      LocationCode = x.consume.LocationCode,
-                      LocationName = x.consume.LocationName,
-                      AccountCode = x.consume.AccountCode,
-                      AccountTitles = x.consume.AccountTitles,
-                      FullName = x.consume.FullName,
-                      EmpId = x.consume.EmpId,
-                      IsActive = x.consume.IsActive
+                      Id = x.Key.Id,
+                      BorrowedItemPKey = x.Key.BorrowedItemPKey,
+                      ItemCode = x.Key.ItemCode,
+                      ItemDescription = x.Key.ItemDescription,
+                      Uom = x.Key.Uom,
+                      BorrowedQuantity = x.Key.Quantity,
+                      ItemConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity),
+                      ConsumedQuantity = x.Key.ConsumedQuantity,
+                      CompanyCode = x.Key.CompanyCode,
+                      CompanyName = x.Key.CompanyName,
+                      DepartmentCode = x.Key.DepartmentCode,
+                      DepartmentName = x.Key.DepartmentName,
+                      LocationCode = x.Key.LocationCode,
+                      LocationName = x.Key.LocationName,
+                      AccountCode = x.Key.AccountCode,
+                      AccountTitles = x.Key.AccountTitles,
+                      FullName = x.Key.FullName,
+                      EmpId = x.Key.EmpId,
+                      IsActive = x.Key.IsActive
 
 
                   });
