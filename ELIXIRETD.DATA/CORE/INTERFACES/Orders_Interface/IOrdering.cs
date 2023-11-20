@@ -135,9 +135,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<PagedList<GetAllListOfMirDto>> GetAllListOfMir(UserParams userParams ,bool status , string search);
         Task<IReadOnlyList<GetAllListOfMirDto>> GetAllListOfMirOrders(string Customer);
 
+        Task<IReadOnlyList<DtoViewListOfMirOrders>> ViewListOfMirOrders(int id);
+
 
         //Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds, string customerName);
-   
+
         Task<IEnumerable<AllOrdersPerMIRIDsDTO>> GetAllListOfMirOrdersbyMirId(int[] listofMirIds/*, string customerName*/);
 
         Task<bool> PreparationOfSchedule ( Ordering orderspreparation);

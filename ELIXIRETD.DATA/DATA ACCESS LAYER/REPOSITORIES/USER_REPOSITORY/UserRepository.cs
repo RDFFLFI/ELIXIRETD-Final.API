@@ -264,15 +264,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
         // Import
 
 
-        //public async Task<bool> AddNewUserImport(User user)
-        //{
 
-
-        //    await _context.Users.AddAsync(user);
-
-        //    return true;
-
-        //}
 
         public async Task <string> GenerateUsername(string fullName)
         {
@@ -319,9 +311,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
                 throw new ArgumentNullException(nameof(user), "User parameter must not be empty or null");
             }
 
-            //user.UserName = await GenerateUsername(user.FullName);
-
-            //user.Password = user.UserName;
             
              await _context.Users.AddAsync(user);
 

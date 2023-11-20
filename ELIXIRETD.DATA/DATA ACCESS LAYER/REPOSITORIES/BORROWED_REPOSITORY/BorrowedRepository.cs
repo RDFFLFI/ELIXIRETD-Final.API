@@ -990,9 +990,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             }
 
 
-
         }
-
 
 
         // ================================================== Customer ==================================================================================
@@ -1034,7 +1032,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             existing.IsActive = borowed.IsActive;
             existing.IsTransact = true;
 
-
             return true;
         }
 
@@ -1066,8 +1063,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
       
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status, int empid)
         {
-            //var daytoday = DateTime.Now;
-
 
             var employee = _context.Users.Where(x => x.Id == empid)
                                          .FirstOrDefault();
@@ -1084,7 +1079,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          BorrowedPKey = x.Key.BorrowedPKey,
                                                          IsActive = x.Key.IsActive,
                                                          TotalQuantity = x.Sum(x => x.Quantity),
-                                                         //UnitCost = x.Sum(x => x.UnitPrice)
 
                                                      });
 
@@ -1110,7 +1104,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
                     x.issues.Details
-                    //x.borrowed.UnitCost
+
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {

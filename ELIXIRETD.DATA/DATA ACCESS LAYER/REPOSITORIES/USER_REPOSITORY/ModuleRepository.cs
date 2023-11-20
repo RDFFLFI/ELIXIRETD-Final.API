@@ -165,16 +165,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
 
 
-            //if (!string.IsNullOrEmpty(search))
-            //{
-            //    search = search.Trim().ToLower();
-            //    modules = modules.Where(x =>
-            //        x.SubMenuName.ToLower().Contains(search) ||
-            //        x.MainMenu.ToLower().Contains(search) ||
-            //        x.ModuleName.ToLower().Contains(search)
-            //    );
 
-            //}
 
             return await PagedList<ModuleDto>.CreateAsync(modules, userParams.PageNumber, userParams.PageSize);
 
