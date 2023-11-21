@@ -40,6 +40,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public string EmpId { get; set; }
 
         public bool IsActive { get; set; }
+        public bool? IsReturned { get; set; }
+        public bool IsApproved { get; set; }
 
 
     }
