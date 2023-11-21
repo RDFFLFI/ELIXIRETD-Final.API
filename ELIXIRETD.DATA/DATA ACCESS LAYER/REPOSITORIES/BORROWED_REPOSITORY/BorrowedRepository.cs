@@ -1404,34 +1404,54 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         {
 
             var consumed = _context.BorrowedConsumes.Where(x => x.IsActive == true)
+                                                    .GroupBy(x => new
+                                                    {
+                                                        x.Id,
+                                                        x.ItemCode,
+
+                                                         x.Consume,
+                                                         x.BorrowedItemPkey,
+
+                                                         x.CompanyCode,
+                                                         x.CompanyName,
+                                                         x.DepartmentCode,
+                                                         x.DepartmentName,
+                                                         x.LocationCode,
+                                                         x.LocationName,
+                                                         x.AccountCode,
+                                                         x.AccountTitles,
+                                                         x.FullName,
+                                                         x.EmpId,
+                                                         x.IsActive
+                                                    })
                                                     .Select(x => new DtoGetConsumedItem
                                                     {
 
-                                                        Id = x.Id,
-                                                        ItemCode = x.ItemCode,
+                                                        Id = x.Key.Id,
+                                                        ItemCode = x.Key.ItemCode,
 
-                                                        ConsumedQuantity = x.Consume,
-                                                        BorrowedItemPKey = x.BorrowedItemPkey,
+                                                        ConsumedQuantity = x.Key.Consume != null ? x.Key.Consume : 0,
+                                                        BorrowedItemPKey = x.Key.BorrowedItemPkey,
 
-                                                        CompanyCode = x.CompanyCode,
-                                                        CompanyName = x.CompanyName,
-                                                        DepartmentCode = x.DepartmentCode,
-                                                        DepartmentName = x.DepartmentName,
-                                                        LocationCode = x.LocationCode,
-                                                        LocationName = x.LocationName,
-                                                        AccountCode = x.AccountCode,
-                                                        AccountTitles = x.AccountTitles,
-                                                        FullName = x.FullName,
-                                                        EmpId = x.EmpId,
-                                                        IsActive = x.IsActive
+                                                        CompanyCode = x.Key.CompanyCode,
+                                                        CompanyName = x.Key.CompanyName,
+                                                        DepartmentCode = x.Key.DepartmentCode,
+                                                        DepartmentName = x.Key.DepartmentName,
+                                                        LocationCode = x.Key.LocationCode,
+                                                        LocationName = x.Key.LocationName,
+                                                        AccountCode = x.Key.AccountCode,
+                                                        AccountTitles = x.Key.AccountTitles,
+                                                        FullName = x.Key.FullName,
+                                                        EmpId = x.Key.EmpId,
+                                                        IsActive = x.Key.IsActive
                                                         
 
                                                     });
 
             var borrowedconsume = _context.BorrowedIssueDetails
-                                                               .GroupJoin(consumed , borrow => borrow.Id , consume => consume.BorrowedItemPKey , (borrow , consume) => new {borrow , consume})
+                                                               .GroupJoin(_context.BorrowedConsumes , borrow => borrow.Id , consume => consume.BorrowedItemPkey , (borrow , consume) => new {borrow , consume})                           
                                                                .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.borrow , consume})
-                                                               .Where(x => x.borrow.IsActive == true)
+                                                                 .Where(x => x.borrow.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned != true)
                                                                .GroupBy(x => new
                                                                {
                                                                    x.borrow.Id,
@@ -1439,39 +1459,33 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                    x.borrow.ItemDescription,
                                                                    x.borrow.Uom,
                                                                    x.borrow.Quantity,
-                                                                   x.borrow.IsApproved,
-                                                                   x.borrow.IsReturned
+                                                               
 
                                                                }).Select(x => new DtoGetConsumedItem
                                                                {
                                                                    BorrowedItemPKey = x.Key.Id,
                                                                    ItemCode = x.Key.ItemCode,
                                                                    ItemDescription = x.Key.ItemDescription,
-                                                                   BorrowedQuantity = x.Key.Quantity,
-                                                                   ItemConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity),
-                                                                   IsApproved = x.Key.IsApproved,
-                                                                   IsReturned = x.Key.IsReturned
-
-                                                                   
+                                                                   Uom = x.Key.Uom,
+                                                                   BorrowedQuantity = x.Key.Quantity != null ? x.Key.Quantity : 0,
+                                                                   ItemConsumedQuantity = x.Sum(x => x.consume.Consume != null ? x.consume.Consume : 0),
+                                                                    
                                                                });
 
 
 
-
+            
             var borrowed = borrowedconsume
                   .GroupJoin(consumed, borrow => borrow.BorrowedItemPKey, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
                   .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
-                  .Where(x => x.borrow.Id == id && x.consume.IsActive == true && x.borrow.IsApproved == true && x.borrow.IsReturned != true)
+                  .Where(x => x.consume.BorrowedItemPKey == id)
                   .GroupBy(x =>  new
                   {
                       x.consume.Id,
-                      x.consume.BorrowedItemPKey,
+                      x.borrow.BorrowedItemPKey,
                       x.borrow.ItemCode,
                       x.borrow.ItemDescription,
                       x.borrow.Uom,
-                      x.borrow.ItemConsumedQuantity,
-                      x.borrow.ConsumedQuantity,
-                      x.borrow.BorrowedQuantity,
                       x.consume.CompanyCode,
                       x.consume.CompanyName,
                       x.consume.DepartmentCode,
@@ -1482,7 +1496,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       x.consume.AccountTitles,
                       x.consume.FullName,
                       x.consume.EmpId,
-                      x.consume.IsActive
+
 
 
 
@@ -1494,9 +1508,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       ItemCode = x.Key.ItemCode,
                       ItemDescription = x.Key.ItemDescription,
                       Uom = x.Key.Uom,
-                      BorrowedQuantity = x.Key.BorrowedQuantity,
-                      ItemConsumedQuantity = x.Key.ItemConsumedQuantity,
-                     ConsumedQuantity = x.Key.ConsumedQuantity,
+                      BorrowedQuantity = x.Sum(x => x.borrow.BorrowedQuantity),
+                      ItemConsumedQuantity = x.Sum(x => x.borrow.ItemConsumedQuantity != null ? x.borrow.ItemConsumedQuantity : 0),
+                      ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
                       CompanyCode = x.Key.CompanyCode,
                       CompanyName = x.Key.CompanyName,
                       DepartmentCode = x.Key.DepartmentCode,
@@ -1507,13 +1521,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       AccountTitles = x.Key.AccountTitles,
                       FullName = x.Key.FullName,
                       EmpId = x.Key.EmpId,
-                      IsActive = x.Key.IsActive
-
 
                   });
                 
 
-            return await borrowed.ToListAsync();
+             return await borrowed.ToListAsync();
         }
 
 
