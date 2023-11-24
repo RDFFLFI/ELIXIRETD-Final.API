@@ -42,6 +42,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
           
 
             receive.ActualDelivered = receive.ActualGood;
+
             await _context.WarehouseReceived.AddAsync(receive);
             return true;
         }
@@ -186,10 +187,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           DepartmentName = x.receiptparents.DepartmentName,
                           LocationCode = x.receiptparents.LocationCode,
                           LocationName = x.receiptparents.LocationName,
-                          AccountCode = x.receiptparents.AccountCode,
-                          AccountTitles = x.receiptparents.AccountTitles,
-                          EmpId = x.receiptparents.EmpId,
-                          FullName = x.receiptparents.FullName,
+                          //AccountCode = x.receiptparents.AccountCode,
+                          //AccountTitles = x.receiptparents.AccountTitles,
+                          //EmpId = x.receiptparents.EmpId,
+                          //FullName = x.receiptparents.FullName,
                           Details = x.receiptparents.Details
 
 
@@ -854,10 +855,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                  DepartmentName = x.DepartmentName,
                                                  LocationCode = x.LocationCode,
                                                  LocationName = x.LocationName,
-                                                 AccountCode = x.AccountCode,
-                                                 AccountTitles = x.AccountTitles,
-                                                 EmpId = x.EmpId,
-                                                 FullName = x.FullName,
+                                                 //AccountCode = x.AccountCode,
+                                                 //AccountTitles = x.AccountTitles,
+                                                 //EmpId = x.EmpId,
+                                                 //FullName = x.FullName,
                                                  Details  = x.Details,
 
                                              });

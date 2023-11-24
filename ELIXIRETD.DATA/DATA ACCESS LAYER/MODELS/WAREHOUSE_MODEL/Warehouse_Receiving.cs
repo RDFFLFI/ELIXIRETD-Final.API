@@ -38,6 +38,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public string SINumber { get; set; }
         public decimal UnitPrice { get; set; }
 
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
+
 
 
     }

@@ -234,10 +234,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 DepartmentName = receiptHeader.DepartmentName,
                                 LocationCode = receiptHeader.LocationCode,
                                 LocationName = receiptHeader.LocationName,
-                                AccountCode = receiptHeader.AccountCode,
-                                AccountTitles = receiptHeader.AccountTitles,
-                                EmpId = receiptHeader.EmpId,
-                                FullName = receiptHeader.FullName,
+                                //AccountCode = receiptHeader.AccountCode,
+                                //AccountTitles = receiptHeader.AccountTitles,
+                                //EmpId = receiptHeader.EmpId,
+                                //FullName = receiptHeader.FullName,
 
                                 UnitCost = receipt.UnitPrice,
                                 TotalCost = receipt.UnitPrice * receipt.ActualDelivered
@@ -276,10 +276,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            DepartmentName = x.receipt.DepartmentName,
                            LocationCode = x.receipt.LocationCode,
                            LocationName = x.receipt.LocationName,
-                           AccountCode = x.receipt.AccountCode,
-                           AccountTitles = x.receipt.AccountTitles,
-                           EmpId = x.receipt.EmpId,
-                           FullName = x.receipt.FullName,
+                           //AccountCode = x.receipt.AccountCode,
+                           //AccountTitles = x.receipt.AccountTitles,
+                           //EmpId = x.receipt.EmpId,
+                           //FullName = x.receipt.FullName,
                            
                            UnitCost = x.issue.UnitPrice,
                            TotalCost = x.issue.UnitPrice * x.issue.Quantity

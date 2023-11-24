@@ -30,12 +30,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
         public string LocationCode { get; set; }
         public string LocationName { get; set; }
 
-        public string AccountCode { get; set; }
-        public string AccountTitles { get; set; }
+        //public string AccountCode { get; set; }
+        //public string AccountTitles { get; set; }
 
-        public string EmpId { get; set; }
+        //public string EmpId { get; set; }
 
-        public string FullName { get; set; }
+        //public string FullName { get; set; }
 
         public DateTime TransactionDate { get; set; }
 
