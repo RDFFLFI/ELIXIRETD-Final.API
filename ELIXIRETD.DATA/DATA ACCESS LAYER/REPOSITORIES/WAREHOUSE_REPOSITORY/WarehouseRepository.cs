@@ -30,6 +30,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             receive.IsWarehouseReceived = true;
             receive.ActualReceivingDate = DateTime.Now;
             receive.ReceivingDate = DateTime.Now;
+
             await _context.WarehouseReceived.AddAsync(receive);
 
             return true;
@@ -74,8 +75,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.IsActive,
                                  x.DateCancelled,
                        
-                             })
-                                                 .Select(receive => new CancelledPoDto
+                             }).Select(receive => new CancelledPoDto
                                                  {
                                                      Id = receive.Key.Id,
                                                      PO_Number = receive.Key.PO_Number,
@@ -86,8 +86,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      DateCancelled = receive.Key.DateCancelled,
                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                                                 })
-                                                   .Where(x => x.IsActive == false);
+                                                 }).Where(x => x.IsActive == false);
 
 
             return await PagedList<CancelledPoDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);

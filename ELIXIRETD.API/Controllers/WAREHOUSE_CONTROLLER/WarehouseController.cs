@@ -50,15 +50,15 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<IActionResult> UpdateReceiveInfo([FromBody] Warehouse_Receiving receiving)
         {
 
-            var unitprice = await _context.PoSummaries.Where(x => x.ItemCode == receiving.ItemCode)
-                                                       .Where(x => x.Id == receiving.PoSummaryId)
-                                                       .FirstOrDefaultAsync();
+            //var unitprice = await _context.PoSummaries.Where(x => x.ItemCode == receiving.ItemCode)
+            //                                           .Where(x => x.Id == receiving.PoSummaryId)
+            //                                           .FirstOrDefaultAsync();
 
-            if(unitprice == null)
-            {
-                return BadRequest("No po id exist!");
-            }
-            receiving.UnitPrice = unitprice.UnitPrice;
+            //if(unitprice == null)
+            //{
+            //    return BadRequest("No po id exist!");
+            //}
+            //receiving.UnitPrice = unitprice.UnitPrice;
 
                                             
 
