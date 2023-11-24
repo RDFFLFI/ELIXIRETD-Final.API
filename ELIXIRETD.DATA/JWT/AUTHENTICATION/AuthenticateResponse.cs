@@ -10,12 +10,6 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
 
         private readonly StoreContext _context;
 
-        public AuthenticateResponse(StoreContext context)
-        {
-            _context = context;
-        }
-
-
         public int Id { get; set; }
         public string FullName { get; set; }
         public string UserName { get; set; }

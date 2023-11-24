@@ -187,10 +187,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           DepartmentName = x.receiptparents.DepartmentName,
                           LocationCode = x.receiptparents.LocationCode,
                           LocationName = x.receiptparents.LocationName,
-                          //AccountCode = x.receiptparents.AccountCode,
-                          //AccountTitles = x.receiptparents.AccountTitles,
-                          //EmpId = x.receiptparents.EmpId,
-                          //FullName = x.receiptparents.FullName,
+                          AccountCode = x.warehouse.AccountCode,
+                          AccountTitles = x.warehouse.AccountTitles,
+                          EmpId = x.warehouse.EmpId,
+                          FullName = x.warehouse.FullName,
                           Details = x.receiptparents.Details
 
 
@@ -889,10 +889,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     DepartmentName = x.issue.DepartmentName,
                     LocationCode = x.issue.LocationCode,
                     LocationName = x.issue.LocationName,
-                    AccountCode = x.issue.AccountCode,
-                    AccountTitles = x.issue.AccountTitles,
-                    EmpId =x.issue.EmpId,
-                    FullName = x.issue.FullName,
+                    AccountCode = x.misc.AccountCode,
+                    AccountTitles = x.misc  .AccountTitles,
+                    EmpId =x.misc.EmpId,
+                    FullName = x.misc.FullName,
                     UnitCost = x.misc.UnitPrice,
                     TotalCost  = x.misc.UnitPrice * x.misc.Quantity,
                     Details = x.issue.Details
