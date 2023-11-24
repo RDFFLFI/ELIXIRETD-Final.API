@@ -195,13 +195,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               Category = total.Key.Category
                               
                               
-                              
-                              
-
-
-
-
-
                           });
 
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -243,6 +236,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 LocationName = receiptHeader.LocationName,
                                 AccountCode = receiptHeader.AccountCode,
                                 AccountTitles = receiptHeader.AccountTitles,
+                                EmpId = receiptHeader.EmpId,
+                                FullName = receiptHeader.FullName,
 
                                 UnitCost = receipt.UnitPrice,
                                 TotalCost = receipt.UnitPrice * receipt.ActualDelivered
@@ -283,6 +278,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            LocationName = x.receipt.LocationName,
                            AccountCode = x.receipt.AccountCode,
                            AccountTitles = x.receipt.AccountTitles,
+                           EmpId = x.receipt.EmpId,
+                           FullName = x.receipt.FullName,
+                           
                            UnitCost = x.issue.UnitPrice,
                            TotalCost = x.issue.UnitPrice * x.issue.Quantity
 

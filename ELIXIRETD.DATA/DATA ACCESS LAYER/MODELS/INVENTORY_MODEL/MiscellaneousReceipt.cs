@@ -36,6 +36,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
+        public string EmpId { get; set; }
+
+        public string FullName { get; set; }
+
         public string Details { get; set; }
 
     }
