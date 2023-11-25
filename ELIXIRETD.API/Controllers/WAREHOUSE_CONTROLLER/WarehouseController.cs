@@ -42,6 +42,7 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
             };
 
             return Ok(posummaryResult);
+
         }
 
 

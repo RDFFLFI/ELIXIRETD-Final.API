@@ -7,8 +7,8 @@
         //public SubCategory SubCategory { get; set; }
         //public int SubCategoryId { get; set; }
 
-        public AccountTitle AccountTitle { get; set; }
-        public int AccountTitleId { get; set; }
+        public AccountTitle ? AccountTitle { get; set; }
+        public int ? AccountTitleId { get; set; }
 
         public Uom Uom { get; set; }
         public int UomId { get; set; }

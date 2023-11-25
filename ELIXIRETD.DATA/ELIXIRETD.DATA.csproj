@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DATA ACCESS LAYER\REPOSITORIES\SETUP_REPOSITORY\Exemption\**" />
+    <EmbeddedResource Remove="DATA ACCESS LAYER\REPOSITORIES\SETUP_REPOSITORY\Exemption\**" />
+    <None Remove="DATA ACCESS LAYER\REPOSITORIES\SETUP_REPOSITORY\Exemption\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="CORE\INTERFACES\BORROWED_INTERFACE\IBorrowedItem.cs~RF1c1a56f.TMP" />
     <None Remove="DATA ACCESS LAYER\DTOs\BORROWED_DTO\DtoGetForBorrowedPrint.cs~RF595264.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
@@ -66,7 +72,6 @@
 
   <ItemGroup>
     <Folder Include="DATA ACCESS LAYER\REPOSITORIES\REPORTS_REPOSITORY\" />
-    <Folder Include="DATA ACCESS LAYER\REPOSITORIES\SETUP_REPOSITORY\Exemption\" />
   </ItemGroup>
 
 </Project>

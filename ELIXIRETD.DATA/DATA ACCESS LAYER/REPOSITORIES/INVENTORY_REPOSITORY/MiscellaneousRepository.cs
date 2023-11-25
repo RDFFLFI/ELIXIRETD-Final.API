@@ -897,10 +897,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     TotalCost  = x.misc.UnitPrice * x.misc.Quantity,
                     Details = x.issue.Details
                     
-                    
-
-
-
+                   
                 });
 
             return await warehouse.ToListAsync();

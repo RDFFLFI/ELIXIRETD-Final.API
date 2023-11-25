@@ -31,7 +31,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ValidateAccountInUse(int subcateg);
 
 
-        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int account);
+        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom/*, int account*/);
         //Task<bool> ValidateSubcategories(int subcategories);
 
         Task<bool> ValildateItemCodeForPoSummary(string itemCode);
@@ -97,11 +97,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
 
-        Task<bool> ValidateMaterialAndAccountAndItem(string material, int account);
+        Task<bool> ValidateMaterialAndAccountAndItem(string material/*, int account*/);
 
-        Task<int> CountMatchingMaterials(int id ,string material, int account);
+        Task<int> CountMatchingMaterials(int id ,string material/*, int account*/);
 
-        Task<int> CountMatchingMaterialsByItemdescription(string material, int account);
+        Task<int> CountMatchingMaterialsByItemdescription(string material/*, int account*/);
 
 
         Task<IReadOnlyList<DtoItemcategDropdown>> GetAllAccountmaterial();

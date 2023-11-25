@@ -27,7 +27,9 @@ namespace ELIXIRETD.API.Controllers.USER_CONTROLLER
         public async Task<IActionResult> GetUsers()
         {
             var user = await _unitOfWork.Users.GetAllActiveUsers();
-             
+
+            //    var user = await _unitOfWork.Users.GetAllActiveUsers();
+
             return Ok(user);
         }
 

@@ -14,8 +14,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public string ItemDescription { get; set; }
         //public int SubCategoryId { get; set; }
         //public string SubCategoryName { get; set; } 
-        public int AccountTitleId { get; set; }
-        public string AccountPName { get; set; }
+        //public int AccountTitleId { get; set; }
+        //public string AccountPName { get; set; }
         public string ItemCategoryName { get; set; }
         public int ItemCategoryId { get; set; }
         public string Uom { get; set; }

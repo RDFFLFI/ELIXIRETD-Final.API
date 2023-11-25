@@ -90,14 +90,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                     }
 
-                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.AccountTitleId);
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId/*, items.AccountTitleId*/);
                     
                     if(await _unitOfWork.Materials.ItemCodeExist(items.ItemCode))
                     {
                         ItemCodeAlreadyExist.Add(items);
                         continue;
                     }
-                    if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(items.ItemDescription, items.AccountTitleId))
+                    if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(items.ItemDescription/*, items.AccountTitleId*/))
                     {
                         ItemDescriptionAlreadyExist.Add(items);
                         continue;
@@ -200,15 +200,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest("Item code and item description already exist, Please try something else!");
 
 
-            if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription, material.AccountTitleId))
-                return BadRequest("Item description, item category and AccountTitle(Per Item) already exist. Please try something else!");
-
-                //int count = await _unitOfWork.Materials.CountMatchingMaterials(material.ItemDescription, material.SubCategoryId);
-
-                //if (count > 1)
-                //{
-                //    return BadRequest("Item description, item category and sub category already exist. Please try something else!");
-                //}
+            //if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription))
+            //    return BadRequest("Item description, item category and AccountTitle(Per Item) already exist. Please try something else!");
 
                 if (uomId == false)
                     return BadRequest("UOM doesn't exist");
@@ -227,38 +220,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
-            //var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(material.ItemCode);
-            //var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(material.ItemCode);
-            //var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(material.ItemCode);
-            //var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(material.ItemCode);
-            //var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(material.ItemCode);
 
-            //if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true ||  validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true )
-            //{
-            //    return BadRequest("ItemCode was in use!");
-            //}
+            var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
 
-            var countCount = await _unitOfWork.Materials.CountMatchingMaterials(material.Id, material.ItemDescription, material.AccountTitleId);
+            if (existingMaterialsAndItemCode == true)
 
-            if (countCount != 0)
-            {
-                countCount = (material.Id == countCount) ? countCount + 0 : 1; 
-            }
-
-            var countCountDescription = await _unitOfWork.Materials.CountMatchingMaterialsByItemdescription(material.ItemDescription , material.AccountTitleId); 
-
-            if(countCountDescription != 0)
-            {
-                bool isMatch = (material.ItemDescription == countCountDescription.ToString()) && (material.AccountTitleId == countCountDescription);
-                countCountDescription = isMatch ? countCountDescription + 0 : 1;
-            }
-
-            var totalcount = countCount + countCountDescription;
-
-            if (totalcount < 2 && totalcount != 0)
-            {
-                return BadRequest("Item description, item category, and AccountTitle(Per Item) combination already exists. Please try something else!");
-            }
+                return BadRequest("Item code and item description already exist, Please try something else!");
 
             await _unitOfWork.Materials.UpdateMaterial(material);
 
@@ -285,24 +252,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             
             var items = itemcodes.ItemCode;
 
-
-
-
-
-            //var validateItemCodePoSummary = await _unitOfWork.Materials.ValildateItemCodeForPoSummary(items);
-            //var validateItemCodeForRecieving = await _unitOfWork.Materials.ValildateItemCodeForReceiving(items);
-            //var validateItemCodeForOrdering = await _unitOfWork.Materials.ValildateItemCodeForOrdering(items);
-            //var validateItemCodeForMiscIssue = await _unitOfWork.Materials.ValildateItemCodeForMiscIssue(items);
-            //var validateItemCodeForBorrowedIssue = await _unitOfWork.Materials.ValildateItemCodeForBorrowedIssue(items);
-
-            //if (validateItemCodePoSummary == true || validateItemCodeForRecieving == true || validateItemCodeForOrdering == true || validateItemCodeForMiscIssue == true || validateItemCodeForBorrowedIssue == true)
-            //{
-            //    return BadRequest("ItemCode is in Use!");
-            //}
-
-
-
-
             await _unitOfWork.Materials.InActiveMaterial(materials);
             await _unitOfWork.CompleteAsync();
 
@@ -325,7 +274,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpGet]
         [Route("GetAllMaterialWithPagination/{status}")]
-        public async Task<ActionResult<IEnumerable<UomDto>>> GetAllMaterialWithPagination([FromRoute] bool status, [FromQuery] UserParams userParams)
+        public async Task<ActionResult<IEnumerable<MaterialDto>>> GetAllMaterialWithPagination([FromRoute] bool status, [FromQuery] UserParams userParams)
         {
             var materials = await _unitOfWork.Materials.GetAllMaterialWithPagination(status, userParams);
 
@@ -348,7 +297,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpGet]
         [Route("GetAllMaterialWithPaginationOrig/{status}")]
-        public async Task<ActionResult<IEnumerable<UomDto>>> GetAllMaterialWithPaginationOrig([FromRoute] bool status, [FromQuery] UserParams userParams, [FromQuery] string search)
+        public async Task<ActionResult<IEnumerable<MaterialDto>>> GetAllMaterialWithPaginationOrig([FromRoute] bool status, [FromQuery] UserParams userParams, [FromQuery] string search)
         {
             if (search == null)
 

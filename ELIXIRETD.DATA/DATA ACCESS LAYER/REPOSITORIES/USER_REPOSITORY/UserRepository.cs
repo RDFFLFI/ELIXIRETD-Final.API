@@ -5,6 +5,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 {
@@ -19,6 +20,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
         public async Task<IReadOnlyList<UserDto>> GetAllActiveUsers()
         {
+
+
             var user = _context.Users.Where(x => x.IsActive == true)
                                      .Select(x => new UserDto
                                      {
@@ -316,9 +319,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             return true;
         }
-
-
-
 
 
     }
