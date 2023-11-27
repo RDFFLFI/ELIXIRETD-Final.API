@@ -32,8 +32,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                             {
                                                 Id = x.Id,
                                                 ItemCode = x.ItemCode,
-                                                ItemCategoryId = x.AccountTitle.ItemCategoryId,
-                                                ItemCategoryName = x.AccountTitle.ItemCategory.ItemCategoryName,
+                                                ItemCategoryId = x.ItemCategoryId,
+                                                ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                 ItemDescription = x.ItemDescription,
                                                 //AccountTitleId = x.AccountTitleId,
                                                 //AccountPName = x.AccountTitle.AccountPName,
@@ -55,8 +55,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              {
                                                  Id = x.Id,
                                                  ItemCode = x.ItemCode,
-                                                 ItemCategoryId = x.AccountTitle.ItemCategoryId,
-                                                 ItemCategoryName = x.AccountTitle.ItemCategory.ItemCategoryName,
+                                                 ItemCategoryId = x.ItemCategoryId,
+                                                 ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                  ItemDescription = x.ItemDescription,
                                                  //AccountTitleId = x.AccountTitleId,
                                                  //AccountPName = x.AccountTitle.AccountPName,
@@ -95,7 +95,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
             existingMaterial.ItemDescription = materials.ItemDescription;
-            existingMaterial.AccountTitleId = materials.AccountTitleId;
+            existingMaterial.ItemCategoryId = materials.ItemCategoryId;
             existingMaterial.UomId = materials.UomId;
             existingMaterial.BufferLevel = materials.BufferLevel;
 
@@ -144,8 +144,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
                                                   Id = x.Id,
                                                   ItemCode = x.ItemCode,
-                                                  ItemCategoryId = x.AccountTitle.ItemCategoryId,
-                                                  ItemCategoryName = x.AccountTitle.ItemCategory.ItemCategoryName,
+                                                  ItemCategoryId = x.ItemCategoryId,
+                                                  ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                   ItemDescription = x.ItemDescription,
                                                   //AccountTitleId = x.AccountTitleId,
                                                   //AccountPName = x.AccountTitle.AccountPName,
@@ -169,8 +169,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                             {
                                                 Id = x.Id,
                                                 ItemCode = x.ItemCode,
-                                                ItemCategoryId = x.AccountTitle.ItemCategoryId,
-                                                ItemCategoryName = x.AccountTitle.ItemCategory.ItemCategoryName,
+                                                ItemCategoryId = x.ItemCategoryId,
+                                                ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                 ItemDescription = x.ItemDescription,
                                                 //AccountTitleId = x.AccountTitleId,
                                                 //AccountPName = x.AccountTitle.AccountPName,
@@ -602,10 +602,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         }
 
 
-        public async Task<bool> ValidateMaterialAndAccountAndItem(string material)
+        public async Task<bool> ValidateMaterialAndAccountAndItem(string material, int ? category)
         {
             
-            return await _context.Materials.AnyAsync(x => x.ItemDescription == material );
+            return await _context.Materials.AnyAsync(x => x.ItemDescription == material  && x.ItemCategoryId == category);
         }
 
 
@@ -670,10 +670,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await categories.ToListAsync();
         }
 
-        public async Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom)
+        public async Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int ? category)
         {
 
-            var validate = await _context.Materials.Where(x => x.ItemCode == itemCode && x.ItemDescription == itemdescription &&  x.UomId == uom )
+            var validate = await _context.Materials.Where(x => x.ItemCode == itemCode && x.ItemDescription == itemdescription &&  x.UomId == uom  && x.ItemCategoryId == category)
                                              .FirstOrDefaultAsync();
 
             if(validate == null)

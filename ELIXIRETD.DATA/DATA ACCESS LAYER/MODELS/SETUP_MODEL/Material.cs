@@ -11,6 +11,7 @@
         public AccountTitle ? AccountTitle { get; set; }
         public int ? AccountTitleId { get; set; }
 
+
         public Uom Uom { get; set; }
         public int UomId { get; set; }
         public int BufferLevel { get; set; }
@@ -18,10 +19,14 @@
         public string AddedBy { get; set; }
         public bool IsActive { get; set; } = true;
 
-
-
         public string UomCode { get; set; }
         public string AccountPName { get; set; }
+
+
+        public ItemCategory ItemCategory { get; set; }
+
+        public int ? ItemCategoryId { get; set; }
+
         public string ItemCategoryName { get; set; }
 
     }

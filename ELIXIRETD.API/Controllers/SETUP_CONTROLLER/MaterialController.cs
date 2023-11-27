@@ -43,7 +43,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 List<Material> DuplicateList = new List<Material>();
                 List<Material> AvailableImport = new List<Material>();
                 List<Material> ItemcategoryNotExist = new List<Material>();
-                List<Material> AccountTitleNotExist = new List<Material>();
+                //List<Material> AccountTitleNotExist = new List<Material>();
                 List<Material> UomNotExist = new List<Material>();
                 List<Material> ItemCodeNull = new List<Material>();
                 List<Material> ItemDescriptionNull = new List<Material>();
@@ -67,37 +67,38 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         ItemcategoryNotExist.Add(items);
                         continue;
                     }
+                    items.ItemCategoryId = itemCategory.Id;
                    
                     
 
-                    AccountTitle account = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.AccountPName, itemCategory.Id);
-                    if(account == null)
-                    {
-                        AccountTitleNotExist.Add(items);
-                        continue;
-                    }
-                    else
-                    {
-                        items.AccountTitleId = account.Id;
-                    }
+                    //AccountTitle account = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.AccountPName, itemCategory.Id);
+                    //if(account == null)
+                    //{
+                    //    AccountTitleNotExist.Add(items);
+                    //    continue;
+                    //}
+                    //else
+                    //{
+                    //    items.AccountTitleId = account.Id;
+                    //}
                   
 
 
-                    if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.AccountTitleId == items.AccountTitleId) > 1)
+                    if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.ItemCategoryId == items.ItemCategoryId) > 1)
                     {
                         DuplicateList.Add(items);
                         continue;
 
                     }
 
-                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId/*, items.AccountTitleId*/);
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId , items.ItemCategoryId);
                     
                     if(await _unitOfWork.Materials.ItemCodeExist(items.ItemCode))
                     {
                         ItemCodeAlreadyExist.Add(items);
                         continue;
                     }
-                    if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(items.ItemDescription/*, items.AccountTitleId*/))
+                    if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(items.ItemDescription, items.ItemCategoryId))
                     {
                         ItemDescriptionAlreadyExist.Add(items);
                         continue;
@@ -139,7 +140,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     AvailableImport,
                     DuplicateList,
                     ItemcategoryNotExist,
-                    AccountTitleNotExist,
                     UomNotExist,
                     ItemCodeNull,
                     ItemDescriptionNull,
@@ -149,7 +149,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                  
                 };
 
-                if (DuplicateList.Count == 0 && AccountTitleNotExist.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0
+                if (DuplicateList.Count == 0  && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0
                     && ItemCodeAlreadyExist.Count == 0 && ItemDescriptionAlreadyExist.Count == 0)
                 {
                     await _unitOfWork.CompleteAsync();
@@ -200,10 +200,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest("Item code and item description already exist, Please try something else!");
 
 
-            //if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription))
-            //    return BadRequest("Item description, item category and AccountTitle(Per Item) already exist. Please try something else!");
+            if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription, material.ItemCategoryId))
+                return BadRequest("Item description and item category already exist. Please try something else!");
 
-                if (uomId == false)
+            if (uomId == false)
                     return BadRequest("UOM doesn't exist");
 
                 if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
@@ -220,6 +220,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateMaterials")]
         public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
         {
+
+            if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription, material.ItemCategoryId))
+                return BadRequest("Item description and item category already exist. Please try something else!");
 
             var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
 
