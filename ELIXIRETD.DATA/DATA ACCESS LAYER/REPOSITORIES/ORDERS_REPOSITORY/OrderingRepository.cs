@@ -1269,6 +1269,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             DepartmentName = x.First().Department,
                                             LocationCode = x.First().LocationCode,
                                             LocationName = x.First().LocationName,
+
                                             ListOrder = x.Select(x => new DtoViewListOfMirOrders.ListOrders
                                             {
                                                 Id = x.Id,
@@ -1276,7 +1277,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 ItemDescription = x.ItemdDescription,
                                                 Uom = x.Uom,
                                                 ItemRemarks = x.ItemRemarks,
-                                                Quantity = x.QuantityOrdered
+                                                Quantity = x.QuantityOrdered,
+                                                AccountCode = x.AccountCode,
+                                                AccountTitles = x.AccountTitles,
+                                                EmpId = x.EmpId,
+                                                FullName = x.FullName
                                                 
                                             }).ToList()
 
@@ -1425,17 +1430,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.ItemdDescription,
                     x.ordering.Uom,
                     x.ordering.ItemRemarks,
-
                     x.ordering.StandartQuantity,
-
+                    x.ordering.AccountCode,
+                    x.ordering.AccountTitles,
+                    x.ordering.EmpId,
+                    x.ordering.FullName,
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
                     
                 })
                 .Select(total => new AllOrdersPerMIRIDsDTO
                 {
 
-                    Id = total.Key.Id,
-                    
+                    Id = total.Key.Id, 
                     MIRId = total.Key.TrasactId,
                     CustomerCode = total.Key.Customercode,
                     CustomerName = total.Key.CustomerName,
@@ -1444,9 +1450,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Uom = total.Key.Uom,
                     QuantityOrder = total.Sum(x => x.ordering.QuantityOrdered),
                     ItemRemarks = total.Key.ItemRemarks,
-                    StockOnHand = total.Key.Reserve != null ? total.Key.Reserve : 0,
-                    StandardQuantity = total.Key.StandartQuantity
-
+                    AccountCode = total.Key.AccountCode,
+                    AccountTitles = total.Key.AccountTitles,
+                    EmpId = total.Key.EmpId,
+                    FullName = total.Key.FullName,
+                    StandardQuantity = total.Key.StandartQuantity,
+                   
                 }).ToList();
 
 
@@ -1508,6 +1517,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
 
+            existingOrder.AccountCode = orders.AccountCode;
+            existingOrder.AccountTitles = orders.AccountTitles;
+            existingOrder.EmpId = orders.EmpId;
+            existingOrder.FullName = orders.FullName;
 
             return true;
         }
@@ -1899,6 +1912,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.Uom,
                        x.ordering.ItemRemarks,
                        x.ordering.Remarks,
+                       x.ordering.AccountCode,
+                       x.ordering.AccountTitles,
+                       x.ordering.EmpId,
+                       x.ordering.FullName
 
                    })
 
@@ -1915,6 +1932,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        ItemRemarks = total.Key.ItemRemarks,
                        Remarks = total.Key.Remarks,
                        PreparedQuantity = total.Sum(x => x.moveorder.QuantityPrepared),
+                       AccountCode = total.Key.AccountCode,
+                       AccountTitles = total.Key.AccountTitles,
+                       EmpId = total.Key.EmpId,
+                       FullName = total.Key.FullName
+                       
+                       
 
                    });
 
@@ -2348,6 +2371,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     CompanyCode = x.CompanyCode,
                     LocationCode = x.LocationCode,
                     LocationName = x.LocationName,
+                    AccountCode = x.AccountCode,
+                    AccountTitles = x.AccountTitles,
+                    EmpId = x.EmpId,
+                    FullName = x.FullName,
+
+
                     Remarks = x.Remarks,
 
                     CustomerName = x.CustomerName,
@@ -2428,6 +2457,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<ListOfPreparedItemsForMoveOrderDto>> ListOfPreparedItemsForMoveOrder(int id)
         {
             var orders = _context.MoveOrders
+                .OrderBy(x => x.WarehouseId)
                 .Where(x => x.IsPrepared == true)
 
                  .Select(x => new ListOfPreparedItemsForMoveOrderDto
@@ -2473,17 +2503,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             foreach (var x in existingsMoveOrders)
             {
-                x.Department = order.Department;
-                x.CompanyCode = order.CompanyCode;
-                x.CompanyName = order.CompanyName;
-                x.DepartmentCode = order.DepartmentCode;
-                x.DepartmentName = order.DepartmentName;
-                x.LocationCode = order.LocationCode;
-                x.LocationName = order.LocationName;
-                x.AccountCode = order.AccountCode;
-                x.AccountTitles = order.AccountTitles;
-                x.EmpId = order.EmpId;
-                x.FullName = order.FullName;
+                //x.Department = order.Department;
+                //x.CompanyCode = order.CompanyCode;
+                //x.CompanyName = order.CompanyName;
+                //x.DepartmentCode = order.DepartmentCode;
+                //x.DepartmentName = order.DepartmentName;
+                //x.LocationCode = order.LocationCode;
+                //x.LocationName = order.LocationName;
+                //x.AccountCode = order.AccountCode;
+                //x.AccountTitles = order.AccountTitles;
+                //x.EmpId = order.EmpId;
+                //x.FullName = order.FullName;
+                x.ApprovedDate = DateTime.Now;
+                x.ApproveDateTempo = DateTime.Now;
+                x.IsApprove = true;
+
                 x.RejectBy = null;
                 x.RejectedDate = null;
                 x.RejectedDateTempo = null;
@@ -2956,6 +2990,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 //items.IsPrepared = true;
                 items.PreparedBy = null;
                 items.IsApproveReject = null;
+                
 
             }
 
@@ -3183,7 +3218,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsApproveReject = true;
                 //items.IsActive = false;
                 //items.IsPrepared = true;
-                items.IsApprove = false;
+                items.IsApprove = null;
+                items.ApprovedDate = null;
+                items.ApproveDateTempo = null;
 
             }
             return true;
@@ -3288,6 +3325,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = null;
                 items.IsApprove = null;
                 items.IsApproveReject = null;
+                
             }
 
             foreach (var items in existingorders)
@@ -3297,6 +3335,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.RejectBy = null;
                 items.Remarks = null;
                 items.RejectedDate = null;
+                items.IsMove = false;
+                
             }
 
             return true;

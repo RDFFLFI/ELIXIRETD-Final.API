@@ -234,10 +234,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 DepartmentName = receiptHeader.DepartmentName,
                                 LocationCode = receiptHeader.LocationCode,
                                 LocationName = receiptHeader.LocationName,
-                                //AccountCode = receiptHeader.AccountCode,
-                                //AccountTitles = receiptHeader.AccountTitles,
-                                //EmpId = receiptHeader.EmpId,
-                                //FullName = receiptHeader.FullName,
+                                AccountCode = receipt.AccountCode,
+                                AccountTitles = receipt.AccountTitles,
+                                EmpId = receipt.EmpId,
+                                FullName = receipt.FullName,
 
                                 UnitCost = receipt.UnitPrice,
                                 TotalCost = receipt.UnitPrice * receipt.ActualDelivered
@@ -276,11 +276,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            DepartmentName = x.receipt.DepartmentName,
                            LocationCode = x.receipt.LocationCode,
                            LocationName = x.receipt.LocationName,
-                           //AccountCode = x.receipt.AccountCode,
-                           //AccountTitles = x.receipt.AccountTitles,
-                           //EmpId = x.receipt.EmpId,
-                           //FullName = x.receipt.FullName,
-                           
+                           AccountCode = x.issue.AccountCode,
+                           AccountTitles = x.issue.AccountTitles,
+                           EmpId = x.issue.EmpId,
+                           FullName = x.issue.FullName,
+
                            UnitCost = x.issue.UnitPrice,
                            TotalCost = x.issue.UnitPrice * x.issue.Quantity
 
@@ -320,17 +320,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         Uom = x.First().borrow.Uom,
                         BorrowedQuantity = x.First().borrow.Quantity != null ? x.First().borrow.Quantity : 0,
 
-
-
                 });
 
 
             return await PagedList<BorrowedTransactionReportsDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
 
         }
-
-
-
 
 
         public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo)
@@ -417,7 +412,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                AccountTitles = x.returned.AccountTitles,
                                EmpId = x.returned.EmpId,
                                FullName = x.returned.FullName
-
+                               
                            });
 
            

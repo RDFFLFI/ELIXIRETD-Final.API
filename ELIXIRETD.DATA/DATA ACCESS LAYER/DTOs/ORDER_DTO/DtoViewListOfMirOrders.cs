@@ -47,6 +47,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
 
             public decimal Quantity { get; set; }
 
+            public string AccountCode { get; set; }
+            public string AccountTitles { get; set; }
+            public string EmpId { get; set; }
+
+            public string FullName { get; set; }
+
 
 
         }
