@@ -765,7 +765,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
-                                 material.AccountTitle.ItemCategory.ItemCategoryName,
+                                 material.ItemCategory.ItemCategoryName,
                                  material.BufferLevel,
                                  UnitPrice = unitprice.UnitPrice != null ? unitprice.UnitPrice : 0,
                                  sudggest = sudggest.Ordered != null ? sudggest.Ordered : 0,
@@ -809,7 +809,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
-                                 BorrowConsume = total.Key.ConsumeQuantity
+                                 BorrowConsume = total.Key.ConsumeQuantity,
                                  //BorrowedDifference = total.Key.returned
 
                              });
@@ -1532,7 +1532,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
-                                 material.AccountTitle.ItemCategory.ItemCategoryName,
+                                 material.ItemCategory.ItemCategoryName,
                                  material.BufferLevel,
                                  UnitPrice = unitprice.UnitPrice != null ? unitprice.UnitPrice : 0,
                                  sudggest = sudggest.Ordered != null ? sudggest.Ordered : 0,
@@ -2302,7 +2302,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
-                                 material.AccountTitle.ItemCategory.ItemCategoryName,
+                                 material.ItemCategory.ItemCategoryName,
                                  material.BufferLevel,
                                  UnitPrice = unitprice.UnitPrice != null ? unitprice.UnitPrice : 0,
                                  sudggest = sudggest.Ordered != null ? sudggest.Ordered : 0,

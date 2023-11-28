@@ -368,10 +368,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateItemCategories([FromBody] ItemCategory category)
         {
 
-            //var validate = await _unitOfWork.Materials.ValidateItemCategorySame(category);
-            //if (validate == true)
-            //    return BadRequest("The item category cannot be changed because you entered the same item category!");
-
+      
             if (await _unitOfWork.Materials.ValidateItemCategInUse(category.Id))
                 return BadRequest("Item category was in use!");
 
