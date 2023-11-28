@@ -303,138 +303,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         //==================================================== Sub Category ===================================================
 
 
-        public async Task<IReadOnlyList<AccountTitlesDto>> GetAllActiveAccountTitles()
-        {
-            var category = _context.AccountTitles.Where(x => x.IsActive == true)
-                                                 .Select(x => new AccountTitlesDto
-                                                 {
-                                                     Id = x.Id,
-                                                     AccountPName = x.AccountPName,
-                                                     ItemCategoryId = x.ItemCategoryId,
-                                                     ItemCategoryName = x.ItemCategory.ItemCategoryName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                     IsActive = x.IsActive
-
-                                                 });
-
-            return await category.ToListAsync();
-        }
-
-        public async Task<IReadOnlyList<AccountTitlesDto>> GetInActiveAccountTitles()
-        {
-            var category = _context.AccountTitles.Where(x => x.IsActive == false)
-                                                 .Select(x => new AccountTitlesDto
-                                                 {
-                                                     Id = x.Id,
-                                                     AccountPName = x.AccountPName,
-                                                     ItemCategoryId = x.ItemCategoryId,
-                                                     ItemCategoryName = x.ItemCategory.ItemCategoryName,
-                                                     AddedBy = x.AddedBy,
-                                                     DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                     IsActive = x.IsActive
-                                                 });
-
-            return await category.ToListAsync();
-
-        }
-
-        public async Task<bool> AddNewAccountTitles(AccountTitle category)
-        {
-            await _context.AccountTitles.AddAsync(category);
-            return true;
-        }
-
-
-        public async Task<bool> UpdateAccountTitles(AccountTitle category)
-        {
-            var update = await _context.AccountTitles.Where(x => x.Id == category.Id)
-                                                     .FirstOrDefaultAsync();
-
-            if (update == null)
-                return false;
-
-            update.AccountPName = category.AccountPName;
-            update.ItemCategoryId = category.ItemCategoryId;
-
-            return true;
-
-        }
-
-
-        public async Task<bool> ActivateAccountTitles(AccountTitle category)
-        {
-            var update = await _context.AccountTitles.Where(x => x.Id == category.Id)
-                                                     //.Where(x => x.ItemCategoryId == category.ItemCategoryId)
-                                                     .FirstOrDefaultAsync();
-
-
-
-            if (update == null)
-                return false;
-
-
-            update.IsActive = category.IsActive = true;
-
-            return true;
-        }
-
-
-        public async Task<bool> InActiveAccountTitles(AccountTitle category)
-        {
-
-            var update = await _context.AccountTitles.Where(x => x.Id == category.Id)
-                                                  .FirstOrDefaultAsync();
-
-            if (update == null)
-                return false;
-
-            update.IsActive = false;
-
-            return true;
-        }
-
-
-        public async Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPagination(bool status, UserParams userParams)
-        {
-            var categories = _context.AccountTitles.Where(x => x.IsActive == status)
-                                                   .OrderByDescending(x => x.DateAdded)
-                                                    .Select(x => new AccountTitlesDto
-                                                    {
-                                                        Id = x.Id,
-                                                        AccountPName = x.AccountPName,
-                                                        ItemCategoryId = x.ItemCategoryId,
-                                                        ItemCategoryName = x.ItemCategory.ItemCategoryName,
-                                                        AddedBy = x.AddedBy,
-                                                        DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                        IsActive = x.IsActive
-                                                    });
-
-            return await PagedList<AccountTitlesDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
-
-
-        }
-
-
-        public async Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPaginationOrig(UserParams userParams, bool status, string search){
-            var categories = _context.AccountTitles.Where(x => x.IsActive == status)
-                                                    .OrderByDescending(x => x.DateAdded)
-                                                     .Select(x => new AccountTitlesDto
-                                                     {
-                                                         Id = x.Id,
-                                                         AccountPName = x.AccountPName,
-                                                         ItemCategoryId = x.ItemCategoryId,
-                                                         ItemCategoryName = x.ItemCategory.ItemCategoryName,
-                                                         AddedBy = x.AddedBy,
-                                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                         IsActive = x.IsActive
-
-                                                     }).Where(x => x.AccountPName.ToLower().Contains(search.Trim().ToLower())
-                                                      || x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower()));
-
-            return await PagedList<AccountTitlesDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
-
-        }
+    
 
 
         //-----------VALIDATION----------
@@ -495,29 +364,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-        public async Task<bool> ValidateAccountInUse(int subcateg)
-        {
-            return await _context.Materials.AnyAsync(x => x.AccountTitleId == subcateg && x.IsActive == true);
+        //public async Task<bool> ValidateAccountInUse(int subcateg)
+        //{
+        //    return await _context.Materials.AnyAsync(x => x.AccountTitleId == subcateg && x.IsActive == true);
 
-        }
-
-
-        public async Task<bool> DuplicateAccountTitleAndItemCategories(AccountTitle category)
-        {
-            var validate = await _context.AccountTitles.Where(x => x.AccountPName == category.AccountPName)
-                                                        .Where(x => x.ItemCategoryId == category.ItemCategoryId)
-                                                        .FirstOrDefaultAsync();
-
-            if (validate == null)
-                return false;
-
-            return true;
-
-        }
+        //}
 
         public async Task<bool> ValidateItemCategInUse(int ItemCateg)
         {
-            return await _context.AccountTitles.AnyAsync(x => x.ItemCategoryId == ItemCateg && x.IsActive == true);
+            return await _context.Materials.AnyAsync(x => x.ItemCategoryId == ItemCateg && x.IsActive == true);
         }
 
         public async Task<bool> ExistItemCateg(string itemcateg)
@@ -552,30 +407,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category)
-        {
-            var items = _context.AccountTitles.Where(x => x.IsActive == true)
-                                       .Where(x => x.ItemCategory.ItemCategoryName == category)
-                                       .Select(x => new DtoItemcategDropdown
-                                       {
-                                           ItemCategoryId = x.ItemCategoryId,
-                                           AccountTitleId= x.Id,
-                                           AccountPName = x.AccountPName,
-
-                                       });
-
-            return await items.ToListAsync();
-
-        }
-
-
         public async Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown()
         {
-            var itemcategory = _context.AccountTitles.Where(x => x.IsActive == true)
+            var itemcategory = _context.ItemCategories.Where(x => x.IsActive == true)
                                                      .Select(x => new DtoItemcategDropdown
                                                      {
-                                                         ItemCategoryId = x.ItemCategoryId,
-                                                         ItemCategoryName = x.ItemCategory.ItemCategoryName,
+                                                         ItemCategoryId = x.Id,
+                                                         ItemCategoryName = x.ItemCategoryName,
 
 
                                                      }).Distinct();
@@ -608,24 +446,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-        public async Task<IReadOnlyList<DtoItemcategDropdown>> GetAllAccountmaterial()
-        {
-            var items = _context.AccountTitles.Where(x => x.IsActive == true)
-
-                                     .Select(x => new DtoItemcategDropdown
-                                     {
-                                         ItemCategoryId = x.ItemCategoryId,
-                                         AccountTitleId = x.Id,
-                                         AccountPName = x.AccountPName,
-                                         ItemCategoryName = x.ItemCategory.ItemCategoryName
-
-                                     });
-
-            return await items.ToListAsync();
-
-
-        }
-
         public async Task<IReadOnlyList<MaterialDto>> GetAllMaterial()
         {
 
@@ -633,8 +453,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             {
                 Id = x.Id,
                 ItemCode = x.ItemCode,
-                ItemCategoryId = x.AccountTitle.ItemCategoryId,
-                ItemCategoryName = x.AccountTitle.ItemCategory.ItemCategoryName,
+                ItemCategoryId = x.ItemCategoryId,
+                ItemCategoryName = x.ItemCategory.ItemCategoryName,
                 ItemDescription = x.ItemDescription,
                 //AccountTitleId = x.AccountTitleId,
                 //AccountPName = x.AccountTitle.AccountPName,
@@ -693,10 +513,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return true;
         }
 
-        public async Task<AccountTitle> GetByNameAndItemCategoryIdAsync(string AccountPName, int itemCategoryId)
-        {
-            return await _context.AccountTitles.FirstOrDefaultAsync(x => x.AccountPName == AccountPName && x.ItemCategoryId == itemCategoryId);
-        }
+     
 
         public async Task<ItemCategory> GetByNameAsync(string itemCategoryName)
         {
@@ -783,6 +600,49 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await _context.Materials.CountAsync(x => x.ItemDescription == material );
         }
 
+
+
+
+
+
+        // Sync ItemCategory Genus  //
+
+
+        public async Task<ItemCategory> GetbyItemCategoryId(int id)
+        {
+            return await _context.ItemCategories.FindAsync(id);
+        }
+
+        public async Task<ItemCategory> GetByItemCategory(int itemCategoryNo)
+        {
+            return await _context.ItemCategories.FirstOrDefaultAsync(x => x.ItemCategory_No == itemCategoryNo);
+        }
+
+        public async Task UpdateAsyncCategory(ItemCategory itemCategory)
+        {
+            _context.ItemCategories.Update(itemCategory);
+            await Task.CompletedTask;
+        }
+
+
+
+        // Sync Material Genus //
+
+        public async Task<Material> GetByItemCategoryId(int id)
+        {
+            return await _context.Materials.FindAsync(id);
+        }
+
+        public async Task<Material> GetByMaterial(int material_No)
+        {
+            return await _context.Materials.FirstOrDefaultAsync(x => x.Material_No == material_No);
+        }
+
+        public async Task UpdateAsyncMaterial(Material material)
+        {
+            _context.Materials.Update(material);
+            await Task.CompletedTask;
+        }
 
 
 

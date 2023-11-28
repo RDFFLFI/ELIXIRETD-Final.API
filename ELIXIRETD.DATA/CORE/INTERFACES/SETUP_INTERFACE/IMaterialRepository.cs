@@ -27,12 +27,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<bool> ItemCodeExist(string itemcode);
         Task<bool> ItemCategoryExist(string category);
         Task<bool> ValidateDescritionAndUom(Material materials);
-        //Task<bool> ExistingSubCateg(string subcateg);
-        Task<bool> ValidateAccountInUse(int subcateg);
 
-
-        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int ? category);
-        //Task<bool> ValidateSubcategories(int subcategories);
+        Task<bool> ValidateDuplicateImport(string itemCode, string itemdescription, int uom, int? category);
 
         Task<bool> ValildateItemCodeForPoSummary(string itemCode);
         Task<bool> ValildateItemCodeForReceiving(string itemCode);
@@ -45,8 +41,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
 
-        Task<bool>AddMaterialImport(Material material);
-        Task<AccountTitle> GetByNameAndItemCategoryIdAsync(string AccountPName, int itemCategoryId);
+        Task<bool> AddMaterialImport(Material material);
+        //Task<AccountTitle> GetByNameAndItemCategoryIdAsync(string AccountPName, int itemCategoryId);
         Task<ItemCategory> GetByNameAsync(string itemCategoryName);
 
 
@@ -64,7 +60,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
         //Task<bool> ExistSubCategoryId(int subCategoryId);
-        Task<bool> DuplicateAccountTitleAndItemCategories(AccountTitle category);
+        //Task<bool> DuplicateAccountTitleAndItemCategories(AccountTitle category);
         Task<bool> ValidateItemCategInUse(int ItemCateg);
         Task<bool> ExistItemCateg(string itemcateg);
 
@@ -75,19 +71,19 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         //====================================================== Sub Category =========================================================
 
-        Task<IReadOnlyList<AccountTitlesDto>> GetAllActiveAccountTitles();
-        Task<IReadOnlyList<AccountTitlesDto>> GetInActiveAccountTitles();
-        Task<bool> AddNewAccountTitles(AccountTitle category);
-        Task<bool> UpdateAccountTitles(AccountTitle category);
-        Task<bool> ActivateAccountTitles(AccountTitle category);
-        Task<bool> InActiveAccountTitles(AccountTitle category);
+        //Task<IReadOnlyList<AccountTitlesDto>> GetAllActiveAccountTitles();
+        //Task<IReadOnlyList<AccountTitlesDto>> GetInActiveAccountTitles();
+        //Task<bool> AddNewAccountTitles(AccountTitle category);
+        //Task<bool> UpdateAccountTitles(AccountTitle category);
+        //Task<bool> ActivateAccountTitles(AccountTitle category);
+        //Task<bool> InActiveAccountTitles(AccountTitle category);
 
-        Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPagination(bool status, UserParams userParams);
-        Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPaginationOrig(UserParams userParams, bool status, string search);
+        //Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPagination(bool status, UserParams userParams);
+        //Task<PagedList<AccountTitlesDto>> GetAllAccountTitlesPaginationOrig(UserParams userParams, bool status, string search);
 
 
 
-        Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category);
+        //Task<IReadOnlyList<DtoItemcategDropdown>> GetAllListofItemMaterial(string category);
         Task<IReadOnlyList<DtoItemcategDropdown>> GetallActiveSubcategoryDropDown();
 
         Task<bool> ValidateMaterialExist(string materialname);
@@ -97,25 +93,44 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
 
 
-        Task<bool> ValidateMaterialAndAccountAndItem(string material, int ? category);
+        Task<bool> ValidateMaterialAndAccountAndItem(string material, int? category);
 
-        Task<int> CountMatchingMaterials(int id ,string material/*, int account*/);
+        Task<int> CountMatchingMaterials(int id, string material/*, int account*/);
 
         Task<int> CountMatchingMaterialsByItemdescription(string material/*, int account*/);
 
 
-        Task<IReadOnlyList<DtoItemcategDropdown>> GetAllAccountmaterial();
+        //Task<IReadOnlyList<DtoItemcategDropdown>> GetAllAccountmaterial();
 
 
 
 
-        Task<IReadOnlyList<MaterialDto>> GetAllMaterial ();
+        Task<IReadOnlyList<MaterialDto>> GetAllMaterial();
 
         Task<IReadOnlyList<ItemCategoryDto>> GetAllItemCategory();
 
-        
 
-       
+
+        // Sync Item Category Genus // 
+
+        Task<ItemCategory> GetbyItemCategoryId(int id);
+
+        Task<ItemCategory> GetByItemCategory(int itemCategoryNo);
+
+        Task UpdateAsyncCategory(ItemCategory itemCategory);
+
+
+        // Sync Item Category 
+
+        Task<Material> GetByItemCategoryId (int id);
+
+        Task<Material> GetByMaterial(int material_No);
+
+        Task UpdateAsyncMaterial(Material material);
+
+
+
+
 
     }
 }

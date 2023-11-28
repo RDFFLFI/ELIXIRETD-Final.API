@@ -1541,6 +1541,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             items.IsActive = false;
 
+             _context.BorrowedConsumes.Remove(items);
+
             return true;
 
         }
@@ -1591,8 +1593,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             foreach(var item in reset)
             {
                 item.IsActive = false;
+
+                _context.BorrowedConsumes.Remove(item);
             }
 
+          
 
             return true;
         }
@@ -1609,8 +1614,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             foreach(var items in consumed)
             {
                 items.IsActive = false;
+
+                _context.BorrowedConsumes.Remove(items);
             }
 
+     
 
             return true;
 

@@ -47,7 +47,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
 
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
 
-        public virtual DbSet<AccountTitle> AccountTitles { get; set; }
 
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

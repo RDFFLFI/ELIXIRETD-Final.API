@@ -21,6 +21,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO
         public decimal UnitCost { get; set; }
 
         public int Barcode { get; set; }
-        public string PreparedDate { get; set; }   
+        public string PreparedDate { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
+
+        public string EmpId { get; set; }
+
+        public string FullName { get; set; }
     }
 }

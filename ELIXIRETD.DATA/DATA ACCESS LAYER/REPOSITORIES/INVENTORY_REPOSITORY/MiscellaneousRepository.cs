@@ -935,12 +935,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                              Id = x.Id,
                                                              ItemCode = x.ItemCode,
-                                                             ItemDescription= x.ItemDescription,
+                                                             ItemDescription = x.ItemDescription,
                                                              Uom = x.Uom,
                                                              TotalQuantity = x.Quantity,
                                                              PreparedDate = x.PreparedDate.ToString("MM/dd/yyyy"),
                                                              UnitCost = x.UnitPrice,
-                                                             Barcode = x.WarehouseId
+                                                             Barcode = x.WarehouseId,
+                                                             AccountCode = x.AccountCode,
+                                                             AccountTitles = x.AccountTitles,
+                                                             EmpId = x.EmpId,
+                                                             FullName = x.FullName
+
 
 
                                                          });

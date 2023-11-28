@@ -26,7 +26,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         private readonly IUnitOfWork _unitOfWork;
         private readonly StoreContext _context;
 
-        public MaterialController(IUnitOfWork unitOfWork , StoreContext context)
+        public MaterialController(IUnitOfWork unitOfWork, StoreContext context)
         {
             _unitOfWork = unitOfWork;
             _context = context;
@@ -68,8 +68,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         continue;
                     }
                     items.ItemCategoryId = itemCategory.Id;
-                   
-                    
+
+
 
                     //AccountTitle account = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.AccountPName, itemCategory.Id);
                     //if(account == null)
@@ -81,7 +81,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     //{
                     //    items.AccountTitleId = account.Id;
                     //}
-                  
+
 
 
                     if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.ItemCategoryId == items.ItemCategoryId) > 1)
@@ -91,9 +91,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                     }
 
-                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId , items.ItemCategoryId);
-                    
-                    if(await _unitOfWork.Materials.ItemCodeExist(items.ItemCode))
+                    var validateDuplicate = await _unitOfWork.Materials.ValidateDuplicateImport(items.ItemCode, items.ItemDescription, items.UomId, items.ItemCategoryId);
+
+                    if (await _unitOfWork.Materials.ItemCodeExist(items.ItemCode))
                     {
                         ItemCodeAlreadyExist.Add(items);
                         continue;
@@ -106,13 +106,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
-                        //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
-                        if (items.ItemCode == string.Empty || items.ItemCode == null)
-                      {
+                    //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
+                    if (items.ItemCode == string.Empty || items.ItemCode == null)
+                    {
                         ItemCodeNull.Add(items);
                         continue;
 
-                      }
+                    }
 
                     if (items.ItemDescription == string.Empty || items.ItemDescription == null)
                     {
@@ -122,16 +122,16 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     }
 
 
-                      if (validateDuplicate == true)
-                      {
+                    if (validateDuplicate == true)
+                    {
                         DuplicateList.Add(items);
-                      }
-                   
-                      else
-                      {
+                    }
+
+                    else
+                    {
                         AvailableImport.Add(items);
                         await _unitOfWork.Materials.AddMaterialImport(items);
-                      }
+                    }
 
                 }
 
@@ -145,11 +145,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     ItemDescriptionNull,
                     ItemCodeAlreadyExist,
                     ItemDescriptionAlreadyExist
-                    
-                 
+
+
                 };
 
-                if (DuplicateList.Count == 0  && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0
+                if (DuplicateList.Count == 0 && ItemcategoryNotExist.Count == 0 && UomNotExist.Count == 0 && ItemCodeNull.Count == 0 && ItemDescriptionNull.Count == 0
                     && ItemCodeAlreadyExist.Count == 0 && ItemDescriptionAlreadyExist.Count == 0)
                 {
                     await _unitOfWork.CompleteAsync();
@@ -191,9 +191,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("AddNewMaterial")]
         public async Task<IActionResult> AddNewMaterial(Material material)
         {
-   
-                var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
-              
+
+            var uomId = await _unitOfWork.Materials.ValidateUOMId(material.UomId);
+
             var existingMaterialsAndItemCode = await _unitOfWork.Materials.ExistingMaterialAndItemCode(material);
 
             if (existingMaterialsAndItemCode == true)
@@ -204,13 +204,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return BadRequest("Item description and item category already exist. Please try something else!");
 
             if (uomId == false)
-                    return BadRequest("UOM doesn't exist");
+                return BadRequest("UOM doesn't exist");
 
-                if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
-                    return BadRequest("Item Code already exist, Please try something else!");
+            if (await _unitOfWork.Materials.ItemCodeExist(material.ItemCode))
+                return BadRequest("Item Code already exist, Please try something else!");
 
-                await _unitOfWork.Materials.AddMaterial(material);
-                await _unitOfWork.CompleteAsync();
+            await _unitOfWork.Materials.AddMaterial(material);
+            await _unitOfWork.CompleteAsync();
 
             return Ok(material);
 
@@ -218,7 +218,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
         [HttpPut]
         [Route("UpdateMaterials")]
-        public async Task<IActionResult> UpdateRawMaterials( [FromBody] Material material)
+        public async Task<IActionResult> UpdateRawMaterials([FromBody] Material material)
         {
 
             if (await _unitOfWork.Materials.ValidateMaterialAndAccountAndItem(material.ItemDescription, material.ItemCategoryId))
@@ -232,7 +232,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             await _unitOfWork.Materials.UpdateMaterial(material);
 
-          
+
 
             await _unitOfWork.CompleteAsync();
             return Ok(material);
@@ -244,15 +244,15 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> InActiveMaterial(Material materials)
         {
 
-            var itemcodes =  await _context.Materials.Where(x => x.Id  == materials.Id)
-                                                      .Where(x => x.IsActive  == true)
+            var itemcodes = await _context.Materials.Where(x => x.Id == materials.Id)
+                                                      .Where(x => x.IsActive == true)
                                                       .FirstOrDefaultAsync();
 
-            if(itemcodes == null)
+            if (itemcodes == null)
             {
                 return BadRequest("Item not exist!");
             }
-            
+
             var items = itemcodes.ItemCode;
 
             await _unitOfWork.Materials.InActiveMaterial(materials);
@@ -266,7 +266,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("ActivateMaterial")]
         public async Task<IActionResult> ActivateRawMaterial([FromBody] Material rawmaterial)
         {
-           
+
 
             await _unitOfWork.Materials.ActivateMaterial(rawmaterial);
             await _unitOfWork.CompleteAsync();
@@ -356,10 +356,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
                 return BadRequest("Item category already exist, Please try something else!");
 
-                await _unitOfWork.Materials.AddNewItemCategory(category);
-                await _unitOfWork.CompleteAsync();
+            await _unitOfWork.Materials.AddNewItemCategory(category);
+            await _unitOfWork.CompleteAsync();
 
-            return Ok(category);         
+            return Ok(category);
         }
 
 
@@ -368,13 +368,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         public async Task<IActionResult> UpdateItemCategories([FromBody] ItemCategory category)
         {
 
-      
+
             if (await _unitOfWork.Materials.ValidateItemCategInUse(category.Id))
                 return BadRequest("Item category was in use!");
 
             if (await _unitOfWork.Materials.ExistItemCateg(category.ItemCategoryName))
                 return BadRequest("Item category already exist, Please try something else!");
-                    
+
             await _unitOfWork.Materials.UpdateItemCategory(category);
             await _unitOfWork.CompleteAsync();
 
@@ -458,152 +458,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             return Ok(categoryResult);
         }
 
-        // ============================================== AccountTitle Category =================================================================
 
-        [HttpGet]
-        [Route("GetAllActiveAccountTitles")]
-        public async Task<IActionResult> GetAllActiveAccountTitles()
-        {
-            var category = await _unitOfWork.Materials.GetAllActiveAccountTitles();
-
-            return Ok(category);
-        }
-
-        [HttpGet]
-        [Route("GetInActiveAccountTitles")]
-        public async Task<IActionResult> GetInActiveAccountTitles()
-        {
-            var category = await _unitOfWork.Materials.GetInActiveAccountTitles();
-
-            return Ok(category);
-        }
-
-        [HttpPost]
-        [Route("AddNewAccountTitles")]
-        public async Task<IActionResult> AddNewAccountTitles(AccountTitle category)
-        {
-           
-            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateAccountTitleAndItemCategories(category);
-
-                if (existingSubCategAndItemCateg == true)
-                return BadRequest("AccountTitles(Per Item) and item category already exist, Please try something else!");
-
-            await _unitOfWork.Materials.AddNewAccountTitles(category);
-            await _unitOfWork.CompleteAsync();
-            return Ok(category);
-        }
-
-        [HttpPut]
-        [Route("UpdateAccountTitles")]
-        public async Task<IActionResult> UpdateAccountTitles(AccountTitle category)
-        {
-
-            if (await _unitOfWork.Materials.ValidateAccountInUse(category.Id))
-                return BadRequest("AccountTitles(Per Item) is in use!");
-
-            var existingSubCategAndItemCateg = await _unitOfWork.Materials.DuplicateAccountTitleAndItemCategories(category);
-
-            if (existingSubCategAndItemCateg == true)
-                return BadRequest("AccountTitles(Per Item) and item category already exist, Please try something else!");
-
-            await _unitOfWork.Materials.UpdateAccountTitles(category);
-            await _unitOfWork.CompleteAsync();
-            return Ok(category);
-
-        }
-
-        [HttpPut]
-        [Route("ActivateAccountTitles")]
-        public async Task<IActionResult> ActivateAccountTitles(AccountTitle category)
-        {
-
-            var valid = await _unitOfWork.Materials.ActivateAccountTitles(category);
-
-            if (valid == false)
-                return BadRequest("No Item category existing, Please try another input!");
-
-            await _unitOfWork.Materials.ActivateAccountTitles(category);
-            await _unitOfWork.CompleteAsync();
-            return Ok(category);
-
-        }
-       
-        [HttpPut]
-        [Route("InActiveAccountTitles")]
-        public async Task<IActionResult> InActiveAccountTitles(AccountTitle category)
-        {
-            var valid = await _unitOfWork.Materials.InActiveAccountTitles(category);
-            if (valid == false)
-                return BadRequest("No Item category existing! Please try another ");
-
-            if (await _unitOfWork.Materials.ValidateAccountInUse(category.Id))
-                return BadRequest("(AccountTitles(Per Item) is in use!");
-
-            await _unitOfWork.Materials.InActiveAccountTitles(category);
-            await _unitOfWork.CompleteAsync();
-            return Ok(category);
-
-        }
-
-        [HttpGet]
-        [Route("GetAllAccountTitlesPagination/{status}")]
-        public async Task<ActionResult<IEnumerable<AccountTitlesDto>>> GetAllAccountTitlesPagination([FromRoute] bool status, [FromQuery] UserParams userParams)
-        {
-            var category = await _unitOfWork.Materials.GetAllAccountTitlesPagination(status, userParams);
-
-            Response.AddPaginationHeader(category.CurrentPage, category.PageSize, category.TotalCount, category.TotalPages, category.HasNextPage, category.HasPreviousPage);
-
-            var categoryResult = new
-            {
-                category,
-                category.CurrentPage,
-                category.PageSize,
-                category.TotalCount,
-                category.TotalPages,
-                category.HasNextPage,
-                category.HasPreviousPage
-            };
-
-            return Ok(categoryResult);
-        }
-
-
-        [HttpGet]
-        [Route("GetAllAccountTitlesPaginationOrig/{status}")]
-        public async Task<ActionResult<IEnumerable<AccountTitlesDto>>> GetAllSubCategoryPaginationOrig([FromRoute] bool status, [FromQuery] UserParams userParams, [FromQuery] string search)
-        {
-            if (search == null)
-
-                return await GetAllAccountTitlesPagination(status, userParams);
-
-            var category = await _unitOfWork.Materials.GetAllAccountTitlesPaginationOrig(userParams, status, search);
-
-            Response.AddPaginationHeader(category.CurrentPage, category.PageSize, category.TotalCount, category.TotalPages, category.HasNextPage, category.HasPreviousPage);
-
-            var categoryResult = new
-            {
-                category,
-                category.CurrentPage,
-                category.PageSize,
-                category.TotalCount,
-                category.TotalPages,
-                category.HasNextPage,
-                category.HasPreviousPage
-            };
-
-            return Ok(categoryResult);
-        }
-
-
-        [HttpGet]
-        [Route("GetAllItemcategoriesmaterial")]
-        public async Task<IActionResult> GetAllsubcategories(string category)
-        {
-            var categ = await _unitOfWork.Materials.GetAllListofItemMaterial(category);
-
-            return Ok(categ);
-
-        }
 
         [HttpGet]
         [Route("GetAllAccountmaterial")]
@@ -615,15 +470,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         }
 
 
-        [HttpGet]
-        [Route("GetAllActiveItemCategories")]
-        public async Task<IActionResult> GetAllActiveItemCategories()
-        {
-            var categ = await _unitOfWork.Materials.GetAllAccountmaterial();
 
-            return Ok(categ);
-
-        }
 
 
         [HttpGet]
@@ -643,6 +490,94 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var categ = await _unitOfWork.Materials.GetAllItemCategory();
 
             return Ok(categ);
+        }
+
+
+
+        // Sync ItemCategory Genus //
+
+
+        [HttpPut]
+        [Route("SyncItemCategory")]
+        public async Task<IActionResult> SyncItemCategory([FromBody] ItemCategory[] category)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            }
+
+            List<ItemCategory> duplicateList = new List<ItemCategory>();
+            List<ItemCategory> availableImport = new List<ItemCategory>();
+
+            foreach (ItemCategory items in category)
+            {
+                if(category.Count(x => x.ItemCategoryName == items.ItemCategoryName) > 1)
+                {
+                    duplicateList.Add(items);
+                }
+                else
+                {
+                    var existingItemCategory = await _unitOfWork.Materials.GetByItemCategory(items.ItemCategory_No);
+                    if (existingItemCategory != null)
+                    {
+                        bool hasChanged = false;
+
+                        if(existingItemCategory.ItemCategoryName != items.ItemCategoryName)
+                        {
+
+                            existingItemCategory.ItemCategoryName = items.ItemCategoryName;
+                            hasChanged = true;
+                        }
+
+                        if(hasChanged)
+                        {
+                            existingItemCategory.IsActive = items.IsActive;
+                            existingItemCategory.ModifyBy = items.ModifyBy;
+                            existingItemCategory.ModifyDate = DateTime.Now;
+                            existingItemCategory.StatusSync = "New update";
+                            existingItemCategory.SyncDate = DateTime.Now;
+
+                            await _unitOfWork.Materials.UpdateAsyncCategory(existingItemCategory);
+                        }
+
+                        if(!hasChanged)
+                        {
+                            existingItemCategory.SyncDate = DateTime.Now;
+                            existingItemCategory.StatusSync = "No new update";
+                        }
+
+                        
+                    }
+                    else
+                    {
+                        items.SyncDate = DateTime.Now;
+                        items.DateAdded = DateTime.Now;
+                        items.StatusSync = "New Added";
+                        availableImport.Add(items);
+                        await _unitOfWork.Materials.AddNewItemCategory(items);
+
+                    }
+
+                }
+            }
+
+            var resultlist = new
+            {
+                AvailableImport = availableImport,
+                DuplicateList = duplicateList,
+            };
+
+            if (duplicateList.Count == 0)
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Successfully updated and added!");
+            }
+            else
+            {
+
+                return BadRequest(resultlist);
+            }
+
         }
 
 
