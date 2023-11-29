@@ -18,10 +18,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
         public bool IsActive { get; set; } = true;
 
         public string UomCode { get; set; }
+        public int UomId { get; set; }
 
         public string ItemCategoryName { get; set; }
-
-
+        public int ItemCategoryId { get; set; }
+        
         public DateTime DateAdded { get; set; } = DateTime.Now;
         public string AddedBy { get; set; }
 
