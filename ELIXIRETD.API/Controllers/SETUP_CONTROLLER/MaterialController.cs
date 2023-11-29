@@ -582,5 +582,179 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
+        [HttpPut]
+        [Route("SyncMaterial")]
+
+        public async Task<IActionResult> SyncMaterial([FromBody] SyncMaterialDto[] material)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            }
+
+            List<SyncMaterialDto> duplicateList = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> availableImport = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> availableUpdate = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> itemCategoryNotExist = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> uomNotExist = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> itemCodeEmpty = new List<SyncMaterialDto>();
+            List<SyncMaterialDto> itemDescriptionEmpty = new List<SyncMaterialDto>();
+
+
+            foreach (SyncMaterialDto item in material)
+            {
+
+                Uom uom =  await _unitOfWork.Uoms.GetByCodeAsync(item.UomCode);
+                if(uom == null )
+                {
+                    uomNotExist.Add(item);
+                    continue;
+                }
+                item.UomId = uom.Id;
+
+                ItemCategory itemCategory = await _unitOfWork.Materials.GetByNameAsync(item.ItemCategoryName);
+                if (itemCategory == null)
+                {
+                    itemCategoryNotExist.Add(item);
+                    continue;
+                }
+                item.ItemCategoryId = itemCategory.Id;
+
+                if (item.ItemCode == string.Empty || item.ItemCode == null)
+                {
+                    itemCodeEmpty.Add(item);
+                    continue;
+
+                }
+
+                if (item.ItemDescription == string.Empty || item.ItemDescription == null)
+                {
+                    itemDescriptionEmpty.Add(item);
+                    continue;
+
+                }
+
+
+                if (material.Count( x => x.ItemCode == item.ItemCode && x.ItemDescription == item.ItemDescription) < 1 )
+                {
+                    duplicateList.Add(item);
+                }
+                else
+                {
+                    var existingMaterials = await _unitOfWork.Materials.GetByMaterial(item.Material_No);
+
+                    if(existingMaterials != null)
+                    {
+                        bool hasChanged  = false;
+                        
+                        if(existingMaterials.ItemCategoryId != item.ItemCategoryId)
+                        {
+                            existingMaterials.ItemCategoryId = item.ItemCategoryId;
+                            hasChanged = true;
+                        }
+
+                        if(existingMaterials.UomId != item.UomId)
+                        {
+                            existingMaterials.UomId = item.UomId;
+                            hasChanged = true;
+                        }
+
+                        if(existingMaterials.ItemCode != item.ItemCode)
+                        {
+                            existingMaterials.ItemCode = item.ItemCode;
+                            hasChanged = true;
+                        }
+                        if(existingMaterials.ItemDescription != item.ItemDescription)
+                        {
+                            existingMaterials.ItemDescription = item.ItemDescription;
+                            hasChanged = true;
+                        }
+
+                        if(hasChanged)
+                        {
+                            existingMaterials.SyncDate = DateTime.Now;
+                            existingMaterials.ModifyBy = User.Identity.Name;
+                            existingMaterials.ModifyDate = DateTime.Now;
+                            existingMaterials.StatusSync = "New update";
+                            availableUpdate.Add(item);
+                            await _unitOfWork.Materials.UpdateAsyncMaterial(existingMaterials);
+
+                        }
+
+                        if (!hasChanged)
+                        {
+                            existingMaterials.SyncDate = DateTime.Now;
+                            existingMaterials.StatusSync = "No new update";
+
+                            availableUpdate.Add(item);
+                        }
+                       
+
+                    }
+                    else
+                    {
+
+                        item.StatusSync = "New Added";
+                        availableImport.Add(item);
+                        await _unitOfWork.Materials.AddSyncMaterial(item);
+
+
+                    }
+
+
+                }
+                
+
+            }
+
+            var resultlist = new
+            {
+                AvailableImport = availableImport,
+                AvailableUpdate = availableUpdate,
+                DuplicateList = duplicateList,
+                UomNotExist = uomNotExist,
+                ItemCategoryNotExist = itemCategoryNotExist,
+                ItemCodeEmpty = itemCodeEmpty,
+                ItemDescriptionEmpty = itemDescriptionEmpty,
+                
+
+            };
+
+            if (duplicateList.Count == 0 && uomNotExist.Count == 0 && itemCategoryNotExist.Count == 0 && itemCodeEmpty.Count == 0 && itemDescriptionEmpty.Count == 0)
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Successfully updated and added!");
+            }
+            else
+            {
+                return BadRequest(resultlist);
+            }
+
+           
+        }
+
+
+        [HttpPut]
+        [Route("UpdateAsyncBufferLvl")]
+        public async Task<IActionResult> UpdateAsyncBufferLvl(Material material)
+        {
+
+            var update = await _unitOfWork.Materials.UpdateAsyncBufferLvl(material);
+
+            if(update == false)
+            {
+                return BadRequest("Material not found");
+            }
+
+
+             await _unitOfWork.Materials.UpdateAsyncBufferLvl(material);
+
+            return Ok(material);
+        }
+
+
+
+
+
     }
 }

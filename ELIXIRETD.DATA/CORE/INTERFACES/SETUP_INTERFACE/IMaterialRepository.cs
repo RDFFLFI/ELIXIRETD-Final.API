@@ -124,9 +124,13 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<Material> GetByItemCategoryId (int id);
 
-        Task<Material> GetByMaterial(int material_No);
+        Task<Material> GetByMaterial(int ? material_No);
 
         Task UpdateAsyncMaterial(Material material);
+
+        Task<bool> AddSyncMaterial(SyncMaterialDto material);
+
+        Task<bool> UpdateAsyncBufferLvl(Material material);
 
 
 

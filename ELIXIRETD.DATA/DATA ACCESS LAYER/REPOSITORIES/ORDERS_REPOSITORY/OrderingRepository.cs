@@ -1455,6 +1455,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     EmpId = total.Key.EmpId,
                     FullName = total.Key.FullName,
                     StandardQuantity = total.Key.StandartQuantity,
+                    StockOnHand = total.Key.Reserve
                    
                 }).ToList();
 

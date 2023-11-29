@@ -633,7 +633,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await _context.Materials.FindAsync(id);
         }
 
-        public async Task<Material> GetByMaterial(int material_No)
+        public async Task<Material> GetByMaterial(int ? material_No)
         {
             return await _context.Materials.FirstOrDefaultAsync(x => x.Material_No == material_No);
         }
@@ -644,9 +644,41 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             await Task.CompletedTask;
         }
 
+        public async Task<bool> AddSyncMaterial(SyncMaterialDto material)
+        {
+            var materials = new Material
+            {
+                Material_No = material.Material_No,
+                ItemCode = material.ItemCode,
+                ItemDescription = material.ItemDescription,
+                UomId = material.UomId,
+                ItemCategoryId = material.ItemCategoryId,
+                SyncDate = DateTime.Now,
+                StatusSync = "New Added",
+                BufferLevel = 0,
+                AddedBy = material.AddedBy
+            };
+
+            await _context.AddAsync(materials);
+
+            return true;
+        }
+
+        public async Task<bool> UpdateAsyncBufferLvl(Material material)
+        {
 
 
+            var update = await _context.Materials.Where(x => x.Id == material.Id).FirstOrDefaultAsync();
 
+            if (update == null)
+            {
+                return false;
+            }
+
+            update.BufferLevel = material.BufferLevel;
+
+            return true;
+        }
     }
     
  
