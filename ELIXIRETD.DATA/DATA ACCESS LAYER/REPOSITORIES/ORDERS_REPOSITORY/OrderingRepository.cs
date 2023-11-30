@@ -2504,13 +2504,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             foreach (var x in existingsMoveOrders)
             {
-                //x.Department = order.Department;
-                //x.CompanyCode = order.CompanyCode;
-                //x.CompanyName = order.CompanyName;
-                //x.DepartmentCode = order.DepartmentCode;
-                //x.DepartmentName = order.DepartmentName;
-                //x.LocationCode = order.LocationCode;
-                //x.LocationName = order.LocationName;
+                x.Department = order.Department;
+                x.CompanyCode = order.CompanyCode;
+                x.CompanyName = order.CompanyName;
+                x.DepartmentCode = order.DepartmentCode;
+                x.DepartmentName = order.DepartmentName;
+                x.LocationCode = order.LocationCode;
+                x.LocationName = order.LocationName;
                 //x.AccountCode = order.AccountCode;
                 //x.AccountTitles = order.AccountTitles;
                 //x.EmpId = order.EmpId;

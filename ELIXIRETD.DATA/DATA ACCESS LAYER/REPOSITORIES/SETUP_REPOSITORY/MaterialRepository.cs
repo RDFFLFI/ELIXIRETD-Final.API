@@ -42,7 +42,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 UomId = x.UomId,
                                                 DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                 AddedBy = x.AddedBy,
-                                                IsActive = x.IsActive
+                                                IsActive = x.IsActive,
+                                                ModifyBy = x.ModifyBy,
+                                                ModifyDate = x.ModifyDate.ToString(),
+
+                                                SyncDate = x.SyncDate.ToString(),
+                                                SyncStatus = x.StatusSync,
                                             });
 
             return await materials.ToListAsync();
@@ -65,7 +70,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  UomId = x.UomId,
                                                  DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                  AddedBy = x.AddedBy,
-                                                 IsActive = x.IsActive
+                                                 IsActive = x.IsActive,
+                                                 ModifyBy = x.ModifyBy,
+                                                 ModifyDate = x.ModifyDate.ToString(),
+
+                                                 SyncDate = x.SyncDate.ToString(),
+                                                 SyncStatus = x.StatusSync,
 
                                              });
 
@@ -152,7 +162,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                   UomId = x.UomId,
                                                   DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                   AddedBy = x.AddedBy,
-                                                  IsActive = x.IsActive
+                                                  IsActive = x.IsActive,
+                                                  ModifyBy = x.ModifyBy,
+                                                  ModifyDate = x.ModifyDate.ToString(),
+
+                                                  SyncDate = x.SyncDate.ToString(),
+                                                  SyncStatus = x.StatusSync,
 
                                               });
 
@@ -177,7 +192,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 UomId = x.UomId,
                                                 DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
                                                 AddedBy = x.AddedBy,
-                                                IsActive = x.IsActive
+                                                IsActive = x.IsActive,
+                                                ModifyBy = x.ModifyBy,
+                                                ModifyDate = x.ModifyDate.ToString(),
+
+                                                SyncDate = x.SyncDate.ToString(),
+                                                SyncStatus = x.StatusSync,
 
                                             }).Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                                              || x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
@@ -201,7 +221,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                             ItemCategoryName = x.ItemCategoryName,
                                             AddedBy = x.AddedBy,
                                             DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                            IsActive = x.IsActive
+                                            IsActive = x.IsActive,
+                                            ModifyBy = x.ModifyBy,
+                                            ModifyDate = x.ModifyDate.ToString(),
+
+                                            SyncDate = x.SyncDate.ToString(),
+                                            SyncStatus = x.StatusSync,
 
 
                                         });
@@ -217,8 +242,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                           ItemCategoryName = x.ItemCategoryName,
                                           AddedBy = x.AddedBy,
                                           DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                          IsActive = x.IsActive
+                                          IsActive = x.IsActive,
+                                           ModifyBy = x.ModifyBy,
+                                          ModifyDate = x.ModifyDate.ToString(),
 
+                                          SyncDate = x.SyncDate.ToString(),
+                                          SyncStatus = x.StatusSync,
                                       });
             return await categories.ToListAsync();
         }
@@ -277,7 +306,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          ItemCategoryName = x.ItemCategoryName,
                                                          AddedBy = x.AddedBy,
                                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                         IsActive = x.IsActive
+                                                         IsActive = x.IsActive,
+                                                         ModifyBy = x.ModifyBy,
+                                                         ModifyDate = x.ModifyDate.ToString(),
+
+                                                         SyncDate = x.SyncDate.ToString(),
+                                                         SyncStatus = x.StatusSync,
                                                      });
 
             return await PagedList<ItemCategoryDto>.CreateAsync(categories, userParams.PageNumber, userParams.PageSize);
@@ -293,7 +327,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                          ItemCategoryName = x.ItemCategoryName,
                                                          AddedBy = x.AddedBy,
                                                          DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                                         IsActive = x.IsActive
+                                                         IsActive = x.IsActive,
+                                                         ModifyBy = x.ModifyBy,
+                                                         ModifyDate = x.ModifyDate.ToString(),
+
+                                                         SyncDate = x.SyncDate.ToString(),
+                                                         SyncStatus = x.StatusSync,
 
                                                      }).Where(x => x.ItemCategoryName.ToLower().Contains(search.Trim().ToLower()));
 
