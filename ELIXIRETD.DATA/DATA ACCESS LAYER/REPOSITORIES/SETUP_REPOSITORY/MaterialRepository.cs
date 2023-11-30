@@ -456,8 +456,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                 ItemCategoryId = x.ItemCategoryId,
                 ItemCategoryName = x.ItemCategory.ItemCategoryName,
                 ItemDescription = x.ItemDescription,
-                //AccountTitleId = x.AccountTitleId,
-                //AccountPName = x.AccountTitle.AccountPName,
                 BufferLevel = x.BufferLevel,
                 Uom = x.Uom.UomCode,
                 UomId = x.UomId,
@@ -602,11 +600,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
 
 
-
-
-
         // Sync ItemCategory Genus  //
-
 
         public async Task<ItemCategory> GetbyItemCategoryId(int id)
         {

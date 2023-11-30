@@ -3515,7 +3515,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.CustomerName,
                 x.IsPrepared,
                 x.IsApproved,
-
+                x.IsActive
 
             }).Select(x => new ListofOrderDto
             {
@@ -3523,7 +3523,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CustomerCode = x.Key.Customercode,
                CustomerName = x.Key.CustomerName,
                 IsPrepared = x.Key.IsPrepared,
-                IsApproved = x.Key.IsApproved
+                IsApproved = x.Key.IsApproved,
+                IsActive = x.Key.IsActive
 
             });
 
@@ -3540,6 +3541,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.order.IsPrepared,
                 x.order.IsApproved,
                 x.moveorder.IsApprove,
+                x.order.IsActive
 
 
             }).Select(x => new ListofOrderDto
@@ -3549,7 +3551,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CustomerName = x.Key.CustomerName,
                 IsPrepared = x.Key.IsPrepared,
                 IsApproved = x.Key.IsApproved,
-                IsServed = x.Key.IsApprove
+                IsServed = x.Key.IsApprove,
+                IsActive = x.Key.IsActive
 
 
             });
@@ -3562,6 +3565,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.IsPrepared,
                 x.IsApproved,
                 x.IsServed,
+                x.IsActive
 
             }).Select(x => new TrackingofOrderingTransactionDto
             {
@@ -3570,8 +3574,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                CustomerName = x.Key.CustomerName,
                 OrderStatus = (x.Key.IsPrepared && x.Key.IsApproved.HasValue && x.Key.IsServed.HasValue && x.Key.IsServed.Value) ? "Served" :
                   (x.Key.IsPrepared && x.Key.IsApproved.HasValue && (!x.Key.IsServed.HasValue || !x.Key.IsServed.Value)) ? "Approved" :
-                  (x.Key.IsPrepared && (!x.Key.IsApproved.HasValue || (x.Key.IsServed.HasValue && !x.Key.IsServed.Value))) ? "Preparing" :
-                  "For Preparation"
+                  (x.Key.IsPrepared && (!x.Key.IsApproved.HasValue || (!x.Key.IsServed.HasValue && !x.Key.IsServed.Value))) ? "Preparing" :
+                  (x.Key.IsActive == true) ? "UnServed" : "For Preparation"
+                  
 
             });
 

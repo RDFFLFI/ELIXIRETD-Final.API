@@ -18,5 +18,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER
 
         public bool? IsServed { get; set; }
 
+        public bool IsActive { get; set; }
+
     }
 }

@@ -14,6 +14,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
         public string CustomerName { get; set; }
 
         public string OrderStatus  { get; set; }
+
+       
         
         
 

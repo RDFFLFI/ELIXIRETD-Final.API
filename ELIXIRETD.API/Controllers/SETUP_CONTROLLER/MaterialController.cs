@@ -508,6 +508,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             List<ItemCategory> duplicateList = new List<ItemCategory>();
             List<ItemCategory> availableImport = new List<ItemCategory>();
+            List<ItemCategory> availableUpdate = new List<ItemCategory>();
+            List<ItemCategory> itemCategoryEmpty = new List<ItemCategory>();
 
             foreach (ItemCategory items in category)
             {
@@ -515,6 +517,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 {
                     duplicateList.Add(items);
                 }
+                if (items.ItemCategoryName == string.Empty || items.ItemCategoryName == null)
+                {
+                    itemCategoryEmpty.Add(items);
+                    continue;
+
+                }
+
                 else
                 {
                     var existingItemCategory = await _unitOfWork.Materials.GetByItemCategory(items.ItemCategory_No);
@@ -532,11 +541,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         if(hasChanged)
                         {
                             existingItemCategory.IsActive = items.IsActive;
-                            existingItemCategory.ModifyBy = items.ModifyBy;
+                            existingItemCategory.ModifyBy = User.Identity.Name;
                             existingItemCategory.ModifyDate = DateTime.Now;
                             existingItemCategory.StatusSync = "New update";
                             existingItemCategory.SyncDate = DateTime.Now;
 
+                            availableUpdate.Add(existingItemCategory);
                             await _unitOfWork.Materials.UpdateAsyncCategory(existingItemCategory);
                         }
 
@@ -544,6 +554,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         {
                             existingItemCategory.SyncDate = DateTime.Now;
                             existingItemCategory.StatusSync = "No new update";
+                            availableUpdate.Add(existingItemCategory);
                         }
 
                         
@@ -564,10 +575,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var resultlist = new
             {
                 AvailableImport = availableImport,
+                AvailableUpdate = availableUpdate,
+                 ItemCategoryEmpty = itemCategoryEmpty,
                 DuplicateList = duplicateList,
             };
 
-            if (duplicateList.Count == 0)
+            if (duplicateList.Count == 0 &&  itemCategoryEmpty.Count == 0)
             {
                 await _unitOfWork.CompleteAsync();
                 return Ok("Successfully updated and added!");
