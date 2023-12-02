@@ -1423,6 +1423,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .GroupBy(x => new
                 {
                     x.ordering.Id,
+                    x.ordering.OrderNo,
                     x.ordering.Customercode,
                     x.ordering.CustomerName,
                     x.ordering.TrasactId,
@@ -1442,6 +1443,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
 
                     Id = total.Key.Id, 
+                    OrderNo = total.Key.OrderNo,
                     MIRId = total.Key.TrasactId,
                     CustomerCode = total.Key.Customercode,
                     CustomerName = total.Key.CustomerName,
@@ -1517,6 +1519,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                      .FirstOrDefaultAsync();
 
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
+            existingOrder.Remarks = orders.Remarks;
 
             existingOrder.AccountCode = orders.AccountCode;
             existingOrder.AccountTitles = orders.AccountTitles;
@@ -1902,6 +1905,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                    .GroupBy(x => new
                    {
                        x.ordering.Id,
+                       x.ordering.OrderNo,
                        x.ordering.TrasactId,
                        x.ordering.OrderDate,
                        x.ordering.DateNeeded,

@@ -426,24 +426,81 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo )
         {
-            var orders = _context.Orders.Where(x => x.CancelDate >= DateTime.Parse(DateFrom) && x.CancelDate <= DateTime.Parse(DateTo) && x.IsCancel == true && x.IsActive == false)
-                                        .Select(x => new DtoCancelledReports
+
+            var cancelled = _context.Orders.Where(x => x.IsCancel == true  && x.IsActive == false)
+                                        .GroupBy(x => new
+                                        {
+                                            x.Id,
+                                            x.OrderNo,
+                                            x.DateNeeded,
+                                            x.OrderDate,
+                                            x.Customercode,
+                                            x.CustomerName,
+                                            x.ItemCode,
+                                            x.ItemdDescription,
+                                            x.CancelDate,
+                                            x.IsCancelBy,
+                                            x.Remarks
+
+
+                                        }).Select(x => new DtoCancelledReports
                                         {
 
-                                            OrderId = x.Id,
-                                            DateNeeded = x.DateNeeded.ToString(),
-                                            DateOrdered = x.OrderDate.ToString(),
-                                            CustomerCode = x.Customercode,
-                                            CustomerName = x.CustomerName,
-                                            ItemCode = x.ItemCode, 
-                                            ItemDescription = x.ItemdDescription,
-                                            QuantityOrdered = x.QuantityOrdered,
-                                            CancelledDate = x.CancelDate.ToString(),
-                                            CancelledBy = x.IsCancelBy,
-                                            Reason = x.Remarks
-
-
+                                            OrderId = x.Key.Id,
+                                            OrderNo = x.Key.OrderNo,
+                                            DateNeeded = x.Key.DateNeeded.ToString(),
+                                            DateOrdered = x.Key.OrderDate.ToString(),
+                                            CustomerCode = x.Key.Customercode,
+                                            CustomerName = x.Key.CustomerName,
+                                            ItemCode = x.Key.ItemCode,
+                                            ItemDescription = x.Key.ItemdDescription,
+                                            QuantityOrdered = x.Sum(x => x.QuantityOrdered),
+                                            CancelledDate = x.Key.CancelDate.ToString(),
+                                            CancelledBy = x.Key.IsCancelBy,
+                                            Reason = x.Key.Remarks
                                         });
+
+
+            var orders = _context.Orders.Where(x => x.Remarks != null && x.Remarks != string.Empty)
+                       .GroupJoin(cancelled, order => order.ItemCode, cancel => cancel.ItemCode, (order, cancel) => new { order, cancel })
+                       .SelectMany(x => x.cancel.DefaultIfEmpty(), (x, cancel) => new { x.order, cancel })
+                       .Where(x => x.order.DateNeeded >= DateTime.Parse(DateFrom) && x.order.DateNeeded <= DateTime.Parse(DateTo))
+                       .GroupBy(x => new
+                       {
+                           x.order.Id,
+                           x.order.OrderNo,
+                           x.order.OrderDate,
+                           x.order.DateNeeded,
+                           x.order.Customercode,
+                           x.order.CustomerName,
+                           x.order.ItemCode,
+                           x.order.ItemdDescription,
+                           x.cancel.CancelledBy,
+                           x.cancel.CancelledDate,
+                           x.cancel.Reason,
+                           x.order.Remarks,
+                           x.cancel.QuantityOrdered,
+
+
+                       }).Select(x => new DtoCancelledReports
+                       {
+                           OrderId = x.Key.Id,
+                           OrderNo = x.Key.OrderNo,
+                           DateNeeded = x.Key.DateNeeded.ToString(),
+                           DateOrdered = x.Key.OrderDate.ToString(),
+                           CustomerCode = x.Key.Customercode,
+                           CustomerName = x.Key.CustomerName,
+                           ItemCode = x.Key.ItemCode,
+                           ItemDescription = x.Key.ItemdDescription,
+                           CancelledBy = x.Key.CancelledBy,
+                           CancelledDate = x.Key.CancelledDate,
+                           Reason = x.Key.Reason != null ? x.Key.Reason : x.Key.Remarks,
+                           QuantityOrdered = x.Key.QuantityOrdered != null ? x.Key.QuantityOrdered :  x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered)
+
+                       });
+                
+
+
 
             return await PagedList<DtoCancelledReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }

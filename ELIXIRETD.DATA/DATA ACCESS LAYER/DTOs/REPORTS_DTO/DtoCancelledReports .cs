@@ -10,6 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     {
         public int OrderId { get; set; }
 
+        public int OrderNo { get; set; }
         public string DateNeeded { get; set; }
         public string DateOrdered { get; set; }
         public string CustomerCode { get; set; }

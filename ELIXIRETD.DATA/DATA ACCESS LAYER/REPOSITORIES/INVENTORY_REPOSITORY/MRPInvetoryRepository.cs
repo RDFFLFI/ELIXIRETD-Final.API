@@ -702,15 +702,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  //into leftJ8
                                  //from borrow in leftJ8.DefaultIfEmpty()
 
-                             join consume in getConsumeBorrow
+                             join consume in consumed
                              on material.ItemCode equals consume.ItemCode
-                             into leftJ9
-                             from consume in leftJ9.DefaultIfEmpty()
+                             into leftJ8
+                             from consume in leftJ8.DefaultIfEmpty()
 
-                                 //join returned in getReturnedBorrow
-                                 //on material.ItemCode equals returned.ItemCode
-                                 //into leftJ9
-                                 //from returned in leftJ9.DefaultIfEmpty()
+                             join returned in getReturnedBorrow
+                             on material.ItemCode equals returned.ItemCode
+                             into leftJ9
+                             from returned in leftJ9.DefaultIfEmpty()
 
                              join reserve in getReserve
                              on material.ItemCode equals reserve.ItemCode
@@ -749,7 +749,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  issueOut,
                                  SOH,
                                  //borrow,
-                                 //returned,
+                                 returned,
                                  consume,
                                  reserve,
                                  sudggest,
@@ -774,13 +774,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  moveorders = moveorders.QuantityOrdered != null ? moveorders.QuantityOrdered : 0,
                                  issueOut = issueOut.Quantity != null ? issueOut.Quantity : 0,
                                  //borrow = borrow.Quantity != null ? borrow.Quantity : 0,
-                                 //returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
+                                 returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                  TotalPrice = unitprice.TotalUnitPrice != null ? unitprice.TotalUnitPrice : 0,
                                  SOH = SOH.SOH != null ? SOH.SOH : 0,
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
+                                 ConsumeQuantity = consume.Consume != null ? consume.Consume : 0
 
 
                              }
@@ -800,7 +800,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  ReceiptIn = total.Key.receiptin,
                                  IssueOut = total.Key.issueOut,
                                  //BorrowedDepartment = total.Key.borrow,
-                                 //ReturnedBorrowed = total.Key.returned,
+                                 ReturnedBorrowed = total.Key.returned,
+                                 BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve,
@@ -809,7 +810,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
-                                 BorrowConsume = total.Key.ConsumeQuantity,
+                            
                                  //BorrowedDifference = total.Key.returned
 
                              });
@@ -826,19 +827,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var StartDate = EndDate.AddDays(-30);
 
             var getPoSummary = _context.PoSummaries.Where(x => x.IsActive == true)
-                                                    .GroupBy(x => new
-                                                    {
+                                                            .GroupBy(x => new
+                                                            {
 
-                                                        x.ItemCode,
+                                                                x.ItemCode,
 
-                                                    }).Select(x => new PoSummaryDto
-                                                    {
-                                                        ItemCode = x.Key.ItemCode,
-                                                        UnitPrice = x.Sum(x => x.UnitPrice),
-                                                        Ordered = x.Sum(x => x.Ordered),
-                                                        //TotalPrice = x.Average(x => x.UnitPrice)
+                                                            }).Select(x => new PoSummaryDto
+                                                            {
+                                                                ItemCode = x.Key.ItemCode,
+                                                                UnitPrice = x.Sum(x => x.UnitPrice),
+                                                                Ordered = x.Sum(x => x.Ordered),
+                                                                //TotalPrice = x.Average(x => x.UnitPrice)
 
-                                                    });
+                                                            });
 
 
             var getWarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -1469,15 +1470,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  //into leftJ8
                                  //from borrow in leftJ8.DefaultIfEmpty()
 
-                             join consume in getConsumeBorrow
+                             join consume in consumed
                              on material.ItemCode equals consume.ItemCode
-                             into leftJ9
-                             from consume in leftJ9.DefaultIfEmpty()
+                             into leftJ8
+                             from consume in leftJ8.DefaultIfEmpty()
 
-                                 //join returned in getReturnedBorrow
-                                 //on material.ItemCode equals returned.ItemCode
-                                 //into leftJ9
-                                 //from returned in leftJ9.DefaultIfEmpty()
+                             join returned in getReturnedBorrow
+                             on material.ItemCode equals returned.ItemCode
+                             into leftJ9
+                             from returned in leftJ9.DefaultIfEmpty()
 
                              join reserve in getReserve
                              on material.ItemCode equals reserve.ItemCode
@@ -1516,7 +1517,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  issueOut,
                                  SOH,
                                  //borrow,
-                                 //returned,
+                                 returned,
                                  consume,
                                  reserve,
                                  sudggest,
@@ -1541,13 +1542,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  moveorders = moveorders.QuantityOrdered != null ? moveorders.QuantityOrdered : 0,
                                  issueOut = issueOut.Quantity != null ? issueOut.Quantity : 0,
                                  //borrow = borrow.Quantity != null ? borrow.Quantity : 0,
-                                 //returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
+                                 returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                  TotalPrice = unitprice.TotalUnitPrice != null ? unitprice.TotalUnitPrice : 0,
                                  SOH = SOH.SOH != null ? SOH.SOH : 0,
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
+                                 ConsumeQuantity = consume.Consume != null ? consume.Consume : 0
 
 
                              }
@@ -1567,7 +1568,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  ReceiptIn = total.Key.receiptin,
                                  IssueOut = total.Key.issueOut,
                                  //BorrowedDepartment = total.Key.borrow,
-                                 //ReturnedBorrowed = total.Key.returned,
+                                 ReturnedBorrowed = total.Key.returned,
+                                 BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve,
@@ -1576,9 +1578,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
-                                 BorrowConsume = total.Key.ConsumeQuantity
-                                 //BorrowedDifference = total.Key.returned
 
+                                 //BorrowedDifference = total.Key.returned
 
                              });
 
@@ -1596,19 +1597,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var StartDate = EndDate.AddDays(-30);
 
             var getPoSummary = _context.PoSummaries.Where(x => x.IsActive == true)
-                                                   .GroupBy(x => new
-                                                   {
+                                                            .GroupBy(x => new
+                                                            {
 
-                                                       x.ItemCode,
+                                                                x.ItemCode,
 
-                                                   }).Select(x => new PoSummaryDto
-                                                   {
-                                                       ItemCode = x.Key.ItemCode,
-                                                       UnitPrice = x.Sum(x => x.UnitPrice) ,
-                                                       Ordered = x.Sum(x => x.Ordered),
-                                                       //TotalPrice = x.Average(x => x.UnitPrice)
+                                                            }).Select(x => new PoSummaryDto
+                                                            {
+                                                                ItemCode = x.Key.ItemCode,
+                                                                UnitPrice = x.Sum(x => x.UnitPrice),
+                                                                Ordered = x.Sum(x => x.Ordered),
+                                                                //TotalPrice = x.Average(x => x.UnitPrice)
 
-                                                   });
+                                                            });
 
 
             var getWarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -1671,7 +1672,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                 });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                //.Where(x => x.IsApproved == false)
+                                                       //.Where(x => x.IsApproved == false)
                                                        .GroupBy(x => new
                                                        {
 
@@ -1728,7 +1729,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getConsumeBorrow = getBorrowedIssue
                 .GroupJoin(getReturnedBorrow, borrow => borrow.ItemCode, returned => returned.ItemCode, (borrow, returned) => new { borrow, returned })
-                .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.borrow, returned })            
+                .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.borrow, returned })
                 .GroupBy(x => new
                 {
 
@@ -1738,7 +1739,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                 }).Select(x => new DtoBorrowedIssue
                 {
-                    ItemCode  = x.Key.ItemCode,
+                    ItemCode = x.Key.ItemCode,
                     ConsumeQuantity = x.Sum(x => x.borrow.Quantity) - x.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0)
 
                 });
@@ -1875,7 +1876,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                   ItemCode = total.Key.ItemCode,
                                   Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) + total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
-                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0) - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) 
+                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0) - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0)
                                   - total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0)
 
                               });
@@ -1920,7 +1921,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                                      ItemCode = x.Key.ItemCode,
                                                                                      Quantity = x.Sum(x => x.Quantity),
                                                                                  });
-                                                                                 
+
 
             var getMoveOrderoutPerMonth = _context.MoveOrders.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                               .Where(x => x.IsActive == true)
@@ -1966,7 +1967,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 .GroupBy(x => new
                 {
 
-                x.returned.ItemCode,
+                    x.returned.ItemCode,
 
                 }).Select(x => new DtoBorrowedIssue
                 {
@@ -2011,7 +2012,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                           ItemCode = total.Key.ItemCode,
                                           ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)) / 30
 
-                                      }); 
+                                      });
 
             var getReseverUsage = (from warehouse in getWarehouseStock
                                    join ordering in getOrderingReserve
@@ -2047,12 +2048,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             }).Select(x => new WarehouseInventory
             {
-                
+
                 WarehouseId = x.Key.Id,
                 ItemCode = x.Key.ItemCode,
                 UnitPrice = x.Key.UnitPrice,
                 ActualGood = x.Key.ActualDelivered
-                
+
             });
 
 
@@ -2234,20 +2235,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ7
                              from SOH in leftJ7.DefaultIfEmpty()
 
-                             //join borrow in getBorrowedIssue
-                             //on material.ItemCode equals borrow.ItemCode
-                             //into leftJ8
-                             //from borrow in leftJ8.DefaultIfEmpty()
+                                 //join borrow in getBorrowedIssue
+                                 //on material.ItemCode equals borrow.ItemCode
+                                 //into leftJ8
+                                 //from borrow in leftJ8.DefaultIfEmpty()
 
-                             join consume in getConsumeBorrow
-                             on  material.ItemCode equals consume.ItemCode
+                             join consume in consumed
+                             on material.ItemCode equals consume.ItemCode
+                             into leftJ8
+                             from consume in leftJ8.DefaultIfEmpty()
+
+                             join returned in getReturnedBorrow
+                             on material.ItemCode equals returned.ItemCode
                              into leftJ9
-                             from consume in leftJ9.DefaultIfEmpty()
-
-                             //join returned in getReturnedBorrow
-                             //on material.ItemCode equals returned.ItemCode
-                             //into leftJ9
-                             //from returned in leftJ9.DefaultIfEmpty()
+                             from returned in leftJ9.DefaultIfEmpty()
 
                              join reserve in getReserve
                              on material.ItemCode equals reserve.ItemCode
@@ -2286,7 +2287,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  issueOut,
                                  SOH,
                                  //borrow,
-                                 //returned,
+                                 returned,
                                  consume,
                                  reserve,
                                  sudggest,
@@ -2311,14 +2312,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  moveorders = moveorders.QuantityOrdered != null ? moveorders.QuantityOrdered : 0,
                                  issueOut = issueOut.Quantity != null ? issueOut.Quantity : 0,
                                  //borrow = borrow.Quantity != null ? borrow.Quantity : 0,
-                                 //returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
+                                 returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                  TotalPrice = unitprice.TotalUnitPrice != null ? unitprice.TotalUnitPrice : 0,
                                  SOH = SOH.SOH != null ? SOH.SOH : 0,
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
-                                 
+                                 ConsumeQuantity = consume.Consume != null ? consume.Consume : 0
+
 
                              }
 
@@ -2337,20 +2338,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  ReceiptIn = total.Key.receiptin,
                                  IssueOut = total.Key.issueOut,
                                  //BorrowedDepartment = total.Key.borrow,
-                                 //ReturnedBorrowed = total.Key.returned,
+                                 ReturnedBorrowed = total.Key.returned,
+                                 BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalPrice = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
-                                 Reserve = total.Key.reserve ,
+                                 Reserve = total.Key.reserve,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
-   
-                                 ReserveUsage = total.Key.usage,
-                                 DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve )/ Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
-                                 BorrowConsume = total.Key.ConsumeQuantity
-                                 //BorrowedDifference = total.Key.returned
-                           
 
-        }).Where(x => x.ItemDescription.ToLower()
+                                 ReserveUsage = total.Key.usage,
+                                 DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
+
+                                 //BorrowedDifference = total.Key.returned
+
+                             }).Where(x => x.ItemDescription.ToLower()
                                .Contains(search.Trim().ToLower())
                                || x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                                 || x.ItemCategory.ToLower().Contains(search.Trim().ToLower()));

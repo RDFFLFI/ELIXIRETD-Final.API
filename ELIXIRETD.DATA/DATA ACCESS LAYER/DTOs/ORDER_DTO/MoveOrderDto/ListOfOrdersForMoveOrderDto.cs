@@ -9,6 +9,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
     public class ListOfOrdersForMoveOrderDto
     {
         public int Id { get; set; }
+
+        public int OrderNo { get; set; }
         public int MIRId { get; set; }
 
         public string OrderDate { get; set; }

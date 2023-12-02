@@ -17,6 +17,8 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
         public int Role { get; set; }
         public string RoleName { get; set; }
       //  public string RoleName { get; set; }
+
+        public string Deparment { get; set; }
         public string Token { get; set; }
 
 
@@ -31,6 +33,7 @@ namespace ELIXIRETD.DATA.JWT.AUTHENTICATION
             Password = user.Password;
             Role = user.UserRoleId;
             Token = token;
+            Deparment = user.Department;
 
        
 

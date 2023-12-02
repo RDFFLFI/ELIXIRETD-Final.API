@@ -15,7 +15,7 @@
         public string UomCode { get; set; }
 
 
-        public ItemCategory ItemCategory { get; set; }
+        public ItemCategory  ItemCategory { get; set; }
 
         public int ? ItemCategoryId { get; set; }
 

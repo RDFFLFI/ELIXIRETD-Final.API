@@ -71,18 +71,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
 
-                    //AccountTitle account = await _unitOfWork.Materials.GetByNameAndItemCategoryIdAsync(items.AccountPName, itemCategory.Id);
-                    //if(account == null)
-                    //{
-                    //    AccountTitleNotExist.Add(items);
-                    //    continue;
-                    //}
-                    //else
-                    //{
-                    //    items.AccountTitleId = account.Id;
-                    //}
-
-
 
                     if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.ItemCategoryId == items.ItemCategoryId) > 1)
                     {
@@ -761,6 +749,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
              await _unitOfWork.Materials.UpdateAsyncBufferLvl(material);
+             await _unitOfWork.CompleteAsync();
 
             return Ok(material);
         }

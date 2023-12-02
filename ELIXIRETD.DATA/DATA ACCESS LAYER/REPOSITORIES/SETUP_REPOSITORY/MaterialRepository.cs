@@ -701,7 +701,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         {
 
 
-            var update = await _context.Materials.Where(x => x.Id == material.Id).FirstOrDefaultAsync();
+            var update = await _context.Materials.Where(x => x.Id == material.Id)
+                                                 .FirstOrDefaultAsync();
 
             if (update == null)
             {
