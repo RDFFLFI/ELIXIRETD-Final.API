@@ -13,7 +13,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public string ItemDescription { get; set; }
         public string ItemCategory { get; set; }
         public string Uom { get; set; }
-        public decimal Price { get; set; }
+        public decimal UnitCost { get; set; }
         public decimal SOH { get; set; }    
         public decimal Reserve { get; set; }
 
@@ -26,7 +26,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
 
         public decimal IssueOut { get; set; }   
 
-        public decimal TotalPrice { get; set; }
+        public decimal TotalCost { get; set; }
 
         public decimal SuggestedPo { get; set; }
         public decimal AverageIssuance { get; set; }
