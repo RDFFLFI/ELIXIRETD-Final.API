@@ -149,6 +149,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                        });
 
 
+            var getBorrowedForMrp = _context.BorrowedIssueDetails.Where(x => x.IsActive == true && x.IsReturned != true)
+                                                                 .GroupBy(x => new
+                                                                 {
+                                                                     x.ItemCode
+
+                                                                 }).Select(x => new DtoBorrowedIssue
+                                                                 {
+                                                                     ItemCode = x.Key.ItemCode,
+                                                                     Quantity = x.Sum(x => x.Quantity)
+                                                                 });
+
             var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
                                                        .GroupBy(x => new
                                                        {
@@ -162,6 +173,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                            Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
 
                                                        });
+
+
+
 
 
 
@@ -697,12 +711,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ7
                              from SOH in leftJ7.DefaultIfEmpty()
 
-                                 //join borrow in getBorrowedIssue
-                                 //on material.ItemCode equals borrow.ItemCode
-                                 //into leftJ8
-                                 //from borrow in leftJ8.DefaultIfEmpty()
 
-                             join consume in consumed
+                             join consume in getReturnedBorrow
                              on material.ItemCode equals consume.ItemCode
                              into leftJ8
                              from consume in leftJ8.DefaultIfEmpty()
@@ -737,6 +747,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ14
                              from unitprice in leftJ14.DefaultIfEmpty()
 
+                             join borrow in getBorrowedForMrp
+                             on material.ItemCode equals borrow.ItemCode
+                             into leftJ15
+                             from borrow in leftJ15.DefaultIfEmpty()
+
                              orderby material.ItemDescription
 
                              group new
@@ -748,7 +763,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  receiptin,
                                  issueOut,
                                  SOH,
-                                 //borrow,
+                                 borrow,
                                  returned,
                                  consume,
                                  reserve,
@@ -773,14 +788,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  receiptin = receiptin.Quantity != null ? receiptin.Quantity : 0,
                                  moveorders = moveorders.QuantityOrdered != null ? moveorders.QuantityOrdered : 0,
                                  issueOut = issueOut.Quantity != null ? issueOut.Quantity : 0,
-                                 //borrow = borrow.Quantity != null ? borrow.Quantity : 0,
+                                 borrow = borrow.Quantity != null ? borrow.Quantity : 0,
                                  returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                  TotalPrice = unitprice.TotalUnitPrice != null ? unitprice.TotalUnitPrice : 0,
                                  SOH = SOH.SOH != null ? SOH.SOH : 0,
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.Consume != null ? consume.Consume : 0
+                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
 
 
                              }
@@ -799,7 +814,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  MoveOrderOut = total.Key.moveorders,
                                  ReceiptIn = total.Key.receiptin,
                                  IssueOut = total.Key.issueOut,
-                                 //BorrowedDepartment = total.Key.borrow,
+                                 BorrowedOut = total.Key.borrow,
                                  ReturnedBorrowed = total.Key.returned,
                                  BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalCost = Math.Round(total.Key.TotalPrice, 2),
@@ -807,7 +822,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  Reserve = total.Key.reserve,
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
-
                                  ReserveUsage = total.Key.usage,
                                  DaysLevel = total.Key.averageissuance != 0 ? (int)((total.Key.reserve) / Math.Round(total.Key.averageissuance, 2)) : (int)total.Key.reserve,
                             
@@ -917,6 +931,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                        });
 
 
+            var getBorrowedForMrp = _context.BorrowedIssueDetails.Where(x => x.IsActive == true && x.IsReturned != true)
+                                                                 .GroupBy(x => new
+                                                                 {
+                                                                     x.ItemCode
+
+                                                                 }).Select(x => new DtoBorrowedIssue
+                                                                 {
+                                                                     ItemCode = x.Key.ItemCode,
+                                                                     Quantity = x.Sum(x => x.Quantity)
+                                                                 });
+
             var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
                                                        .GroupBy(x => new
                                                        {
@@ -930,6 +955,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                            Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
 
                                                        });
+
+
+
 
 
 
@@ -1465,12 +1493,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ7
                              from SOH in leftJ7.DefaultIfEmpty()
 
-                                 //join borrow in getBorrowedIssue
-                                 //on material.ItemCode equals borrow.ItemCode
-                                 //into leftJ8
-                                 //from borrow in leftJ8.DefaultIfEmpty()
 
-                             join consume in consumed
+                             join consume in getReturnedBorrow
                              on material.ItemCode equals consume.ItemCode
                              into leftJ8
                              from consume in leftJ8.DefaultIfEmpty()
@@ -1505,6 +1529,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ14
                              from unitprice in leftJ14.DefaultIfEmpty()
 
+                             join borrow in getBorrowedForMrp
+                             on material.ItemCode equals borrow.ItemCode
+                             into leftJ15
+                             from borrow in leftJ15.DefaultIfEmpty()
+
                              orderby material.ItemDescription
 
                              group new
@@ -1516,7 +1545,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  receiptin,
                                  issueOut,
                                  SOH,
-                                 //borrow,
+                                 borrow,
                                  returned,
                                  consume,
                                  reserve,
@@ -1541,14 +1570,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  receiptin = receiptin.Quantity != null ? receiptin.Quantity : 0,
                                  moveorders = moveorders.QuantityOrdered != null ? moveorders.QuantityOrdered : 0,
                                  issueOut = issueOut.Quantity != null ? issueOut.Quantity : 0,
-                                 //borrow = borrow.Quantity != null ? borrow.Quantity : 0,
+                                 borrow = borrow.Quantity != null ? borrow.Quantity : 0,
                                  returned = returned.ReturnQuantity != null ? returned.ReturnQuantity : 0,
                                  TotalPrice = unitprice.TotalUnitPrice != null ? unitprice.TotalUnitPrice : 0,
                                  SOH = SOH.SOH != null ? SOH.SOH : 0,
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.Consume != null ? consume.Consume : 0
+                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
 
 
                              }
@@ -1567,12 +1596,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  MoveOrderOut = total.Key.moveorders,
                                  ReceiptIn = total.Key.receiptin,
                                  IssueOut = total.Key.issueOut,
-                                 //BorrowedDepartment = total.Key.borrow,
+                                 BorrowedOut = total.Key.borrow,
                                  ReturnedBorrowed = total.Key.returned,
                                  BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalCost = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
                                  Reserve = total.Key.reserve,
+
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
                                  AverageIssuance = Math.Round(total.Key.averageissuance, 2),
 
