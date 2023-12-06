@@ -752,7 +752,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemDescription
+                             orderby material.ItemCode
 
                              group new
                              {
@@ -1534,7 +1534,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemDescription
+                             orderby material.ItemCode
 
                              group new
                              {
@@ -2320,7 +2320,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemDescription
+                             orderby material.ItemCode
 
                              group new
                              {
@@ -2364,7 +2364,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
                                  ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
-
 
                              }
 

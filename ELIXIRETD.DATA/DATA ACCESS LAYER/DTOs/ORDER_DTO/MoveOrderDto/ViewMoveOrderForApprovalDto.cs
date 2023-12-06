@@ -57,6 +57,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
 
         public string FullName { get; set; }
 
+        public decimal TUnitCost { get; set; }
+
+        public decimal TQuantity { get; set; }
+
+        public decimal TTotalCost { get; set; }
+
 
     }
 }
