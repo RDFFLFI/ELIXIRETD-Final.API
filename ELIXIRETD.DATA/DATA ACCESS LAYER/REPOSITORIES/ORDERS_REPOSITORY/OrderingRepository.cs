@@ -1904,7 +1904,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                    .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
                    .GroupBy(x => new
                    {
-                       x.ordering.Id,
+                       x.ordering.Id,        
                        x.ordering.OrderNo,
                        x.ordering.TrasactId,
                        x.ordering.OrderDate,
@@ -1927,6 +1927,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                    .Select(total => new ListOfOrdersForMoveOrderDto
                    {
                        Id = total.Key.Id,
+                       OrderNo = total.Key.OrderNo,
                        MIRId = total.Key.TrasactId,
                        OrderDate = total.Key.OrderDate.ToString("MM/dd/yyyy"),
                        DateNeeded = total.Key.DateNeeded.ToString("MM/dd/yyyy"),
@@ -3450,36 +3451,52 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             });
 
+            var orderno = _context.Orders.Where(x => x.IsActive == true)
+                                         .GroupBy(x => new
+                                         {
+                                             x.ItemCode,
+                                             x.OrderNo,
+
+                                         }).Select(x => new ListOfMoveOrdersForTransactDto
+                                         {
+                                             OrderNoGenus = x.Key.OrderNo,
+                                             ItemCode = x.Key.ItemCode
+                                         });
+
             var orders = _context.MoveOrders
                 .OrderBy(x => x.Rush == null)
                 .ThenBy(x => x.Rush)
                  .Where(x => x.IsActive == true)
-                   .Where(x => x.IsApprove == true)
-              .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode, unitprice => unitprice.ItemCode, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
+                 .Where(x => x.IsApprove == true)
+               .GroupJoin(orderno , Moveorders => Moveorders.ItemCode , orderNo => orderNo.ItemCode , (Moveorders , orderNo) => new {Moveorders , orderNo})
+               .SelectMany(x => x.orderNo.DefaultIfEmpty() , (x , orderNo) => new {x.Moveorders , orderNo})
+              .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.Moveorders.ItemCode, unitprice => unitprice.ItemCode, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
               .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.MoveOrders, unitprice })
               .GroupBy(x => new
               {
 
-                  x.MoveOrders.OrderNo,
-                  x.MoveOrders.OrderDate,
-                  x.MoveOrders.PreparedDate,
-                  x.MoveOrders.DateNeeded,
-                  x.MoveOrders.Customercode,
-                  x.MoveOrders.CustomerName,
-                  x.MoveOrders.Category,
-                  x.MoveOrders.ItemCode,
-                  x.MoveOrders.ItemDescription,
-                  x.MoveOrders.Uom,
+                  x.MoveOrders.Moveorders.OrderNo,
+                  x.MoveOrders.Moveorders.OrderDate,
+                  x.MoveOrders.Moveorders.PreparedDate,
+                  x.MoveOrders.Moveorders.DateNeeded,
+                  x.MoveOrders.Moveorders.Customercode,
+                  x.MoveOrders.Moveorders.CustomerName,
+                  x.MoveOrders.Moveorders.Category,
+                  x.MoveOrders.Moveorders.ItemCode,
+                  x.MoveOrders.Moveorders.ItemDescription,
+                  x.MoveOrders.Moveorders.Uom,
+                  x.MoveOrders.orderNo.OrderNoGenus,
                   x.unitprice.UnitCost,
                   x.unitprice.TotalCost,
                   x.unitprice.Quantity,
-                  x.MoveOrders.IsApprove,
-                  x.MoveOrders.ItemRemarks
+                  x.MoveOrders.Moveorders.IsApprove,
+                  x.MoveOrders.Moveorders.ItemRemarks
 
               }).Select(x => new ListOfMoveOrdersForTransactDto
               {
 
                   MIRId = x.Key.OrderNo,
+                  OrderNoGenus = x.Key.OrderNoGenus,
                   OrderDate = x.Key.OrderDate.ToString(),
                   PreparedDate = x.Key.PreparedDate.ToString(),
                   DateNeeded = x.Key.DateNeeded.ToString(),

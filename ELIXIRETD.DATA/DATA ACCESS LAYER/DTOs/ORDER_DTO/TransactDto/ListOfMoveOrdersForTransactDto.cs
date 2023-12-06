@@ -11,6 +11,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto
 
         public int OrderNoPkey { get; set; }    
 
+        public int OrderNoGenus {  get; set; }
+
         public int MIRId { get; set; }
 
         public int BarcodeNo { get; set; }
