@@ -12,6 +12,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public int Id { get; set; }
         public int MIRId { get; set; }
 
+        public int OrderNoGenus { get; set; }
+
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
 

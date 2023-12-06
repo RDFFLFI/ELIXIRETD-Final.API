@@ -659,9 +659,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         {
             var details = await _unitofwork.Orders.GetMoveOrderDetailsForMoveOrder(order.OrderNoPkey);
 
-
+            
             order.OrderNoPkey = details.Id;
             order.OrderNo = details.MIRId;
+            order.OrderNoGenus = details.OrderNoGenus;
             order.OrderDate = Convert.ToDateTime(details.OrderDate);
             order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
             order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
