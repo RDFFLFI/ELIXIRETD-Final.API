@@ -14,6 +14,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
 
         public int MIRId { get; set; }
 
+        public int OrderNoGenus { get; set; }
         public int BarcodeNo { get; set; }
 
         public string ItemCode { get; set; }
@@ -62,6 +63,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public decimal TQuantity { get; set; }
 
         public decimal TTotalCost { get; set; }
+
+        public string AssetTag { get; set; }
 
 
     }

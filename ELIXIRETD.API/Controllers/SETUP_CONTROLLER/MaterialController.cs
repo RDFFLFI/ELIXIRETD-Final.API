@@ -542,7 +542,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         {
                             existingItemCategory.SyncDate = DateTime.Now;
                             existingItemCategory.StatusSync = "No new update";
-                            availableUpdate.Add(existingItemCategory);
+                          
                         }
 
                         
@@ -687,7 +687,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingMaterials.SyncDate = DateTime.Now;
                             existingMaterials.StatusSync = "No new update";
 
-                            availableUpdate.Add(item);
                         }
                        
 

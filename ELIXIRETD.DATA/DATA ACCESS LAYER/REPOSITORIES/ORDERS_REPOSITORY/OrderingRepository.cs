@@ -765,7 +765,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
                 Category = x.Key.Category,
-                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                //TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 //IsRush = x.Key.Rush != null ? true : false,
                 //Rush = x.Key.Rush
@@ -808,7 +808,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
                 Category = x.Key.Category,
-                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                //TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsRush = x.Key.Rush != null ? true : false,
                 //Rush = x.Key.Rush
@@ -854,7 +854,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
                 Category = x.Key.Category,
-                TotalOrders = x.Sum(x => x.QuantityOrdered),
+                //TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsRush = x.Key.Rush != null ? true : false,
                 //Rush = x.Key.Rush
@@ -1436,6 +1436,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.AccountTitles,
                     x.ordering.EmpId,
                     x.ordering.FullName,
+                    x.ordering.AssetTag,
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
                     
                 })
@@ -1457,7 +1458,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     EmpId = total.Key.EmpId,
                     FullName = total.Key.FullName,
                     StandardQuantity = total.Key.StandartQuantity,
-                    StockOnHand = total.Key.Reserve
+                    StockOnHand = total.Key.Reserve,
+                    AssetTag = total.Key.AssetTag
+
                    
                 }).ToList();
 
@@ -1615,6 +1618,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             Uom = x.Uom,
                                             QuantityOrder = x.QuantityOrdered,
                                             ItemRemarks = x.ItemRemarks,
+                                            
 
                                         });
 
@@ -2402,7 +2406,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     CustomerType = x.CustomerType,
                     Rush = x.Rush,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                     ItemRemarks = x.ItemRemarks,
-                    Cip_no = x.Cip_No
+                    Cip_no = x.Cip_No,
+                    AssetTag = x.AssetTag
+                    
 
 
 
@@ -2833,69 +2839,112 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id)
         {
 
-            var UnitPriceById =  _context.MoveOrders.Where(x => x.IsActive == true)
+            var UnitPriceById = _context.MoveOrders.Where(x => x.IsActive == true)
                 .GroupBy(x => new
-            {
-                x.OrderNo,
-                x.Id,
-                x.ItemCode,
-                x.QuantityOrdered,
-                x.UnitPrice
+                {
+                    x.OrderNo,
+                    x.OrderNoGenus,
+                    x.Id,
+                    x.ItemCode,
+                    x.ItemDescription,
+                    x.Uom,
+                    x.ItemRemarks,
+                    x.AccountCode,
+                    x.AccountTitles,
+                    x.EmpId,
+                    x.FullName,
+                    x.QuantityOrdered,
+                    x.UnitPrice,
+                    x.AssetTag
 
-            }).Select(x => new ViewMoveOrderForApprovalDto
-            {
-                MIRId  = x.Key.OrderNo,
-                Id = x.Key.Id,
-                ItemCode = x.Key.ItemCode,
-                UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
-                Quantity = x.Key.QuantityOrdered,
-                
+                }).Select(x => new ViewMoveOrderForApprovalDto
+                {
+                    MIRId = x.Key.OrderNo,
+                    OrderNoGenus = x.Key.OrderNoGenus,
+                    Id = x.Key.Id,
+                    ItemCode = x.Key.ItemCode,
+                    ItemDescription = x.Key.ItemDescription,
+                    Uom = x.Key.Uom,
+                    ItemRemarks = x.Key.ItemRemarks,
+                    AccountCode = x.Key.AccountCode,
+                    AccountTitles = x.Key.AccountTitles,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
+                    UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
+                    Quantity = x.Key.QuantityOrdered,
+                    AssetTag = x.Key.AssetTag
+                    
 
-            });
+
+                });
 
 
             var UnitPriceTotal = UnitPriceById.GroupBy(x => new
             {
                 x.MIRId,
+                x.OrderNoGenus,
                 x.ItemCode,
+                x.ItemDescription,
+                x.Uom,
+                x.ItemRemarks,
+                x.AccountCode,
+                x.AccountTitles,
+                x.EmpId,
+                x.FullName,
+                x.AssetTag
 
 
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
                 MIRId = x.Key.MIRId,
+                OrderNoGenus = x.Key.OrderNoGenus,
                 ItemCode = x.Key.ItemCode,
+                ItemDescription = x.Key.ItemDescription,
+                Uom = x.Key.Uom,
+                ItemRemarks = x.Key.ItemRemarks,
+                AccountCode = x.Key.AccountCode,
+                AccountTitles = x.Key.AccountTitles,
+                EmpId = x.Key.EmpId,
+                FullName = x.Key.FullName,
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
                 TotalCost = x.Sum(x => x.UnitCost),
                 Quantity = x.Sum(x => x.Quantity),
-             
+                AssetTag = x.Key.AssetTag
+
             });
 
-            var totalpricebyMir = UnitPriceTotal.GroupBy(x => new
-                                                     {
-                                                         x.MIRId
 
-                                                     }).Select(x => new ViewMoveOrderForApprovalDto
-                                                     {
-                                                         MIRId = x.Key.MIRId,
-                                                         TQuantity = x.Sum(x => x.Quantity),
-                                                         TUnitCost = x.Sum(x => x.UnitCost),
-                                                         TTotalCost = x.Sum(x => x.TotalCost)
-                                                     });
+
+
+            var totalpricebyMir = UnitPriceTotal.GroupBy(x => new
+            {
+                x.MIRId,
+
+
+            }).Select(x => new ViewMoveOrderForApprovalDto
+            {
+                MIRId = x.Key.MIRId,
+
+                TQuantity = x.Sum(x => x.Quantity),
+                TUnitCost = x.Sum(x => x.UnitCost),
+                TTotalCost = x.Sum(x => x.TotalCost)
+            });
 
 
             var orders = _context.MoveOrders
-                .Where(x => x.OrderNo == id)
-                .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode , unitprice => unitprice.ItemCode, (MoveOrders , unitprice) => new {MoveOrders , unitprice})
-                .SelectMany(x => x.unitprice.DefaultIfEmpty() , (x , unitprice) => new {x.MoveOrders , unitprice})
-                .GroupJoin(totalpricebyMir , Moveorders => Moveorders.MoveOrders.OrderNo , tunitprice => tunitprice.MIRId , (MoveOrders , tunitprice) => new {MoveOrders , tunitprice})
-                .SelectMany(x => x.tunitprice.DefaultIfEmpty() , (x , tunitprice) => new {x.MoveOrders , tunitprice})
+                .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.OrderNo, unitprice => unitprice.MIRId, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
+                .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.MoveOrders, unitprice })
+                .GroupJoin(totalpricebyMir, Moveorders => Moveorders.MoveOrders.OrderNo, tunitprice => tunitprice.MIRId, (MoveOrders, tunitprice) => new { MoveOrders, tunitprice })
+                .SelectMany(x => x.tunitprice.DefaultIfEmpty(), (x, tunitprice) => new { x.MoveOrders, tunitprice })
                 .Where(x => x.MoveOrders.MoveOrders.IsActive == true && x.MoveOrders.MoveOrders.IsPrepared == true)
+                .Where(x => x.MoveOrders.MoveOrders.OrderNo == id)
                 .GroupBy(x => new
                 {
                     x.MoveOrders.MoveOrders.OrderNo,
+                    x.MoveOrders.unitprice.OrderNoGenus,
                     x.MoveOrders.unitprice.ItemCode,
-                    x.MoveOrders.MoveOrders.ItemDescription,
-                    x.MoveOrders.MoveOrders.Uom,
+                    x.MoveOrders.unitprice.ItemDescription,
+                    x.MoveOrders.unitprice.Uom,
                     x.MoveOrders.MoveOrders.Customercode,
                     x.MoveOrders.MoveOrders.CustomerName,
                     x.MoveOrders.MoveOrders.ApprovedDate,
@@ -2911,11 +2960,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.MoveOrders.MoveOrders.DepartmentName,
                     x.MoveOrders.MoveOrders.LocationCode,
                     x.MoveOrders.MoveOrders.LocationName,
-                    x.MoveOrders.MoveOrders.AccountCode,
-                    x.MoveOrders.MoveOrders.AccountTitles,
-                    x.MoveOrders.MoveOrders.ItemRemarks,
-                    x.MoveOrders.MoveOrders.EmpId,
-                    x.MoveOrders.MoveOrders.FullName
+                    x.MoveOrders.unitprice.AccountCode,
+                    x.MoveOrders.unitprice.AccountTitles,
+                    x.MoveOrders.unitprice.ItemRemarks,
+                    x.MoveOrders.unitprice.EmpId,
+                    x.MoveOrders.unitprice.FullName,
+                    x.MoveOrders.unitprice.AssetTag
 
 
 
@@ -2924,9 +2974,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
 
                     MIRId = x.Key.OrderNo,
+                    OrderNoGenus = x.Key.OrderNoGenus,
                     ItemCode = x.Key.ItemCode,
                     ItemDescription = x.Key.ItemDescription,
                     Uom = x.Key.Uom,
+
                     Customercode = x.Key.Customercode,
                     CustomerName = x.Key.CustomerName,
                     ApprovedDate = x.Key.ApprovedDate.ToString(),
@@ -2946,7 +2998,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     TUnitCost = x.Key.TUnitCost,
                     TTotalCost = x.Key.TTotalCost,
                     EmpId = x.Key.EmpId,
-                    FullName = x.Key.FullName
+                    FullName = x.Key.FullName,
+                    AssetTag = x.Key.AssetTag
 
                 });
 
@@ -3420,18 +3473,29 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                  .GroupBy(x => new
                  {
                      x.OrderNo,
-                     x.Id,
+                     x.OrderNoGenus,
                      x.ItemCode,
+                     x.ItemDescription,
+                     x.Uom,
+                     x.Id,
+                     //x.Category,
+                     x.ItemRemarks,
                      x.QuantityOrdered,
-                     x.UnitPrice
+                     x.UnitPrice,
+                     x.AssetTag
 
                  }).Select(x => new ViewMoveOrderForApprovalDto
                  {
                      MIRId = x.Key.OrderNo,
-                     Id = x.Key.Id,
+                     OrderNoGenus = x.Key.OrderNoGenus,
                      ItemCode = x.Key.ItemCode,
+                     ItemDescription = x.Key.ItemDescription,
+                     Uom = x.Key.Uom,
+                     //Category = x.Key.Category,
+                     ItemRemarks = x.Key.ItemRemarks,
                      UnitCost = x.Key.UnitPrice * x.Key.QuantityOrdered,
                      Quantity = x.Key.QuantityOrdered,
+                     AssetTag = x.Key.AssetTag
 
 
                  });
@@ -3440,46 +3504,61 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var UnitPriceTotal = UnitPriceById.GroupBy(x => new
             {
-
+                x.MIRId,
+                x.OrderNoGenus,
                 x.ItemCode,
+                x.ItemDescription,
+                x.Uom,
+                x.ItemRemarks,
+                x.AssetTag
+
 
 
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
+                MIRId = x.Key.MIRId,
+                OrderNoGenus = x.Key.OrderNoGenus,
                 ItemCode = x.Key.ItemCode,
+                ItemDescription = x.Key.ItemDescription,
+                Uom = x.Key.Uom,
+                //Category = x.Key.Category,
+                ItemRemarks = x.Key.ItemRemarks,
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
-                TotalCost= x.Sum(x => x.UnitCost),
-                Quantity = x.Sum(x => x.Quantity)
+                TotalCost = x.Sum(x => x.UnitCost),
+                Quantity = x.Sum(x => x.Quantity),
+                AssetTag = x.Key.AssetTag
+
 
             });
 
-           
+
 
             var orders = _context.MoveOrders
                 .OrderBy(x => x.Rush == null)
                 .ThenBy(x => x.Rush)
                  .Where(x => x.IsActive == true)
-              .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.ItemCode, unitprice => unitprice.ItemCode, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
+              .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.OrderNo, unitprice => unitprice.MIRId, (MoveOrders, unitprice) => new { MoveOrders, unitprice })
               .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.MoveOrders, unitprice })
               .GroupBy(x => new
               {
 
                   x.MoveOrders.OrderNo,
+                  x.unitprice.OrderNoGenus,
                   x.MoveOrders.OrderDate,
                   x.MoveOrders.PreparedDate,
                   x.MoveOrders.DateNeeded,
                   x.MoveOrders.Customercode,
                   x.MoveOrders.CustomerName,
-                  x.MoveOrders.Category,
-                  x.MoveOrders.ItemCode,
-                  x.MoveOrders.ItemDescription,
-                  x.MoveOrders.Uom,
-                  x.MoveOrders.OrderNoGenus,
+                  //x.unitprice.Category,
+                  x.unitprice.ItemCode,
+                  x.unitprice.ItemDescription,
+                  x.unitprice.Uom,
                   x.unitprice.UnitCost,
                   x.unitprice.TotalCost,
                   x.unitprice.Quantity,
                   x.MoveOrders.IsApprove,
-                  x.MoveOrders.ItemRemarks
+                  x.unitprice.ItemRemarks,
+                  x.unitprice.AssetTag
 
               }).Select(x => new ListOfMoveOrdersForTransactDto
               {
@@ -3491,18 +3570,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   DateNeeded = x.Key.DateNeeded.ToString(),
                   CustomerCode = x.Key.Customercode,
                   CustomerName = x.Key.CustomerName,
-                  Category = x.Key.Category,
+                  //Category = x.Key.Category,
                   ItemCode = x.Key.ItemCode,
                   ItemDescription = x.Key.ItemDescription,
                   Uom = x.Key.Uom,
                   Quantity = x.Key.Quantity,
                   ItemRemarks = x.Key.ItemRemarks,
                   UnitCost = x.Key.UnitCost,
-                  TotalCost = x.Key.TotalCost
+                  TotalCost = x.Key.TotalCost,
+                  AssetTag = x.Key.AssetTag
+                  
 
               });
 
-       
+
             return await orders.Where(x => x.MIRId == orderid)
                                .ToListAsync();
 

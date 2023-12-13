@@ -3,9 +3,11 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 {
@@ -171,6 +173,131 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             var uom = await _unitOfWork.Uoms.GetAllUom();
 
             return Ok(uom);
+
+        }
+
+
+
+        //Sync Uom
+
+        [HttpPut]
+        [Route("SyncUom")]
+
+        public async Task<IActionResult> SyncUom([FromBody] Uom[] uom)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult("Something went wrong!") { StatusCode = 500 };
+            }
+
+            List<Uom> duplicateList = new List<Uom>();
+            List<Uom> availableImport = new List<Uom>();
+            List<Uom> availableUpdate = new List<Uom>();
+            List<Uom> uomDescriptionEmpty = new List<Uom>();
+            List<Uom> uomCodeEmpty = new List<Uom>();
+
+            foreach(Uom items in uom)
+            {
+
+                if (uom.Count(x => x.UomCode == items.UomCode && x.UomDescription == x.UomDescription) > 1)
+                {
+                    duplicateList.Add(items);
+                }
+                if (items.UomCode == string.Empty || items.UomCode == null)
+                {
+                    uomCodeEmpty.Add(items);
+                    continue;
+
+                }
+                if (items.UomDescription == string.Empty || items.UomDescription == null)
+                {
+                    uomCodeEmpty.Add(items);
+                    continue;
+
+                }
+
+                else
+                {
+                    var existingUom = await _unitOfWork.Uoms.GetByUomNo(items.UomNo);
+                    if (existingUom != null)
+                    {
+                        bool hasChanged = false;
+
+                        if (existingUom.UomCode != items.UomCode)
+                        {
+
+                            existingUom.UomCode = items.UomCode;
+                            hasChanged = true;
+                        }
+
+                        if (existingUom.UomDescription != items.UomDescription)
+                        {
+
+                            existingUom.UomDescription = items.UomDescription;
+                            hasChanged = true;
+                        }
+
+                        if (hasChanged)
+                        {
+                            existingUom.IsActive = items.IsActive;
+                            existingUom.ModifyBy = User.Identity.Name;
+                            existingUom.ModifyDate = DateTime.Now;
+                            existingUom.StatusSync = "New update";
+                            existingUom.SyncDate = DateTime.Now;
+
+                            availableUpdate.Add(existingUom);
+                            await _unitOfWork.Uoms.UpdateSyncUom(existingUom);
+                        }
+
+                        if (!hasChanged)
+                        {
+                            existingUom.SyncDate = DateTime.Now;
+                            existingUom.StatusSync = "No new update";
+                           
+                        }
+
+
+
+                    }
+                    else
+                    {
+
+                        items.StatusSync = "New Added";
+                        availableImport.Add(items);
+                        await _unitOfWork.Uoms.AddNewUom(items);
+
+
+                    }
+
+                }
+
+
+
+            }
+
+            var resultlist = new
+            {
+                AvailableImport = availableImport,
+                AvailableUpdate = availableUpdate,
+                DuplicateList = duplicateList,
+                UomDescriptionEmpty = uomDescriptionEmpty,
+                UomCodeEmpty = uomCodeEmpty,
+               
+
+
+            };
+
+            if (duplicateList.Count == 0 && uomDescriptionEmpty.Count == 0 && uomCodeEmpty.Count == 0)
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Successfully updated and added!");
+            }
+            else
+            {
+                return BadRequest(resultlist);
+            }
+
+
 
         }
 

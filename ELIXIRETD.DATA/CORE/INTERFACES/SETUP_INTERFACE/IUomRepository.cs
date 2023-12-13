@@ -38,5 +38,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
         Task<Uom> GetByCodeAsync(string uomCode);
 
 
+        Task<Uom> GetByUomId(int id);
+
+        Task<Uom> GetByUomNo (int UomNo);   
+
+        Task UpdateSyncUom (Uom uom);
+
+
     }
 }

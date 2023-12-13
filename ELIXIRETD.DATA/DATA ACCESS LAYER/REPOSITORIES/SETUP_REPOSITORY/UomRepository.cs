@@ -3,6 +3,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.USER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -188,5 +189,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             return await _context.Uoms.FirstOrDefaultAsync(u => u.UomCode == uomCode);
         }
 
+        //Uom Sync
+
+        public async Task<Uom> GetByUomId(int id)
+        {
+            return await _context.Uoms.FindAsync(id);
+        }
+
+        public async Task<Uom> GetByUomNo(int UomNo)
+        {
+            return await _context.Uoms.FirstOrDefaultAsync(x => x.UomNo == UomNo);
+        }
+
+        public async Task UpdateSyncUom(Uom uom)
+        {
+            _context.Uoms.Update(uom);
+            await Task.CompletedTask;
+        }
     }
 }
