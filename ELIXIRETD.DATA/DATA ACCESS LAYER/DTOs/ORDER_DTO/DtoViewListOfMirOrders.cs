@@ -53,6 +53,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
 
             public string FullName { get; set; }
 
+            public string AssetTag { get; set; }
+
 
 
         }

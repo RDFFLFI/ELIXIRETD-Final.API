@@ -745,16 +745,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                       x.Department,
                                       x.CustomerName,
                                       x.Customercode,
-                                      x.Category,
-                                      x.PreparedDate,
-                                      x.IsApproved,
-                                      x.IsActive,
-                                      //x.Rush,
 
 
-                                  })//}).Where(x => x.Key.IsApproved == null)
-                                    //    .Where(x => x.Key.PreparedDate != null)
-                                    //    .Where(x => x.Key.IsActive == true)
+                                  })
 
 
 
@@ -764,11 +757,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
-                //TotalOrders = x.Sum(x => x.QuantityOrdered),
-                PreparedDate = x.Key.PreparedDate.ToString(),
-                //IsRush = x.Key.Rush != null ? true : false,
-                //Rush = x.Key.Rush
+
 
 
             })/*.Where(x => x.IsRush == true)*/;
@@ -790,16 +779,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.Department,
                                           x.CustomerName,
                                           x.Customercode,
-                                          x.Category,
-                                          x.PreparedDate,
-                                          x.IsApproved,
-                                          x.IsActive,
-                                          x.Rush,
 
 
-                                      })//}).Where(x => x.Key.IsApproved == null)
-                                        //    .Where(x => x.Key.PreparedDate != null)
-                                        //    .Where(x => x.Key.IsActive == true)
+                                      })
 
             .Select(x => new GetallApproveDto
             {
@@ -807,11 +789,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
-                //TotalOrders = x.Sum(x => x.QuantityOrdered),
-                PreparedDate = x.Key.PreparedDate.ToString(),
-                IsRush = x.Key.Rush != null ? true : false,
-                //Rush = x.Key.Rush
+
 
 
             }).Where(x => x.IsRush == true);
@@ -836,16 +814,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.Department,
                                           x.CustomerName,
                                           x.Customercode,
-                                          x.Category,
-                                          x.PreparedDate,
-                                          x.IsApproved,
-                                          x.IsActive,
-                                          x.Rush,
 
 
-                                      })//}).Where(x => x.Key.IsApproved == null)
-                                        //    .Where(x => x.Key.PreparedDate != null)
-                                        //    .Where(x => x.Key.IsActive == true)
+
+                                      })
 
             .Select(x => new GetallApproveDto
             {
@@ -853,11 +825,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-                Category = x.Key.Category,
-                //TotalOrders = x.Sum(x => x.QuantityOrdered),
-                PreparedDate = x.Key.PreparedDate.ToString(),
-                IsRush = x.Key.Rush != null ? true : false,
-                //Rush = x.Key.Rush
 
 
             }).Where(x => x.IsRush == false);
@@ -1277,6 +1244,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 ItemDescription = x.ItemdDescription,
                                                 Uom = x.Uom,
                                                 ItemRemarks = x.ItemRemarks,
+
                                                 Quantity = x.QuantityOrdered,
                                                 AccountCode = x.AccountCode,
                                                 AccountTitles = x.AccountTitles,
@@ -1618,6 +1586,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             Uom = x.Uom,
                                             QuantityOrder = x.QuantityOrdered,
                                             ItemRemarks = x.ItemRemarks,
+                                            AssetTag = x.AssetTag
                                             
 
                                         });
@@ -1924,7 +1893,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        x.ordering.AccountCode,
                        x.ordering.AccountTitles,
                        x.ordering.EmpId,
-                       x.ordering.FullName
+                       x.ordering.FullName,
+                       x.ordering.AssetTag
 
                    })
 
@@ -1945,7 +1915,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        AccountCode = total.Key.AccountCode,
                        AccountTitles = total.Key.AccountTitles,
                        EmpId = total.Key.EmpId,
-                       FullName = total.Key.FullName
+                       FullName = total.Key.FullName,
+                       AssetTag = total.Key.AssetTag
+                       
                        
                        
 
