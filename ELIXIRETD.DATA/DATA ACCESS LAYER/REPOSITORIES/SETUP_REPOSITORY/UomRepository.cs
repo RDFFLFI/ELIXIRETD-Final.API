@@ -33,7 +33,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         UomDescription = x.UomDescription,
                                         IsActive = x.IsActive, 
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                        AddedBy = x.AddedBy
+                                        AddedBy = x.AddedBy,
+                                        ModifyBy = x.ModifyBy,
+                                        ModifyDate = x.ModifyDate.ToString(),
+
+                                        SyncDate = x.SyncDate.ToString(),
+                                        SyncStatus = x.StatusSync,
                                     });
 
             return await uoms.ToListAsync();
@@ -49,7 +54,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                       UomDescription = x.UomDescription,
                                       IsActive = x.IsActive,
                                       DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                      AddedBy = x.AddedBy
+                                      AddedBy = x.AddedBy,
+                                      ModifyBy = x.ModifyBy,
+                                      ModifyDate = x.ModifyDate.ToString(),
+
+                                      SyncDate = x.SyncDate.ToString(),
+                                      SyncStatus = x.StatusSync,
                                   });
 
             return await uoms.ToListAsync();
@@ -106,7 +116,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                      UomDescription = x.UomDescription,
                                      AddedBy = x.AddedBy,
                                      DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                     IsActive = x.IsActive
+                                     IsActive = x.IsActive,
+                                     ModifyBy = x.ModifyBy,
+                                     ModifyDate = x.ModifyDate.ToString(),
+
+                                     SyncDate = x.SyncDate.ToString(),
+                                     SyncStatus = x.StatusSync,
 
                                  });
 
@@ -126,7 +141,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                        UomDescription = x.UomDescription,
                                        AddedBy = x.AddedBy,
                                        DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),
-                                       IsActive = x.IsActive
+                                       IsActive = x.IsActive,
+                                       ModifyBy = x.ModifyBy,
+                                       ModifyDate = x.ModifyDate.ToString(),
+
+                                       SyncDate = x.SyncDate.ToString(),
+                                       SyncStatus = x.StatusSync,
 
                                    }).Where(x => x.UomDescription.ToLower().Contains(search.Trim().ToLower()) 
                                        || x.UomCode.ToLower().Contains(search.Trim().ToLower()));

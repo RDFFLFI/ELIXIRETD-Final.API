@@ -624,7 +624,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      x.moveorders.Rush,
 
                  }).Select(x => new DtoForApprovalMoveOrderNotif
-       {
+            {
            MIRId = x.Key.OrderNo,
            CustomerCode = x.Key.Customercode,
            CustomerName = x.Key.CustomerName,
@@ -779,6 +779,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.Department,
                                           x.CustomerName,
                                           x.Customercode,
+                                          x.Rush
 
 
                                       })
@@ -789,6 +790,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
+                IsRush = x.Key.Rush != null ? true : false
 
 
 
@@ -814,6 +816,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                           x.Department,
                                           x.CustomerName,
                                           x.Customercode,
+                                          x.Rush
 
 
 
@@ -825,6 +828,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Department = x.Key.Department,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
+                IsRush = x.Key.Rush != null ? true : false
 
 
             }).Where(x => x.IsRush == false);
