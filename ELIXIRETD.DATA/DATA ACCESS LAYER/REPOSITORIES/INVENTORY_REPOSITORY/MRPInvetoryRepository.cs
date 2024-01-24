@@ -752,8 +752,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemCode
-
                              group new
                              {
 
@@ -827,7 +825,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                             
                                  //BorrowedDifference = total.Key.returned
 
-                             });
+                             }).OrderBy(x => x.ItemCode);
 
 
             return await inventory.ToListAsync();
@@ -1534,8 +1532,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemCode
-
                              group new
                              {
 
@@ -1582,8 +1578,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                              }
 
+                             
                               into total
                              select new DtoMRP
+                             
 
                              {
                                  ItemCode = total.Key.ItemCode,
@@ -1611,7 +1609,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                  //BorrowedDifference = total.Key.returned
 
-                             });
+                             }).OrderBy(x => x.ItemCode);
 
 
             return await PagedList<DtoMRP>.CreateAsync(inventory, userParams.PageNumber, userParams.PageSize);
@@ -2320,7 +2318,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
-                             orderby material.ItemCode
+                             orderby material.ItemCode ascending
 
                              group new
                              {
@@ -2399,7 +2397,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              }).Where(x => x.ItemDescription.ToLower()
                                .Contains(search.Trim().ToLower())
                                || x.ItemCode.ToLower().Contains(search.Trim().ToLower())
-                                || x.ItemCategory.ToLower().Contains(search.Trim().ToLower()));
+                                || x.ItemCategory.ToLower().Contains(search.Trim().ToLower())).OrderBy(x => x.ItemCode);
 
 
             return await PagedList<DtoMRP>.CreateAsync(inventory, userParams.PageNumber, userParams.PageSize);

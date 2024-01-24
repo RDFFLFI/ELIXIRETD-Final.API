@@ -23,6 +23,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto
         public decimal QuantityOrder { get; set; }
         //public bool IsActive { get; set; }
         //public bool IsPrepared { get; set; }
+
+        public decimal ActualReserve { get; set; }
+        public decimal Reserve { get; set; }
         public decimal StockOnHand { get; set; }
         //public string Rush { get; set; }
 

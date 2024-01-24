@@ -86,7 +86,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                              SyncDate = x.SyncDate.ToString(),
                                              SyncStatus = x.StatusSync,
 
-
                                              ModifyBy = x.ModifyBy,
                                              ModifyDate = x.ModifyDate.ToString(),
                                              DateAdded = x.DateAdded.ToString("MM/dd/yyyy"),

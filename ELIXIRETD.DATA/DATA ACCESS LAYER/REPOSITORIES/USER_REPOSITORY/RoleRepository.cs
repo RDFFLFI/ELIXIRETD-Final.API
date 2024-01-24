@@ -284,7 +284,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES
 
             return await _context.Users.AnyAsync(x => x.UserRoleId == role && x.IsActive == true);
 
-
         }
 
         public async Task<UserRole> GetByCodeAsync(string userRoleCode)

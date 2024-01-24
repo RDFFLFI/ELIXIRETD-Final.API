@@ -1386,6 +1386,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var itemCodes = new HashSet<string>(listofMirIds.Select(id => id.ToString()));
             var stockOnHandDict = new Dictionary<string, decimal>();
+            var reserveDict = new Dictionary<string, decimal>();
+
 
             var orders = _context.Orders
                 .Where(ordering =>/* ordering.CustomerName == customerName &&*/ ordering.PreparedDate == null && ordering.IsActive == true)
@@ -1430,26 +1432,42 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     EmpId = total.Key.EmpId,
                     FullName = total.Key.FullName,
                     StandardQuantity = total.Key.StandartQuantity,
-                    StockOnHand = total.Key.Reserve,
+                    ActualReserve = total.Key.Reserve > 0 ? total.Key.Reserve : 0,
+                    Reserve = total.Key.Reserve > 0 ? total.Key.Reserve : 0,
+                    StockOnHand = total.Key.Reserve > 0 ? total.Key.Reserve : 0,
                     AssetTag = total.Key.AssetTag
 
                    
                 }).ToList();
-
 
             foreach (var order in orders)
             {
                 if (!stockOnHandDict.ContainsKey(order.ItemCode))
                 {
                     stockOnHandDict[order.ItemCode] = order.StockOnHand;
+
                 }
+                if (!reserveDict.ContainsKey(order.ItemCode))
+                {
+                    reserveDict[order.ItemCode] = order.Reserve;
+
+                }
+
 
                 if (listofMirIds.Contains(order.MIRId))
                 {
                     stockOnHandDict[order.ItemCode] -= order.QuantityOrder;
+                    reserveDict[order.ItemCode] -= order.QuantityOrder;
                 }
 
-                order.StockOnHand = stockOnHandDict[order.ItemCode];
+                if (stockOnHandDict[order.ItemCode] <= 0)
+                {
+                    stockOnHandDict[order.ItemCode] = 0;
+                }
+
+                order.StockOnHand = stockOnHandDict[order.ItemCode] ;
+                order.Reserve = reserveDict[order.ItemCode];
+
             }
 
 
@@ -1457,9 +1475,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             foreach (var itemCode in itemCodess)
             {
                 var stockOnHand = stockOnHandDict[itemCode];
+                var reserve = reserveDict[itemCode];
                 foreach (var order in orders.Where(x => x.ItemCode == itemCode))
                 {
                     order.StockOnHand = stockOnHand;
+                    order.Reserve = reserve;
                 }
             }
 
@@ -1474,7 +1494,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var Ordertransact = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
                                              .ToListAsync();
-
+          
 
             foreach (var items in Ordertransact)
             {
