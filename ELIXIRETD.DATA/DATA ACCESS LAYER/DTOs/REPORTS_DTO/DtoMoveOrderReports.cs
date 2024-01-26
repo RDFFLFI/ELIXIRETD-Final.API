@@ -47,7 +47,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
-        public string Empid { get; set; }   
+        public string Empid { get; set; }
 
         public string FullName { get; set; }
 
@@ -60,6 +60,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public decimal LineAmount { get; set; }
 
         public string Cip_No { get; set; }
+
+        public string AssetTag {  get; set; }
 
 
 

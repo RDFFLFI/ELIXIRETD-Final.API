@@ -91,7 +91,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              ItemRemarks = x.moveorder.ItemRemarks,
                              UnitCost = x.moveorder.UnitPrice,
                              LineAmount = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered,
-                             Cip_No = x.moveorder.Cip_No
+                             Cip_No = x.moveorder.Cip_No,
+                             AssetTag = x.moveorder.AssetTag
 
 
 
@@ -155,6 +156,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               moveorder.Cip_No,
                               moveorder.IsTransact,
                               moveorder.Category,
+                              moveorder.AssetTag
                              
                              
                              
@@ -198,7 +200,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               LineAmount = total.Key.UnitPrice * total.Key.QuantityOrdered,
                               Cip_No = total.Key.Cip_No,
                               Status = total.Key.IsTransact == true ? "Transacted" :"For Approval",
-                              Category = total.Key.Category
+                              Category = total.Key.Category,
+                              AssetTag = total.Key.AssetTag
                               
                               
                           });

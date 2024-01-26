@@ -59,6 +59,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string Status { get; set; }
         public string Category { get; set; }
 
+        public string AssetTag { get; set; }
+
 
     }
 }
