@@ -29,6 +29,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string TransactedDate { get; set; }
 
+        public string DateNeeded { get; set; }
+
+        public string OrderDate { get; set; }
+
         public bool IsActive { get; set; }
 
         public string CompanyCode { get; set; }

@@ -701,6 +701,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
             order.AssetTag = details.AssetTag;
 
+            if(order.QuantityOrdered < 0 )
+            {
+                return BadRequest("Quantity order invalid!");
+            }
+
             await _unitofwork.Orders.PrepareItemForMoveOrder(order);
             await _unitofwork.CompleteAsync();
 
