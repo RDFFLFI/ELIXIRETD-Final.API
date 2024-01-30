@@ -159,12 +159,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               moveorder.AssetTag
                              
                              
-                             
-
-                              
-
-
-
+                          
                           } into total
 
                           select new DtoTransactReports

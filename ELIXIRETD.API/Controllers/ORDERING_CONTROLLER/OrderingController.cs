@@ -42,6 +42,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 //List<Ordering> ItemDescriptionNotExist = new List<Ordering>();
                 //List<Ordering> QuantityInValid = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
+                List<Ordering> AccountCodeEmpty = new List<Ordering>();
+                List<Ordering> AccountTitleEmpty = new List<Ordering>();
                 //List<Ordering> DepartmentCodeanNameNotExist = new List <Ordering>();
                 //List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
                 //List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
@@ -59,6 +61,17 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         DuplicateList.Add(items);
                         continue;
 
+                    }
+
+                    if(string.IsNullOrEmpty(items.AccountCode))
+                    {
+                        AccountCodeEmpty.Add(items);
+                        continue;
+                    }
+                    if(string.IsNullOrEmpty(items.AccountTitles))
+                    {
+                        AccountTitleEmpty.Add(items);
+                        continue;
                     }
                  
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
@@ -125,12 +138,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    UomNotExist,
                    CustomerNameNotExist,
                    PreviousDateNeeded,
+                   AccountCodeEmpty,
+                   AccountTitleEmpty
 
 
                   
                 };
 
-                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0)
+                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 
+                    && AccountTitleEmpty.Count == 0 && AccountCodeEmpty.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();
                     return Ok("Successfully Add!");
