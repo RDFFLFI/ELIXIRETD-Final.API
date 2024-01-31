@@ -1,5 +1,7 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 {
@@ -7,10 +9,12 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
     public class ImportController : BaseApiController
     {
         private IUnitOfWork _unitOfWork;
+        private readonly StoreContext _context;
 
-        public ImportController(IUnitOfWork unitOfWork)
+        public ImportController(IUnitOfWork unitOfWork , StoreContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
 
@@ -37,17 +41,26 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 
                 foreach (PoSummary items in posummary)
                 {
+                    var uomExist = await _context.Uoms.FirstOrDefaultAsync(x => x.UomDescription == items.Uom);
+
+                    if (uomExist is null) 
+                    {
+                        uomCodeNotExist.Add(items);
+                        continue;
+                    }
+                    items.Uom = uomExist.UomCode;
+
                     if (items.Ordered <= 0)
                     {
                         quantityInValid.Add(items);
                     }
-
 
                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
                     {
                         duplicateList.Add(items);
                         continue;
                     }
+
 
                   
                         var validateSupplier = await _unitOfWork.Imports.CheckSupplier(items.VendorName);

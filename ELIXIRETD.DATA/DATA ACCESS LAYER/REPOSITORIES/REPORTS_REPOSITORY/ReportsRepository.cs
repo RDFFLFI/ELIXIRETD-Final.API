@@ -25,7 +25,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
        
 
-        public async Task<PagedList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(UserParams userParams, string DateFrom, string DateTo , string Search)
         {
 
             var warehouse = _context.WarehouseReceived.Where(x => x.ReceivingDate >= DateTime.Parse(DateFrom) && x.ReceivingDate <= DateTime.Parse(DateTo))
@@ -49,12 +49,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                       });
 
+            if(!string.IsNullOrEmpty(Search))
+            {
+                warehouse = warehouse.Where(x => Convert.ToString(x.PoNumber).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.TransactionType).ToLower().Contains(Search.Trim().ToLower()));
+            }
+
+
            
             return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
 
 
-        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = _context.MoveOrders
                         .Where(moveorder => moveorder.PreparedDate >= DateTime.Parse(DateFrom) && moveorder.PreparedDate <= DateTime.Parse(DateTo) && moveorder.IsActive == true && moveorder.IsPrepared == true && moveorder.IsTransact == false)
@@ -98,11 +106,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                          });
 
+
+
+            if (!string.IsNullOrEmpty(Search))
+            {
+                orders = orders.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
+
             return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
 
-        public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = (from transact in _context.TransactOrder
                           where transact.IsActive == true && transact.IsTransact == true && transact.DeliveryDate >= DateTime.Parse(DateFrom) && transact.DeliveryDate <= DateTime.Parse(DateTo)
@@ -201,12 +218,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               
                           });
 
+            if (!string.IsNullOrEmpty(Search))
+            {
+                orders = orders.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
+
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
 
 
-        public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var receipts = (from receiptHeader in _context.MiscellaneousReceipts
                             join receipt in _context.WarehouseReceived
@@ -249,11 +273,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                             });
 
+            if (!string.IsNullOrEmpty(Search))
+            {
+                receipts = receipts.Where(x => Convert.ToString(x.ReceiptId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.SupplierName).ToLower().Contains(Search.Trim().ToLower()));
+            }
+
             return await PagedList<DtoMiscReports>.CreateAsync(receipts, userParams.PageNumber, userParams.PageSize);
 
         }
 
-        public async Task<PagedList<DtoMiscIssue>> MiscIssue(UserParams userParams, string DateFrom , string DateTo)
+        public async Task<PagedList<DtoMiscIssue>> MiscIssue(UserParams userParams, string DateFrom , string DateTo, string Search)
         {
             var issues = _context.MiscellaneousIssues
                        .GroupJoin(_context.MiscellaneousIssueDetail, receipt => receipt.Id, issue => issue.IssuePKey, (receipt, issue) => new { receipt, issue })
@@ -291,6 +322,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                        });
 
+            if (!string.IsNullOrEmpty(Search))
+            {
+                issues = issues.Where(x => Convert.ToString(x.IssueId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
 
             return await PagedList<DtoMiscIssue>.CreateAsync(issues, userParams.PageNumber, userParams.PageSize);
         }
@@ -299,7 +336,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
 
-        public async Task<PagedList<BorrowedTransactionReportsDto>> BorrowedTransactionReports(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<BorrowedTransactionReportsDto>> BorrowedTransactionReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
 
             var borrowed = _context.BorrowedIssues
@@ -326,13 +363,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
+            if (!string.IsNullOrEmpty(Search))
+            {
+                borrowed = borrowed.Where(x => Convert.ToString(x.BorrowedId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
 
             return await PagedList<BorrowedTransactionReportsDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
 
         }
 
 
-        public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo)
+        public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
 
 
@@ -419,8 +462,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                
                            });
 
-           
-
+            if (!string.IsNullOrEmpty(Search))
+            {
+                Reports = Reports.Where(x => Convert.ToString(x.BorrowedId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
 
             return await PagedList<DtoBorrowedAndReturned>.CreateAsync(Reports, userParams.PageNumber, userParams.PageSize);
 
@@ -428,7 +475,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         
 
-        public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo )
+        public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
             var cancelled = _context.Orders.Where(x => x.IsCancel == true  && x.IsActive == false)
@@ -502,14 +549,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            QuantityOrdered = x.Key.QuantityOrdered != null ? x.Key.QuantityOrdered :  x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered)
 
                        });
-                
 
 
+            if (!string.IsNullOrEmpty(Search))
+            {
+                orders = orders.Where(x => Convert.ToString(x.OrderId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+            }
 
             return await PagedList<DtoCancelledReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom, string DateTo , string PlusOne )
+        public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom, string DateTo , string PlusOne  )
         {
             var DateToday = DateTime.Parse(DateTime.Now.ToString());
 
