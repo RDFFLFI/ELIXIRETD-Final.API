@@ -53,7 +53,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 warehouse = warehouse.Where(x => Convert.ToString(x.PoNumber).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.TransactionType).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.TransactionType).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescrption).ToLower().Contains(Search.Trim().ToLower()));
             }
 
 
@@ -112,7 +113,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 orders = orders.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -222,7 +224,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 orders = orders.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
@@ -277,7 +280,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 receipts = receipts.Where(x => Convert.ToString(x.ReceiptId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.SupplierName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.SupplierName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoMiscReports>.CreateAsync(receipts, userParams.PageNumber, userParams.PageSize);
@@ -326,7 +330,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 issues = issues.Where(x => Convert.ToString(x.IssueId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoMiscIssue>.CreateAsync(issues, userParams.PageNumber, userParams.PageSize);
@@ -367,7 +372,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 borrowed = borrowed.Where(x => Convert.ToString(x.BorrowedId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<BorrowedTransactionReportsDto>.CreateAsync(borrowed, userParams.PageNumber, userParams.PageSize);
@@ -466,7 +472,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 Reports = Reports.Where(x => Convert.ToString(x.BorrowedId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoBorrowedAndReturned>.CreateAsync(Reports, userParams.PageNumber, userParams.PageSize);
@@ -555,7 +562,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 orders = orders.Where(x => Convert.ToString(x.OrderId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
-                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower()));
+                || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
             return await PagedList<DtoCancelledReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
