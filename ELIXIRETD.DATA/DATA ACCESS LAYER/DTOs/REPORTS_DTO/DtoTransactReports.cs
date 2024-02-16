@@ -11,6 +11,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     {
 
         public int MIRId { get; set; }
+        public string Requestor { get; set; }
+        public string Approver { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
         public string ItemCode { get; set; }
@@ -18,6 +20,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string Uom { get; set; }
         public decimal Quantity { get; set; }
         public string MoveOrderDate { get; set; }
+        public string MoveOrderBy { get; set; }
         public string TransactedBy { get; set; }
         public bool TransactionType { get; set; }
         public string TransactedDate { get; set; }
@@ -56,11 +59,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string Cip_No { get; set; }
 
+        public int ? HelpDesk { get; set; }
+
+        public string Remarks { get; set; }
+
+        public string Rush {  get; set; }
+
         public string Status { get; set; }
         public string Category { get; set; }
 
         public string AssetTag { get; set; }
 
+        public string DateApproved { get; set; }
+
+       
 
     }
 }

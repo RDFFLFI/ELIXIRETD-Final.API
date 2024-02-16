@@ -2399,11 +2399,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     DateNeeded = x.DateNeeded.ToString(),
                     PrepareDate = x.PreparedDate.ToString(),
 
+                    HelpDeskNo = x.HelpdeskNo,
+
                     CustomerType = x.CustomerType,
                     Rush = x.Rush,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                     ItemRemarks = x.ItemRemarks,
                     Cip_no = x.Cip_No,
-                    AssetTag = x.AssetTag
+                    AssetTag = x.AssetTag,
+                    DateApproved = x.DateApproved.ToString(),
+                    Approver = x.Approver,
+                    Requestor = x.Requestor
+
+                    
                     
 
 

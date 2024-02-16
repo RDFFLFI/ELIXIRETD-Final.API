@@ -87,5 +87,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string AssetTag { get; set; }
 
+        public string Requestor { get; set; }
+
+        public string Approver { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime ? DateApproved { get; set; }
+
     }
 }

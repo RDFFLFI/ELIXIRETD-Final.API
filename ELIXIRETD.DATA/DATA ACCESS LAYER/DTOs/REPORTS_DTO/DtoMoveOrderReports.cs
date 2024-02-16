@@ -10,6 +10,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     {
 
         public int MIRId { get; set; }
+        public string Requestor { get; set; }
+        public string Approver { get; set; }
 
         public string Department { get; set; }
         public string CustomerCode { get; set; }
@@ -58,10 +60,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public decimal UnitCost { get; set; }
 
         public decimal LineAmount { get; set; }
+        public string AssetTag { get; set; }
 
         public string Cip_No { get; set; }
 
-        public string AssetTag {  get; set; }
+        public int? HelpdeskNo { get; set; }
+
+        public string Rush { get; set; }
+
+        public string DateApproved { get ; set; }
+
+        public string Remarks { get; set; }
+
+
+
+
 
 
 

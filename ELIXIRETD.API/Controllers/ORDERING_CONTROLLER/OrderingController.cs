@@ -10,6 +10,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using ELIXIRETD.DATA.Migrations;
 using ELIXIRETD.DATA.SERVICES;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 {
@@ -716,6 +717,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.PreparedBy = User.Identity.Name;
 
             order.AssetTag = details.AssetTag;
+
+            order.HelpdeskNo = details.HelpDeskNo;
+
+            order.Requestor = details.Requestor;
+            order.Approver = details.Approver;
+            order.DateApproved = Convert.ToDateTime(details.DateApproved);
+
 
             if(order.QuantityOrdered < 0 )
             {

@@ -8,8 +8,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 {
     public class DtoCancelledReports
     {
+        public int MIRId { get; set; }
         public int OrderId { get; set; }
-
         public int OrderNo { get; set; }
         public string DateNeeded { get; set; }
         public string DateOrdered { get; set; }
@@ -18,6 +18,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
         public decimal QuantityOrdered { get; set; }
+
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string DepartmentCode { get; set; }
+        public string Department { get; set; }
+        public string LocationCode { get; set; }
+        public string LocationName { get; set; }
+
+        public string AccountCode { get; set; }
+        public string AccountTitles { get; set; }
 
         public string CancelledDate { get; set; }   
         public string CancelledBy { get; set; }

@@ -73,6 +73,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          {
 
                              MIRId = x.moveorder.OrderNo,
+                             Requestor = x.moveorder.Requestor,
+                             Approver = x.moveorder.Approver,
                              CustomerCode = x.moveorder.Customercode,
                              CustomerName = x.moveorder.CustomerName,
                              ItemCode = x.moveorder.ItemCode,
@@ -101,9 +103,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              UnitCost = x.moveorder.UnitPrice,
                              LineAmount = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered,
                              Cip_No = x.moveorder.Cip_No,
-                             AssetTag = x.moveorder.AssetTag
-
-
+                             AssetTag = x.moveorder.AssetTag,
+                             HelpdeskNo = x.moveorder.HelpdeskNo,
+                             DateApproved = x.moveorder.DateApproved.ToString(),
+                             Rush = x.moveorder.Rush,
+                             Remarks = x.moveorder.Remarks
 
                          });
 
@@ -146,19 +150,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           by new
                           {
                               moveorder.OrderNo,
+                              moveorder.Requestor,
+                              moveorder.Approver,
                               customer.CustomerName,
                               customer.CustomerCode,
                               moveorder.ItemCode,
-                              moveorder.ItemDescription,
-                              moveorder.Uom,
-                              moveorder.QuantityOrdered,
-                              MoveOrderDate = moveorder.ApprovedDate.ToString(),
-                              transact.PreparedBy,
-                              TransactionDate = transact.PreparedDate.ToString(),
-                              DeliveryDate = transact.DeliveryDate.ToString(),
-                              moveorder.DateNeeded,
-                              moveorder.OrderDate,
-                              transact.IsActive,
+                             moveorder.ItemDescription,
+                             moveorder.Uom,
+                             moveorder.QuantityOrdered,
+                             MoveOrderDate = moveorder.ApprovedDate.ToString(),
+                             MoveOrderBy = moveorder.PreparedBy,
+                             transact.PreparedBy,                    
+                             TransactionDate = transact.PreparedDate.ToString(),
+                             DeliveryDate = transact.DeliveryDate.ToString(),
+                             moveorder.DateNeeded,
+                             moveorder.OrderDate,
+                             transact.IsActive,
                              moveorder.CompanyCode,
                              moveorder.CompanyName,
                              moveorder.DepartmentCode,
@@ -173,9 +180,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              moveorder.FullName,
                               customer.CustomerType,
                               moveorder.Cip_No,
+                              moveorder.HelpdeskNo,
+                              moveorder.Remarks,
+                              moveorder.Rush,
                               moveorder.IsTransact,
                               moveorder.Category,
-                              moveorder.AssetTag
+                              moveorder.AssetTag,
+                              moveorder.DateApproved,
+
+                              
                              
                              
                           
@@ -185,6 +198,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           {
 
                               MIRId = total.Key.OrderNo,
+                              Requestor = total.Key.Requestor,
+                              Approver = total.Key.Approver,
                               CustomerName = total.Key.CustomerName,
                               CustomerCode = total.Key.CustomerCode,
                               ItemCode = total.Key.ItemCode,
@@ -192,6 +207,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               Uom = total.Key.Uom,
                               Quantity = total.Key.QuantityOrdered,
                               MoveOrderDate = total.Key.MoveOrderDate,
+                              MoveOrderBy = total.Key.MoveOrderBy,
                               TransactedBy = total.Key.PreparedBy,
                               TransactionType = total.Key.IsActive,
                               TransactedDate = total.Key.TransactionDate,
@@ -213,9 +229,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               UnitCost = total.Key.UnitPrice,
                               LineAmount = total.Key.UnitPrice * total.Key.QuantityOrdered,
                               Cip_No = total.Key.Cip_No,
+                              HelpDesk = total.Key.HelpdeskNo,
+                              Remarks = total.Key.Remarks,
                               Status = total.Key.IsTransact == true ? "Transacted" :"For Approval",
                               Category = total.Key.Category,
-                              AssetTag = total.Key.AssetTag
+                              AssetTag = total.Key.AssetTag,
+                              DateApproved = total.Key.DateApproved.ToString(),
+                              Rush = total.Key.Rush
+
                               
                               
                           });
@@ -488,6 +509,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var cancelled = _context.Orders.Where(x => x.IsCancel == true  && x.IsActive == false)
                                         .GroupBy(x => new
                                         {
+
+                                            x.TrasactId,
                                             x.Id,
                                             x.OrderNo,
                                             x.DateNeeded,
@@ -498,12 +521,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             x.ItemdDescription,
                                             x.CancelDate,
                                             x.IsCancelBy,
-                                            x.Remarks
-
+                                            x.Remarks,
+                                            x.DepartmentCode,
+                                            x.Department,
+                                            x.CompanyCode,
+                                            x.CompanyName,
+                                            x.LocationCode,
+                                            x.LocationName,
+                                            x.AccountCode,
+                                            x.AccountTitles,
 
                                         }).Select(x => new DtoCancelledReports
                                         {
-
+                                            MIRId = x.Key.TrasactId,
                                             OrderId = x.Key.Id,
                                             OrderNo = x.Key.OrderNo,
                                             DateNeeded = x.Key.DateNeeded.ToString(),
@@ -515,7 +545,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered),
                                             CancelledDate = x.Key.CancelDate.ToString(),
                                             CancelledBy = x.Key.IsCancelBy,
-                                            Reason = x.Key.Remarks
+                                            Reason = x.Key.Remarks,
+                                            DepartmentCode = x.Key.DepartmentCode,
+                                            Department = x.Key.Department,
+                                            CompanyCode = x.Key.CompanyCode, 
+                                            CompanyName = x.Key.CompanyName,
+                                            AccountCode = x.Key.AccountCode,
+                                            AccountTitles = x.Key.AccountTitles,
+
                                         });
 
 
@@ -525,6 +562,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                        .Where(x => x.order.DateNeeded >= DateTime.Parse(DateFrom) && x.order.DateNeeded <= DateTime.Parse(DateTo))
                        .GroupBy(x => new
                        {
+                           x.order.TrasactId,
                            x.order.Id,
                            x.order.OrderNo,
                            x.order.OrderDate,
@@ -538,10 +576,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            x.cancel.Reason,
                            x.order.Remarks,
                            x.cancel.QuantityOrdered,
+                           x.cancel.DepartmentCode,
+                           x.cancel.Department,
+                           x.cancel.CompanyCode,
+                           x.cancel.CompanyName,
+                           x.cancel.LocationCode,
+                           x.cancel.LocationName,
+                           x.cancel.AccountCode,
+                           x.cancel.AccountTitles,
 
 
                        }).Select(x => new DtoCancelledReports
                        {
+                           MIRId = x.Key.TrasactId,
                            OrderId = x.Key.Id,
                            OrderNo = x.Key.OrderNo,
                            DateNeeded = x.Key.DateNeeded.ToString(),
@@ -553,8 +600,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            CancelledBy = x.Key.CancelledBy,
                            CancelledDate = x.Key.CancelledDate,
                            Reason = x.Key.Reason != null ? x.Key.Reason : x.Key.Remarks,
-                           QuantityOrdered = x.Key.QuantityOrdered != null ? x.Key.QuantityOrdered :  x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered)
-
+                           QuantityOrdered = x.Key.QuantityOrdered != null ? x.Key.QuantityOrdered :  x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered),
+                           DepartmentCode = x.Key.DepartmentCode,
+                           Department = x.Key.Department,
+                           CompanyCode = x.Key.CompanyCode,
+                           CompanyName = x.Key.CompanyName,
+                           AccountCode = x.Key.AccountCode,
+                           AccountTitles = x.Key.AccountTitles,
                        });
 
 
