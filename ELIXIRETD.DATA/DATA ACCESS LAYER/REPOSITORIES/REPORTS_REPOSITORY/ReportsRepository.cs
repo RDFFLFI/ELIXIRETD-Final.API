@@ -510,7 +510,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                         .GroupBy(x => new
                                         {
 
-                                            x.TrasactId,
+
                                             x.Id,
                                             x.OrderNo,
                                             x.DateNeeded,
@@ -522,18 +522,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             x.CancelDate,
                                             x.IsCancelBy,
                                             x.Remarks,
-                                            x.DepartmentCode,
-                                            x.Department,
-                                            x.CompanyCode,
-                                            x.CompanyName,
-                                            x.LocationCode,
-                                            x.LocationName,
-                                            x.AccountCode,
-                                            x.AccountTitles,
+
 
                                         }).Select(x => new DtoCancelledReports
                                         {
-                                            MIRId = x.Key.TrasactId,
+
                                             OrderId = x.Key.Id,
                                             OrderNo = x.Key.OrderNo,
                                             DateNeeded = x.Key.DateNeeded.ToString(),
@@ -546,12 +539,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             CancelledDate = x.Key.CancelDate.ToString(),
                                             CancelledBy = x.Key.IsCancelBy,
                                             Reason = x.Key.Remarks,
-                                            DepartmentCode = x.Key.DepartmentCode,
-                                            Department = x.Key.Department,
-                                            CompanyCode = x.Key.CompanyCode, 
-                                            CompanyName = x.Key.CompanyName,
-                                            AccountCode = x.Key.AccountCode,
-                                            AccountTitles = x.Key.AccountTitles,
 
                                         });
 
@@ -576,14 +563,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            x.cancel.Reason,
                            x.order.Remarks,
                            x.cancel.QuantityOrdered,
-                           x.cancel.DepartmentCode,
-                           x.cancel.Department,
-                           x.cancel.CompanyCode,
-                           x.cancel.CompanyName,
-                           x.cancel.LocationCode,
-                           x.cancel.LocationName,
-                           x.cancel.AccountCode,
-                           x.cancel.AccountTitles,
+                           x.order.DepartmentCode,
+                           x.order.Department,
+                           x.order.CompanyCode,
+                           x.order.CompanyName,
+                           x.order.LocationCode,
+                           x.order.LocationName,
+                           x.order.AccountCode,
+                           x.order.AccountTitles,
 
 
                        }).Select(x => new DtoCancelledReports
@@ -605,6 +592,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            Department = x.Key.Department,
                            CompanyCode = x.Key.CompanyCode,
                            CompanyName = x.Key.CompanyName,
+                           LocationCode = x.Key.LocationCode,
+                           LocationName = x.Key.LocationName,
                            AccountCode = x.Key.AccountCode,
                            AccountTitles = x.Key.AccountTitles,
                        });

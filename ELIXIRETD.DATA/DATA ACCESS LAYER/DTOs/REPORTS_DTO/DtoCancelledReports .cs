@@ -15,24 +15,29 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string DateOrdered { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
-        public string ItemCode { get; set; }
-        public string ItemDescription { get; set; }
-        public decimal QuantityOrdered { get; set; }
-
-        public string CompanyCode { get; set; }
-        public string CompanyName { get; set; }
 
         public string DepartmentCode { get; set; }
         public string Department { get; set; }
         public string LocationCode { get; set; }
         public string LocationName { get; set; }
 
+        public string ItemCode { get; set; }
+        public string ItemDescription { get; set; }
+        public decimal QuantityOrdered { get; set; }
+
+        public string Reason { get; set; }
+
+        public string CompanyCode { get; set; }
+        public string CompanyName { get; set; }
+
+        public string CancelledDate { get; set; }
+        public string CancelledBy { get; set; }
+
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 
-        public string CancelledDate { get; set; }   
-        public string CancelledBy { get; set; }
-        public string Reason { get; set; }
+
+
 
 
 
