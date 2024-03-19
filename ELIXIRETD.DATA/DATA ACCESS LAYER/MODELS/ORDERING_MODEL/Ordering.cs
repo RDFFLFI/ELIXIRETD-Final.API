@@ -73,7 +73,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public string AddressOrder { get; set; }
 
         public string Cip_No { get; set; }
-        public int HelpdeskNo { get; set; }
+        public int ? HelpdeskNo { get; set; }
         public string Rush { get; set; }
         public bool ? IsRush { get; set; }
 

@@ -22,29 +22,29 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
 builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString));
 
-builder.Services.AddAuthentication(authOptions =>
-{
-    authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-        .AddJwtBearer(jwtOptions =>
-        {
-            var key = configuration.GetValue<string>("JwtConfig:Key");
-            var keyBytes = Encoding.ASCII.GetBytes(key);
-
-            jwtOptions.SaveToken = true;
-            jwtOptions.RequireHttpsMetadata = false;
-            jwtOptions.TokenValidationParameters = new TokenValidationParameters
+    builder.Services.AddAuthentication(authOptions =>
+    {
+        authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+            .AddJwtBearer(jwtOptions =>
             {
+                var key = configuration.GetValue<string>("JwtConfig:Key");
+                var keyBytes = Encoding.ASCII.GetBytes(key);
 
-                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-                ValidateLifetime = true,
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ClockSkew = TimeSpan.Zero
-            };
+                jwtOptions.SaveToken = true;
+                jwtOptions.RequireHttpsMetadata = false;
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                {
 
-        });
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                    ValidateLifetime = true,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+            });
 
 builder.Services.AddCors(options =>
 {
