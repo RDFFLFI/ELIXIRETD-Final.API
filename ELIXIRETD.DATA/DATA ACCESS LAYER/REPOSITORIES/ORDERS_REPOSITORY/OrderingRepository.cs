@@ -2534,6 +2534,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.ApprovedDate = DateTime.Now;
                 x.ApproveDateTempo = DateTime.Now;
                 x.IsApprove = true;
+                x.DateApproved = DateTime.Now;
 
                 x.RejectBy = null;
                 x.RejectedDate = null;

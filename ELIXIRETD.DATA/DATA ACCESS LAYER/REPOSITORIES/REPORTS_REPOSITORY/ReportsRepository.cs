@@ -73,6 +73,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          {
 
                              MIRId = x.moveorder.OrderNo,
+                            
                              Requestor = x.moveorder.Requestor,
                              Approver = x.moveorder.Approver,
                              CustomerCode = x.moveorder.Customercode,
@@ -186,18 +187,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               moveorder.IsTransact,
                               moveorder.Category,
                               moveorder.AssetTag,
-                              moveorder.DateApproved,
+                              moveorder.ApprovedDate,
 
-                              
-                             
-                             
-                          
+
+
+
+
                           } into total
 
                           select new DtoTransactReports
                           {
 
                               MIRId = total.Key.OrderNo,
+                              
                               Requestor = total.Key.Requestor,
                               Approver = total.Key.Approver,
                               CustomerName = total.Key.CustomerName,
@@ -234,10 +236,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               Status = total.Key.IsTransact == true ? "Transacted" :"For Approval",
                               Category = total.Key.Category,
                               AssetTag = total.Key.AssetTag,
-                              DateApproved = total.Key.DateApproved.ToString(),
+                              DateApproved = total.Key.ApprovedDate.ToString(),
                               Rush = total.Key.Rush
-
-                              
                               
                           });
 
@@ -510,7 +510,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                         .GroupBy(x => new
                                         {
 
-
                                             x.Id,
                                             x.OrderNo,
                                             x.DateNeeded,
@@ -550,7 +549,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                        .GroupBy(x => new
                        {
                            x.order.TrasactId,
-                           x.order.Id,
+                          x. order.Id,
                            x.order.OrderNo,
                            x.order.OrderDate,
                            x.order.DateNeeded,
@@ -602,6 +601,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             if (!string.IsNullOrEmpty(Search))
             {
                 orders = orders.Where(x => Convert.ToString(x.OrderId).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
