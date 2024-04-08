@@ -1,5 +1,4 @@
-﻿using ELIXIRETD.DATA.CORE.API_RESPONSE;
-using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
+﻿using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
@@ -8,27 +7,9 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Microsoft.Extensions.Logging.Abstractions;
-using NetTopologySuite.IO;
-using NetTopologySuite.Mathematics;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text.RegularExpressions;
-using System;
-using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.ListofServedDto;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
-using System.Security.Claims;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Identity;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 {
@@ -2534,6 +2515,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.ApprovedDate = DateTime.Now;
                 x.ApproveDateTempo = DateTime.Now;
                 x.IsApprove = true;
+                x.DateApproved = DateTime.Now;
 
                 x.RejectBy = null;
                 x.RejectedDate = null;

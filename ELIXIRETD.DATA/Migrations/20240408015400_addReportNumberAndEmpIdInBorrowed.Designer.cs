@@ -4,6 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20240408015400_addReportNumberAndEmpIdInBorrowed")]
+    partial class addReportNumberAndEmpIdInBorrowed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,9 +123,6 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("EmpId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -216,9 +215,6 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmpId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")

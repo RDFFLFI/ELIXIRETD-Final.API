@@ -14,6 +14,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
 
         public string CustomerName { get; set; }
 
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
+
         public decimal TotalQuantity { get; set; }
 
         public string RejectDate { get; set; }

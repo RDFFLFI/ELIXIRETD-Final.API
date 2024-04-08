@@ -9,10 +9,6 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY.Excemption;
-using System.Security.Cryptography.X509Certificates;
-using System;
-using NetTopologySuite.Index.HPRtree;
-using Microsoft.Extensions.Logging.Abstractions;
 //using EntityFramework.FunctionsExtensions.DateDiffDay;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
@@ -1093,6 +1089,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowed.BorrowedPKey,
                     x.issues.CustomerCode,
                     x.issues.CustomerName,
+                    x.issues.EmpId,
+                    x.issues.FullName,
                     x.borrowed.TotalQuantity,
                     x.issues.PreparedBy,
                     x.borrowed.IsActive,
@@ -1111,6 +1109,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.CustomerCode,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
@@ -1165,6 +1165,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowed.BorrowedPKey,
                     x.issues.CustomerCode,
                     x.issues.CustomerName,
+                    x.issues.EmpId,
+                    x.issues.FullName,
                     x.borrowed.TotalQuantity,
                     x.issues.PreparedBy,
                     x.borrowed.IsActive,
@@ -1183,6 +1185,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.CustomerCode,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
@@ -1214,6 +1218,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                    Id = x.Id,
                                                    Customer = x.CustomerName,
                                                    CustomerCode = x.CustomerCode,
+                                                   EmpId = x.EmpId,
+                                                   FullName = x.FullName,
                                                    TransactionDate = x.TransactionDate.ToString(),
                                                    Details = x.Details
 
@@ -1240,6 +1246,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   BorrowedPKey = x.borrowed.BorrowedPKey,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
+                  EmpId = x.issues.EmpId,
+                  FullName = x.issues.FullName,
                   Uom = x.borrowed.Uom,
                   PreparedDate = x.borrowed.PreparedDate.ToString(),
                   ItemCode = x.borrowed.ItemCode,
@@ -1342,6 +1350,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 x.borrowed.borrowed.BorrowedPKey,
                 x.issue.CustomerCode,
                 x.issue.CustomerName,
+                x.issue.EmpId,
+                x.issue.FullName,
                 x.issue.PreparedDate,
                 x.borrowed.borrowed.ItemCode,
                 x.borrowed.borrowed.ItemDescription,
@@ -1358,6 +1368,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 BorrowedPKey = x.Key.BorrowedPKey,
                 CustomerCode = x.Key.CustomerCode,
                 CustomerName = x.Key.CustomerName,
+                EmpId = x.Key.EmpId,
+                FullName = x.Key.FullName,
                 BorrowedDate = x.Key.PreparedDate.ToString(),
                 ItemCode = x.Key.ItemCode,
                 ItemDescription = x.Key.ItemDescription,
@@ -1394,10 +1406,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             }
 
             return false;
-
-            
-
-          
         }
 
         public async Task<IReadOnlyList<DtoGetConsumedItem>> GetConsumedItem(int id)
@@ -1408,21 +1416,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                           {
                                                               x.Id,
                                                               x.ItemCode,
-
                                                               x.Consume,
                                                               x.BorrowedItemPkey,
-
                                                               x.CompanyCode,
                                                               x.CompanyName,
+                                                              x.EmpId,
+                                                              x.FullName,
                                                               x.DepartmentCode,
                                                               x.DepartmentName,
                                                               x.LocationCode,
                                                               x.LocationName,
                                                               x.AccountCode,
                                                               x.AccountTitles,
-                                                              x.FullName,
-                                                              x.EmpId,
-                                                              x.IsActive
+
+                                                                                                                                              x.IsActive
                                                           })
                                                           .Select(x => new DtoGetConsumedItem
                                                           {
@@ -1435,6 +1442,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                               CompanyCode = x.Key.CompanyCode,
                                                               CompanyName = x.Key.CompanyName,
+
                                                               DepartmentCode = x.Key.DepartmentCode,
                                                               DepartmentName = x.Key.DepartmentName,
                                                               LocationCode = x.Key.LocationCode,
@@ -1472,8 +1480,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                });
 
 
-
-
             var borrowed = borrowedconsume
                   .GroupJoin(consumed, borrow => borrow.BorrowedItemPKey, consume => consume.BorrowedItemPKey, (borrow, consume) => new { borrow, consume })
                   .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
@@ -1497,10 +1503,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       x.consume.AccountTitles,
                       x.consume.FullName,
                       x.consume.EmpId,
-
-
-
-
                   })
                   .Select(x => new DtoGetConsumedItem
                   {
@@ -1525,7 +1527,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       EmpId = x.Key.EmpId,
 
                   });
-
 
             return await borrowed.ToListAsync();
         }
@@ -1577,6 +1578,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 borrowedconsume.AccountTitles = consumes.AccountTitles;
                 borrowedconsume.EmpId = consumes.EmpId;
                 borrowedconsume.FullName = consumes.FullName;
+                borrowedconsume.ReportNumber = consumes.ReportNumber;
+
                 return true;
 
             }
@@ -1617,8 +1620,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 _context.BorrowedConsumes.Remove(items);
             }
-
-     
 
             return true;
 
@@ -1672,6 +1673,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             {
                 BorrowedItemPKey = x.Key.BorrowedItemPkey,
                 ConsumedQuantity = x.Sum(x => x.Consume)
+                
 
             });
 
@@ -1688,6 +1690,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.ReturnedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
+                                
 
                               }).Select(x => new DtoGetAllReturnedItem
                               {
@@ -1715,12 +1718,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 .GroupBy(x => new
                 {
 
-                    x.borrowdetail.Id,
+                    x.borrowissue.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
+                    x.borrowissue.EmpId,
+                    x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
-                    x.borrowissue.ReturnBy,
+                    x.borrowdetail.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
                     x.borrowdetail.ConsumedQuantity,
@@ -1737,6 +1742,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate,
                     ReturnBy = x.Key.ReturnBy,
@@ -1785,7 +1792,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedPKey,
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
-                                  //x.borrow.IsApprovedReturned,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
 
@@ -1796,14 +1802,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                   Id = x.Key.BorrowedPKey,
                                   PreparedBy = x.Key.PreparedBy,
-                                  //IsApproveReturn = x.Key.IsApprovedReturned != null ? false : true,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
-                                  //IsReturned = x.Key.IsReturned != null ? true : false,
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
-                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
 
 
                               });
@@ -1822,6 +1825,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
+                    x.borrowissue.EmpId,
+                    x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
                     x.borrowissue.ReturnBy,
@@ -1830,7 +1835,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
-                    //x.borrowdetail.UnitCost
                     x.borrowissue.Details
 
 
@@ -1838,10 +1842,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate,
                     ReturnBy = x.Key.ReturnBy,
@@ -1851,8 +1856,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsApproveReturn = x.Key.IsApprovedReturned ?? false,
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
-                    //UnitCost = x.Key.UnitCost,
-                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
 
 
@@ -1875,6 +1878,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.BorrowedPKey)
                                                        .ToListAsync();
 
+            var consumeItem = await _context.BorrowedConsumes
+                .Where(x => x.BorrowedPkey == borrowed.BorrowedPKey).ToListAsync();
+
 
             foreach(var items in borrow)
             {
@@ -1884,6 +1890,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 items.IsApprovedReturned = null;
             }
 
+            foreach(var consume in consumeItem) 
+            {
+                consume.IsActive = false;
+                consume.IsApproveReturn = null;
+
+            }
+
             issue.IsReturned = false;
             issue.IsApprovedReturned = null;
             issue.StatusApproved = "Borrow Approved";
@@ -1891,8 +1904,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return true;
 
         }
-
-
 
 
         public async Task<IReadOnlyList<DtoViewBorrewedReturnedDetails>> ViewBorrewedReturnedDetails(int id)
@@ -1927,6 +1938,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   x.borrow.ItemDescription,
                                                   x.borrow.Uom,
                                                   x.borrow.ReturnedDate,
+                                                  
 
                                               }).Select(x => new DtoViewBorrewedReturnedDetails
                                               {
@@ -1956,6 +1968,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Id = x.borrow.Id,
                   CustomerCode = x.issue.CustomerCode,
                   Customer = x.issue.CustomerName,
+                  EmpId = x.issue.EmpId,
+                  FullName = x.issue.FullName,
                   ItemCode = x.borrow.ItemCode,
                   ItemDescription = x.borrow.ItemDescription,
                   Uom = x.borrow.Uom,
@@ -1985,6 +1999,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedItemPKey = x.BorrowedItemPkey,
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemDescription,
+                    ReportNumber = x.ReportNumber,
                     Uom = x.Uom,
                     Consume = x.Consume,
                     CompanyCode = x.CompanyCode,
@@ -2023,6 +2038,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                             BorrowedPKey = x.Id,
                                             CustomerName = x.CustomerName,
                                             CustomerCode = x.CustomerCode,
+                                            EmpId = x.EmpId,
+                                            FullName = x.FullName,
                                             TotalQuantity = x.TotalQuantity,
                                             //PreparedBy = x.PreparedBy,
                                             RejectDate = x.IsRejectDate.ToString(),
@@ -2059,6 +2076,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                      BorrowedPKey = x.Id,
                                      CustomerName = x.CustomerName,
                                      CustomerCode = x.CustomerCode,
+                                     EmpId = x.EmpId,
+                                     FullName = x.FullName,
                                      TotalQuantity = x.TotalQuantity,
                                      //PreparedBy = x.PreparedBy,
                                      RejectDate = x.IsRejectDate.ToString(),
@@ -2107,6 +2126,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowed.BorrowedPKey,
                     x.issues.CustomerCode,
                     x.issues.CustomerName,
+                    x.issues.EmpId,
+                    x.issues.FullName,
                     x.borrowed.TotalQuantity,
                     x.issues.PreparedBy,
                     x.borrowed.IsActive,
@@ -2125,6 +2146,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.CustomerCode,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
@@ -2177,6 +2200,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowed.BorrowedPKey,
                     x.issues.CustomerCode,
                     x.issues.CustomerName,
+                    x.issues.EmpId,
+                    x.issues.FullName,
                     x.borrowed.TotalQuantity,
                     x.issues.PreparedBy,
                     x.borrowed.IsActive,
@@ -2195,6 +2220,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     BorrowedPKey = x.Key.BorrowedPKey,
                     CustomerName = x.Key.CustomerName,
                     CustomerCode = x.Key.CustomerCode,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     TotalQuantity = x.Key.TotalQuantity,
                     PreparedBy = x.Key.PreparedBy,
                     IsActive = x.Key.IsActive,
@@ -2258,6 +2285,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                            Id = x.Id,
                                                            Customer = x.CustomerName,
                                                            CustomerCode = x.CustomerCode,
+                                                           EmpId = x.EmpId,
+                                                           FullName = x.FullName,
                                                            TransactionDate = x.TransactionDate.ToString(),
                                                            Details = x.Details
 
@@ -2284,6 +2313,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   BorrowedPKey = x.borrowed.BorrowedPKey,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
+                
+                  EmpId = x.issues.EmpId,
+                  FullName = x.issues.FullName,
                   Uom = x.borrowed.Uom,
                   PreparedDate = x.borrowed.PreparedDate.ToString(),
                   ItemCode = x.borrowed.ItemCode,
@@ -2353,6 +2385,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                  BorrowedPKey = x.Id,
                                                  CustomerName = x.CustomerName,
                                                  CustomerCode = x.CustomerCode,
+                                                 EmpId = x.EmpId,
+                                                 FullName = x.FullName,
                                                  TotalQuantity = x.TotalQuantity,
                                                  //PreparedBy = x.PreparedBy,
                                                  RejectDate = x.IsRejectDate.ToString(),
@@ -2563,6 +2597,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.Id,
                     x.borrowissue.CustomerCode,
                     x.borrowissue.CustomerName,
+                    x.borrowissue.EmpId,
+                    x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
                     x.borrowissue.ReturnBy,
@@ -2583,6 +2619,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
+                    EmpId = x.Key.EmpId,
+                    FullName = x.Key.FullName,
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate,
                     ReturnBy = x.Key.ReturnBy,

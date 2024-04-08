@@ -13,6 +13,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public int BorrowedPKey { get; set; }
         public string CustomerCode { get; set; }
         public string Customer { get; set; }
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
         public string Uom { get; set; }

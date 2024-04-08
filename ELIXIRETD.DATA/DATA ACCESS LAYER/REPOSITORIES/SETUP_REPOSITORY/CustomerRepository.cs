@@ -4,7 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Index.HPRtree;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

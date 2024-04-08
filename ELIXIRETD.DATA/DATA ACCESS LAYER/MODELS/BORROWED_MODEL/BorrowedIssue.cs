@@ -31,8 +31,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
         public bool? IsReturned { get; set; }
 
        
-
-
         // Update Borrowed
 
         [Column(TypeName = "Date")]
@@ -65,6 +63,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL
 
 
         public string StatusApproved { get; set; }
+
+        public string EmpId { get; set; }
+        public string FullName { get; set; }    
 
 
 

@@ -14,6 +14,7 @@
   <ItemGroup>
     <None Remove="CORE\INTERFACES\BORROWED_INTERFACE\IBorrowedItem.cs~RF1c1a56f.TMP" />
     <None Remove="DATA ACCESS LAYER\DTOs\BORROWED_DTO\DtoGetForBorrowedPrint.cs~RF595264.TMP" />
+    <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\BorrowedIssue.cs~RF4fdbf8.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\BORROWED_MODEL\ReturnedBorrowed.cs~RF2dd12f.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\ORDERING_MODEL\MoveOrder.cs~RFc78d92.TMP" />
     <None Remove="DATA ACCESS LAYER\MODELS\ORDERING_MODEL\Ordering.cs~RF45e8aa.TMP" />
@@ -47,23 +48,18 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="EntityFramework.Functions" Version="1.5.0" />
-    <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="6.0.2" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="6.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="6.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
