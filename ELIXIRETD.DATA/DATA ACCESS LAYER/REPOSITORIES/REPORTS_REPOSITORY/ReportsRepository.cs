@@ -375,6 +375,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     BorrowedId = x.Key,
                     CustomerCode = x.First().issue.CustomerCode,
                     CustomerName = x.First().issue.CustomerName,
+                    EmpId = x.First().issue.EmpId,
+                    FullName = x.First().issue.FullName,
                     TransactedBy = x.First().issue.PreparedBy,
                     BorrowedDate = x.First().issue.PreparedDate.ToString(),
                     Details = x.First().issue.Details,
@@ -421,7 +423,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                        AccountCode = x.AccountCode,
                                        AccountTitles = x.AccountTitles,
                                        EmpId = x.EmpId,
-                                       FullName = x.FullName
+                                       FullName = x.FullName,
+                                       ReportNumber = x.ReportNumber
+
 
                                    });
 
@@ -447,7 +451,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              AccountCode = x.consume.AccountCode,
                              AccountTitles = x.consume.AccountTitles,
                              EmpId = x.consume.EmpId,
-                             FullName = x.consume.FullName
+                             FullName = x.consume.FullName,
+                             ReportNumber = x.consume.ReportNumber
                          });
 
 
@@ -485,7 +490,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                AccountCode = x.returned.AccountCode,
                                AccountTitles = x.returned.AccountTitles,
                                EmpId = x.returned.EmpId,
-                               FullName = x.returned.FullName
+                               FullName = x.returned.FullName,
+                               ReportNumber = x.returned.ReportNumber
                                
                            });
 

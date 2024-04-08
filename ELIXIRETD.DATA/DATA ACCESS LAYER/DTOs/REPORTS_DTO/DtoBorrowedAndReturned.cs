@@ -51,6 +51,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string EmpId { get; set; }
         public string FullName { get; set; }
 
+        public int ? ReportNumber { get; set; }
+
 
 
 

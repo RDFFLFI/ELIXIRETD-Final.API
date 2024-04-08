@@ -1688,8 +1688,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedPKey,
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
+                                  x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
+      
                                 
 
                               }).Select(x => new DtoGetAllReturnedItem
@@ -1702,7 +1704,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
-
+                                  BorrowedDate = x.Key.BorrowedDate.ToString(),
 
 
                               });
@@ -1725,6 +1727,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
+                    x.borrowdetail.BorrowedDate,
                     x.borrowdetail.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
@@ -1746,6 +1749,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     FullName = x.Key.FullName,
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate,
+                    BorrowedDate = x.Key.BorrowedDate,
                     ReturnBy = x.Key.ReturnBy,
                     TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
                     ConsumedQuantity = x.Key.ConsumedQuantity,
@@ -1792,6 +1796,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedPKey,
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
+                                  x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
 
@@ -1803,6 +1808,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   Id = x.Key.BorrowedPKey,
                                   PreparedBy = x.Key.PreparedBy,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
+                                  BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
@@ -1829,6 +1835,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
+                    x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
@@ -1849,6 +1856,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     FullName = x.Key.FullName,
                     PreparedBy = x.Key.PreparedBy,
                     ReturnedDate = x.Key.ReturnedDate,
+                    BorrowedDate = x.Key.BorrowedDate,
                     ReturnBy = x.Key.ReturnBy,
                     TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
                     ConsumedQuantity = x.Key.ConsumedQuantity,
@@ -1938,6 +1946,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   x.borrow.ItemDescription,
                                                   x.borrow.Uom,
                                                   x.borrow.ReturnedDate,
+                                                  x.borrow.BorrowedDate
                                                   
 
                                               }).Select(x => new DtoViewBorrewedReturnedDetails
@@ -1950,7 +1959,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   BorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                                   Consume = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
                                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
-                                                  UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0)
+                                                  UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
+                                                  BorrowedDate = x.Key.BorrowedDate.ToString(),
                                                   
 
                                               });
@@ -1979,6 +1989,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   ReturnedDate = x.borrow.ReturnedDate,
                   PreparedBy = x.issue.PreparedBy,
                   Remarks = x.issue.Remarks,
+                  BorrowedDate = x.borrow.BorrowedDate,
                   TransactionDate = x.issue.TransactionDate.ToString(),
                   Reason = x.issue.Reason,
                   UnitCost = x.borrow.UnitCost,
@@ -2497,6 +2508,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.CustomerName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
+                    x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
@@ -2561,6 +2573,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedPKey,
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
+                                  x.borrow.BorrowedDate,
                                   //x.borrow.IsApprovedReturned,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
@@ -2576,6 +2589,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
+                                  BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                   //IsReturned = x.Key.IsReturned != null ? true : false,
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
@@ -2601,6 +2615,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
                     x.borrowdetail.ReturnedDate,
+                    x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
@@ -2630,6 +2645,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     IsApproveReturn = x.Key.IsApprovedReturned ?? false,
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
+                    BorrowedDate = x.Key.BorrowedDate,
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
