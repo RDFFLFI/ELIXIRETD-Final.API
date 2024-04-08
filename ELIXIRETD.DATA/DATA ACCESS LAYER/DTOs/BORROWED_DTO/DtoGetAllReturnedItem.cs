@@ -12,6 +12,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
         public int Id { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode {get; set;}
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
         public string PreparedBy { get; set; }
         public decimal ConsumedQuantity { get; set; }
         public string ReturnedDate { get; set; }

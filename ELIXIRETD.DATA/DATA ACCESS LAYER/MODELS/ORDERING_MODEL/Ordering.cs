@@ -1,6 +1,4 @@
-﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
-using NetTopologySuite.Geometries;
+﻿
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL

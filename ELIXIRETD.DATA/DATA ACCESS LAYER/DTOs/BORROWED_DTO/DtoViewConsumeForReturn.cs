@@ -31,6 +31,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO.BorrowedNotificatio
 
         public string EmpId { get; set; }
 
+        public int ? ReportNumber {  get; set; }
+
 
 
 
