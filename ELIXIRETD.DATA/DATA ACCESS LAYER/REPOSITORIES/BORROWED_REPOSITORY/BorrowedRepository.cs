@@ -1428,6 +1428,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                               x.LocationName,
                                                               x.AccountCode,
                                                               x.AccountTitles,
+                                                              x.ReportNumber,
 
                                                                                                                                               x.IsActive
                                                           })
@@ -1451,7 +1452,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                               AccountTitles = x.Key.AccountTitles,
                                                               FullName = x.Key.FullName,
                                                               EmpId = x.Key.EmpId,
-                                                              IsActive = x.Key.IsActive
+                                                              IsActive = x.Key.IsActive,
+                                                              ReportNumber = x.Key.ReportNumber
+
 
 
                                                           });
@@ -1503,6 +1506,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       x.consume.AccountTitles,
                       x.consume.FullName,
                       x.consume.EmpId,
+                      x.consume.ReportNumber
                   })
                   .Select(x => new DtoGetConsumedItem
                   {
@@ -1525,6 +1529,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                       AccountTitles = x.Key.AccountTitles,
                       FullName = x.Key.FullName,
                       EmpId = x.Key.EmpId,
+                      ReportNumber = x.Key.ReportNumber
 
                   });
 
@@ -1624,9 +1629,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return true;
 
         }
-
-
-
 
         public async Task<bool> SaveReturnedQuantity(BorrowedIssueDetails borrowed)
         {
@@ -2471,6 +2473,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
                                   //x.borrow.IsApprovedReturned,
+                                  x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
 
@@ -2484,6 +2487,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   //IsApproveReturn = x.Key.IsApprovedReturned != null ? false : true,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                   //IsReturned = x.Key.IsReturned != null ? true : false,
