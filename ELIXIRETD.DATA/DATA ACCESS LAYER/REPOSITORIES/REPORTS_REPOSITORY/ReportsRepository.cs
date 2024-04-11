@@ -380,6 +380,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     TransactedBy = x.First().issue.PreparedBy,
                     BorrowedDate = x.First().issue.PreparedDate.ToString(),
                     Details = x.First().issue.Details,
+                    AgingDays = x.First().issue.IsApprovedReturnedDate != null ? 
+                    EF.Functions.DateDiffDay(x.First().issue.IsApprovedDate.Value , x.First().issue.IsApprovedReturnedDate)
+                    : x.First().issue.IsApprovedDate == null ? 0 : EF.Functions.DateDiffDay(x.First().issue.IsApprovedDate , DateTime.Now) ,
                     Remarks = x.First().issue.Remarks,
                     Status = (x.First().issue.IsApproved == true) ? "Approved" :
                             (x.First().issue.IsApproved == false) ? "For Approval" : "Unknown",
@@ -469,6 +472,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                BorrowedId = x.borrowed.Id,
                                CustomerCode = x.borrowed.CustomerCode,
                                CustomerName = x.borrowed.CustomerName,
+                               EmpIdByIssue = x.borrowed.EmpId,
+                               FullNameByIssue = x.borrowed.FullName,
                                ItemCode = x.returned.ItemCode,
                                ItemDescription = x.returned.ItemDescription,
                                Uom = x.returned.Uom,
@@ -491,7 +496,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                AccountTitles = x.returned.AccountTitles,
                                EmpId = x.returned.EmpId,
                                FullName = x.returned.FullName,
-                               ReportNumber = x.returned.ReportNumber
+                               ReportNumber = x.returned.ReportNumber,
+                               AgingDays = x.borrowed.IsApprovedReturnedDate != null ? EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate.Value , x.borrowed.IsApprovedReturnedDate.Value)
+                               : x.borrowed.IsApprovedDate == null ? 0 : EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate, DateTime.Now),
                                
                            });
 

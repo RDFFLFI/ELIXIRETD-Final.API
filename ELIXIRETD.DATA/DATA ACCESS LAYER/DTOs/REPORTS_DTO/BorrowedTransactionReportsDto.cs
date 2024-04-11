@@ -20,6 +20,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string Details { get; set; }
         public string Remarks { get; set; }
 
+        public int ? AgingDays { get; set; }
         
             public int BorrowedItemPkey { get; set; }
             public string ItemCode { get; set; }

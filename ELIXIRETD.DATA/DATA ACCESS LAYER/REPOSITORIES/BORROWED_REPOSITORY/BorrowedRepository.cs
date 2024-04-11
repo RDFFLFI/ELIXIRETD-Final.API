@@ -1584,7 +1584,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 borrowedconsume.EmpId = consumes.EmpId;
                 borrowedconsume.FullName = consumes.FullName;
                 borrowedconsume.ReportNumber = consumes.ReportNumber;
-
                 return true;
 
             }
@@ -1692,6 +1691,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.ReturnedDate,
                                   x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
+                                  //x.borrow.IsApprovedDate,
                                   x.borrow.ReturnBy,
       
                                 
@@ -1703,6 +1703,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   PreparedBy = x.Key.PreparedBy,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
+                                  //IsApproveDate = x.Key.IsApprovedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
@@ -1732,6 +1733,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.BorrowedDate,
                     x.borrowdetail.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.IsApprovedReturnedDate,
+                    x.borrowissue.IsApprovedDate,
                     x.borrowissue.StatusApproved,
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
@@ -1756,13 +1759,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
                     ConsumedQuantity = x.Key.ConsumedQuantity,
                     ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
+                    AgingDays = x.Key.IsApprovedReturnedDate != null ? 
+                    EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value) 
+                    : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
+
                     IsApproveReturn = x.Key.IsApprovedReturned ?? false,
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
                     Details = x.Key.Details 
 
 
-                }).Where(x => x.IsApproveReturn  == status);
+                }).Where(x => x.IsApproveReturn == status);
 
             return await PagedList<DtoGetAllReturnedItem>.CreateAsync(BorrowIssue, userParams.PageNumber, userParams.PageSize);
         }
@@ -1836,11 +1843,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowissue.EmpId,
                     x.borrowissue.FullName,
                     x.borrowissue.PreparedBy,
+                    x.borrowissue.IsApprovedDate,
                     x.borrowdetail.ReturnedDate,
                     x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
                     x.borrowissue.StatusApproved,
+                    x.borrowissue.IsApprovedReturnedDate,
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
@@ -1863,6 +1872,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
                     ConsumedQuantity = x.Key.ConsumedQuantity,
                     ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
+                    AgingDays = x.Key.IsApprovedReturnedDate != null ?
+                    EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value)
+                    : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
                     IsApproveReturn = x.Key.IsApprovedReturned ?? false,
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
@@ -2515,6 +2527,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.IsApprovedReturnedDate,
+                    x.borrowissue.IsApprovedDate,
                     x.borrowissue.StatusApproved,
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
@@ -2537,9 +2551,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TotalBorrowedQuantity = x.Key.TotalBorrowedQuantity,
                     ConsumedQuantity = x.Key.ConsumedQuantity,
                     ReturnedBorrow = x.Key.TotalBorrowedQuantity - x.Key.ConsumedQuantity,
+                    BorrowedDate = x.Key.BorrowedDate,
                     IsApproveReturn = x.Key.IsApprovedReturned ?? false,
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
+                    AgingDays = x.Key.IsApprovedReturnedDate != null ?
+                    EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value)
+                    : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
@@ -2622,6 +2640,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.BorrowedDate,
                     x.borrowissue.ReturnBy,
                     x.borrowissue.IsApprovedReturned,
+                    x.borrowissue.IsApprovedDate,
+                    x.borrowissue.IsApprovedReturnedDate,
                     x.borrowissue.StatusApproved,
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
@@ -2650,6 +2670,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     StatusApprove = x.Key.StatusApproved,
                     IsActive = x.Key.IsActive,
                     BorrowedDate = x.Key.BorrowedDate,
+                    AgingDays = x.Key.IsApprovedReturnedDate != null ?
+                    EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value)
+                    : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
                     //UnitCost = x.Key.UnitCost,
                     //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
@@ -2722,6 +2745,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             var borrow = await _context.BorrowedIssueDetails.Where(x => x.BorrowedPKey == borrowed.Id)
                                                              .ToListAsync();
+            var borrowConsume = await _context.BorrowedConsumes.Where(x => x.BorrowedPkey == borrowed.Id).ToListAsync();
 
 
             foreach (var item in borrow)
@@ -2733,6 +2757,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 //item.ReturnQuantity = 0;
                 item.IsReturned = false;
                 
+            }
+
+            foreach (var consume in borrowConsume)
+            {
+                consume.IsActive = false;
+                consume.IsApproveReturn = null;
+
             }
 
             issue.IsReturned = false;
