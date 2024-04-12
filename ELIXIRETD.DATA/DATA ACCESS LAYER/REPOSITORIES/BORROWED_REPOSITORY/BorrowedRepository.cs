@@ -881,6 +881,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 Id = x.Id,
                                                 Customer = x.CustomerName,
                                                 CustomerCode = x.CustomerCode,
+                                                EmpId = x.EmpId,
+                                                FullName = x.FullName,
                                                 Remarks = x.Remarks,
                                                 TransactionDate = x.TransactionDate.ToString(),
                                                 Details = x.Details
@@ -899,6 +901,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                   Id = x.borrowed.Id,
                   Customer = x.issues.Customer,
                   CustomerCode = x.issues.CustomerCode,
+                  EmpId = x.issues.EmpId,
+                  FullName = x.issues.FullName,
                   ItemCode = x.borrowed.ItemCode,
                   ItemDescription = x.borrowed.ItemDescription,
                   Uom = x.borrowed.Uom,
@@ -1125,7 +1129,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Details = x.Key.Details
                     //UnitCost = x.Key.UnitCost
 
-                });
+                }).OrderByDescending(x => x.BorrowedDate);
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
 
@@ -1201,7 +1205,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Details = x.Key.Details
                     //UnitCost = x.Key.UnitCost
 
-                }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+                }).OrderByDescending(x => x.BorrowedDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<GetAllBorrowedReceiptWithPaginationDto>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
@@ -2074,7 +2078,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                             TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                 
 
-                                        });
+                                        }).OrderByDescending(x => x.RejectDate);
 
             return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
 
@@ -2111,7 +2115,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                      //BorrowedDate = x.PreparedDate.ToString(),
                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
-                                 }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
+                                 }).OrderByDescending(x => x.RejectDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
@@ -2187,7 +2191,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     //UnitCost = x.Key.UnitCost
                     Details = x.Key.Details
 
-                });
+                }).OrderByDescending(x => x.BorrowedDate);
 
 
 
@@ -2261,7 +2265,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     //UnitCost = x.Key.UnitCost
                     Details = x.Key.Details
 
-                }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
+                }).OrderByDescending(x => x.BorrowedDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
                                                     || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                                                       || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
 
@@ -2420,7 +2424,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                  //BorrowedDate = x.PreparedDate.ToString(),
                                                  TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
-                                             });
+                                             }).OrderByDescending(x => x.RejectDate);
 
             return await PagedList<GetRejectBorrowedPagination>.CreateAsync(borrow, userParams.PageNumber, userParams.PageSize);
         }
@@ -2446,7 +2450,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                //BorrowedDate = x.PreparedDate.ToString(),
                                                TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
-                                           }).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
+                                           }).OrderByDescending(x  => x.RejectDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
                                                     || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                                                       || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
 
@@ -2563,7 +2567,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Details = x.Key.Details
 
 
-                }).Where(x => x.IsApproveReturn == status);
+                }).OrderByDescending(x => x.ReturnedDate).Where(x => x.IsApproveReturn == status);
 
 
 
@@ -2678,7 +2682,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     Details = x.Key.Details
 
 
-                }).Where(x => x.IsApproveReturn == status).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
+                }).OrderByDescending(x => x.ReturnedDate).Where(x => x.IsApproveReturn == status).Where(x => (Convert.ToString(x.Id)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerCode)).ToLower().Contains(search.Trim().ToLower())
                           || (Convert.ToString(x.CustomerName)).ToLower().Contains(search.Trim().ToLower()));
 
@@ -2773,8 +2777,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return true;
 
         }
-
-     
     }
 
 }
