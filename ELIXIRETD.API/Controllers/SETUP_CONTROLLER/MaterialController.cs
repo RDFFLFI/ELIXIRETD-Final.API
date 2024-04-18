@@ -38,6 +38,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 List<Material> ItemDescriptionNull = new List<Material>();
                 List<Material> ItemCodeAlreadyExist = new List<Material>();
                 List<Material> ItemDescriptionAlreadyExist = new List<Material>();
+                var allList = new List<Material>(); 
 
                 foreach (Material items in materials)
                 {
@@ -57,9 +58,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         continue;
                     }
                     items.ItemCategoryId = itemCategory.Id;
-
-
-
 
                     if (materials.Count(x => x.ItemCode == items.ItemCode && x.ItemDescription == items.ItemDescription && x.UomId == items.UomId && x.ItemCategoryId == items.ItemCategoryId) > 1)
                     {
@@ -81,8 +79,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         continue;
                     }
 
-
-
                     //var Itemcodenull = await _unitOfWork.Materials.AddMaterialImport(items);
                     if (items.ItemCode == string.Empty || items.ItemCode == null)
                     {
@@ -98,18 +94,33 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                     }
 
-
                     if (validateDuplicate == true)
                     {
                         DuplicateList.Add(items);
                     }
-
                     else
                     {
                         AvailableImport.Add(items);
                         await _unitOfWork.Materials.AddMaterialImport(items);
                     }
 
+
+                }
+
+
+
+                var allListSelect = allList.Select(x => x.Material_No);
+                var allDelete = await _context.Materials.ToListAsync();
+                var allMaterialList = allDelete.Where(x => !allListSelect.Contains(x.Material_No)).ToList();
+
+                if(allMaterialList.Count() > 0)
+                {
+                    foreach (var item in allMaterialList)
+                    {
+                        var itemInActive = await _context.Materials.FirstOrDefaultAsync(x => x.Material_No == item.Material_No);
+
+                        itemInActive.IsActive = false;
+                    }
                 }
 
                 var resultList = new
@@ -137,7 +148,10 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     return BadRequest(resultList);
                 }
 
+
             }
+
+            
         }
 
 
@@ -582,6 +596,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 return new JsonResult("Something went wrong!") { StatusCode = 500 };
             }
 
+
+            var allList = new List<SyncMaterialDto>();
             List<SyncMaterialDto> duplicateList = new List<SyncMaterialDto>();
             List<SyncMaterialDto> availableImport = new List<SyncMaterialDto>();
             List<SyncMaterialDto> availableUpdate = new List<SyncMaterialDto>();
@@ -692,8 +708,22 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
 
                 }
-                
 
+                allList.Add(item);
+            }
+
+            var allListSelect = allList.Select(x => x.Material_No);
+            var allDelete = await _context.Materials.ToListAsync();
+            var allMaterialList = allDelete.Where(x => !allListSelect.Contains(x.Material_No)).ToList();
+
+            if (allMaterialList.Count() > 0)
+            {
+                foreach (var item in allMaterialList)
+                {
+                    var itemInActive = await _context.Materials.FirstOrDefaultAsync(x => x.Material_No == item.Material_No);
+
+                    itemInActive.IsActive = false;
+                }
             }
 
             var resultlist = new

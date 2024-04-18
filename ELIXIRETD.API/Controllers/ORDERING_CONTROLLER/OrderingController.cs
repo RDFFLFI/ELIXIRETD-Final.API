@@ -431,7 +431,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> EditOrderQuantity([FromBody] Ordering order)
         {
 
-
+            order.Modified_By = User.Identity.Name;
 
             await _unitofwork.Orders.EditQuantityOrder(order);
             await _unitofwork.CompleteAsync();

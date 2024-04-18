@@ -92,5 +92,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         [Column(TypeName = "Date")]
         public DateTime ? DateApproved { get; set; }
 
+        [Column(TypeName = "Date")]
+        public DateTime? Modified_Date { get;set; }
+        public string Modified_By { get; set;}
+
     }
 }

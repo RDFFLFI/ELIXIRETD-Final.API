@@ -28,7 +28,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoWarehouseReceivingReports>> WarehouseReceivingReports(UserParams userParams, string DateFrom, string DateTo , string Search)
         {
 
-            var warehouse = _context.WarehouseReceived.Where(x => x.ReceivingDate >= DateTime.Parse(DateFrom) && x.ReceivingDate <= DateTime.Parse(DateTo))
+            var warehouse = _context.WarehouseReceived.Where(x => x.ReceivingDate.Date >= DateTime.Parse(DateFrom).Date && x.ReceivingDate.Date <= DateTime.Parse(DateTo).Date)
                                                       .Where(x => x.IsActive == true)
                                                       .Select(x => new DtoWarehouseReceivingReports
                                                       {
@@ -66,7 +66,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = _context.MoveOrders
-                        .Where(moveorder => moveorder.PreparedDate >= DateTime.Parse(DateFrom) && moveorder.PreparedDate <= DateTime.Parse(DateTo) && moveorder.IsActive == true && moveorder.IsPrepared == true && moveorder.IsTransact == false)
+                        .Where(moveorder => moveorder.PreparedDate.Value.Date >= DateTime.Parse(DateFrom).Date && moveorder.PreparedDate.Value.Date <= DateTime.Parse(DateTo).Date && moveorder.IsActive == true && moveorder.IsPrepared == true && moveorder.IsTransact == false)
                         .GroupJoin(_context.TransactOrder, moveorder => moveorder.OrderNo, transact => transact.OrderNo, (moveorder, transact) => new { moveorder, transact })
                         .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveorder, transact })
                          .Select(x => new DtoMoveOrderReports
@@ -129,7 +129,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = (from transact in _context.TransactOrder
-                          where transact.IsActive == true && transact.IsTransact == true && transact.DeliveryDate >= DateTime.Parse(DateFrom) && transact.DeliveryDate <= DateTime.Parse(DateTo)
+                          where transact.IsActive == true && transact.IsTransact == true && transact.DeliveryDate.Value.Date >= DateTime.Parse(DateFrom).Date && transact.DeliveryDate.Value.Date <= DateTime.Parse(DateTo).Date
                           join moveorder in _context.MoveOrders
                           on transact.OrderNo equals moveorder.OrderNo
                           into leftJ
@@ -262,7 +262,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                             into leftJ
                             from receipt in leftJ.DefaultIfEmpty()
 
-                            where receipt.ReceivingDate >= DateTime.Parse(DateFrom) && receipt.ReceivingDate <= DateTime.Parse(DateTo) && receipt.IsActive == true && receipt.TransactionType == "MiscellaneousReceipt"
+                            where receipt.ReceivingDate.Date >= DateTime.Parse(DateFrom).Date && receipt.ReceivingDate.Date <= DateTime.Parse(DateTo).Date && receipt.IsActive == true && receipt.TransactionType == "MiscellaneousReceipt"
 
                             select new DtoMiscReports
                             {
@@ -368,7 +368,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var borrowed = _context.BorrowedIssues
                 .GroupJoin(_context.BorrowedIssueDetails, issue => issue.Id, borrow => borrow.BorrowedPKey, (issue, borrow) => new { issue, borrow })
                 .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.issue, borrow })
-                .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo))
+                .Where(x => x.issue.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.issue.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
                 .GroupBy(x => x.issue.Id)
                 .Select(x => new BorrowedTransactionReportsDto
                 {
@@ -462,7 +462,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
               var Reports = _context.BorrowedIssues
-                           .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(DateTo))
+                           .Where(x => x.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
                            .Where(x => x.IsActive == true || x.IsReject != null)
                            .GroupJoin(details ,borrowed => borrowed.Id , returned => returned.BorrowedId , (borrowed , returned) => new {borrowed , returned})
                            .SelectMany(x => x.returned.DefaultIfEmpty() , (x , returned) => new {x.borrowed , returned})
@@ -519,10 +519,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
-            var cancelled = _context.Orders.Where(x => x.IsCancel == true  && x.IsActive == false)
+            var cancelled = _context.Orders.Where(x => x.IsActive == false)
                                         .GroupBy(x => new
                                         {
-
+                                            x.TrasactId,
                                             x.Id,
                                             x.OrderNo,
                                             x.DateNeeded,
@@ -531,14 +531,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             x.CustomerName,
                                             x.ItemCode,
                                             x.ItemdDescription,
-                                            x.CancelDate,
-                                            x.IsCancelBy,
-                                            x.Remarks,
+                                            //x.Remarks,
 
 
                                         }).Select(x => new DtoCancelledReports
                                         {
-
+                                            MIRId = x.Key.TrasactId,
                                             OrderId = x.Key.Id,
                                             OrderNo = x.Key.OrderNo,
                                             DateNeeded = x.Key.DateNeeded.ToString(),
@@ -546,23 +544,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             CustomerCode = x.Key.Customercode,
                                             CustomerName = x.Key.CustomerName,
                                             ItemCode = x.Key.ItemCode,
+                                            CancelledDate = x.First().CancelDate.ToString(),
+                                            CancelledBy = x.First().IsCancelBy,
                                             ItemDescription = x.Key.ItemdDescription,
                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered),
-                                            CancelledDate = x.Key.CancelDate.ToString(),
-                                            CancelledBy = x.Key.IsCancelBy,
-                                            Reason = x.Key.Remarks,
+                                            Reason = x.First().Remarks,
 
                                         });
 
 
-            var orders = _context.Orders.Where(x => x.Remarks != null && x.Remarks != string.Empty)
-                       .GroupJoin(cancelled, order => order.ItemCode, cancel => cancel.ItemCode, (order, cancel) => new { order, cancel })
+            var orders = _context.Orders.Where(x => !string.IsNullOrEmpty(x.Remarks))
+                       .GroupJoin(cancelled, order => order.Id, cancel => cancel.OrderId, (order, cancel) => new { order, cancel })
                        .SelectMany(x => x.cancel.DefaultIfEmpty(), (x, cancel) => new { x.order, cancel })
-                       .Where(x => x.order.DateNeeded >= DateTime.Parse(DateFrom) && x.order.DateNeeded <= DateTime.Parse(DateTo))
+                       .Where(x => x.order.DateNeeded.Date >= DateTime.Parse(DateFrom).Date && x.order.DateNeeded.Date <= DateTime.Parse(DateTo).Date)
                        .GroupBy(x => new
                        {
                            x.order.TrasactId,
-                          x. order.Id,
+                           x.order.Id,
                            x.order.OrderNo,
                            x.order.OrderDate,
                            x.order.DateNeeded,
@@ -570,19 +568,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            x.order.CustomerName,
                            x.order.ItemCode,
                            x.order.ItemdDescription,
-                           x.cancel.CancelledBy,
-                           x.cancel.CancelledDate,
-                           x.cancel.Reason,
-                           x.order.Remarks,
-                           x.cancel.QuantityOrdered,
-                           x.order.DepartmentCode,
-                           x.order.Department,
-                           x.order.CompanyCode,
-                           x.order.CompanyName,
-                           x.order.LocationCode,
-                           x.order.LocationName,
-                           x.order.AccountCode,
-                           x.order.AccountTitles,
+                           //x.cancel.CancelledBy,
+                           //x.cancel.CancelledDate,
+                           //x.cancel.Reason,
+                           //x.order.Remarks,
+                           //x.cancel.QuantityOrdered,
+                           //x.order.DepartmentCode,
+                           //x.order.Department,
+                           //x.order.CompanyCode,
+                           //x.order.CompanyName,
+                           //x.order.LocationCode,
+                           //x.order.LocationName,
+                           //x.order.AccountCode,
+                           //x.order.AccountTitles,
 
 
                        }).Select(x => new DtoCancelledReports
@@ -596,18 +594,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            CustomerName = x.Key.CustomerName,
                            ItemCode = x.Key.ItemCode,
                            ItemDescription = x.Key.ItemdDescription,
-                           CancelledBy = x.Key.CancelledBy,
-                           CancelledDate = x.Key.CancelledDate,
-                           Reason = x.Key.Reason != null ? x.Key.Reason : x.Key.Remarks,
-                           QuantityOrdered = x.Key.QuantityOrdered != null ? x.Key.QuantityOrdered :  x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered),
-                           DepartmentCode = x.Key.DepartmentCode,
-                           Department = x.Key.Department,
-                           CompanyCode = x.Key.CompanyCode,
-                           CompanyName = x.Key.CompanyName,
-                           LocationCode = x.Key.LocationCode,
-                           LocationName = x.Key.LocationName,
-                           AccountCode = x.Key.AccountCode,
-                           AccountTitles = x.Key.AccountTitles,
+                           CancelledBy = x.First().cancel.CancelledBy,
+                           CancelledDate = x.First().cancel.CancelledDate,
+                           Reason = x.First().cancel.Reason != null ? x.First().cancel.Reason : x.First().order.Remarks,
+                           QuantityOrdered = x.Sum(x => x.cancel.QuantityOrdered) != null && x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered) != 0 ?
+                           x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered) : x.Sum(x => x.cancel.QuantityOrdered),
+
+                           DepartmentCode = x.First().order.DepartmentCode,
+                           Department = x.First().order.Department,
+                           CompanyCode = x.First().order.CompanyCode,
+                           CompanyName = x.First().order.CompanyName,
+                           LocationCode = x.First().order.LocationCode,
+                           LocationName = x.First().order.LocationName,
+                           AccountCode = x.First().order.AccountCode,
+                           AccountTitles = x.First().order.AccountTitles,
                        });
 
 

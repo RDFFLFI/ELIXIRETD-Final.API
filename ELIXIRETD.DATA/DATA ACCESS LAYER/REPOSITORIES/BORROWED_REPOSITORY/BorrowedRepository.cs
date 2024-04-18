@@ -1064,8 +1064,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         public async Task<PagedList<GetAllBorrowedReceiptWithPaginationDto>> GetAllBorrowedReceiptWithPagination(UserParams userParams, bool status, int empid)
         {
 
-            var employee = _context.Users.Where(x => x.Id == empid)
-                                         .FirstOrDefault();
+         var employee = _context.Users.Where(x => x.Id == empid)
+                                         .FirstOrDefault();   
 
 
             var details = _context.BorrowedIssueDetails
@@ -2767,7 +2767,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             {
                 consume.IsActive = false;
                 consume.IsApproveReturn = null;
-
             }
 
             issue.IsReturned = false;

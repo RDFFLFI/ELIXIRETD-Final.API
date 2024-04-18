@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 {
@@ -9,10 +10,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
     public class UomController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly StoreContext _context;
 
-        public UomController(IUnitOfWork unitOfWork)
+        public UomController(IUnitOfWork unitOfWork , StoreContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         [HttpGet]
@@ -189,6 +192,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             List<Uom> availableUpdate = new List<Uom>();
             List<Uom> uomDescriptionEmpty = new List<Uom>();
             List<Uom> uomCodeEmpty = new List<Uom>();
+            var AllList = new List<Uom>();
 
             foreach(Uom items in uom)
             {
@@ -259,15 +263,14 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         items.StatusSync = "New Added";
                         availableImport.Add(items);
                         await _unitOfWork.Uoms.AddNewUom(items);
-
-
                     }
 
                 }
 
-
+                AllList.Add(items);
 
             }
+
 
             var resultlist = new
             {

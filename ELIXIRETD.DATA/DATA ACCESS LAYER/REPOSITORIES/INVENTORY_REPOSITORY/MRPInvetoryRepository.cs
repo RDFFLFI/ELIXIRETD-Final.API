@@ -681,6 +681,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var inventory = (from material in _context.Materials
+                             where material.IsActive == true
+
                              join posummary in getPoSummary
                               on material.ItemCode equals posummary.ItemCode
                               into leftJ1
@@ -1461,6 +1463,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var inventory = (from material in _context.Materials
+                             where material.IsActive == true
+
                              join posummary in getPoSummary
                               on material.ItemCode equals posummary.ItemCode
                               into leftJ1
@@ -2247,6 +2251,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var inventory = (from material in _context.Materials
+                             where material.IsActive == true
+
                              join posummary in getPoSummary
                               on material.ItemCode equals posummary.ItemCode
                               into leftJ1
