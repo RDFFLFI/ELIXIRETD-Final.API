@@ -519,7 +519,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
-            var cancelled = _context.Orders.Where(x => x.IsActive == false)
+            var cancelled = _context.Orders.Where(x => x.IsActive == false || x.QuantityOrdered != x.StandartQuantity)
                                         .GroupBy(x => new
                                         {
                                             x.TrasactId,
@@ -539,24 +539,31 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             MIRId = x.Key.TrasactId,
                                             OrderId = x.Key.Id,
                                             OrderNo = x.Key.OrderNo,
-                                            DateNeeded = x.Key.DateNeeded.ToString(),
-                                            DateOrdered = x.Key.OrderDate.ToString(),
+                                            DateNeeded = x.Key.DateNeeded,
+                                            DateOrdered = x.Key.OrderDate,
                                             CustomerCode = x.Key.Customercode,
                                             CustomerName = x.Key.CustomerName,
                                             ItemCode = x.Key.ItemCode,
-                                            CancelledDate = x.First().CancelDate.ToString(),
-                                            CancelledBy = x.First().IsCancelBy,
+
+                                            CancelledDate = x.First().CancelDate != null 
+                                            ? x.First().CancelDate: x.First().Modified_Date == null
+                                            ? x.First().OrderDate : x.First().Modified_Date,
+
+                                            CancelledBy = x.First().IsCancelBy != null ? x.First().IsCancelBy : x.First().Modified_By,
                                             ItemDescription = x.Key.ItemdDescription,
                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered),
-                                            Reason = x.First().Remarks,
+                                            Reason = x.First().Remarks != null ? x.First().Remarks : "Out of Stocks",
 
                                         });
 
 
-            var orders = _context.Orders.Where(x => !string.IsNullOrEmpty(x.Remarks))
+            var orders = _context.Orders
                        .GroupJoin(cancelled, order => order.Id, cancel => cancel.OrderId, (order, cancel) => new { order, cancel })
                        .SelectMany(x => x.cancel.DefaultIfEmpty(), (x, cancel) => new { x.order, cancel })
-                       .Where(x => x.order.DateNeeded.Date >= DateTime.Parse(DateFrom).Date && x.order.DateNeeded.Date <= DateTime.Parse(DateTo).Date)
+
+                       .Where(x => x.cancel.CancelledDate.Value.Date >= DateTime.Parse(DateFrom).Date 
+                       && x.cancel.CancelledDate.Value.Date <= DateTime.Parse(DateTo).Date)
+
                        .GroupBy(x => new
                        {
                            x.order.TrasactId,
@@ -588,8 +595,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            MIRId = x.Key.TrasactId,
                            OrderId = x.Key.Id,
                            OrderNo = x.Key.OrderNo,
-                           DateNeeded = x.Key.DateNeeded.ToString(),
-                           DateOrdered = x.Key.OrderDate.ToString(),
+                           DateNeeded = x.Key.DateNeeded.Date,
+                           DateOrdered = x.Key.OrderDate.Date,
                            CustomerCode = x.Key.Customercode,
                            CustomerName = x.Key.CustomerName,
                            ItemCode = x.Key.ItemCode,

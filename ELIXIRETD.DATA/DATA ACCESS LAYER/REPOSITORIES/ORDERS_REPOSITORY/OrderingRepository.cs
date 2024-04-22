@@ -1517,6 +1517,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existing.IsActive = false;
             existing.IsCancelBy = orders.IsCancelBy;
+            existing.Modified_Date = DateTime.Now;
             existing.IsCancel = true;
             existing.CancelDate = DateTime.Now;
             existing.Remarks = orders.Remarks;

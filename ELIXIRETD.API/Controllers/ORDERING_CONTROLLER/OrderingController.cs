@@ -444,6 +444,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> Cancelorders([FromBody] Ordering orders)
         {
 
+            orders.Modified_By = User.Identity.Name;
             var existing = await _unitofwork.Orders.CancelOrders(orders);
 
             if (existing == false)

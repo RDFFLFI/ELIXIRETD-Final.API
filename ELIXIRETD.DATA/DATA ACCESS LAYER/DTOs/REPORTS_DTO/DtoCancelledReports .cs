@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public int MIRId { get; set; }
         public int OrderId { get; set; }
         public int OrderNo { get; set; }
-        public string DateNeeded { get; set; }
-        public string DateOrdered { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime DateNeeded { get; set; }
+        [Column(TypeName = "Date")]
+        public DateTime DateOrdered { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
 
@@ -30,7 +34,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
 
-        public string CancelledDate { get; set; }
+        public DateTime ? CancelledDate { get; set; }
         public string CancelledBy { get; set; }
 
         public string AccountCode { get; set; }
