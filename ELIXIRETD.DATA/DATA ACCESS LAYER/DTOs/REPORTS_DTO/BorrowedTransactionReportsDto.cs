@@ -12,12 +12,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public int BorrowedId { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCode { get; set; }
+        public string EmpId { get; set; }
+        public string FullName { get; set; }
         public string TransactedBy { get; set; }
         public string BorrowedDate { get; set; }
         public string Status { get; set; }
         public string Details { get; set; }
         public string Remarks { get; set; }
 
+        public int ? AgingDays { get; set; }
         
             public int BorrowedItemPkey { get; set; }
             public string ItemCode { get; set; }

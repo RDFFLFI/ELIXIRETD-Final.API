@@ -28,6 +28,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.BORROWED_DTO
     
         public string PreparedBy { get; set; }
 
+        public string BorrowedDate { get; set; }
 
      
 

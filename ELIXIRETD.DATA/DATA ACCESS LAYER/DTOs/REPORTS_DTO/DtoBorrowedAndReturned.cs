@@ -15,6 +15,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string CustomerCode { get; set; }
 
+        public string EmpIdByIssue { get; set; }
+
+        public string FullNameByIssue { get; set; }
+
         public string BorrowedDate { get; set; }
 
         public string Remarks { get; set; }
@@ -51,6 +55,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string EmpId { get; set; }
         public string FullName { get; set; }
 
+        public int ? ReportNumber { get; set; }
+
+        public int ? AgingDays { get; set; }
 
 
 

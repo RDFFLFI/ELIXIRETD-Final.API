@@ -1497,6 +1497,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             existingOrder.QuantityOrdered = orders.QuantityOrdered;
             existingOrder.Remarks = orders.Remarks;
 
+            existingOrder.Modified_Date = DateTime.Now;
             existingOrder.AccountCode = orders.AccountCode;
             existingOrder.AccountTitles = orders.AccountTitles;
             existingOrder.EmpId = orders.EmpId;
@@ -1516,6 +1517,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existing.IsActive = false;
             existing.IsCancelBy = orders.IsCancelBy;
+            existing.Modified_Date = DateTime.Now;
             existing.IsCancel = true;
             existing.CancelDate = DateTime.Now;
             existing.Remarks = orders.Remarks;
