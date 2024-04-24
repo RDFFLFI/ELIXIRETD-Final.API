@@ -45,7 +45,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           TransactionType = x.TransactionType,
                                                           ReceivedBy = x.AddedBy,
                                                           UnitPrice = x.UnitPrice,
-                                                          TotalUnitPrice = x.UnitPrice * x.ActualDelivered,
+                                                          Amount = x.UnitPrice * x.ActualDelivered,
                                                           SINumber = x.SINumber
                                                           
 
