@@ -418,6 +418,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                    {
                                        BorrowedId = x.BorrowedItemPkey,
                                        ItemCode = x.ItemCode,
+                                       ItemDescription = x.ItemDescription,
                                        Consumed = x.Consume,
                                        CompanyCode = x.CompanyCode,
                                        CompanyName = x.CompanyName,
@@ -435,7 +436,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                    });
 
 
-            var details = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var details = _context.BorrowedIssueDetails
                          .GroupJoin(ConsumeQuantity, borrow => borrow.Id, consume => consume.BorrowedId, (borrow, consume) => new { borrow, consume })
                          .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
                          .Select(x => new DtoBorrowedAndReturned
@@ -465,7 +466,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
               var Reports = _context.BorrowedIssues
                            .Where(x => x.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
-                           .Where(x => x.IsActive == true || x.IsReject != null)
+                           .Where(x => x.IsActive == true || x.IsReject != null )
                            .GroupJoin(details ,borrowed => borrowed.Id , returned => returned.BorrowedId , (borrowed , returned) => new {borrowed , returned})
                            .SelectMany(x => x.returned.DefaultIfEmpty() , (x , returned) => new {x.borrowed , returned})
                            .Select(x => new DtoBorrowedAndReturned
@@ -501,6 +502,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                ReportNumber = x.returned.ReportNumber,
                                AgingDays = x.borrowed.IsApprovedReturnedDate != null ? EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate.Value , x.borrowed.IsApprovedReturnedDate.Value)
                                : x.borrowed.IsApprovedDate == null ? 0 : EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate, DateTime.Now),
+                               IsActive = x.borrowed.IsActive
+                             
                                
                            });
 

@@ -58,6 +58,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public int ? ReportNumber { get; set; }
 
         public int ? AgingDays { get; set; }
+        public bool IsActive { get; set; }
 
 
 
