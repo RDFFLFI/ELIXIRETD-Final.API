@@ -688,6 +688,64 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             var updateItemReceiver = await _context.WarehouseReceived
                                 .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
 
+                            foreach(var receiver in updateItemReceiver)
+                            {
+                                receiver.ItemCode = existingMaterials.ItemCode;
+                                receiver.ItemDescription = existingMaterials.ItemDescription;   
+                                receiver.Uom = existingMaterials.UomCode;
+
+                            }
+
+                            var updateItemOrder = await _context.Orders
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
+                            foreach(var order in updateItemOrder)
+                            {
+                                order.ItemCode = existingMaterials.ItemCode;
+                                order.ItemdDescription = existingMaterials.ItemDescription;
+                                order.Uom = existingMaterials.UomCode;
+                            }
+
+                            var updateItemMoveOrder = await _context.MoveOrders
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
+                            foreach (var moverOrder in updateItemMoveOrder)
+                            {
+                                moverOrder.ItemCode = existingMaterials.ItemCode;
+                                moverOrder.ItemDescription = existingMaterials.ItemDescription;
+                                moverOrder.Uom = existingMaterials.UomCode;
+                            }
+
+                            var updateItemMiscIssue = await _context.MiscellaneousIssueDetail
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
+                            foreach (var issue in updateItemMiscIssue)
+                            {
+                                issue.ItemCode = existingMaterials.ItemCode;
+                                issue.ItemDescription = existingMaterials.ItemDescription;
+                                issue.Uom = existingMaterials.UomCode;
+                            }
+
+                            var updateItemBorrowedDetails = await _context.BorrowedIssueDetails
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
+                            foreach( var borrow in updateItemBorrowedDetails)
+                            {
+                                borrow.ItemCode = existingMaterials.ItemCode;
+                                borrow.ItemDescription = existingMaterials.ItemDescription;
+                                borrow.Uom = existingMaterials.UomCode; 
+                            }
+
+                            var updateItemBorrowedConsume = await _context.BorrowedConsumes
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
+                            foreach(var consume  in updateItemBorrowedConsume)
+                            {
+                                consume.ItemCode = existingMaterials.ItemCode;
+                                consume.ItemDescription = existingMaterials.ItemDescription;
+                                consume.Uom = existingMaterials.UomCode;
+                            }
+
                         }
 
                         if (!hasChanged)
@@ -696,7 +754,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingMaterials.StatusSync = "No new update";
 
                         }
-                       
 
                     }
                     else

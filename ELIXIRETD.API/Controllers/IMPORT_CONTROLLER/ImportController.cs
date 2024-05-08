@@ -41,14 +41,14 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 
                 foreach (PoSummary items in posummary)
                 {
-                    var uomExist = await _context.Uoms.FirstOrDefaultAsync(x => x.UomDescription == items.Uom);
+                    //var uomExist = await _context.Uoms.FirstOrDefaultAsync(x => x.UomDescription == items.Uom);
 
-                    if (uomExist is null) 
-                    {
-                        uomCodeNotExist.Add(items);
-                        continue;
-                    }
-                    items.Uom = uomExist.UomCode;
+                    //if (uomExist is null) 
+                    //{
+                    //    uomCodeNotExist.Add(items);
+                    //    continue;
+                    //}
+                    //items.Uom = uomExist.UomCode;
 
                     if (items.Ordered <= 0)
                     {

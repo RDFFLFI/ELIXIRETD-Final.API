@@ -68,7 +68,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 {
 
                     
-                    var existingSuppliers = await _unitOfWork.Suppliers.GetBySupplierNo(items.Supplier_No);
+                    var existingSuppliers = await _context.Suppliers.FirstOrDefaultAsync(x => x.Supplier_No == items.Supplier_No && items.Supplier_No != null);
 
                     if (existingSuppliers != null)
                     {
@@ -119,6 +119,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         if (items.Supplier_No == null)
                         {
                             items.Manual = "Manual";
+                           
 
                             var supplierExist = await _context.Suppliers
                                 .FirstOrDefaultAsync(x => x.SupplierCode == items.SupplierCode || x.SupplierName == items.SupplierName);
@@ -133,6 +134,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                         items.SyncDate = DateTime.Now;
                          items.DateAdded = DateTime.Now;
                         items.StatusSync = "New Added";
+                        
+                        
                         availableImport.Add(items);
 
                         await _unitOfWork.Suppliers.AddSupplier(items);
@@ -166,6 +169,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
         [Route("UpdateSupplier")]
         public async Task<IActionResult> UpdateManualSupplier(UpdateManualSupplierDto supplier)
         {
+
+            supplier.ModifiedBy = User.Identity.Name;
             var existingSupplier = await _unitOfWork.Suppliers.UpdateManualSupplier(supplier);
 
             if(existingSupplier == false)

@@ -68,7 +68,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> AddSupplier(Supplier supplier)
         {
             supplier.Id = 0;
-            await _context.Suppliers.AddAsync(supplier);
+
+            var addSupplier = new Supplier
+            {
+                Supplier_No = supplier.Supplier_No,
+                SupplierCode = supplier.SupplierCode,   
+                SupplierName = supplier.SupplierName,
+                AddedBy = supplier.AddedBy,
+                DateAdded = supplier.DateAdded,
+                ModifyBy = supplier.AddedBy,
+                SyncDate = DateTime.Now,
+                StatusSync = "New Added"
+                
+
+            };
+
+
+            await _context.Suppliers.AddAsync(addSupplier);
 
             return true;
         }
@@ -168,6 +184,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
 
             existingSupplier.SupplierName = supplier.SupplierName;
             existingSupplier.SupplierCode = supplier.SupplierCode;
+            existingSupplier.ModifyBy = supplier.ModifiedBy;
+            
 
             return true;
             

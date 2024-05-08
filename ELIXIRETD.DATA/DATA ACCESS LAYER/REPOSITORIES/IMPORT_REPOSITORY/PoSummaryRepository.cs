@@ -47,7 +47,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == itemcode)
                                                    //.Where(x => x.ItemDescription == itemdescription)
-                                                   .Where(x => x.Uom.UomCode == uom)
+                                                   .Where(x => x.Uom.UomDescription == uom)
                                                    .Where(x => x.IsActive == true)
                                                    .FirstOrDefaultAsync();
 
@@ -70,7 +70,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
 
         public async Task<bool> CheckUomCode(string uom)
         {
-            var validate = await _context.Uoms.Where(x => x.UomCode == uom)
+            var validate = await _context.Uoms.Where(x => x.UomDescription == uom)
                                               .Where(x => x.IsActive == true)
                                               .FirstOrDefaultAsync();
 
