@@ -776,7 +776,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              }
                              by new
                              {
-
+                                 material.Id,
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
@@ -804,6 +804,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              select new DtoMRP
 
                              {
+                                 Id = total.Key.Id,
                                  ItemCode = total.Key.ItemCode,
                                  ItemDescription = total.Key.ItemDescription,
                                  Uom = total.Key.UomCode,
@@ -1558,7 +1559,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              }
                              by new
                              {
-
+                                 material.Id,
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
@@ -1588,6 +1589,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              
 
                              {
+                                 Id = total.Key.Id,
                                  ItemCode = total.Key.ItemCode,
                                  ItemDescription = total.Key.ItemDescription,
                                  Uom = total.Key.UomCode,
@@ -2348,7 +2350,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              }
                              by new
                              {
-
+                                 material.Id,
                                  material.ItemCode,
                                  material.ItemDescription,
                                  material.Uom.UomCode,
@@ -2375,6 +2377,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              select new DtoMRP
 
                              {
+                                 Id = total.Key.Id,
                                  ItemCode = total.Key.ItemCode,
                                  ItemDescription = total.Key.ItemDescription,
                                  Uom = total.Key.UomCode,

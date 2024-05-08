@@ -3,6 +3,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
@@ -11,10 +13,13 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
     public class SupplierController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly StoreContext _context;
 
-        public SupplierController(IUnitOfWork unitOfWork)
+        public SupplierController(IUnitOfWork unitOfWork , StoreContext context)
         {
             _unitOfWork = unitOfWork;
+             _context = context;    
+
         }
 
         [HttpGet]
@@ -47,6 +52,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             List<Supplier> duplicateList = new List<Supplier>();
             List<Supplier> availableImport = new List<Supplier>();
+            var supplierAlreadyExist = new List<Supplier>();
 
             foreach (Supplier items in supplier)
             {
@@ -60,6 +66,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
                 else
                 {
+
+                    
                     var existingSuppliers = await _unitOfWork.Suppliers.GetBySupplierNo(items.Supplier_No);
 
                     if (existingSuppliers != null)
@@ -108,10 +116,25 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     }
                     else 
                     {
+                        if (items.Supplier_No == null)
+                        {
+                            items.Manual = "Manual";
+
+                            var supplierExist = await _context.Suppliers
+                                .FirstOrDefaultAsync(x => x.SupplierCode == items.SupplierCode || x.SupplierName == items.SupplierName);
+
+                            if (supplierExist != null)
+                            {
+                                supplierAlreadyExist.Add(supplierExist);
+                            }
+
+                        }
+                         
                         items.SyncDate = DateTime.Now;
                          items.DateAdded = DateTime.Now;
                         items.StatusSync = "New Added";
                         availableImport.Add(items);
+
                         await _unitOfWork.Suppliers.AddSupplier(items);
                     }
 
@@ -137,6 +160,24 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
             }
 
         }
+
+
+        [HttpPut]
+        [Route("UpdateSupplier")]
+        public async Task<IActionResult> UpdateManualSupplier(UpdateManualSupplierDto supplier)
+        {
+            var existingSupplier = await _unitOfWork.Suppliers.UpdateManualSupplier(supplier);
+
+            if(existingSupplier == false)
+            {
+               return BadRequest("No supplier Exist!");
+            }
+
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(existingSupplier);
+        }
+
 
 
 

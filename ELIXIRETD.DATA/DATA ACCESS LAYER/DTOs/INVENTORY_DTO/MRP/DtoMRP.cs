@@ -10,6 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
     public class DtoMRP
     {
 
+        public int Id { get; set; }
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
 

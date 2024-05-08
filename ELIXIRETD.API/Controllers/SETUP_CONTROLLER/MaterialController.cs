@@ -685,6 +685,9 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             availableUpdate.Add(item);
                             await _unitOfWork.Materials.UpdateAsyncMaterial(existingMaterials);
 
+                            var updateItemReceiver = await _context.WarehouseReceived
+                                .Where(x => x.ItemCode == existingMaterials.ItemCode).ToListAsync();
+
                         }
 
                         if (!hasChanged)
