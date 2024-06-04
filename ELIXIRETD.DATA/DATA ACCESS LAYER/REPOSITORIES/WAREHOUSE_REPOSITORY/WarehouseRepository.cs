@@ -6,6 +6,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             receive.IsWarehouseReceived = true;
             receive.ActualReceivingDate = DateTime.Now;
             receive.ReceivingDate = DateTime.Now;
+
+            var lotSectionExist = await _context.Materials.Include(x => x.LotSection)
+                .FirstOrDefaultAsync(x => x.ItemCode == receive.ItemCode);
+
+            receive.LotSection = lotSectionExist.LotSection.SectionName;
+
 
             await _context.WarehouseReceived.AddAsync(receive);
 
@@ -167,6 +174,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                join warehouse in _context.WarehouseReceived
                                on posummary.Id equals warehouse.PoSummaryId into leftJ
                                from receive in leftJ.DefaultIfEmpty()
+
+                             join material in _context.Materials
+                             on posummary.ItemCode equals material.ItemCode
+                             into leftJ1
+                             from material in leftJ1.DefaultIfEmpty()
+
                                select new WarehouseReceivingDto
                                {
 
@@ -185,6 +198,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                    UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0 ,
                                    TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
                                    ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
+                                   LotSection = material.LotSection.SectionName,
+
 
                                }).GroupBy(x => new
                              {
@@ -199,7 +214,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
-                                 x.UnitPrice
+                                 x.UnitPrice,
+                                 x.LotSection
 
                              })
 
@@ -219,7 +235,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          ActualGood = receive.Sum(x => x.ActualGood),
                                                          ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
                                                          IsActive = receive.Key.IsActive,
-                                                         UnitPrice = receive.Key.UnitPrice
+                                                         UnitPrice = receive.Key.UnitPrice,
+                                                         LotSection = receive.Key.LotSection,
+                                                         
                                                         
                                                      })
                                                   
@@ -242,6 +260,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
 
+                             join material in _context.Materials
+                             on posummary.ItemCode equals material.ItemCode
+                             into leftJ1
+                             from material in leftJ1.DefaultIfEmpty()
+
                              select new WarehouseReceivingDto
                              {
                                  Id = posummary.Id,
@@ -259,6 +282,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0,
                                  ActualRemaining = 0,
                                  ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
+                                 LotSection = material.LotSection.SectionName,
 
                              }).GroupBy(x => new
                              {
@@ -273,7 +297,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.Supplier,
                                  x.QuantityOrdered,
                                  x.IsActive,
-                                 x.UnitPrice
+                                 x.UnitPrice,
+                                 x.LotSection,
                               
                              })
                                                   .Select(receive => new WarehouseReceivingDto
@@ -293,6 +318,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                       IsActive = receive.Key.IsActive,
                                                       TotalReject = receive.Sum(x => x.TotalReject),
                                                       UnitPrice = receive.Key.UnitPrice,
+                                                      LotSection = receive.Key.LotSection
 
 
                                                   }).OrderByDescending(x => x.PoNumber)
