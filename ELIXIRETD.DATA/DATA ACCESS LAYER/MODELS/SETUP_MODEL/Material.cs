@@ -33,8 +33,8 @@
 
         public string StatusSync { get; set; }
 
-        public int? LotNamesId { get; set; }
-        public virtual LotNames LotNames { get; set; }
+        public int? LotSectionId { get; set; }
+        public virtual LotSection LotSection { get; set; }
 
     }
 }

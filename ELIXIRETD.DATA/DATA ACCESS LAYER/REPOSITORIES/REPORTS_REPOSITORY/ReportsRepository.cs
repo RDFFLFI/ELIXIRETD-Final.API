@@ -640,7 +640,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoCancelledReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom , string PlusOne)
+        public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom , string PlusOne , string Search)
         {
             var DateToday = DateTime.Today;
 
@@ -1098,6 +1098,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          OtherPlus = total.Sum(x => x.moverorderPlus.QuantityOrdered) + total.Sum(x => x.issuePlus.Quantity) + total.Sum(x => x.borrowedPlus.Quantity),
 
                                      });
+
+            if(!string.IsNullOrEmpty(Search))
+            {
+                movementInventory = movementInventory
+                    .Where(x => Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
+                || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
+            }
 
             return await PagedList<DtoInventoryMovement>.CreateAsync(movementInventory, userParams.PageNumber, userParams.PageSize);
 

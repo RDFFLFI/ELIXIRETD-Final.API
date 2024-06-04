@@ -31,9 +31,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.SETUP_DTO
 
         public string SyncDate { get; set; }
 
-        public int ? LotNamesId { get; set; }
-        public string LotCode { get; set; }
-        public string  LotName { get; set;}
+        public int ? LotSectionId { get; set; }
+        public string SectionName { get; set; }
 
 
     }

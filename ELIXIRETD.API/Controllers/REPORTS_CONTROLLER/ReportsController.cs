@@ -221,10 +221,10 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         [HttpGet]
         [Route("InventoryMovementReport")]
-        public async Task<ActionResult<IEnumerable<DtoInventoryMovement>>> InventoryMovementReport([FromQuery] UserParams userParams, [FromQuery] string DateFrom , [FromQuery] string PlusOne)
+        public async Task<ActionResult<IEnumerable<DtoInventoryMovement>>> InventoryMovementReport([FromQuery] UserParams userParams, [FromQuery] string DateFrom , [FromQuery] string PlusOne , [FromQuery]string Search)
         {
 
-            var inventory = await _unitofwork.Reports.InventoryMovementReports(userParams, DateFrom, PlusOne);
+            var inventory = await _unitofwork.Reports.InventoryMovementReports(userParams, DateFrom, PlusOne , Search);
 
             Response.AddPaginationHeader(inventory.CurrentPage, inventory.PageSize, inventory.TotalCount, inventory.TotalPages, inventory.HasNextPage, inventory.HasPreviousPage);
 

@@ -30,7 +30,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
 
         Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams, string DateFrom , string DateTo, string Search);
-        Task<PagedList<DtoInventoryMovement>> InventoryMovementReports (UserParams userParams, string DateFrom, string PlusOne);
+        Task<PagedList<DtoInventoryMovement>> InventoryMovementReports (UserParams userParams, string DateFrom, string PlusOne , string Search);
 
         Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search);
 
