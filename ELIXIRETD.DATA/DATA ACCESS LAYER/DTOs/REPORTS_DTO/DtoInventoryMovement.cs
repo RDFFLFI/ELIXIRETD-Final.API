@@ -12,8 +12,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string ItemCode { get; set; }    
         public string ItemDescription { get; set; }
         public string ItemCategory { get; set; }
-        public decimal TotalOut { get; set; }
         public decimal TotalIn { get; set; }
+        public decimal TotalOut { get; set; }
 
         public decimal Ending { get; set; }
         public decimal CurrentStock { get; set; }

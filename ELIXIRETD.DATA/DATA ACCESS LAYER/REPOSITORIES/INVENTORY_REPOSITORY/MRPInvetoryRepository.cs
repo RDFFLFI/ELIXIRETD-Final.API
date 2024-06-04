@@ -174,11 +174,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                        });
 
-
-
-
-
-
             var getReturnedBorrow = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .Where(x => x.IsApprovedReturned == true)
@@ -2403,10 +2398,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                  //BorrowedDifference = total.Key.returned
 
-                             }).Where(x => x.ItemDescription.ToLower()
+                             }).OrderBy(x => x.ItemCode).Where(x => x.ItemDescription.ToLower()
                                .Contains(search.Trim().ToLower())
-                               || x.ItemCode.ToLower().Contains(search.Trim().ToLower())
-                                || x.ItemCategory.ToLower().Contains(search.Trim().ToLower())).OrderBy(x => x.ItemCode);
+                               || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
 
 
             return await PagedList<DtoMRP>.CreateAsync(inventory, userParams.PageNumber, userParams.PageSize);

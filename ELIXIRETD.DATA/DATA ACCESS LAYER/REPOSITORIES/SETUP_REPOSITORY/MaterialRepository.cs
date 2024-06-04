@@ -37,6 +37,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 ItemDescription = x.ItemDescription,
                                                 //AccountTitleId = x.AccountTitleId,
                                                 //AccountPName = x.AccountTitle.AccountPName,
+                                                LotNamesId = x.LotNamesId,
+                                                LotCode = x.LotNames.LotCode,
+                                                LotName = x.LotNames.LotName,
+                                                
                                                 BufferLevel = x.BufferLevel,
                                                 Uom = x.Uom.UomCode,
                                                 UomId = x.UomId,
@@ -63,6 +67,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                  ItemCategoryId = x.ItemCategoryId,
                                                  ItemCategoryName = x.ItemCategory.ItemCategoryName,
                                                  ItemDescription = x.ItemDescription,
+
+                                                 LotNamesId = x.LotNamesId,
+                                                 LotCode = x.LotNames.LotCode,
+                                                 LotName = x.LotNames.LotName,
                                                  //AccountTitleId = x.AccountTitleId,
                                                  //AccountPName = x.AccountTitle.AccountPName,
                                                  BufferLevel = x.BufferLevel,
@@ -106,6 +114,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             existingMaterial.ItemCategoryId = materials.ItemCategoryId;
             existingMaterial.UomId = materials.UomId;
             existingMaterial.BufferLevel = materials.BufferLevel;
+            existingMaterial.LotNamesId = materials.LotNamesId;
 
             return true;
         }
@@ -157,6 +166,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                   ItemDescription = x.ItemDescription,
                                                   //AccountTitleId = x.AccountTitleId,
                                                   //AccountPName = x.AccountTitle.AccountPName,
+
+                                                  LotNamesId = x.LotNamesId,
+                                                  LotCode = x.LotNames.LotCode,
+                                                  LotName = x.LotNames.LotName,
+
                                                   BufferLevel = x.BufferLevel,
                                                   Uom = x.Uom.UomCode,
                                                   UomId = x.UomId,
@@ -187,6 +201,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 ItemDescription = x.ItemDescription,
                                                 //AccountTitleId = x.AccountTitleId,
                                                 //AccountPName = x.AccountTitle.AccountPName,
+
+                                                LotNamesId = x.LotNamesId,
+                                                LotCode = x.LotNames.LotCode,
+                                                LotName = x.LotNames.LotName,
+
                                                 BufferLevel = x.BufferLevel,
                                                 Uom = x.Uom.UomCode,
                                                 UomId = x.UomId,
@@ -709,7 +728,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                 return false;
             }
 
+            var lotNamesExist = await _context.Lotnames
+                .FirstOrDefaultAsync(x => x.Id == material.LotNamesId);
+
             update.BufferLevel = material.BufferLevel;
+            update.LotNamesId = material.LotNamesId;    
 
             return true;
         }

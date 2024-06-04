@@ -9,7 +9,6 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 {
@@ -376,7 +375,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                        UOM = receive.Key.UOM,
                                                        QuantityOrdered = receive.Key.QuantityOrdered,
                                                        ActualGood = receive.Sum(x => x.ActualGood),
-                                                       ActualRemaining = ((receive.Key.QuantityOrdered + (receive.Key.QuantityOrdered / 100) * 10) - (receive.Sum(x => x.ActualGood))), // formula for 10% allowable
+                                                       ActualRemaining = ((receive.Key.QuantityOrdered /*+ (receive.Key.QuantityOrdered / 100) * 10*/) - (receive.Sum(x => x.ActualGood))), // formula for 10% allowable
                                                        IsActive = receive.Key.IsActive,
                                                        IsQcReceiveIsActive = receive.Key.IsQcReceiveIsActive
                                                    }).Where(x => x.IsQcReceiveIsActive == true)

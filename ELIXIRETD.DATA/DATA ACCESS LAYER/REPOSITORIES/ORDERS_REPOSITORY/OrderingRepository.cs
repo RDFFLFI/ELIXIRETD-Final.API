@@ -26,11 +26,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         // ========================================== Schedule Prepare ===========================================================
 
-
-
-
-     
-
         public async Task<bool> GenerateNumber(GenerateOrderNo generate)
         {
 
@@ -1617,7 +1612,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.ApprovedDate = DateTime.Now;
                 items.RejectBy = null;
                 items.RejectedDate = null;
-                items.Remarks = null;
+                //items.Remarks = null;
             }
             return true;
         }
@@ -3116,12 +3111,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   IsApprove = x.Key.IsApprove != null,
                   IsPrepared = x.Key.IsPrepared,
                   ApprovedDate = x.Key.ApproveDateTempo.ToString(),
-                  IsPrint = x.Key.IsPrint != null,
+                  IsPrint = x.Key.IsPrint,
                   IsTransact = x.Key.IsTransact,
                   IsRush = x.Key.Rush != null ? true : false,
                   Rush = x.Key.Rush,
 
-              }).Where(x => x.IsRush == status);
+              }).OrderByDescending(x => x.PreparedDate).Where(x => x.IsRush == status);
 
             return await PagedList<ApprovedMoveOrderPaginationDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
@@ -3165,12 +3160,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                  IsApprove = x.Key.IsApprove != null,
                  IsPrepared = x.Key.IsPrepared,
                  ApprovedDate = x.Key.ApproveDateTempo.ToString(),
-                 IsPrint = x.Key.IsPrint != null,
+                 IsPrint = x.Key.IsPrint,
                  IsTransact = x.Key.IsTransact,
                  IsRush = x.Key.Rush != null ? true : false,
                  Rush = x.Key.Rush,
 
-             }).Where(x => x.IsRush == status)
+             }).Where(x => x.IsRush == status).OrderByDescending(x => x.PreparedDate)
              .Where(x => Convert.ToString(x.MIRId).ToLower().Contains(search.Trim().ToLower())
                  || Convert.ToString(x.CustomerName).ToLower().Contains(search.Trim().ToLower())
                   || Convert.ToString(x.CustomerCode).ToLower().Contains(search.Trim().ToLower()));
@@ -3489,8 +3484,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                  });
 
-
-
             var UnitPriceTotal = UnitPriceById.GroupBy(x => new
             {
                 x.MIRId,
@@ -3627,7 +3620,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             });
 
-
             var moveorders = orders
             .GroupJoin(_context.MoveOrders, order => order.TransactId, moveorder => moveorder.OrderNo, (order, moveorder) => new { order, moveorder })
             .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.order, moveorder })
@@ -3679,7 +3671,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             });
 
-          
             return await List.ToListAsync();   
         }
 

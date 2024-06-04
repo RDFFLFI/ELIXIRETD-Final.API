@@ -13,10 +13,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public int OrderId { get; set; }
         public int OrderNo { get; set; }
 
-        [Column(TypeName = "Date")]
-        public DateTime DateNeeded { get; set; }
-        [Column(TypeName = "Date")]
-        public DateTime DateOrdered { get; set; }
+        //[Column(TypeName = "Date")]
+        public string DateNeeded { get; set; }
+        //[Column(TypeName = "Date")]
+        public string DateOrdered { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
 
