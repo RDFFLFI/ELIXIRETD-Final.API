@@ -2412,7 +2412,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            .FirstOrDefaultAsync();
 
             orders.UnitPrice = UnitCost.UnitPrice;
-
+            //orders.IsActive = true;
             orders.PreparedBy = orders.PreparedBy;
 
             await _context.MoveOrders.AddAsync(orders);
@@ -2507,13 +2507,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.DepartmentName = order.DepartmentName;
                 x.LocationCode = order.LocationCode;
                 x.LocationName = order.LocationName;
-                //x.AccountCode = order.AccountCode;
-                //x.AccountTitles = order.AccountTitles;
-                //x.EmpId = order.EmpId;
-                //x.FullName = order.FullName;
                 x.ApprovedDate = DateTime.Now;
                 x.ApproveDateTempo = DateTime.Now;
                 x.IsApprove = true;
+                x.IsPrepared = true;
                 x.DateApproved = DateTime.Now;
 
                 x.RejectBy = null;
@@ -2540,6 +2537,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             existing.IsActive = false;
             existing.IsPrepared = false;
+            existing.IsApprove = null;
+            existing.IsCancel = true;
             existing.CancelledDate = DateTime.Now;
 
             return true;

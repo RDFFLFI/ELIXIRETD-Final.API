@@ -1106,6 +1106,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
+            movementInventory = movementInventory.OrderBy(x => x.ItemCode);
+
+            
+
             return await PagedList<DtoInventoryMovement>.CreateAsync(movementInventory, userParams.PageNumber, userParams.PageSize);
 
 

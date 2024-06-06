@@ -41,7 +41,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
             return true;
         }
-       
+
+        public async Task<bool> ValidateLotSectionExist(string lotSection)
+        {
+
+            var lotSectionExist = await _context.LotSections
+                .FirstOrDefaultAsync(x => x.SectionName == lotSection);
+
+            if(lotSectionExist is  null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 
         public async Task<PagedList<CancelledPoDto>> GetAllCancelledPOWithPagination(UserParams userParams)
         {
@@ -180,6 +194,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              into leftJ1
                              from material in leftJ1.DefaultIfEmpty()
 
+                              //from warehouse in _context.WarehouseReceived
+                              //join lotsection in _context.LotSections
+                              //on warehouse.LotSection equals lotsection.SectionName
+                              //into leftj2 
+                              //from lotsection in leftj2.DefaultIfEmpty()
+
                                select new WarehouseReceivingDto
                                {
 
@@ -198,6 +218,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                    UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0 ,
                                    TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
                                    ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
+                                   LotSectionId = material.LotSectionId,
                                    LotSection = material.LotSection.SectionName,
 
 
@@ -215,7 +236,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.QuantityOrdered,
                                  x.IsActive,
                                  x.UnitPrice,
-                                 x.LotSection
+                                 x.LotSection,
+                                 x.LotSectionId,
 
                              })
 
@@ -237,6 +259,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                          IsActive = receive.Key.IsActive,
                                                          UnitPrice = receive.Key.UnitPrice,
                                                          LotSection = receive.Key.LotSection,
+                                                         LotSectionId = receive.Key.LotSectionId
                                                          
                                                         
                                                      })
@@ -283,6 +306,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  ActualRemaining = 0,
                                  ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
                                  LotSection = material.LotSection.SectionName,
+                                 LotSectionId = material.LotSectionId,
 
                              }).GroupBy(x => new
                              {
@@ -299,6 +323,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.IsActive,
                                  x.UnitPrice,
                                  x.LotSection,
+                                 x.LotSectionId,
                               
                              })
                                                   .Select(receive => new WarehouseReceivingDto
@@ -318,7 +343,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                       IsActive = receive.Key.IsActive,
                                                       TotalReject = receive.Sum(x => x.TotalReject),
                                                       UnitPrice = receive.Key.UnitPrice,
-                                                      LotSection = receive.Key.LotSection
+                                                      LotSection = receive.Key.LotSection,
+                                                      LotSectionId = receive.Key.LotSectionId
 
 
                                                   }).OrderByDescending(x => x.PoNumber)
@@ -872,8 +898,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
             return await poSummary.ToListAsync();
         }
-
-
 
     }
 }

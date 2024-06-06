@@ -61,7 +61,12 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
             //}
             //receiving.UnitPrice = unitprice.UnitPrice;
 
-                                            
+            //var lotSectionExist = await _unitOfWork.Receives.ValidateLotSectionExist(receiving.LotSection);
+
+            //if (lotSectionExist is false)
+            //{
+            //    return BadRequest("Invalid item setup: Lot section is not specified");
+            //}
 
             if (receiving.ActualDelivered <= 0)
                 return BadRequest("Received failed, please check your input in actual delivered!");
