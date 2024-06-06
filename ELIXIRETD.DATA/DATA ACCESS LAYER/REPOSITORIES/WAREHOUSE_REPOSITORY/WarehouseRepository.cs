@@ -34,8 +34,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var lotSectionExist = await _context.Materials.Include(x => x.LotSection)
                 .FirstOrDefaultAsync(x => x.ItemCode == receive.ItemCode);
 
-            receive.LotSection = lotSectionExist.LotSection.SectionName;
 
+            if(lotSectionExist is not null)
+            {
+                receive.LotSection = lotSectionExist.LotSection.SectionName;
+            }
 
             await _context.WarehouseReceived.AddAsync(receive);
 
