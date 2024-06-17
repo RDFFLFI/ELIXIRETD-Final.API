@@ -2,8 +2,12 @@
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.SERVICES;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY.ConsolidateFinanceExport;
 
 namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 {
@@ -12,10 +16,12 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
     public class ReportsController : ControllerBase
     {
         private readonly IUnitOfWork _unitofwork;
+        private readonly IMediator _mediator;
 
-        public ReportsController(IUnitOfWork unitofwork)
+        public ReportsController(IUnitOfWork unitofwork, IMediator mediator)
         {
             _unitofwork = unitofwork;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -245,7 +251,43 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
 
 
+        [HttpGet]
+        [Route("ConsolidationFinanceReports")]
+        public async Task<IActionResult> ConsolidationFinanceReports([FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
+        {
+            var reports = await _unitofwork.Reports.ConsolidateFinanceReport(DateFrom,DateTo,Search);
 
+            return Ok(reports);
+        }
+
+
+        [HttpGet("ConsolidateFinanceExport")]
+        public async Task<IActionResult> ConsolidateFinanceExport([FromQuery] ConsolidateFinanceExportCommand command)
+        {
+            var filePath = $"ConsolidatedReports {command.DateFrom} - {command.DateTo}.xlsx";
+
+            try
+            {
+                await _mediator.Send(command);
+
+                var memory = new MemoryStream();
+                await using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                var result = File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    filePath);
+                System.IO.File.Delete(filePath);
+                return result;
+
+            }
+            catch(Exception e)
+            {
+                return Conflict(e.Message);    
+            }
+
+        }
 
 
 

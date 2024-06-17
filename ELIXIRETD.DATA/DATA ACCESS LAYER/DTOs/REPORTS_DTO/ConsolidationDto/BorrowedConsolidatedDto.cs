@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
+namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
 {
-    public class DtoBorrowedAndReturned
+    public class BorrowedConsolidatedDto
     {
         public int Id { get; set; }
         public int BorrowedId { get; set; }
@@ -29,14 +29,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string TransactedBy { get; set; }
 
-         public string ItemCode { get; set; }
+        public string ItemCode { get; set; }
 
-         public string ItemDescription { get; set; }
-         public string Uom { get; set; }
+        public string ItemDescription { get; set; }
+        public string Uom { get; set; }
 
         public decimal BorrowedQuantity { get; set; }
         public decimal Consumed { get; set; }
-       public decimal ReturnedQuantity { get; set; }
+        public decimal ReturnedQuantity { get; set; }
 
         public string IsApproveReturnDate { get; set; }
 
@@ -55,14 +55,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string EmpId { get; set; }
         public string FullName { get; set; }
 
-        public int ? ReportNumber { get; set; }
+        public int? ReportNumber { get; set; }
 
-        public int ? AgingDays { get; set; }
+        public int? AgingDays { get; set; }
         public bool IsActive { get; set; }
-
-
-
-
-
+        public decimal ? UnitPrice { get; set; }
     }
 }

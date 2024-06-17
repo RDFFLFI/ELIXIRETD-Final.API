@@ -1779,8 +1779,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
         }
 
 
-
-
         public async Task<PagedList<DtoGetAllReturnedItem>> GetAllReturnedItemOrig(UserParams userParams, string search, bool status, int empid)
         {
 
@@ -1797,7 +1795,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 ConsumedQuantity = x.Sum(x => x.Consume)
 
             });
-
 
 
             var borrowed = _context.BorrowedIssueDetails.Where(x => x.IsReturned == true && x.IsActive == true)

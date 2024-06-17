@@ -22,7 +22,13 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
 builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString));
 
-    builder.Services.AddAuthentication(authOptions =>
+builder.Services.AddMediatR(x =>
+{
+    x.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+
+});
+
+builder.Services.AddAuthentication(authOptions =>
     {
         authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;

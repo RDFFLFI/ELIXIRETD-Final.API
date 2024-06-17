@@ -4,11 +4,15 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
@@ -148,7 +152,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               transact,
                               moveorder,
                               customer
-
                           }
 
                           by new
@@ -317,7 +320,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var issues = _context.MiscellaneousIssues
                        .GroupJoin(_context.MiscellaneousIssueDetail, receipt => receipt.Id, issue => issue.IssuePKey, (receipt, issue) => new { receipt, issue })
                        .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.receipt, issue })
-                       .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo) && x.issue.IsActive == true && x.issue.IsTransact == true)
+                       .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo) && x.issue.IsActive == true )
                        .Select(x => new DtoMiscIssue
                        {
 
@@ -372,6 +375,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .GroupJoin(_context.BorrowedIssueDetails, issue => issue.Id, borrow => borrow.BorrowedPKey, (issue, borrow) => new { issue, borrow })
                 .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.issue, borrow })
                 .Where(x => x.issue.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.issue.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
+                .Where(x => x.issue.IsActive == true)
                 .GroupBy(x => x.issue.Id)
                 .Select(x => new BorrowedTransactionReportsDto
                 {
@@ -417,6 +421,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var ConsumeQuantity = _context.BorrowedConsumes.Where(x => x.IsActive == true)
                                    .Select(x => new DtoBorrowedAndReturned
                                    {
+                                       Id = x.Id,
                                        BorrowedId = x.BorrowedItemPkey,
                                        ItemCode = x.ItemCode,
                                        ItemDescription = x.ItemDescription,
@@ -433,16 +438,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                        FullName = x.FullName,
                                        ReportNumber = x.ReportNumber
 
-
                                    });
 
-
             var details = _context.BorrowedIssueDetails
+                         .Where(x => x.IsActive == true && x.IsApprovedReturned == true)
                          .GroupJoin(ConsumeQuantity, borrow => borrow.Id, consume => consume.BorrowedId, (borrow, consume) => new { borrow, consume })
                          .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrow, consume })
                          .Select(x => new DtoBorrowedAndReturned
                          {
-                           
+
+                             Id = x.borrow.Id,
                              BorrowedId = x.borrow.BorrowedPKey,
                              ItemCode = x.borrow.ItemCode,
                              ItemDescription = x.borrow.ItemDescription,
@@ -460,16 +465,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              EmpId = x.consume.EmpId,
                              FullName = x.consume.FullName,
                              ReportNumber = x.consume.ReportNumber
+
                          });
 
 
+            var borrowIssue =  _context.BorrowedIssues
+                      .Where(x => x.IsActive == true || x.IsReject != null);
 
-
-              var Reports = _context.BorrowedIssues
-                           .Where(x => x.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
-                           .Where(x => x.IsActive == true || x.IsReject != null )
-                           .GroupJoin(details ,borrowed => borrowed.Id , returned => returned.BorrowedId , (borrowed , returned) => new {borrowed , returned})
-                           .SelectMany(x => x.returned.DefaultIfEmpty() , (x , returned) => new {x.borrowed , returned})
+              var Reports = details
+                           .GroupJoin(borrowIssue, returned => returned.BorrowedId , borrowed => borrowed.Id , (returned, borrowed) => new { returned, borrowed})
+                           .SelectMany(x => x.borrowed.DefaultIfEmpty() , (x , borrowed) => new {x.returned , borrowed })
+                           .Where(x => x.borrowed.PreparedDate.Date >= DateTime.Parse(DateFrom).Date && x.borrowed.PreparedDate.Date <= DateTime.Parse(DateTo).Date)
                            .Select(x => new DtoBorrowedAndReturned
                            {
 
@@ -1112,10 +1118,349 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             return await PagedList<DtoInventoryMovement>.CreateAsync(movementInventory, userParams.PageNumber, userParams.PageSize);
 
-
         }
 
-      
+        public async Task<IReadOnlyList<ConsolidateFinanceReportDto>> ConsolidateFinanceReport(string DateFrom, string DateTo, string Search)
+        {
+            var dateFrom = DateTime.Parse(DateFrom).Date;
+            var dateTo = DateTime.Parse(DateTo).Date;
+
+            var receivingConsol = _context.WarehouseReceived
+                .Where(x => x.TransactionType == "Receiving" && x.IsActive == true)
+                .Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+                    Id = x.Id,
+                    TransactionDate = x.ActualReceivingDate.ToString(),
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemDescription,
+                    Uom = x.Uom,
+                    Category = "",
+                    Quantity = x.ActualGood,
+                    UnitCost = x.UnitPrice,
+                    LineAmount = Math.Round(x.UnitPrice * x.ActualGood, 2),
+                    Source = x.PoNumber,
+                    Reason = "Receiving",
+                    Reference = x.SINumber,
+                    EncodedBy = x.AddedBy,
+                    CompanyCode = "",
+                    CompanyName = "",
+                    DepartmentCode = "",
+                    DepartmentName = "",
+                    LocationCode = "",
+                    LocationName = "",
+                    AccountTitleCode = "",
+                    AccountTitle = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Remarks = x.Reason,
+                    Rush = ""
+
+                }).ToList();
+
+            var moveOrderConsol = _context.MoveOrders
+                .Join(_context.TransactOrder, moveOrder => moveOrder.OrderNo, 
+                transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder ,transact})       
+               .Where(x => x.transact.IsTransact && x.transact.IsActive == true )
+               .Where(x => x.transact.DeliveryDate.Value >= dateFrom.Date && x.transact.DeliveryDate.Value <= dateTo)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+                    Id = x.moveOrder.Id,
+                    TransactionDate = x.transact.DeliveryDate.ToString(),
+                    ItemCode = x.moveOrder.ItemCode,
+                    ItemDescription = x.moveOrder.ItemDescription,
+                    Uom = x.moveOrder.Uom,
+                    Category = x.moveOrder.Category,
+                    Quantity = Math.Round(System.Math.Abs(x.moveOrder.QuantityOrdered) * (-1),2),
+                    UnitCost = x.moveOrder.UnitPrice,
+                    LineAmount = Math.Round(x.moveOrder.UnitPrice * System.Math.Abs(x.moveOrder.QuantityOrdered) * (-1) , 2),
+                    Source = x.moveOrder.OrderNo,
+                    Reason = "MoveOrder",
+                    Reference = x.moveOrder.ItemRemarks,
+                    EncodedBy = x.transact.PreparedBy,
+                    CompanyCode = x.moveOrder.CompanyCode,
+                    CompanyName = x.moveOrder.CompanyName,
+                    DepartmentCode = x.moveOrder.DepartmentCode,
+                    DepartmentName = x.moveOrder.DepartmentName,
+                    LocationCode = x.moveOrder.LocationCode,
+                    LocationName = x.moveOrder.LocationName,
+                    AccountTitleCode = x.moveOrder.AccountCode,
+                    AccountTitle = x.moveOrder.AccountTitles,
+                    AssetTag = x.moveOrder.AssetTag,
+                    CIPNo = x.moveOrder.Cip_No,
+                    Helpdesk = x.moveOrder.HelpdeskNo,
+                    Remarks = x.moveOrder.Remarks,
+                    Rush = x.moveOrder.Rush
+
+                }).ToList();
+
+            var receiptConsol = _context.MiscellaneousReceipts
+                .GroupJoin(_context.WarehouseReceived, receipt => receipt.Id, warehouse => warehouse.MiscellaneousReceiptId, (receipt, warehouse) => new { receipt, warehouse })
+                .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.receipt, warehouse })
+                .Where(x => x.warehouse.ReceivingDate.Date >= dateFrom && x.warehouse.ReceivingDate.Date <= dateTo)
+                .Where(x => x.warehouse.IsActive == true && x.warehouse.TransactionType == "MiscellaneousReceipt") 
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+                    Id = x.warehouse.Id,
+                    TransactionDate = x.receipt.TransactionDate.ToString(),
+                    ItemCode = x.warehouse.ItemCode,
+                    ItemDescription = x.warehouse.ItemDescription,
+                    Uom = x.warehouse.Uom,
+                    Category = "",
+                    Quantity = x.warehouse.ActualGood,
+                    UnitCost = x.warehouse.UnitPrice,
+                    LineAmount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
+                    Source = x.receipt.Id,
+                    Reason = "Receipt",
+                    Reference = "",
+                    EncodedBy = x.receipt.PreparedBy,
+                    CompanyCode = x.receipt.CompanyCode,
+                    CompanyName = x.receipt.CompanyName,
+                    DepartmentCode = x.receipt.DepartmentCode,
+                    DepartmentName = x.receipt.DepartmentName,
+                    LocationCode = x.receipt.LocationCode,
+                    LocationName = x.receipt.LocationName,
+                    AccountTitleCode = "",
+                    AccountTitle = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Remarks = x.receipt.Remarks,
+                    Rush = ""
+                }).ToList();
+
+
+            var issueConsol = _context.MiscellaneousIssues
+                .Join(_context.MiscellaneousIssueDetail, miscDatail => miscDatail.Id, issue => issue.IssuePKey,
+                (miscDetail, issue) => new { miscDetail, issue })
+                .Where(x => x.issue.IsActive == true)
+                .Where(x => x.issue.PreparedDate.Date >= dateFrom && x.issue.PreparedDate.Date <= dateTo)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+                   Id = x.issue.Id,
+                    TransactionDate = x.miscDetail.TransactionDate.ToString(),
+                    ItemCode = x.issue.ItemCode,
+                    ItemDescription = x.issue.ItemDescription,
+                    Uom = x.issue.Uom,
+                    Category = "",
+                    Quantity = Math.Round(System.Math.Abs(x.issue.Quantity) * (-1), 2),
+                    UnitCost = x.issue.UnitPrice,
+                    LineAmount = Math.Round(x.issue.UnitPrice * System.Math.Abs(x.issue.Quantity) * (-1), 2),
+                    Source = x.miscDetail.Id,
+                    Reason = "Issue",
+                    Reference = x.issue.Remarks,
+                    EncodedBy = x.issue.PreparedBy,
+                    CompanyCode = x.miscDetail.CompanyCode,
+                    CompanyName = x.miscDetail.CompanyName,
+                    DepartmentCode = x.miscDetail.DepartmentCode,
+                    DepartmentName = x.miscDetail.DepartmentName,
+                    LocationCode = x.miscDetail.LocationCode,
+                    LocationName = x.miscDetail.LocationName,
+                    AccountTitleCode = "",
+                    AccountTitle = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Remarks = x.issue.Remarks,
+                    Rush = ""
+
+
+                }).ToList();
+
+            var borrowedConsol = _context.BorrowedIssues
+                .Join(_context.BorrowedIssueDetails, borrow => borrow.Id, borrowDetail => borrowDetail.BorrowedPKey,
+                (borrow, borrowDetail) => new { borrow, borrowDetail })
+                .Where(x => x.borrowDetail.IsActive == true)
+                .Where(x => x.borrowDetail.PreparedDate.Date >= dateFrom && x.borrowDetail.PreparedDate.Date <= dateTo)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+                    Id = x.borrowDetail.Id,
+                    TransactionDate = x.borrowDetail.PreparedDate.ToString(),
+                    ItemCode = x.borrowDetail.ItemCode,
+                    ItemDescription = x.borrowDetail.ItemDescription,
+                    Uom = x.borrowDetail.Uom,
+                    Category = "",
+                    Quantity = Math.Round(System.Math.Abs(x.borrowDetail.Quantity) * (-1), 2),
+                    UnitCost = x.borrowDetail.UnitPrice,
+                    LineAmount = Math.Round(x.borrowDetail.UnitPrice * System.Math.Abs(x.borrowDetail.Quantity) * (-1), 2),
+                    Source = x.borrow.Id,
+                    Reason = "Borrow",
+                    Reference = x.borrow.Remarks,
+                    EncodedBy = x.borrow.PreparedBy,
+                    CompanyCode = "",
+                    CompanyName = "",
+                    DepartmentCode = "",
+                    DepartmentName = "",
+                    LocationCode = "",
+                    LocationName = "",
+                    AccountTitleCode = "",
+                    AccountTitle = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Remarks = x.borrow.Remarks,
+                    Rush = ""
+
+                }).ToList();
+
+
+
+
+            var consumeList = _context.BorrowedConsumes
+                .Where(x => x.IsActive == true)
+                .Select(x => new BorrowedConsolidatedDto
+                {
+                    Id = x.Id,
+                    BorrowedId = x.BorrowedItemPkey,
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemDescription,
+                    Uom = x.Uom,
+                    Consumed = x.Consume,
+                    CompanyCode = x.CompanyCode,
+                    CompanyName = x.CompanyName,
+                    DepartmentCode = x.DepartmentCode,
+                    DepartmentName = x.DepartmentName,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    AccountCode = x.AccountCode,
+                    AccountTitles = x.AccountTitles,
+                    EmpId = x.EmpId,
+                    FullName = x.FullName,
+                    ReportNumber = x.ReportNumber,
+
+                }).ToList();
+
+
+            var borrowlist = _context.BorrowedIssueDetails
+                .Where(x => x.IsActive == true || x.IsReject != null)
+                .ToList();
+
+            var returnList = consumeList
+                .GroupJoin(borrowlist, consume => consume.BorrowedId, borrowDetails => borrowDetails.Id
+                , (consume, borrowDetails) => new { consume, borrowDetails })
+                .SelectMany(x => x.borrowDetails.DefaultIfEmpty(), (x , borrowDetails) => new {x.consume , borrowDetails} )
+                .Select(x => new BorrowedConsolidatedDto
+                {
+                    Id = x.borrowDetails.Id,
+                    BorrowedId = x.borrowDetails.BorrowedPKey,
+                    ItemCode = x.borrowDetails.ItemCode,
+                    ItemDescription = x.borrowDetails.ItemDescription,
+                    Uom = x.borrowDetails.Uom,
+                    BorrowedQuantity = x.borrowDetails.Quantity != null ? x.borrowDetails.Quantity : 0,
+                    Consumed = x.consume.Consumed,
+                    CompanyCode = x.consume.CompanyCode,
+                    CompanyName = x.consume.CompanyName,
+                    DepartmentCode = x.consume.DepartmentCode,
+                    DepartmentName = x.consume.DepartmentName,
+                    LocationCode = x.consume.LocationCode,
+                    LocationName = x.consume.LocationName,
+                    AccountCode = x.consume.AccountCode,
+                    AccountTitles = x.consume.AccountTitles,
+                    EmpId = x.consume.EmpId,
+                    FullName = x.consume.FullName,
+                    ReportNumber = x.consume.ReportNumber,
+                    UnitPrice = x.borrowDetails.UnitPrice
+                    
+                }).ToList();
+
+            var borrowedIssueList = await _context.BorrowedIssues
+                .Where(x => x.IsActive == true || x.IsReject != null)
+                .ToListAsync();
+
+            var returnedConsol = returnList
+                .GroupJoin(borrowedIssueList, borrowDetail => borrowDetail.BorrowedId, borrow => borrow.Id,
+                (borrowDetail, borrow) => new { borrowDetail, borrow })
+                .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.borrowDetail, borrow })
+                .Where(x => x.borrow.PreparedDate.Date >= dateFrom && x.borrow.PreparedDate.Date <= dateTo)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+
+                    Id = x.borrowDetail.Id,
+                    TransactionDate = x.borrow.PreparedDate.ToString(),
+                    ItemCode = x.borrowDetail.ItemCode,
+                    ItemDescription = x.borrowDetail.ItemDescription,
+                    Uom = x.borrowDetail.Uom,
+                    Category = "",
+                    Quantity = x.borrowDetail.BorrowedQuantity - x.borrowDetail.Consumed,
+                    UnitCost = x.borrowDetail.UnitPrice,
+                    LineAmount = Math.Round(x.borrowDetail.UnitPrice.Value * x.borrowDetail.BorrowedQuantity - x.borrowDetail.Consumed, 2),
+                    Source = x.borrow.Id,
+                    Reason = "Returned",
+                    Reference = "",
+                    EncodedBy = x.borrow.PreparedBy,
+                    CompanyCode = x.borrowDetail.CompanyCode,
+                    CompanyName = x.borrowDetail.CompanyName,
+                    DepartmentCode = x.borrowDetail.DepartmentCode,
+                    DepartmentName = x.borrowDetail.DepartmentName,
+                    LocationCode = x.borrowDetail.LocationCode,
+                    LocationName = x.borrowDetail.LocationName,
+                    AccountTitleCode = x.borrowDetail.AccountCode,
+                    AccountTitle = x.borrowDetail.AccountTitles,
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Remarks = x.borrowDetail.Remarks,
+                    Rush = ""
+
+                }).ToList() ;
+
+            var consolidateList = receivingConsol
+                .Concat(moveOrderConsol)
+                .Concat(receiptConsol) 
+                .Concat(issueConsol)
+                .Concat(borrowedConsol)
+                .Concat(returnedConsol)
+                .ToList();
+
+            var materials = await _context.Materials
+                .Include(x => x.Uom)
+                .Include(x => x.ItemCategory)
+                .ToListAsync();
+
+            var reports = consolidateList
+                .Join(materials, 
+                 consol => consol.ItemCode, material => material.ItemCode,
+                 (consol, material) =>  new ConsolidateFinanceReportDto
+                 {
+                     Id = consol.Id,
+                     TransactionDate = consol.TransactionDate,
+                     ItemCode = material.ItemCode,
+                     ItemDescription = material.ItemDescription,
+                     Uom = material.Uom.UomCode,
+                     Category = material.ItemCategory.ItemCategoryName,
+                     Quantity = consol.Quantity,
+                     UnitCost = consol.UnitCost,
+                     LineAmount = consol.LineAmount,
+                     Source = consol.Source,
+                     Reason = consol.Reason,
+                     Reference = consol.Reference,
+                     EncodedBy = consol.EncodedBy,
+                     CompanyCode = consol.CompanyCode,
+                     CompanyName = consol.CompanyName,
+                     DepartmentCode = consol.DepartmentCode,
+                     DepartmentName = consol.DepartmentName,
+                     LocationCode = consol.LocationCode,
+                     LocationName = consol.LocationName,
+                     AccountTitleCode = consol.AccountTitleCode,
+                     AccountTitle = consol.AccountTitle,
+                     AssetTag = consol.AssetTag,
+                     CIPNo = consol.CIPNo,
+                     Helpdesk = consol.Helpdesk,
+                     Remarks = consol.Remarks,
+                     Rush = consol.Rush
+
+                 }).ToList();
+
+            if(!string.IsNullOrEmpty(Search))
+            {
+               reports = reports.Where(x => x. ItemCode.ToLower().Contains(Search.ToLower())
+               || x.ItemDescription.ToLower().Contains(Search.ToLower()) 
+               || x.Reason.ToLower().Contains(Search.ToLower())).ToList();
+            }
+
+            return reports;
+        }
     }
 
 }
