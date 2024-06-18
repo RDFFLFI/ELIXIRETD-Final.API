@@ -36,6 +36,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
         public string LocationCode { get; set; }
         public string LocationName { get; set; }
 
+        public string EmpId { get; set; }
+        public string Fullname { get; set; }
+
         public string AccountTitleCode { get; set; }
         public string AccountTitle {  get; set; }
         public string AssetTag { get; set; }

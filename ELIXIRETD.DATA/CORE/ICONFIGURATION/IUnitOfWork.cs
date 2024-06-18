@@ -57,8 +57,6 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
 
         IReports Reports { get; }
 
-
-
         Task CompleteAsync();
 
       

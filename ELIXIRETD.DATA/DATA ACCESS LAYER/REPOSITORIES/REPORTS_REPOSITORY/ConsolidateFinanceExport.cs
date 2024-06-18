@@ -1,14 +1,10 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2016.Excel;
+using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using ELIXIRETD.DATA.SERVICES;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Mvc;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY.ConsolidateFinanceExport;
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 {
     public class ConsolidateFinanceExport
@@ -18,14 +14,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             public string DateTo { get; set; }
             public string DateFrom { get; set; }
 
-            public string Search {  get; set; }
+            public string Search { get; set; }
         }
 
         public class Handler : IRequestHandler<ConsolidateFinanceExportCommand, Unit>
         {
-            private readonly IReports _report;
+            private readonly IUnitOfWork _report;
 
-            public Handler(IReports report)
+            public Handler(IUnitOfWork report)
             {
                 _report = report;
             }
@@ -33,7 +29,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             public async Task<Unit> Handle(ConsolidateFinanceExportCommand command, CancellationToken cancellationToken)
             {
 
-                var consolidate = await _report.ConsolidateFinanceReport(command.DateFrom, command.DateTo , command.Search);
+                var consolidate = await _report.Reports.ConsolidateFinanceReport(command.DateFrom, command.DateTo, command.Search);
 
 
                 using (var workbook = new XLWorkbook())
@@ -102,8 +98,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
-
-
-
     }
 }
+
+
+
+

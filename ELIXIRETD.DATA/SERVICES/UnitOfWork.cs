@@ -16,6 +16,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using MediatR;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ELIXIRETD.DATA.SERVICES
@@ -24,6 +25,7 @@ namespace ELIXIRETD.DATA.SERVICES
 
     {
         private readonly StoreContext _context;
+        private readonly IMediator _mediator;
 
         private IDbContextTransaction _transaction;
 
@@ -67,10 +69,11 @@ namespace ELIXIRETD.DATA.SERVICES
         public IReports Reports { get; set; }
 
 
-        public UnitOfWork(StoreContext context)
+        public UnitOfWork(StoreContext context, IMediator mediator)
 
         {
             _context = context;
+            _mediator = mediator;
 
             Users = new UserRepository(_context);
             Roles = new RoleRepository(_context);
@@ -98,7 +101,6 @@ namespace ELIXIRETD.DATA.SERVICES
         {
             await _context.SaveChangesAsync();
         }
-
 
         public void Dispose()
         {

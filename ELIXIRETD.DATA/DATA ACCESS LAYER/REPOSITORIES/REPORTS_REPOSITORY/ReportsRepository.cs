@@ -470,7 +470,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var borrowIssue =  _context.BorrowedIssues
-                      .Where(x => x.IsActive == true || x.IsReject != null);
+                      .Where(x => x.IsActive == true);
 
               var Reports = details
                            .GroupJoin(borrowIssue, returned => returned.BorrowedId , borrowed => borrowed.Id , (returned, borrowed) => new { returned, borrowed})
@@ -1151,6 +1151,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     LocationName = "",
                     AccountTitleCode = "",
                     AccountTitle = "",
+                    EmpId= "",
+                    Fullname = "",
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
@@ -1187,6 +1189,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     LocationName = x.moveOrder.LocationName,
                     AccountTitleCode = x.moveOrder.AccountCode,
                     AccountTitle = x.moveOrder.AccountTitles,
+                    EmpId = x.moveOrder.EmpId,
+                    Fullname = x.moveOrder.FullName,
                     AssetTag = x.moveOrder.AssetTag,
                     CIPNo = x.moveOrder.Cip_No,
                     Helpdesk = x.moveOrder.HelpdeskNo,
@@ -1223,6 +1227,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     LocationName = x.receipt.LocationName,
                     AccountTitleCode = "",
                     AccountTitle = "",
+                    EmpId = "",
+                    Fullname = "",
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
@@ -1259,6 +1265,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     LocationName = x.miscDetail.LocationName,
                     AccountTitleCode = "",
                     AccountTitle = "",
+                    EmpId = "",
+                    Fullname = "",
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
@@ -1329,17 +1337,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     FullName = x.FullName,
                     ReportNumber = x.ReportNumber,
 
-                }).ToList();
+                });
 
 
-            var borrowlist = _context.BorrowedIssueDetails
-                .Where(x => x.IsActive == true || x.IsReject != null)
-                .ToList();
-
-            var returnList = consumeList
-                .GroupJoin(borrowlist, consume => consume.BorrowedId, borrowDetails => borrowDetails.Id
-                , (consume, borrowDetails) => new { consume, borrowDetails })
-                .SelectMany(x => x.borrowDetails.DefaultIfEmpty(), (x , borrowDetails) => new {x.consume , borrowDetails} )
+            var returnList = _context.BorrowedIssueDetails
+                .Where(x => x.IsActive == true && x.IsApprovedReturned == true)
+                .GroupJoin(consumeList, borrowDetails => borrowDetails.Id, consume => consume.BorrowedId
+                , (borrowDetails, consume) => new { borrowDetails, consume })
+                .SelectMany(x => x.consume.DefaultIfEmpty(), (x , consume) => new {x.borrowDetails, consume} )
                 .Select(x => new BorrowedConsolidatedDto
                 {
                     Id = x.borrowDetails.Id,
@@ -1348,7 +1353,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ItemDescription = x.borrowDetails.ItemDescription,
                     Uom = x.borrowDetails.Uom,
                     BorrowedQuantity = x.borrowDetails.Quantity != null ? x.borrowDetails.Quantity : 0,
-                    Consumed = x.consume.Consumed,
+                    Consumed = x.consume.Consumed != null ? x.consume.Consumed : 0,
                     CompanyCode = x.consume.CompanyCode,
                     CompanyName = x.consume.CompanyName,
                     DepartmentCode = x.consume.DepartmentCode,
@@ -1362,11 +1367,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ReportNumber = x.consume.ReportNumber,
                     UnitPrice = x.borrowDetails.UnitPrice
                     
-                }).ToList();
+                });
 
-            var borrowedIssueList = await _context.BorrowedIssues
-                .Where(x => x.IsActive == true || x.IsReject != null)
-                .ToListAsync();
+            var borrowedIssueList =  _context.BorrowedIssues
+                .Where(x => x.IsActive == true);
 
             var returnedConsol = returnList
                 .GroupJoin(borrowedIssueList, borrowDetail => borrowDetail.BorrowedId, borrow => borrow.Id,
@@ -1403,7 +1407,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Remarks = x.borrowDetail.Remarks,
                     Rush = ""
 
-                }).ToList() ;
+                }).ToList();
 
             var consolidateList = receivingConsol
                 .Concat(moveOrderConsol)

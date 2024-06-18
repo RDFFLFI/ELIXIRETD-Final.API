@@ -18,7 +18,7 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         private readonly IUnitOfWork _unitofwork;
         private readonly IMediator _mediator;
 
-        public ReportsController(IUnitOfWork unitofwork, IMediator mediator)
+        public ReportsController(IUnitOfWork unitofwork , IMediator mediator)
         {
             _unitofwork = unitofwork;
             _mediator = mediator;
@@ -261,15 +261,14 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         }
 
 
-        [HttpGet("ConsolidateFinanceExport")]
-        public async Task<IActionResult> ConsolidateFinanceExport([FromQuery] ConsolidateFinanceExportCommand command)
+        [HttpGet("ExportConcsolidateFinnance")]
+        public async Task<IActionResult> ExportConsolidateFinnance([FromQuery] ConsolidateFinanceExportCommand command)
         {
             var filePath = $"ConsolidatedReports {command.DateFrom} - {command.DateTo}.xlsx";
 
             try
             {
                 await _mediator.Send(command);
-
                 var memory = new MemoryStream();
                 await using (var stream = new FileStream(filePath, FileMode.Open))
                 {
@@ -282,12 +281,13 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
                 return result;
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                return Conflict(e.Message);    
+                return Conflict(e.Message);
             }
 
         }
+
 
 
 
