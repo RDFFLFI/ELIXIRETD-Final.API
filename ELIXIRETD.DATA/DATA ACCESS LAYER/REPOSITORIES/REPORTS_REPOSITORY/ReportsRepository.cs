@@ -1131,7 +1131,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.Id,
-                    TransactionDate = x.ActualReceivingDate.ToString(),
+                    TransactionDate = x.ActualReceivingDate.Date,
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemDescription,
                     Uom = x.Uom,
@@ -1169,7 +1169,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.moveOrder.Id,
-                    TransactionDate = x.transact.DeliveryDate.ToString(),
+                    TransactionDate = x.transact.DeliveryDate.Value,
                     ItemCode = x.moveOrder.ItemCode,
                     ItemDescription = x.moveOrder.ItemDescription,
                     Uom = x.moveOrder.Uom,
@@ -1207,7 +1207,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.warehouse.Id,
-                    TransactionDate = x.receipt.TransactionDate.ToString(),
+                    TransactionDate = x.receipt.TransactionDate.Date,
                     ItemCode = x.warehouse.ItemCode,
                     ItemDescription = x.warehouse.ItemDescription,
                     Uom = x.warehouse.Uom,
@@ -1245,7 +1245,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                    Id = x.issue.Id,
-                    TransactionDate = x.miscDetail.TransactionDate.ToString(),
+                    TransactionDate = x.miscDetail.TransactionDate.Date,
                     ItemCode = x.issue.ItemCode,
                     ItemDescription = x.issue.ItemDescription,
                     Uom = x.issue.Uom,
@@ -1284,7 +1284,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.borrowDetail.Id,
-                    TransactionDate = x.borrowDetail.PreparedDate.ToString(),
+                    TransactionDate = x.borrowDetail.PreparedDate.Date,
                     ItemCode = x.borrowDetail.ItemCode,
                     ItemDescription = x.borrowDetail.ItemDescription,
                     Uom = x.borrowDetail.Uom,
@@ -1381,7 +1381,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 {
 
                     Id = x.borrowDetail.Id,
-                    TransactionDate = x.borrow.PreparedDate.ToString(),
+                    TransactionDate = x.borrow.PreparedDate.Date,
                     ItemCode = x.borrowDetail.ItemCode,
                     ItemDescription = x.borrowDetail.ItemDescription,
                     Uom = x.borrowDetail.Uom,

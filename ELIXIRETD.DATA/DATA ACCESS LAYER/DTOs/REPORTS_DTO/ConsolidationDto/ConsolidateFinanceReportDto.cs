@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
     public class ConsolidateFinanceReportDto
     {
         public int Id { get; set; }
-        public string TransactionDate { get; set; }
+        public DateTime TransactionDate { get; set; }
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
 
