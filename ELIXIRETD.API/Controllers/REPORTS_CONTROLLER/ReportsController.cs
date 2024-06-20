@@ -261,8 +261,8 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         }
 
 
-        [HttpGet("ExportConcsolidateFinnance")]
-        public async Task<IActionResult> ExportConsolidateFinnance([FromQuery] ConsolidateFinanceExportCommand command)
+        [HttpGet("ExportConsolidateFinance")]
+        public async Task<IActionResult> ExportConsolidateFinance([FromQuery] ConsolidateFinanceExportCommand command)
         {
             var filePath = $"ConsolidatedReports {command.DateFrom} - {command.DateTo}.xlsx";
 
