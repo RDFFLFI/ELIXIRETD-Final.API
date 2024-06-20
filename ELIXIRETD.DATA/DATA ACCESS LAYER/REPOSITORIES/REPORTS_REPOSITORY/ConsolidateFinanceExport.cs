@@ -40,7 +40,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     {
                         "Id","Transaction Date","Item Code","Item Description","Uom","Category","Quantity","Unit Cost","Line Amount",
                         "Source","Reason","Reference","Encoded By","Company Code","Company Name","Department Code","Department Name",
-                        "Location Code","Location Name","Account Title Code","Asset Tag","Cip #", "Helpdesk","Remarks","Rush"
+                        "Location Code","Location Name","Account Title Code","Account Title","EmpId","FullName","Asset Tag","Cip #", "Helpdesk","Remarks","Rush"
 
                     };
 
@@ -82,11 +82,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(18).Value = consolidate[index - 1].LocationCode;
                         row.Cell(19).Value = consolidate[index - 1].AccountTitleCode;
                         row.Cell(20).Value = consolidate[index - 1].AccountTitle;
-                        row.Cell(21).Value = consolidate[index - 1].AssetTag;
-                        row.Cell(22).Value = consolidate[index - 1].CIPNo;
-                        row.Cell(23).Value = consolidate[index - 1].Helpdesk;
-                        row.Cell(24).Value = consolidate[index - 1].Remarks;
-                        row.Cell(25).Value = consolidate[index - 1].Rush;
+                        row.Cell(21).Value = consolidate[index - 1].EmpId;
+                        row.Cell(22).Value = consolidate[index - 1].Fullname;
+                        row.Cell(23).Value = consolidate[index - 1].AssetTag;
+                        row.Cell(24).Value = consolidate[index - 1].CIPNo;
+                        row.Cell(25).Value = consolidate[index - 1].Helpdesk;
+                        row.Cell(26).Value = consolidate[index - 1].Remarks;
+                        row.Cell(27).Value = consolidate[index - 1].Rush;
 
                     }
                     worksheet.Columns().AdjustToContents();
