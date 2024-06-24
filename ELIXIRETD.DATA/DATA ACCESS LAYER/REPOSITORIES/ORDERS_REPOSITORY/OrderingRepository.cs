@@ -1276,7 +1276,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                               .Where(x => x.IsTransact == true)
+                                                               //.Where(x => x.IsTransact == true)
                                                                .GroupBy(x => new
                                                                {
                                                                    x.ItemCode,

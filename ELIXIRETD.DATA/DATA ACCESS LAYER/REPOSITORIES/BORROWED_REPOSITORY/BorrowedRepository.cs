@@ -30,17 +30,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                                .GroupBy(x => new
                                                                {
 
-                                                                   x.ItemCode,
-                                                                   x.ItemDescription,
-                                                                   x.Uom,
+                                                                   x.ItemCode
                                                          
                                                                }).Select(x => new WarehouseInventory
                                                                {
 
                                                                    ItemCode = x.Key.ItemCode,
-                                                                   ItemDescription = x.Key.ItemDescription,
-                                                                   Uom = x.Key.Uom,
-                                                                   ActualGood = x.Sum(x => x.ActualDelivered)
+                                                                   ItemDescription = x.First().ItemDescription,
+                                                                   Uom = x.First().Uom,
+                                                                   ActualGood = x.Sum(x => x.ActualGood)
 
                                                                });
 
@@ -130,7 +128,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                              {
 
                                                                  ItemCode = x.Key.ItemCode,
-                                                                 In = x.Sum(x => x.returned.Quantity) -  x.Sum(x => x.itemconsume.Consume),
+                                                                 In = x.Sum(x => x.returned.Quantity != null ? x.returned.Quantity : 0) -  x.Sum(x => x.itemconsume.Consume),
 
                                                              });
 
@@ -179,28 +177,27 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 {
 
                                     warehouse.ItemCode,
-                                    warehouse.ItemDescription,
-                                    warehouse.Uom,
-                                    WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
-                                    MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
-                                    IssueOut = issue.Out != null ? issue.Out : 0,
-                                    BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
-                                    reserveOut = reserve.QuantityOrdered != null ? reserve.QuantityOrdered : 0,
-                                    BorrowedReturn = borrowedReturned.In != null ? borrowedReturned.In : 0
+                                    //warehouse.ItemDescription,
+                                    //warehouse.Uom,
+                                    //WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
+                                    //MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
+                                    //IssueOut = issue.Out != null ? issue.Out : 0,
+                                    //BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
+                                    //reserveOut = reserve.QuantityOrdered != null ? reserve.QuantityOrdered : 0,
+                                    //BorrowedReturn = borrowedReturned.In != null ? borrowedReturned.In : 0
 
 
                                 } into total
-
-                                orderby total.Key.ItemCode
 
                                 select new GetAvailableStocksForBorrowedIssue_Dto
                                 {
 
 
                                     ItemCode = total.Key.ItemCode,
-                                    ItemDescription = total.Key.ItemDescription,
-                                    Uom = total.Key.Uom,
-                                    RemainingStocks = total.Key.WarehouseActualGood + total.Key.BorrowedReturn/* - total.Key.MoveOrderOut*/ - total.Key.IssueOut - total.Key.BorrowedOut - total.Key.reserveOut,
+                                    ItemDescription = total.First().warehouse.ItemDescription,
+                                    Uom = total.First().warehouse.Uom,
+                                    RemainingStocks = total.Sum(x => x.warehouse.ActualGood) + total.Sum(x => x.borrowedReturned.In) 
+                                    - total.Sum(x => x.reserve.QuantityOrdered) - total.Sum(x => x.issue.Out) - total.Sum(x => x.borrowOut.Out),
 
                                 }).Where(x => x.RemainingStocks >= 1 );
 
@@ -209,18 +206,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var GetAvailableItem =  getAvailable.GroupBy(x => new
             {
                 x.ItemCode,
-                x.ItemDescription,
-                x.Uom,
-                x.RemainingStocks
+                //x.ItemDescription,
+                //x.Uom,
+                //x.RemainingStocks
 
             }).Select(x => new GetAvailableStocksForBorrowedIssue_Dto
             {
                 ItemCode = x.Key.ItemCode,
-                ItemDescription = x.Key.ItemDescription,
-                Uom = x.Key.Uom,
-                RemainingStocks = x.Key.RemainingStocks,
+                ItemDescription = x.First().ItemDescription,
+                Uom = x.First().Uom,
+                RemainingStocks = x.Sum(x => x.RemainingStocks),
 
-            });
+            }).OrderBy(x => x.ItemCode);
                                  
 
             return await GetAvailableItem.ToListAsync();

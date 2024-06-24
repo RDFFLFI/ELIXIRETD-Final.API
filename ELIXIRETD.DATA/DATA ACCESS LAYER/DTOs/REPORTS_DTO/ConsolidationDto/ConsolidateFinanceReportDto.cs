@@ -26,8 +26,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
         [Column(TypeName = "decimal(18,2)")]
         public decimal? LineAmount { get; set; }
         public int? Source { get; set; }
+        public string TransactionType { get; set; }
         public string Reason { get; set; }
         public string Reference { get; set; }
+        public string SupplierName { get; set; }
         public string EncodedBy { get; set; }
         public string CompanyCode { get; set; }
         public string CompanyName { get; set; }
@@ -44,7 +46,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
         public string AssetTag { get; set; }
         public string CIPNo { get; set; }
         public int ? Helpdesk { get; set; }
-        public string Remarks { get; set; }
+        //public string Remarks { get; set; }
         public string Rush { get; set; }
 
     }

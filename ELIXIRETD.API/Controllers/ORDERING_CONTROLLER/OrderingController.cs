@@ -63,17 +63,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         continue;
 
                     }
-
-                    if(string.IsNullOrEmpty(items.AccountCode))
-                    {
-                        AccountCodeEmpty.Add(items);
-                        continue;
-                    }
-                    if(string.IsNullOrEmpty(items.AccountTitles))
-                    {
-                        AccountTitleEmpty.Add(items);
-                        continue;
-                    }
                  
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
@@ -82,53 +71,64 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription, items.Uom);
                         //var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
-                        //var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
-                        //var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.Department);
-                        //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
-                        //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
+                    //var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
+                    //var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.Department);
+                    //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
+                    //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
 
-                        if (validateOrderNoAndItemcode == true)
-                        {
-                            DuplicateList.Add(items);
-                        }
-                        else if (validateDateNeeded == false)
-                        {
-                            PreviousDateNeeded.Add(items);
-                        }
+                    if (validateOrderNoAndItemcode == true)
+                    {
+                        DuplicateList.Add(items);
+                    }
+                    else if (validateDateNeeded == false)
+                    {
+                        PreviousDateNeeded.Add(items);
+                    }
 
-                        //else if (validateCustomerCode == false)
-                        //{
-                        //    CustomerCodeNotExist.Add(items);
-                        //}
+                    //else if (validateCustomerCode == false)
+                    //{
+                    //    CustomerCodeNotExist.Add(items);
+                    //}
 
-                        else if (validateCustomerName == false)
-                        {
-                            CustomerNameNotExist.Add(items);
-                        }
+                    else if (validateCustomerName == false)
+                    {
+                        CustomerNameNotExist.Add(items);
+                    }
 
-                        else if (validateItemCode == false)
-                        {
-                            ItemCodesExist.Add(items);
-                        }
-                        //else if (validateItemDescription == false)
-                        //{
-                        //    ItemDescriptionNotExist.Add(items);
-                        //}
+                    else if (validateItemCode == false)
+                    {
+                        ItemCodesExist.Add(items);
+                    }
 
-                        else if (validateUom == false)
-                        {
-                            UomNotExist.Add(items);
-                        }
-                       
-                        else
-                        {
+                    else if (string.IsNullOrEmpty(items.AccountCode))
+                    {
+                        AccountCodeEmpty.Add(items);
+                    }
+
+                    else if (string.IsNullOrEmpty(items.AccountTitles))
+                    {
+                        AccountTitleEmpty.Add(items);
+                    }
+
+                    //else if (validateItemDescription == false)
+                    //{
+                    //    ItemDescriptionNotExist.Add(items);
+                    //}
+
+                    else if (validateUom == false)
+                    {
+                        UomNotExist.Add(items);
+                    }
+
+                    else
+                    {
 
                         items.SyncDate = DateTime.Now;
                         AvailableImport.Add(items);
                         await _unitofwork.Orders.AddNewOrders(items);
 
-                        }
-  
+                    }
+
                 }
 
                 var resultList = new
@@ -142,8 +142,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    AccountCodeEmpty,
                    AccountTitleEmpty
 
-
-                  
                 };
 
                 if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 

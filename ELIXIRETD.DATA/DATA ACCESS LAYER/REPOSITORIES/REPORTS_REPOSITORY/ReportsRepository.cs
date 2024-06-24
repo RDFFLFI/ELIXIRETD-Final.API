@@ -1129,7 +1129,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Where(x => x.TransactionType == "Receiving" && x.IsActive == true)
                 .Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
-                {
+                { 
                     Id = x.Id,
                     TransactionDate = x.ActualReceivingDate.Date,
                     ItemCode = x.ItemCode,
@@ -1140,8 +1140,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.UnitPrice,
                     LineAmount = Math.Round(x.UnitPrice * x.ActualGood, 2),
                     Source = x.PoNumber,
-                    Reason = "Receiving",
+                    TransactionType = "Receiving",
+                    Reason = "",
                     Reference = x.SINumber,
+                    SupplierName = x.Supplier,
                     EncodedBy = x.AddedBy,
                     CompanyCode = "10",
                     CompanyName = "RDF Corporate Services",
@@ -1149,14 +1151,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     DepartmentName = "Corporate Common",
                     LocationCode = "0001",
                     LocationName = "Head Office",
-                    AccountTitleCode = "",
-                    AccountTitle = "",
+                    AccountTitleCode = "117701",
+                    AccountTitle = "Materials & Supplies Inventory",
                     EmpId= "",
                     Fullname = "",
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
-                    Remarks = x.Reason,
                     Rush = ""
 
                 }).ToList();
@@ -1178,8 +1179,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.moveOrder.UnitPrice,
                     LineAmount = Math.Round(x.moveOrder.UnitPrice * System.Math.Abs(x.moveOrder.QuantityOrdered) * (-1) , 2),
                     Source = x.moveOrder.OrderNo,
-                    Reason = "MoveOrder",
+                    TransactionType = "MoveOrder",
+                    Reason = "",
                     Reference = x.moveOrder.ItemRemarks,
+                    SupplierName = "",
                     EncodedBy = x.transact.PreparedBy,
                     CompanyCode = x.moveOrder.CompanyCode,
                     CompanyName = x.moveOrder.CompanyName,
@@ -1194,7 +1197,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AssetTag = x.moveOrder.AssetTag,
                     CIPNo = x.moveOrder.Cip_No,
                     Helpdesk = x.moveOrder.HelpdeskNo,
-                    Remarks = x.moveOrder.Remarks,
+                    //Remarks = x.moveOrder.Remarks,
                     Rush = x.moveOrder.Rush
 
                 }).ToList();
@@ -1216,8 +1219,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.warehouse.UnitPrice,
                     LineAmount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
                     Source = x.receipt.Id,
-                    Reason = "Receipt",
-                    Reference = "",
+                    TransactionType = "Receipt",
+                    Reason = x.receipt.Remarks,
+                    Reference = x.receipt.Details,
+                    SupplierName = "",
                     EncodedBy = x.receipt.PreparedBy,
                     CompanyCode = x.receipt.CompanyCode,
                     CompanyName = x.receipt.CompanyName,
@@ -1232,7 +1237,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
-                    Remarks = x.receipt.Remarks,
+                    //Remarks = x.receipt.Remarks,
                     Rush = ""
                 }).ToList();
 
@@ -1254,8 +1259,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.issue.UnitPrice,
                     LineAmount = Math.Round(x.issue.UnitPrice * System.Math.Abs(x.issue.Quantity) * (-1), 2),
                     Source = x.miscDetail.Id,
-                    Reason = "Issue",
-                    Reference = x.issue.Remarks,
+                    TransactionType = "Issue",
+                    Reason = x.issue.Remarks,
+                    Reference = x.miscDetail.Details,
+                    SupplierName = "",
                     EncodedBy = x.issue.PreparedBy,
                     CompanyCode = x.miscDetail.CompanyCode,
                     CompanyName = x.miscDetail.CompanyName,
@@ -1270,7 +1277,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
-                    Remarks = x.issue.Remarks,
+                    //Remarks = x.issue.Remarks,
                     Rush = ""
 
 
@@ -1293,8 +1300,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.borrowDetail.UnitPrice,
                     LineAmount = Math.Round(x.borrowDetail.UnitPrice * System.Math.Abs(x.borrowDetail.Quantity) * (-1), 2),
                     Source = x.borrow.Id,
-                    Reason = "Borrow",
-                    Reference = x.borrow.Remarks,
+                    TransactionType = "Borrow",
+                    Reason = x.borrow.Remarks,
+                    Reference = x.borrow.Details,
+                    SupplierName = "" ,
                     EncodedBy = x.borrow.PreparedBy,
                     CompanyCode = "",
                     CompanyName = "",
@@ -1309,7 +1318,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
-                    Remarks = x.borrow.Remarks,
+                    //Remarks = x.borrow.Remarks,
                     Rush = ""
 
                 }).ToList();
@@ -1392,8 +1401,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.borrowDetail.UnitPrice,
                     LineAmount = Math.Round(x.borrowDetail.UnitPrice.Value * x.borrowDetail.BorrowedQuantity - x.borrowDetail.Consumed, 2),
                     Source = x.borrow.Id,
-                    Reason = "Returned",
-                    Reference = "",
+                    TransactionType = "Returned",
+                    Reason = x.borrowDetail.Remarks,
+                    Reference = x.borrowDetail.Details,
+                    SupplierName= "",
                     EncodedBy = x.borrow.PreparedBy,
                     CompanyCode = x.borrowDetail.CompanyCode,
                     CompanyName = x.borrowDetail.CompanyName,
@@ -1408,7 +1419,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AssetTag = "",
                     CIPNo = "",
                     Helpdesk = 0,
-                    Remarks = x.borrowDetail.Remarks,
+                    //Remarks = x.borrowDetail.Remarks,
                     Rush = ""
 
                 }).ToList();
@@ -1441,8 +1452,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      UnitCost = consol.UnitCost,
                      LineAmount = consol.LineAmount,
                      Source = consol.Source,
+                      TransactionType = consol.TransactionType,
                      Reason = consol.Reason,
                      Reference = consol.Reference,
+                     SupplierName = consol.SupplierName,
                      EncodedBy = consol.EncodedBy,
                      CompanyCode = consol.CompanyCode,
                      CompanyName = consol.CompanyName,
@@ -1457,7 +1470,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      AssetTag = consol.AssetTag,
                      CIPNo = consol.CIPNo,
                      Helpdesk = consol.Helpdesk,
-                     Remarks = consol.Remarks,
+                     //Remarks = consol.Remarks,
                      Rush = consol.Rush
 
                  }).ToList();
@@ -1466,7 +1479,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                reports = reports.Where(x => x. ItemCode.ToLower().Contains(Search.ToLower())
                || x.ItemDescription.ToLower().Contains(Search.ToLower()) 
-               || x.Reason.ToLower().Contains(Search.ToLower())).ToList();
+               || x.TransactionType.ToLower().Contains(Search.ToLower())).ToList();
             }
 
             return reports;
