@@ -39,8 +39,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
         public async Task<bool> AddMiscellaneousReceiptInWarehouse(Warehouse_Receiving receive)
         {
 
-          
-
             receive.ActualDelivered = receive.ActualGood;
 
             await _context.WarehouseReceived.AddAsync(receive);
@@ -52,8 +50,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var existing = await _context.MiscellaneousReceipts.Where(x => x.Id == receipt.Id)
                                                                .FirstOrDefaultAsync();
 
-            var existingWH = await _context.WarehouseReceived.Where(x => x.MiscellaneousReceiptId == receipt.Id)
-                                                            .ToListAsync();
+            var existingWH = await _context.WarehouseReceived
+                .Where(x => x.MiscellaneousReceiptId == receipt.Id)
+                .ToListAsync();
 
 
             if (existing == null)
@@ -882,6 +881,168 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             return true;
         }
 
-      
+        public async Task<IReadOnlyList<MiscReceiptItemListDto>> MiscReceiptItemList(string itemCode)
+        {
+
+            var warehouseList = _context.WarehouseReceived
+                .Where(x => x.IsActive == true)
+                .Where(x => x.ItemCode == itemCode)
+                .Select(x => new WarehouseInventory
+                {
+                    WarehouseId = x.Id,
+                    ItemCode = x.ItemCode, 
+                    ActualGood = x.ActualGood,
+                    UnitPrice = x.UnitPrice, 
+                });
+
+            var moveOrderList = _context.MoveOrders
+                .Where(x => x.IsActive == true && x.IsPrepared == true)
+                .Where(x => x.ItemCode == itemCode)
+                .Select(x => new MoveOrderInventory
+                {
+                    WarehouseId = x.Id,
+                    ItemCode = x.ItemCode,
+                    QuantityOrdered = x.QuantityOrdered,
+                });
+
+
+            var issueList = _context.MiscellaneousIssueDetail
+                .Where(x => x.IsActive == true)
+                .Where(x => x.ItemCode == itemCode)
+                .Select(x => new DtoIssueInventory
+                {
+                    WarehouseId = x.WarehouseId,
+                    ItemCode = x.ItemCode,
+                    Quantity = x.Quantity,
+
+                });
+
+            var borrowedList = _context.BorrowedIssueDetails
+                .Where(x => x.IsActive == true)
+                .Where(x => x.ItemCode == itemCode)
+                .Select(x => new DtoBorrowedIssue
+                {
+                    WarehouseId = x.WarehouseId,
+                    ItemCode = x.ItemCode,
+                    Quantity = x.Quantity,
+
+                });
+
+            var consumed = _context.BorrowedConsumes
+                .Where(x => x.IsActive)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+                    x.BorrowedItemPkey
+
+                }).Select(x => new ItemStocksDto
+                {
+                    ItemCode = x.Key.ItemCode,
+                    BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                    Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                });
+
+            var returnedList = _context.BorrowedIssueDetails
+                .Where(x => x.IsActive == true)
+                .Where(x => x.IsReturned == true)
+                .Where(x => x.IsApprovedReturned == true)
+                .Where(x => x.ItemCode == itemCode)
+                .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, 
+                (returned, itemconsume) => new { returned, itemconsume })
+                 .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
+                 .Select(x => new DtoBorrowedIssue
+                 {
+                     WarehouseId = x.returned.WarehouseId,
+                     ItemCode = x.returned.ItemCode,
+                     ReturnQuantity = x.returned.Quantity - x.itemconsume.Consume
+
+                 });
+
+            var getUnitPrice = (from warehouse in warehouseList
+                                join moveorder in moveOrderList
+                                on warehouse.WarehouseId equals moveorder.WarehouseId
+                                into leftJ1
+                                from moveorder in leftJ1.DefaultIfEmpty()
+
+                                join issue in issueList
+                                on warehouse.WarehouseId equals issue.WarehouseId
+                                into leftJ2
+                                from issue in leftJ2.DefaultIfEmpty()
+
+                                join borrow in borrowedList
+                                on warehouse.WarehouseId equals borrow.WarehouseId
+                                into leftJ3
+                                from borrow in leftJ3.DefaultIfEmpty()
+
+                                join returned in returnedList
+                                on warehouse.WarehouseId equals returned.WarehouseId
+                                into leftJ4
+                                from returned in leftJ4.DefaultIfEmpty()
+
+
+                                group new
+                                {
+                                    warehouse,
+                                    moveorder,
+                                    issue,
+                                    borrow,
+                                    returned,
+
+
+                                }
+
+                              by new
+                              {
+                                  warehouse.WarehouseId,
+                                  warehouse.ItemCode,
+                                  warehouse.ActualGood,
+                                  warehouse.UnitPrice
+
+                              }
+
+                                into x
+                                select new WarehouseInventory
+                                {
+
+                                    WarehouseId = x.Key.WarehouseId,
+                                    ItemCode = x.Key.ItemCode,
+                                    UnitPrice = x.Key.UnitPrice * (x.Key.ActualGood + x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.QuantityOrdered) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),
+                                    ActualGood = x.Key.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.QuantityOrdered) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity))
+                                });
+
+
+            var getUnitpriceTotal = getUnitPrice
+                .Where(x => x.UnitPrice != 0)
+                .GroupBy(x => x.ItemCode)
+            .Select(x => new WarehouseInventory
+            {
+                ItemCode = x.Key,
+                UnitPrice = x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),
+                ActualGood = x.Sum(x => x.ActualGood),
+                TotalUnitPrice = x.Sum(x => x.UnitPrice)
+            });
+
+
+
+            var result = _context.Materials
+                .Where(x => x.ItemCode == itemCode)
+                .GroupJoin(getUnitpriceTotal, material => material.ItemCode , unitcost => unitcost.ItemCode,(material, unitcost) =>new {material , unitcost })
+                .SelectMany(x => x.unitcost.DefaultIfEmpty(), (x , unitcost) => new {x.material , unitcost})
+                .GroupBy(x => x.material.ItemCode)
+                .Select(x => new MiscReceiptItemListDto
+                {
+                    ItemCode = x.Key,
+                    ItemDescription = x.First().material.ItemDescription,
+                    UomCode = x.First().material.Uom.UomCode,
+                    UnitCost = decimal.Round(x.First().unitcost.UnitPrice, 2)
+
+                });
+
+
+
+            return await result.ToListAsync();
+            
+        }
     }
 }

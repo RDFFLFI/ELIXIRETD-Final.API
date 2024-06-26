@@ -45,15 +45,27 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
                 items.ReceivingDate = DateTime.Now;
                 items.IsWarehouseReceived = true;
                 items.TransactionType = "MiscellaneousReceipt";
+
                 await _unitofwork.miscellaneous.AddMiscellaneousReceiptInWarehouse(items);
                 await _unitofwork.CompleteAsync();
                 
 
             }
 
-            return Ok("Successfully Add new miscellaneous receipt in wareouse!");
+            return Ok("Successfully Add new miscellaneous receipt in warehouse!");
 
         }
+
+        [HttpGet]
+        [Route("MiscReceiptItemList")]
+        public async Task<IActionResult> MiscReceiptItemList([FromQuery]string itemCode)
+        {
+            var receipt = await _unitofwork.miscellaneous.MiscReceiptItemList(itemCode);
+
+            return Ok(receipt);
+        }
+
+
 
         [HttpPut]
         [Route("InActiveReceipt")]

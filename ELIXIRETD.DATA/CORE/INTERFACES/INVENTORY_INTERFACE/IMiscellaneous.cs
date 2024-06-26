@@ -21,6 +21,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE
         Task<bool> ActivateMiscellaenousReceipt (MiscellaneousReceipt receipt);
         Task<PagedList<GetAllMReceiptWithPaginationdDto>> GetAllMReceiptWithPaginationd(UserParams userParams, bool status);
 
+        Task<IReadOnlyList<MiscReceiptItemListDto>> MiscReceiptItemList(string itemCode);
+
         Task<PagedList<GetAllMReceiptWithPaginationdDto>> GetAllMReceiptWithPaginationOrig(UserParams userParams, string search, bool status);
 
         Task<IReadOnlyList<GetWarehouseDetailsByMReceiptDto>> GetWarehouseDetailsByMReceipt(int id);
