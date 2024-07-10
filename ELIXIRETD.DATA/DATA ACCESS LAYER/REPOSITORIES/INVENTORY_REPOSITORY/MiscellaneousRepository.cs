@@ -1039,8 +1039,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                 });
 
-
-
             return await result.ToListAsync();
             
         }

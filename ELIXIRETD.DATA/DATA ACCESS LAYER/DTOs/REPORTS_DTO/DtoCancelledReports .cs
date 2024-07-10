@@ -37,6 +37,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public DateTime ? CancelledDate { get; set; }
         public string CancelledBy { get; set; }
 
+        public string ItemRemarks { get; set; }
+
         public string AccountCode { get; set; }
         public string AccountTitles { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
+﻿using DocumentFormat.OpenXml.Vml;
+using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
@@ -35,6 +36,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var warehouse = _context.WarehouseReceived.Where(x => x.ReceivingDate.Date >= DateTime.Parse(DateFrom).Date && x.ReceivingDate.Date <= DateTime.Parse(DateTo).Date)
                                                       .Where(x => x.IsActive == true)
+                                                      .Where(x => x.TransactionType == "Receiving")
                                                       .Select(x => new DtoWarehouseReceivingReports
                                                       {
                                                           WarehouseId = x.Id,
@@ -135,117 +137,53 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
-            var orders = (from transact in _context.TransactOrder
-                          where transact.IsActive == true && transact.IsTransact == true && transact.DeliveryDate.Value.Date >= DateTime.Parse(DateFrom).Date && transact.DeliveryDate.Value.Date <= DateTime.Parse(DateTo).Date
-                          join moveorder in _context.MoveOrders
-                          on transact.OrderNo equals moveorder.OrderNo
-                          into leftJ
-                          from moveorder in leftJ.DefaultIfEmpty()
-
-                          join customer in _context.Customers
-                          on moveorder.Customercode equals customer.CustomerCode
-                          into leftJ2
-                          from customer in leftJ2.DefaultIfEmpty()
-
-                          group new
-                          {
-                              transact,
-                              moveorder,
-                              customer
-                          }
-
-                          by new
-                          {
-                              moveorder.OrderNo,
-                              moveorder.Requestor,
-                              moveorder.Approver,
-                              customer.CustomerName,
-                              customer.CustomerCode,
-                              moveorder.ItemCode,
-                             moveorder.ItemDescription,
-                             moveorder.Uom,
-                             moveorder.QuantityOrdered,
-                             MoveOrderDate = moveorder.ApprovedDate.ToString(),
-                             MoveOrderBy = moveorder.PreparedBy,
-                             transact.PreparedBy,                    
-                             TransactionDate = transact.PreparedDate.ToString(),
-                             DeliveryDate = transact.DeliveryDate.ToString(),
-                             moveorder.DateNeeded,
-                             moveorder.OrderDate,
-                             transact.IsActive,
-                             moveorder.CompanyCode,
-                             moveorder.CompanyName,
-                             moveorder.DepartmentCode,
-                             moveorder.DepartmentName,
-                             moveorder.LocationCode,
-                             moveorder.LocationName,
-                             moveorder.AccountCode,
-                             moveorder.AccountTitles,
-                             moveorder.ItemRemarks,
-                             moveorder.UnitPrice,
-                             moveorder.EmpId,
-                             moveorder.FullName,
-                              customer.CustomerType,
-                              moveorder.Cip_No,
-                              moveorder.HelpdeskNo,
-                              moveorder.Remarks,
-                              moveorder.Rush,
-                              moveorder.IsTransact,
-                              moveorder.Category,
-                              moveorder.AssetTag,
-                              moveorder.ApprovedDate,
-
-
-
-
-
-                          } into total
-
-                          select new DtoTransactReports
-                          {
-
-                              MIRId = total.Key.OrderNo,
-                              
-                              Requestor = total.Key.Requestor,
-                              Approver = total.Key.Approver,
-                              CustomerName = total.Key.CustomerName,
-                              CustomerCode = total.Key.CustomerCode,
-                              ItemCode = total.Key.ItemCode,
-                              ItemDescription = total.Key.ItemDescription,
-                              Uom = total.Key.Uom,
-                              Quantity = total.Key.QuantityOrdered,
-                              MoveOrderDate = total.Key.MoveOrderDate,
-                              MoveOrderBy = total.Key.MoveOrderBy,
-                              TransactedBy = total.Key.PreparedBy,
-                              TransactionType = total.Key.IsActive,
-                              TransactedDate = total.Key.TransactionDate,
-                              DeliveryDate = total.Key.DeliveryDate,
-                              CustomerType = total.Key.CustomerType,
-                              DateNeeded = total.Key.DateNeeded.ToString(),
-                              OrderDate = total.Key.OrderDate.ToString(),
-                              CompanyCode = total.Key.CompanyCode,
-                              CompanyName = total.Key.CompanyName,
-                              DepartmentCode = total.Key.DepartmentCode,
-                              DepartmentName = total.Key.DepartmentName,
-                              LocationCode = total.Key.LocationCode,
-                              LocationName = total.Key.LocationName,
-                              AccountCode = total.Key.AccountCode,
-                              AccountTitles = total.Key.AccountTitles,
-                              EmpId = total.Key.EmpId,
-                              FullName = total.Key.FullName,
-                              ItemRemarks = total.Key.ItemRemarks,
-                              UnitCost = total.Key.UnitPrice,
-                              LineAmount = total.Key.UnitPrice * total.Key.QuantityOrdered,
-                              Cip_No = total.Key.Cip_No,
-                              HelpDesk = total.Key.HelpdeskNo,
-                              Remarks = total.Key.Remarks,
-                              Status = total.Key.IsTransact == true ? "Transacted" :"For Approval",
-                              Category = total.Key.Category,
-                              AssetTag = total.Key.AssetTag,
-                              DateApproved = total.Key.ApprovedDate.ToString(),
-                              Rush = total.Key.Rush
-                              
-                          });
+            var orders = _context.MoveOrders
+                .Where(x => x.IsActive == true)
+                .Join(_context.TransactOrder, moveorder => moveorder.OrderNo, transact => transact.OrderNo, (moveorder, transact) => new { moveorder, transact })
+                .Where(transact => transact.transact.IsActive == true && transact.transact.IsTransact == true && transact.transact.DeliveryDate.Value.Date >= DateTime.Parse(DateFrom).Date && transact.transact.DeliveryDate.Value.Date <= DateTime.Parse(DateTo).Date)
+                .Select(x => new DtoTransactReports
+                {
+                    MIRId = x.moveorder.OrderNo,
+                    Id = x.moveorder.Id,
+                    Requestor = x.moveorder.Requestor,
+                    Approver = x.moveorder.Approver,
+                    CustomerName = x.moveorder.CustomerName,
+                    CustomerCode = x.moveorder.Customercode,
+                    ItemCode = x.moveorder.ItemCode,
+                    ItemDescription = x.moveorder.ItemDescription,
+                    Uom = x.moveorder.Uom,
+                    Quantity = x.moveorder.QuantityOrdered,
+                    MoveOrderDate = x.moveorder.PreparedDate.ToString(),
+                    MoveOrderBy = x.moveorder.PreparedBy,
+                    TransactedBy = x.moveorder.PreparedBy,
+                    TransactionType = x.moveorder.IsActive,
+                    TransactedDate = x.moveorder.DateApproved.ToString(),
+                    DeliveryDate = x.transact.DeliveryDate.ToString(),
+                    CustomerType = x.moveorder.CustomerType,
+                    DateNeeded = x.moveorder.DateNeeded.ToString(),
+                    OrderDate = x.moveorder.OrderDate.ToString(),
+                    CompanyCode = x.moveorder.CompanyCode,
+                    CompanyName = x.moveorder.CompanyName,
+                    DepartmentCode = x.moveorder.DepartmentCode,
+                    DepartmentName = x.moveorder.DepartmentName,
+                    LocationCode = x.moveorder.LocationCode,
+                    LocationName = x.moveorder.LocationName,
+                    AccountCode = x.moveorder.AccountCode,
+                    AccountTitles = x.moveorder.AccountTitles,
+                    EmpId = x.moveorder.EmpId,
+                    FullName = x.moveorder.FullName,
+                    ItemRemarks = x.moveorder.ItemRemarks,
+                    UnitCost = x.moveorder.UnitPrice,
+                    LineAmount = x.moveorder.UnitPrice * x.moveorder.QuantityOrdered,
+                    Cip_No = x.moveorder.Cip_No,
+                    HelpDesk = x.moveorder.HelpdeskNo,
+                    Remarks = x.moveorder.Remarks,
+                    Status = x.moveorder.IsTransact == true ? "Transacted" : "For Approval",
+                    Category = x.moveorder.Category,
+                    AssetTag = x.moveorder.AssetTag,
+                    DateApproved = x.moveorder.ApprovedDate.ToString(),
+                    Rush = x.moveorder.Rush
+                });
 
             if (!string.IsNullOrEmpty(Search))
             {
@@ -544,10 +482,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             x.ItemCode,
                                             x.ItemdDescription,
                                             Remarks = x.Remarks,
-                                            //Remarks = x.Remarks != null ? x.Remarks : 
-                                            //(x.QuantityOrdered != x.StandartQuantity && x.Remarks == null) ? "Out of Stocks" : 
-                                            //(x.IsActive == false && x.Remarks == null) ? "WRONG BATCH": "Out of Stocks"
-                                            //x.Remarks,
+                                           
+
+
 
 
                                         }).Select(x => new DtoCancelledReports
@@ -560,6 +497,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             CustomerCode = x.Key.Customercode,
                                             CustomerName = x.Key.CustomerName,
                                             ItemCode = x.Key.ItemCode,
+                                            //ItemRemarks = x.First().ItemRemarks,
 
                                             CancelledDate = x.First().CancelDate != null 
                                             ? x.First().CancelDate: x.First().Modified_Date == null
@@ -569,6 +507,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             ItemDescription = x.Key.ItemdDescription,
                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered),
                                             Reason = x.Key.Remarks,
+                                            //DepartmentCode = x.First().DepartmentCode,
+                                            //Department = x.First().Department,
+                                            //CompanyCode = x.First().CompanyCode,
+                                            //CompanyName = x.First().CompanyName,
+                                            //LocationCode = x.First().LocationCode,
+                                            //LocationName = x.First().LocationName,
+                                            //AccountCode = x.First().AccountCode,
+                                            //AccountTitles = x.First().AccountTitles,
 
                                         });
 
@@ -591,20 +537,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            x.order.CustomerName,
                            x.order.ItemCode,
                            x.order.ItemdDescription,
-                           //x.cancel.CancelledBy,
-                           //x.cancel.CancelledDate,
-                           //x.cancel.Reason,
-                           //x.order.Remarks,
-                           //x.cancel.QuantityOrdered,
-                           //x.order.DepartmentCode,
-                           //x.order.Department,
-                           //x.order.CompanyCode,
-                           //x.order.CompanyName,
-                           //x.order.LocationCode,
-                           //x.order.LocationName,
-                           //x.order.AccountCode,
-                           //x.order.AccountTitles,
-
 
                        }).Select(x => new DtoCancelledReports
                        {
@@ -631,6 +563,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            LocationName = x.First().order.LocationName,
                            AccountCode = x.First().order.AccountCode,
                            AccountTitles = x.First().order.AccountTitles,
+                           ItemRemarks = x.First().order.ItemRemarks
                        });
 
 
@@ -1162,23 +1095,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 }).ToList();
 
-            var moveOrderConsol = _context.MoveOrders
-                .Join(_context.TransactOrder, moveOrder => moveOrder.OrderNo, 
-                transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder ,transact})       
-               .Where(x => x.transact.IsTransact && x.transact.IsActive == true )
+            var moveOrderConsol = _context.TransactOrder
+                .Join(_context.MoveOrders, transact => transact.OrderNo,
+                moveOrder => moveOrder.OrderNo, (transact, moveOrder) => new { transact, moveOrder})       
+               .Where(x => x.transact.IsTransact == true && x.transact.IsActive == true && x.moveOrder.IsActive == true)
                .Where(x => x.transact.DeliveryDate.Value >= dateFrom.Date && x.transact.DeliveryDate.Value <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
-                    Id = x.moveOrder.Id,
+                    Id = x.transact.Id,
                     TransactionDate = x.transact.DeliveryDate.Value,
                     ItemCode = x.moveOrder.ItemCode,
                     ItemDescription = x.moveOrder.ItemDescription,
                     Uom = x.moveOrder.Uom,
                     Category = x.moveOrder.Category,
-                    Quantity = Math.Round(System.Math.Abs(x.moveOrder.QuantityOrdered) * (-1),2),
+                    Quantity = Math.Round(x.moveOrder.QuantityOrdered,2),
                     UnitCost = x.moveOrder.UnitPrice,
-                    LineAmount = Math.Round(x.moveOrder.UnitPrice * System.Math.Abs(x.moveOrder.QuantityOrdered) * (-1) , 2),
-                    Source = x.moveOrder.OrderNo,
+                    LineAmount = Math.Round(x.moveOrder.UnitPrice * x.moveOrder.QuantityOrdered , 2),
+                    Source = x.transact.OrderNo,
                     TransactionType = "MoveOrder",
                     Reason = "",
                     Reference = x.moveOrder.ItemRemarks,
@@ -1255,9 +1188,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ItemDescription = x.issue.ItemDescription,
                     Uom = x.issue.Uom,
                     Category = "",
-                    Quantity = Math.Round(System.Math.Abs(x.issue.Quantity) * (-1), 2),
+                    Quantity = Math.Round(x.issue.Quantity, 2),
                     UnitCost = x.issue.UnitPrice,
-                    LineAmount = Math.Round(x.issue.UnitPrice * System.Math.Abs(x.issue.Quantity) * (-1), 2),
+                    LineAmount = Math.Round(x.issue.UnitPrice * x.issue.Quantity, 2),
                     Source = x.miscDetail.Id,
                     TransactionType = "Issue",
                     Reason = x.issue.Remarks,
@@ -1296,9 +1229,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ItemDescription = x.borrowDetail.ItemDescription,
                     Uom = x.borrowDetail.Uom,
                     Category = "",
-                    Quantity = Math.Round(System.Math.Abs(x.borrowDetail.Quantity) * (-1), 2),
+                    Quantity = Math.Round(x.borrowDetail.Quantity, 2),
                     UnitCost = x.borrowDetail.UnitPrice,
-                    LineAmount = Math.Round(x.borrowDetail.UnitPrice * System.Math.Abs(x.borrowDetail.Quantity) * (-1), 2),
+                    LineAmount = Math.Round(x.borrowDetail.UnitPrice * x.borrowDetail.Quantity, 2),
                     Source = x.borrow.Id,
                     TransactionType = "Borrow",
                     Reason = x.borrow.Remarks,
@@ -1479,6 +1412,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                reports = reports.Where(x => x. ItemCode.ToLower().Contains(Search.ToLower())
                || x.ItemDescription.ToLower().Contains(Search.ToLower()) 
+               || x.Source.ToString().Contains(Search)
                || x.TransactionType.ToLower().Contains(Search.ToLower())).ToList();
             }
 

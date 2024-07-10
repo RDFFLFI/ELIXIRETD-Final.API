@@ -11,6 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     {
 
         public int MIRId { get; set; }
+        public int Id { get; set; }
         public string Requestor { get; set; }
         public string Approver { get; set; }
         public string CustomerCode { get; set; }

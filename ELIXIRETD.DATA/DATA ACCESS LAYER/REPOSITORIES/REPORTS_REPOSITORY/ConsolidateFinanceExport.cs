@@ -68,9 +68,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(4).Value = consolidate[index - 1].ItemDescription;
                         row.Cell(5).Value = consolidate[index - 1].Uom;
                         row.Cell(6).Value = consolidate[index - 1].Category;
-                        row.Cell(7).Value = consolidate[index - 1].Quantity;
+                        if (consolidate[index - 1].TransactionType == "MoveOrder" || consolidate[index - 1].TransactionType == "Issue" || consolidate[index - 1].TransactionType == "Borrow")
+                        {
+                            row.Cell(7).Value = "-" + consolidate[index - 1].Quantity;
+                            row.Cell(9).Value = "-" + consolidate[index - 1].LineAmount;
+                        }
+                        else
+                        {
+                            row.Cell(7).Value = consolidate[index - 1].Quantity;
+                            row.Cell(9).Value = consolidate[index - 1].LineAmount;
+                        }
+                        //row.Cell(7).Value = consolidate[index - 1].Quantity;
                         row.Cell(8).Value = consolidate[index - 1].UnitCost;
-                        row.Cell(9).Value = consolidate[index - 1].LineAmount;
+                        //row.Cell(9).Value = consolidate[index - 1].LineAmount;
                         row.Cell(10).Value = consolidate[index - 1].Source;
                         row.Cell(11).Value = consolidate[index - 1].TransactionType;
                         row.Cell(12).Value = consolidate[index - 1].Reason;
