@@ -66,6 +66,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
 
         public string AssetTag { get; set; }
 
+        public int  OrderId { get; set; }
+
+        public decimal ServedQuantity { get; set; }
+        public decimal UnservedQuantity { get; set; }
+
 
     }
 }
