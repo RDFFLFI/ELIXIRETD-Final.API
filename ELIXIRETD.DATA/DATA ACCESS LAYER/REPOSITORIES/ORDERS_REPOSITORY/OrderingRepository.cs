@@ -2808,56 +2808,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         public async Task<IReadOnlyList<ViewMoveOrderForApprovalDto>> ViewMoveOrderForApproval(int id)
         {
 
-            var UnitPriceById = _context.MoveOrders
-                .Where(x => x.IsActive == true)
-                .GroupBy(x => new
-                {
-                    x.OrderNo,
-                    x.Id,
-                    x.ItemCode,
-                    x.Uom,
-                    //x.Customercode,
-
-                }).Select(x => new ViewMoveOrderForApprovalDto
-                {
-                    MIRId = x.Key.OrderNo,
-                    Id = x.Key.Id,
-                    ItemCode = x.Key.ItemCode,
-                    Uom = x.Key.Uom,
-                    //Customercode = x.Key.Customercode,
-                    UnitCost = x.First().UnitPrice * x.First().QuantityOrdered,
-                    Quantity = x.First().QuantityOrdered          
-                });
-
-
-            var UnitPriceTotal = UnitPriceById.GroupBy(x => new
+            var totalbyMir = _context.MoveOrders.GroupBy(x => new
             {
-                x.MIRId,
-                x.ItemCode,
-                x.Uom,
-                //x.Customercode,
-
+                x.OrderNo,
 
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
-                MIRId = x.Key.MIRId,
-                ItemCode = x.Key.ItemCode,
-                Uom = x.Key.Uom,
-                UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
-                TotalCost = x.Sum(x => x.UnitCost),
-                Quantity = x.Sum(x => x.Quantity)
-            });
-
-            var totalpricebyMir = UnitPriceTotal.GroupBy(x => new
-            {
-                x.MIRId,
-
-            }).Select(x => new ViewMoveOrderForApprovalDto
-            {
-                MIRId = x.Key.MIRId,
-                TQuantity = x.Sum(x => x.Quantity),
-                TUnitCost = x.Sum(x => x.UnitCost),
-                TTotalCost = x.Sum(x => x.TotalCost)
+                MIRId = x.Key.OrderNo,
+                TQuantity = x.Sum(x => x.QuantityOrdered),
             });
 
             var moveOrders = _context.MoveOrders
@@ -2897,46 +2855,42 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                 });
 
+
+
             var orders = moveOrders
-                .GroupJoin(UnitPriceTotal, Moveorders => Moveorders.MIRId, unitprice => unitprice.MIRId, (Moveorders, unitprice) => new { Moveorders, unitprice })
-                .SelectMany(x => x.unitprice.DefaultIfEmpty(), (x, unitprice) => new { x.Moveorders, unitprice })
-                .GroupJoin(totalpricebyMir, Moveorders => Moveorders.Moveorders.MIRId, tunitprice => tunitprice.MIRId, (Moveorders, tunitprice) => new { Moveorders, tunitprice })
-                .SelectMany(x => x.tunitprice.DefaultIfEmpty(), (x, tunitprice) => new { x.Moveorders, tunitprice })
+                .GroupJoin(totalbyMir, Moveorders => Moveorders.MIRId, tQuantity => tQuantity.MIRId, (Moveorders, tQuantity) => new { Moveorders, tQuantity })
+                .SelectMany(x => x.tQuantity.DefaultIfEmpty(), (x, tQuantity) => new { x.Moveorders, tQuantity })
                 .GroupBy(x => new
                 {
-                    x.Moveorders.Moveorders.MIRId,
-                    x.Moveorders.Moveorders.ItemCode,
+                    x.Moveorders.MIRId,
+                    x.Moveorders.ItemCode,
 
 
                 }).Select(x => new ViewMoveOrderForApprovalDto
                 {
                     MIRId = x.Key.MIRId,
                     ItemCode = x.Key.ItemCode,
-                    ItemDescription = x.First().Moveorders.Moveorders.ItemDescription,
-                    Uom = x.First().Moveorders.Moveorders.Uom,
-                    Customercode = x.First().Moveorders.Moveorders.Customercode,
-                    CustomerName = x.First().Moveorders.Moveorders.CustomerName,
-                    ApprovedDate = x.First().Moveorders.Moveorders.ApprovedDate,
-                    UnitCost = x.First().Moveorders.unitprice.UnitCost,
-                    TUnitCost = x.First().tunitprice.TUnitCost,
-                    TotalCost = x.First().Moveorders.unitprice.TotalCost,
-                    Quantity = x.First().Moveorders.Moveorders.Quantity,
-                    ServedQuantity = x.First().Moveorders.Moveorders.ServedQuantity,
-                    UnservedQuantity = x.First().Moveorders.Moveorders.UnservedQuantity,
-                    TQuantity = x.First().tunitprice.TQuantity,
-                    TTotalCost = x.First().tunitprice.TTotalCost,
-                    CompanyCode = x.First().Moveorders.Moveorders.CompanyCode,
-                    CompanyName = x.First().Moveorders.Moveorders.CompanyName,
-                    DepartmentCode = x.First().Moveorders.Moveorders.DepartmentCode,
-                    DepartmentName = x.First().Moveorders.Moveorders.DepartmentName,
-                    LocationCode = x.First().Moveorders.Moveorders.LocationCode,
-                    LocationName = x.First().Moveorders.Moveorders.LocationName,
-                    AccountCode = x.First().Moveorders.Moveorders.AccountCode,
-                    AccountTitles = x.First().Moveorders.Moveorders.AccountTitles,
-                    ItemRemarks = x.First().Moveorders.Moveorders.ItemRemarks,
-                    EmpId = x.First().Moveorders.Moveorders.EmpId,
-                    FullName = x.First().Moveorders.Moveorders.FullName,
-                    AssetTag = x.First().Moveorders.Moveorders.AssetTag
+                    ItemDescription = x.First().Moveorders.ItemDescription,
+                    Uom = x.First().Moveorders.Uom,
+                    Customercode = x.First().Moveorders.Customercode,
+                    CustomerName = x.First().Moveorders.CustomerName,
+                    ApprovedDate = x.First().Moveorders.ApprovedDate,
+                    Quantity = x.First().Moveorders.Quantity,
+                    ServedQuantity = x.First().Moveorders.ServedQuantity,
+                    UnservedQuantity = x.First().Moveorders.UnservedQuantity,
+                    TQuantity = x.First().tQuantity.TQuantity,
+                    CompanyCode = x.First().Moveorders.CompanyCode,
+                    CompanyName = x.First().Moveorders.CompanyName,
+                    DepartmentCode = x.First().Moveorders.DepartmentCode,
+                    DepartmentName = x.First().Moveorders.DepartmentName,
+                    LocationCode = x.First().Moveorders.LocationCode,
+                    LocationName = x.First().Moveorders.LocationName,
+                    AccountCode = x.First().Moveorders.AccountCode,
+                    AccountTitles = x.First().Moveorders.AccountTitles,
+                    ItemRemarks = x.First().Moveorders.ItemRemarks,
+                    EmpId = x.First().Moveorders.EmpId,
+                    FullName = x.First().Moveorders.FullName,
+                    AssetTag = x.First().Moveorders.AssetTag
 
                 }).OrderBy(x => x.ItemCode);
 
