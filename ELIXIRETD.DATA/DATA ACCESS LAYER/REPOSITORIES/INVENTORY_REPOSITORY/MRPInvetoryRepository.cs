@@ -602,7 +602,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                                  });
 
 
-
             var getUnitPrice = (from warehouse in getWarehouseStockById
                                 join moveorder in getMoveOrderOutid
                                 on warehouse.WarehouseId equals moveorder.WarehouseId
@@ -624,7 +623,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                 into leftJ4
                                 from returned in leftJ4.DefaultIfEmpty()
 
-
                                 group new
                                 {
                                     warehouse,
@@ -632,7 +630,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                     issue,
                                     borrow,
                                     returned,
-
 
                                 }
 
@@ -657,14 +654,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                 });
 
 
-
-
-
-
             var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice != 0).GroupBy(x => new
             {
                 x.ItemCode,
-
 
             }).Select(x => new WarehouseInventory
             {
@@ -675,8 +667,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             });
-
-
 
             var inventory = (from material in _context.Materials
                              where material.IsActive == true
@@ -710,7 +700,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              on material.ItemCode equals SOH.ItemCode
                              into leftJ7
                              from SOH in leftJ7.DefaultIfEmpty()
-
 
                              join consume in getReturnedBorrow
                              on material.ItemCode equals consume.ItemCode

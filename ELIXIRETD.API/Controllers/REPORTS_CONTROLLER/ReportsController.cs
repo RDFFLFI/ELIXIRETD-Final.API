@@ -48,7 +48,7 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         [HttpGet]
         [Route("MoveOrderHistory")]
-        public async Task<ActionResult<IEnumerable<DtoMoveOrderReports>>> MoveOrderHistory([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
+        public async Task<ActionResult<IEnumerable<DtoForTransactedReports>>> MoveOrderHistory([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
         {
 
             var inventory = await _unitofwork.Reports.WarehouseMoveOrderReports(userParams, DateFrom, DateTo, Search);
@@ -73,7 +73,7 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
         [HttpGet]
         [Route("TransactionReport")]
-        public async Task<ActionResult<IEnumerable<DtoMoveOrderReports>>> TransactionReports([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo,[FromQuery] string Search)
+        public async Task<ActionResult<IEnumerable<DtoForTransactedReports>>> TransactionReports([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo,[FromQuery] string Search)
         {
 
             var inventory = await _unitofwork.Reports.TransactedMoveOrderReport(userParams, DateFrom, DateTo , Search);

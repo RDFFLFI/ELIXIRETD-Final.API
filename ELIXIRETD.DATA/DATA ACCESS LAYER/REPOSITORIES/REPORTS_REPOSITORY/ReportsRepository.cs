@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Vml;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Vml;
 using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
@@ -71,13 +72,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo, string Search)
+        public async Task<PagedList<DtoForTransactedReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = _context.MoveOrders
                         .Where(moveorder => moveorder.PreparedDate.Value.Date >= DateTime.Parse(DateFrom).Date && moveorder.PreparedDate.Value.Date <= DateTime.Parse(DateTo).Date && moveorder.IsActive == true && moveorder.IsPrepared == true && moveorder.IsTransact == false)
                         .GroupJoin(_context.TransactOrder, moveorder => moveorder.OrderNo, transact => transact.OrderNo, (moveorder, transact) => new { moveorder, transact })
                         .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveorder, transact })
-                         .Select(x => new DtoMoveOrderReports
+                         .Select(x => new DtoForTransactedReports
                          {
 
                              MIRId = x.moveorder.OrderNo,           
@@ -127,9 +128,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
-            return await PagedList<DtoMoveOrderReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+            return await PagedList<DtoForTransactedReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
+
+
 
         public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
@@ -198,6 +201,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
+
+        public async Task<PagedList<MoveOrderReportsDto>> MoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
+        {
+
+            var orders = _context.MoveOrders
+                .Where(x => x.IsActive == true && x.IsApprove == true)
+                .GroupJoin(_context.Orders, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
+                .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order })
+                .GroupJoin(_context.TransactOrder, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
+                .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrder, transact })
+                .GroupBy(x => new
+                {
+                   MIRId = x.moveOrder.moveOrder.OrderNo,
+                   Id = x.moveOrder.moveOrder.Id,
+                   OrderNoPKey = x.moveOrder.moveOrder.OrderNoPkey,
+                   ItemCode = x.moveOrder.moveOrder.ItemCode,
+
+
+                }).Select(x => new MoveOrderReportsDto
+                {
+
+                });
+
+          
+
+            return await PagedList<MoveOrderReportsDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+
 
         public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
@@ -1400,6 +1433,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             return reports;
         }
+
+
     }
 
 }

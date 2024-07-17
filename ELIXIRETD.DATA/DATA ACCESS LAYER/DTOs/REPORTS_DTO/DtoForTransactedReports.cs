@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 {
-    public class DtoMoveOrderReports
+    public class DtoForTransactedReports
     {
 
         public int MIRId { get; set; }
