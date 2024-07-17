@@ -56,7 +56,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           Amount = x.UnitPrice * x.ActualDelivered,
                                                           SINumber = x.SINumber
                                                           
-
                                                       });
 
             if(!string.IsNullOrEmpty(Search))
@@ -71,7 +70,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
            
             return await PagedList<DtoWarehouseReceivingReports>.CreateAsync(warehouse, userParams.PageNumber, userParams.PageSize);
         }
-
 
         public async Task<PagedList<DtoMoveOrderReports>> WarehouseMoveOrderReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
@@ -200,7 +198,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
         }
-
 
         public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
@@ -352,7 +349,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
-
 
             var ConsumeQuantity = _context.BorrowedConsumes.Where(x => x.IsActive == true)
                                    .Select(x => new DtoBorrowedAndReturned
@@ -820,6 +816,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                      });
 
+
             var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
                                                  .GroupBy(x => new
                                                  {
@@ -833,8 +830,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                      Quantity = x.Sum(x => x.Quantity)
 
                                                  });
-
-
 
 
             var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
@@ -1005,11 +1000,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                      }
 
-                                     by new
+                                     by new                             
                                      {
                                          material.ItemCode,
                                          material.ItemDescription,
- 
                                      }
                                      into total
 
@@ -1018,8 +1012,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                          ItemCode = total.Key.ItemCode,
                                          ItemDescription = total.Key.ItemDescription,
-                                         TotalOut = total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity),
-                                         TotalIn = total.Sum(x => x.receiveIn.Quantity) + total.Sum(x => x.receipt.Quantity) + total.Sum(x => x.returned.ReturnQuantity),
+                                         TotalReceiving = total.Sum(x => x.receiveIn.Quantity),
+                                         TotalMoveOrder = total.Sum(x => x.moveorder.QuantityOrdered),
+                                         TotalReceipt = total.Sum(x => x.receipt.Quantity),
+                                         TotalIssue = total.Sum(x => x.issue.Quantity),
+                                         TotalBorrowed = total.Sum(x => x.borrowed.Quantity),
+                                         TotalReturned = total.Sum(x => x.returned.ReturnQuantity),
                                          Ending = (total.Sum(x => x.receipt.Quantity) + total.Sum(x => x.receiveIn.Quantity) + total.Sum(x => x.returned.ReturnQuantity)) - 
                                          (total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity)),
 

@@ -11,8 +11,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE
     public interface IMRPInventory
     {
         Task<IReadOnlyList<DtoGetAllAvailableInRawmaterialInventory>> GetAllAvailableInRawmaterialInventory();
-        Task<IReadOnlyList<DtoMRP>> MRPInventory();
-        Task<PagedList<DtoMRP>> GetallItemForInventoryPagination(UserParams userParams);
+        //Task<IReadOnlyList<DtoMRP>> MRPInventory();
+        //Task<PagedList<DtoMRP>> GetallItemForInventoryPagination(UserParams userParams);
         Task<PagedList<DtoMRP>> GetallItemForInventoryPaginationOrig(UserParams userParams, string search);
 
     }

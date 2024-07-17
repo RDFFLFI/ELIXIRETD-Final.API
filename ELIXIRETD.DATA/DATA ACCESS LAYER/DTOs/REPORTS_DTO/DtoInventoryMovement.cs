@@ -12,10 +12,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string ItemCode { get; set; }    
         public string ItemDescription { get; set; }
         public string ItemCategory { get; set; }
-        public decimal TotalIn { get; set; }
-        public decimal TotalOut { get; set; }
+        public decimal TotalReceiving {  get; set; }
+        public decimal TotalMoveOrder { get; set; }
+        public decimal TotalReceipt { get; set; }
+        public decimal TotalIssue {  get; set; }
+        public decimal TotalBorrowed { get; set; }
+        public decimal TotalReturned { get; set; }
 
+        //public decimal TotalIn { get; set; }
+        //public decimal TotalOut { get; set; }
         public decimal Ending { get; set; }
+
         public decimal CurrentStock { get; set; }
         public decimal PurchaseOrder { get; set; }
         public decimal OtherPlus { get; set; }
