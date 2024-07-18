@@ -52,7 +52,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
       
       
-        Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status);
+        Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status, string search);
 
         Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid);
 

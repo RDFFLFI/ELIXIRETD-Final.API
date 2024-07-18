@@ -925,10 +925,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetTotalListForMoveOrder")]
-        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status)
+        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status , [FromQuery] string search)
         {
 
-            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status);
+            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status , search);
 
             return Ok(orders);
 

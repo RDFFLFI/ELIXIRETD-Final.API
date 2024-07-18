@@ -2946,7 +2946,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         //=================================================================== MIR Transact MoveOrder =======================================================
 
 
-        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status)
+        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status , string search)
         {
 
 
@@ -2981,6 +2981,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 Rush = x.Key.Rush
 
                                             });
+
+            if(!string.IsNullOrEmpty(search))
+            {
+                orders = orders
+                    .Where(x => x.MIRId.ToString().ToLower().Contains(search.ToLower()));
+            }
 
             return await orders.ToListAsync();
 

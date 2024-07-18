@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY.ConsolidateFinanceExport;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY.MoveOrderReportExport;
 
 namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 {
@@ -290,6 +291,34 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         public async Task<IActionResult> ExportConsolidateFinance([FromQuery] ConsolidateFinanceExportCommand command)
         {
             var filePath = $"ConsolidatedReports {command.DateFrom} - {command.DateTo}.xlsx";
+
+            try
+            {
+                await _mediator.Send(command);
+                var memory = new MemoryStream();
+                await using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                var result = File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    filePath);
+                System.IO.File.Delete(filePath);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                return Conflict(e.Message);
+            }
+
+        }
+
+
+        [HttpGet("ExportMoveOrderReports")]
+        public async Task<IActionResult> ExportMoveOrderReports([FromQuery] MoveOrderReportExportCommand command)
+        {
+            var filePath = $"MoveOrderReports {command.DateFrom} - {command.DateTo}.xlsx";
 
             try
             {

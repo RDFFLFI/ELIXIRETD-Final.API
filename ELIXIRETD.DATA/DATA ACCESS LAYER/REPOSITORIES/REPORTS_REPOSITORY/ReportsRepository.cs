@@ -13,6 +13,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Cryptography;
@@ -203,11 +204,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<MoveOrderReportsDto>> MoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
 
-            var orders = _context.MoveOrders
-                .Where(x => x.IsActive == true && x.IsApprove == true)
-                .GroupJoin(_context.Orders, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
+            var moveOrdersReport = _context.MoveOrders
+                .Where(x => x.IsActive == true && x.IsApprove == true);
+
+            var orderReport = _context.Orders.
+                Where(x => x.IsActive == true);
+
+            var transactReport = _context.TransactOrder.
+                Where(x => x.IsActive == true);
+
+
+            var orders = moveOrdersReport
+                .GroupJoin(orderReport, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
                 .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order })
-                .GroupJoin(_context.TransactOrder, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
+                .GroupJoin(transactReport, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
                 .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrder, transact })
                 .Where(x => x.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
                  x.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
@@ -217,14 +227,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                    OrderNoPKey = x.moveOrder.moveOrder.OrderNoPkey,
                    ItemCode = x.moveOrder.moveOrder.ItemCode,
 
-
                 }).Select(x => new MoveOrderReportsDto
                 {
 
                     MIRId = x.Key.MIRId,
                     OrderNoGenus = x.First().moveOrder.order.OrderNo,
                     CustomerCode = x.First().moveOrder.moveOrder.Customercode,
-                    CustomerName = x.First().moveOrder.moveOrder.Customercode,
+                    CustomerName = x.First().moveOrder.moveOrder.CustomerName,
                     BarcodeNo = x.First().moveOrder.moveOrder.WarehouseId,
                     ItemCode = x.Key.ItemCode,
                     ItemDescription = x.First().moveOrder.moveOrder.ItemDescription,
@@ -254,7 +263,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
-          
+            if(!string.IsNullOrEmpty(Search))
+            {
+                orders = orders.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.ToLower())
+                || x.ItemCode.ToLower().Contains(Search.Trim().ToLower())
+                || x.ItemDescription.ToLower().Contains(Search.ToLower())
+                || x.Status.ToLower().Contains(Search.ToLower()));
+
+            }
+
+            
+            orders = orders.OrderBy(x => x.ApprovedDate);
 
             return await PagedList<MoveOrderReportsDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
