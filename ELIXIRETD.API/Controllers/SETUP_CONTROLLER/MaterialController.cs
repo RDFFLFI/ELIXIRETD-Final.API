@@ -675,6 +675,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingMaterials.ItemDescription = item.ItemDescription;
                             hasChanged = true;
                         }
+                        if(existingMaterials.IsActive != item.IsActive)
+                        {
+                            existingMaterials.IsActive = !existingMaterials.IsActive;
+                            hasChanged = true;
+                        }
 
                         if(hasChanged)
                         {
@@ -683,6 +688,7 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                             existingMaterials.ModifyDate = DateTime.Now;
                             existingMaterials.StatusSync = "New update";
                             availableUpdate.Add(item);
+
                             await _unitOfWork.Materials.UpdateAsyncMaterial(existingMaterials);
 
                             var updateItemReceiver = await _context.WarehouseReceived

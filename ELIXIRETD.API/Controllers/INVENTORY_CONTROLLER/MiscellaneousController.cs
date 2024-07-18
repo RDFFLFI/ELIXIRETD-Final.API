@@ -46,7 +46,7 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
                 items.IsWarehouseReceived = true;
                 items.TransactionType = "MiscellaneousReceipt";
 
-                await _unitofwork.miscellaneous.AddMiscellaneousReceiptInWarehouse(items);
+                await _unitofwork.miscellaneous.AddMiscellaneousReceiptInWarehouse(items); 
                 await _unitofwork.CompleteAsync();
                 
 
@@ -58,9 +58,9 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
 
         [HttpGet]
         [Route("MiscReceiptItemList")]
-        public async Task<IActionResult> MiscReceiptItemList([FromQuery]string itemCode)
+        public async Task<IActionResult> MiscReceiptItemList(/*[FromQuery]string itemCode*/)
         {
-            var receipt = await _unitofwork.miscellaneous.MiscReceiptItemList(itemCode);
+            var receipt = await _unitofwork.miscellaneous.MiscReceiptItemList(/*itemCode*/);
 
             return Ok(receipt);
         }

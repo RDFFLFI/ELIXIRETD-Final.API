@@ -132,8 +132,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
-
-
         public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
             var orders = _context.MoveOrders
@@ -211,10 +209,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order })
                 .GroupJoin(_context.TransactOrder, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
                 .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrder, transact })
+                .Where(x => x.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
+                 x.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
                 .GroupBy(x => new
                 {
                    MIRId = x.moveOrder.moveOrder.OrderNo,
-                   Id = x.moveOrder.moveOrder.Id,
                    OrderNoPKey = x.moveOrder.moveOrder.OrderNoPkey,
                    ItemCode = x.moveOrder.moveOrder.ItemCode,
 
@@ -222,14 +221,43 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 }).Select(x => new MoveOrderReportsDto
                 {
 
+                    MIRId = x.Key.MIRId,
+                    OrderNoGenus = x.First().moveOrder.order.OrderNo,
+                    CustomerCode = x.First().moveOrder.moveOrder.Customercode,
+                    CustomerName = x.First().moveOrder.moveOrder.Customercode,
+                    BarcodeNo = x.First().moveOrder.moveOrder.WarehouseId,
+                    ItemCode = x.Key.ItemCode,
+                    ItemDescription = x.First().moveOrder.moveOrder.ItemDescription,
+                    Uom = x.First().moveOrder.order.Uom,
+                    ItemRemarks = x.First().moveOrder.moveOrder.ItemRemarks,
+                    Status = x.First().moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
+                    ApprovedDate = x.First().moveOrder.moveOrder.ApprovedDate.ToString(),
+                    DeliveryDate = x.First().transact.DeliveryDate.ToString(),
+                    OrderedQuantity = x.First().moveOrder.order.StandartQuantity,
+                    ServedOrder = x.First().moveOrder.moveOrder.QuantityOrdered,
+                    UnservedOrder = x.First().moveOrder.order.StandartQuantity -  x.First().moveOrder.moveOrder.QuantityOrdered,
+                    CompanyCode = x.First().moveOrder.moveOrder.CompanyCode,
+                    CompanyName = x.First().moveOrder.moveOrder.CompanyName,
+                    DepartmentCode = x.First().moveOrder.moveOrder.DepartmentCode,
+                    DepartmentName = x.First().moveOrder.moveOrder.DepartmentName,
+                    LocationCode = x.First().moveOrder.moveOrder.LocationCode,
+                    LocationName = x.First().moveOrder.moveOrder.LocationName,
+                    AccountCode = x.First().moveOrder.moveOrder.AccountCode,
+                    AccountTitles = x.First().moveOrder.moveOrder.AccountTitles,
+                    EmpId = x.First().moveOrder.moveOrder.CompanyCode,
+                    FullName = x.First().moveOrder.moveOrder.CompanyCode,
+                    AssetTag = x.First().moveOrder.moveOrder.AssetTag,
+                    Cip_No = x.First().moveOrder.moveOrder.Cip_No,
+                    HelpdeskNo = x.First().moveOrder.moveOrder.HelpdeskNo,
+                    IsRush = !string.IsNullOrEmpty(x.First().moveOrder.moveOrder.Rush) ? "Yes" : null,
+                    Remarks = x.First().moveOrder.moveOrder.Remarks
+
                 });
 
           
 
             return await PagedList<MoveOrderReportsDto>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
         }
-
-
 
 
         public async Task<PagedList<DtoMiscReports>> MiscReports(UserParams userParams, string DateFrom, string DateTo, string Search)

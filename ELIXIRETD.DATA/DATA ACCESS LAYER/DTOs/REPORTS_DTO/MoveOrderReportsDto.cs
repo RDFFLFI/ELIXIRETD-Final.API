@@ -9,6 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 {
     public class MoveOrderReportsDto
     {
+
         public int MIRId { get; set; }
         public int OrderNoGenus { get; set; }
         public string CustomerCode { get; set; }
@@ -19,9 +20,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string Uom { get; set; }
         public string ItemRemarks { get; set; }
         public string Status { get; set; }
-
-        public string DeliveryDate { get; set; }
         public string ApprovedDate { get; set; }
+        public string DeliveryDate { get; set; }
 
         public decimal OrderedQuantity { get; set; }
         public decimal ServedOrder {  get; set; }
@@ -40,7 +40,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string AssetTag { get; set; }
         public string Cip_No { get; set; }
         public int? HelpdeskNo { get; set; }
-        public bool IsRush { get; set; }
+        public string IsRush { get; set; }
         public string Remarks { get; set; }
 
 

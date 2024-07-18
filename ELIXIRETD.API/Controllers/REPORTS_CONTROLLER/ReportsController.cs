@@ -97,6 +97,31 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
 
 
         [HttpGet]
+        [Route("MoveOrderReport")]
+        public async Task<ActionResult<IEnumerable<MoveOrderReportsDto>>> MoveOrderReport([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
+        {
+
+            var inventory = await _unitofwork.Reports.MoveOrderReport(userParams, DateFrom, DateTo, Search);
+
+            Response.AddPaginationHeader(inventory.CurrentPage, inventory.PageSize, inventory.TotalCount, inventory.TotalPages, inventory.HasNextPage, inventory.HasPreviousPage);
+
+            var inventoryResult = new
+            {
+                inventory,
+                inventory.CurrentPage,
+                inventory.PageSize,
+                inventory.TotalCount,
+                inventory.TotalPages,
+                inventory.HasNextPage,
+                inventory.HasPreviousPage
+            };
+
+            return Ok(inventoryResult);
+
+        }
+
+
+        [HttpGet]
         [Route("MiscellaneousReceiptReport")]
         public async Task<ActionResult<IEnumerable<DtoMiscReports>>> MiscellaneousReceiptReport([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
         {
