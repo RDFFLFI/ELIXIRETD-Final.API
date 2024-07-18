@@ -1011,7 +1011,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                     ActualGood = x.Key.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.QuantityOrdered) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity))
                                 });
 
-
             var getUnitpriceTotal = getUnitPrice
                 .Where(x => x.UnitPrice > 0)
                 .GroupBy(x => x.ItemCode)
