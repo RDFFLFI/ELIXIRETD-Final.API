@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS
     {
         private const int MaxPageSize = 10000;
         public int PageNumber { get; set; } = 1;
-        private int _pageSize = 10;
+        private int _pageSize = MaxPageSize;
 
         public int PageSize
         {
@@ -19,10 +19,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS
         }
 
 
-        public void SetDynamicMaxPageSize(int totalCount)
-        {
-            _pageSize = totalCount;
-        }
+        //public void SetDynamicMaxPageSize(int totalCount)
+        //{
+        //    _pageSize = totalCount;
+        //}
 
     }
 }

@@ -40,22 +40,25 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     var headers = new List<string>
                     {
                         "MIRId"
-                        ,"OrderNo-Genus"
                         ,"Customer Code"
                         ,"Customer Name"
                         ,"Barcode No"
                         ,"Item Code"
                         ,"Item Description"
                         ,"Uom"
-                        ,"Item Remarks"
-                        ,"Status"
-                        ,"Approved Date"
-                        ,"Delivery Date"
+                        ,"SOH"
                         ,"Ordered Quantity"
+                        ,"Prepared Item"
                         ,"Served Order"
                         ,"Unserved Order"
-                        ,"Prepared Item"
-                        ,"SOH"
+                        ,"Unserved Remarks"
+                        ,"Approved Date"
+                        ,"Delivery Date"
+                        ,"Status"
+                        ,"Asset Tag"
+                        ,"Cip #"
+                        ,"Helpdesk"
+                        ,"Item Remarks"
                         ,"Company Code"
                         ,"Company Name"
                         ,"Department Code"
@@ -66,11 +69,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         ,"Account Title"
                         ,"EmpId"
                         ,"FullName"
-                        ,"Asset Tag"
-                        ,"Cip #"
-                        ,"Helpdesk"
-                        ,"IsRush"
-                        ,"Remarks"
+                        //,"IsRush"
 
                     };
 
@@ -93,37 +92,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         var row = worksheet.Row(index + 1);
 
                         row.Cell(1).Value = moveOrder[index - 1].MIRId;
-                        row.Cell(2).Value = moveOrder[index - 1].OrderNoGenus;
-                        row.Cell(3).Value = moveOrder[index - 1].CustomerCode;
-                        row.Cell(4).Value = moveOrder[index - 1].CustomerName;
-                        row.Cell(5).Value = moveOrder[index - 1].BarcodeNo;
-                        row.Cell(6).Value = moveOrder[index - 1].ItemCode;
-                        row.Cell(7).Value = moveOrder[index - 1].ItemDescription;
-                        row.Cell(8).Value = moveOrder[index - 1].Uom;
-                        row.Cell(9).Value = moveOrder[index - 1].ItemRemarks;
-                        row.Cell(10).Value = moveOrder[index - 1].Status;
-                        row.Cell(11).Value = moveOrder[index - 1].ApprovedDate;
-                        row.Cell(12).Value = moveOrder[index - 1].DeliveryDate;
-                        row.Cell(13).Value = moveOrder[index - 1].OrderedQuantity;
-                        row.Cell(14).Value = moveOrder[index - 1].ServedOrder;
-                        row.Cell(15).Value = moveOrder[index - 1].UnservedOrder;
-                        row.Cell(16).Value = moveOrder[index - 1].PreparedItem;
-                        row.Cell(17).Value = moveOrder[index - 1].SOH;
-                        row.Cell(18).Value = moveOrder[index - 1].CompanyCode;
-                        row.Cell(19).Value = moveOrder[index - 1].CompanyName;
-                        row.Cell(20).Value = moveOrder[index - 1].DepartmentCode;
-                        row.Cell(21).Value = moveOrder[index - 1].DepartmentName;
-                        row.Cell(22).Value = moveOrder[index - 1].LocationCode;
-                        row.Cell(23).Value = moveOrder[index - 1].LocationName;
-                        row.Cell(24).Value = moveOrder[index - 1].AccountCode;
-                        row.Cell(25).Value = moveOrder[index - 1].AccountTitles;
-                        row.Cell(26).Value = moveOrder[index - 1].EmpId;
-                        row.Cell(27).Value = moveOrder[index - 1].FullName;
-                        row.Cell(28).Value = moveOrder[index - 1].AssetTag;
-                        row.Cell(29).Value = moveOrder[index - 1].Cip_No;
-                        row.Cell(30).Value = moveOrder[index - 1].HelpdeskNo;
-                        row.Cell(31).Value = moveOrder[index - 1].IsRush;
-                        row.Cell(32).Value = moveOrder[index - 1].Remarks;
+                        row.Cell(2).Value = moveOrder[index - 1].CustomerCode;
+                        row.Cell(3).Value = moveOrder[index - 1].CustomerName;
+                        row.Cell(4).Value = moveOrder[index - 1].BarcodeNo;
+                        row.Cell(5).Value = moveOrder[index - 1].ItemCode;
+                        row.Cell(6).Value = moveOrder[index - 1].ItemDescription;
+                        row.Cell(7).Value = moveOrder[index - 1].Uom;
+                        row.Cell(8).Value = moveOrder[index - 1].SOH;
+                        row.Cell(9).Value = moveOrder[index - 1].OrderedQuantity;
+                        row.Cell(10).Value = moveOrder[index - 1].PreparedItem;
+                        row.Cell(11).Value = moveOrder[index - 1].ServedOrder;
+                        row.Cell(12).Value = moveOrder[index - 1].UnservedOrder;
+                        row.Cell(13).Value = moveOrder[index - 1].Remarks;
+                        row.Cell(14).Value = moveOrder[index - 1].ApprovedDate;
+                        row.Cell(15).Value = moveOrder[index - 1].DeliveryDate;
+                        row.Cell(16).Value = moveOrder[index - 1].Status;
+                        row.Cell(17).Value = moveOrder[index - 1].AssetTag;
+                        row.Cell(18).Value = moveOrder[index - 1].Cip_No;
+                        row.Cell(19).Value = moveOrder[index - 1].HelpdeskNo;
+                        row.Cell(20).Value = moveOrder[index - 1].ItemRemarks;
+                        row.Cell(21).Value = moveOrder[index - 1].CompanyCode;
+                        row.Cell(22).Value = moveOrder[index - 1].CompanyName;
+                        row.Cell(23).Value = moveOrder[index - 1].DepartmentCode;
+                        row.Cell(24).Value = moveOrder[index - 1].DepartmentName;
+                        row.Cell(25).Value = moveOrder[index - 1].LocationCode;
+                        row.Cell(26).Value = moveOrder[index - 1].LocationName;
+                        row.Cell(27).Value = moveOrder[index - 1].AccountCode;
+                        row.Cell(28).Value = moveOrder[index - 1].AccountTitles;
+                        row.Cell(29).Value = moveOrder[index - 1].EmpId;
+                        row.Cell(30).Value = moveOrder[index - 1].FullName;
+
 
 
                     }
