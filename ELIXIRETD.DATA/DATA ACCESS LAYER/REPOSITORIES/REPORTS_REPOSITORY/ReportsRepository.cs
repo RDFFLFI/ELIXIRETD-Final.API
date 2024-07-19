@@ -214,52 +214,195 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 Where(x => x.IsActive == true);
 
 
+            var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
+                                                  .GroupBy(x => new
+                                                  {
+                                                      x.ItemCode,
+
+                                                  }).Select(x => new WarehouseInventory
+                                                  {
+                                                      ItemCode = x.Key.ItemCode,
+                                                      ActualGood = x.Sum(x => x.ActualGood)
+                                                  });
+
+            var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
+                                         .Where(x => x.IsPrepared == true)
+                                         .GroupBy(x => new
+                                         {
+
+                                             x.ItemCode,
+
+                                         }).Select(x => new MoveOrderInventory
+                                         {
+                                             ItemCode = x.Key.ItemCode,
+                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+
+                                         });
+
+
+            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+                                                 .GroupBy(x => new
+                                                 {
+                                                     x.ItemCode
+
+                                                 }).Select(x => new DtoMiscIssue
+                                                 {
+
+                                                     ItemCode = x.Key.ItemCode,
+                                                     Quantity = x.Sum(x => x.Quantity)
+
+                                                 });
+
+
+            var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                              .GroupBy(x => new
+                                                              {
+                                                                  x.ItemCode,
+
+                                                              }).Select(x => new DtoBorrowedIssue
+                                                              {
+
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  Quantity = x.Sum(x => x.Quantity)
+
+                                                              });
+
+            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+                               .GroupBy(x => new
+                               {
+                                   x.ItemCode,
+                                   x.BorrowedItemPkey
+
+                               }).Select(x => new ItemStocksDto
+                               {
+                                   ItemCode = x.Key.ItemCode,
+                                   BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                   Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                               });
+
+            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
+                                                            .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
+                                                            .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })
+                                                             .GroupBy(x => new
+                                                             {
+
+                                                                 x.returned.ItemCode,
+
+                                                             }).Select(x => new DtoBorrowedIssue
+                                                             {
+
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
+
+                                                             });
+
+            var getSOH = (from warehouse in getWarehouseStock
+                          join moveorder in getMoveOrderOut
+                          on warehouse.ItemCode equals moveorder.ItemCode
+                          into leftJ1
+                          from moveorder in leftJ1.DefaultIfEmpty()
+
+                          join issue in getIssueOut
+                          on warehouse.ItemCode equals issue.ItemCode
+                          into leftJ2
+                          from issue in leftJ2.DefaultIfEmpty()
+
+                          join borrowed in getBorrowedOut
+                          on warehouse.ItemCode equals borrowed.ItemCode
+                          into leftJ3
+                          from borrowed in leftJ3.DefaultIfEmpty()
+
+                          join returned in getReturned
+                          on warehouse.ItemCode equals returned.ItemCode
+                          into leftJ4
+                          from returned in leftJ4.DefaultIfEmpty()
+
+                          group new
+                          {
+
+                              warehouse,
+                              moveorder,
+                              issue,
+                              borrowed,
+                              returned,
+
+                          }
+
+                          by new
+                          {
+                              warehouse.ItemCode
+                          }
+
+                          into total
+
+                          select new DtoSOH
+                          {
+
+                              ItemCode = total.Key.ItemCode,
+                              SOH = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) +
+                             total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
+                             total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
+                             total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
+                             total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)
+
+                          });
+
+
+
+
             var orders = moveOrdersReport
                 .GroupJoin(orderReport, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
                 .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order })
                 .GroupJoin(transactReport, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
                 .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrder, transact })
-                .Where(x => x.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
-                 x.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
+                .GroupJoin(getSOH, moveOrder => moveOrder.moveOrder.moveOrder.ItemCode, soh => soh.ItemCode, (moveOrder, soh) => new { moveOrder, soh })
+                .SelectMany(x => x.soh.DefaultIfEmpty(), (x, soh) => new { x.moveOrder, soh })
+                .Where(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
+                 x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
                 .GroupBy(x => new
                 {
-                   MIRId = x.moveOrder.moveOrder.OrderNo,
-                   OrderNoPKey = x.moveOrder.moveOrder.OrderNoPkey,
-                   ItemCode = x.moveOrder.moveOrder.ItemCode,
+                   MIRId = x.moveOrder.moveOrder.moveOrder.OrderNo, 
+                   OrderNoPKey = x.moveOrder.moveOrder.moveOrder.OrderNoPkey,
+                   ItemCode = x.moveOrder.moveOrder.moveOrder.ItemCode,
 
                 }).Select(x => new MoveOrderReportsDto
                 {
 
                     MIRId = x.Key.MIRId,
-                    OrderNoGenus = x.First().moveOrder.order.OrderNo,
-                    CustomerCode = x.First().moveOrder.moveOrder.Customercode,
-                    CustomerName = x.First().moveOrder.moveOrder.CustomerName,
-                    BarcodeNo = x.First().moveOrder.moveOrder.WarehouseId,
+                    OrderNoGenus = x.First().moveOrder.moveOrder.order.OrderNo,
+                    CustomerCode = x.First().moveOrder.moveOrder.moveOrder.Customercode,
+                    CustomerName = x.First().moveOrder.moveOrder.moveOrder.CustomerName,
+                    BarcodeNo = x.First().moveOrder.moveOrder.moveOrder.WarehouseId,
                     ItemCode = x.Key.ItemCode,
-                    ItemDescription = x.First().moveOrder.moveOrder.ItemDescription,
-                    Uom = x.First().moveOrder.order.Uom,
-                    ItemRemarks = x.First().moveOrder.moveOrder.ItemRemarks,
-                    Status = x.First().moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
-                    ApprovedDate = x.First().moveOrder.moveOrder.ApprovedDate.ToString(),
-                    DeliveryDate = x.First().transact.DeliveryDate.ToString(),
-                    OrderedQuantity = x.First().moveOrder.order.StandartQuantity,
-                    ServedOrder = x.First().moveOrder.moveOrder.QuantityOrdered,
-                    UnservedOrder = x.First().moveOrder.order.StandartQuantity -  x.First().moveOrder.moveOrder.QuantityOrdered,
-                    CompanyCode = x.First().moveOrder.moveOrder.CompanyCode,
-                    CompanyName = x.First().moveOrder.moveOrder.CompanyName,
-                    DepartmentCode = x.First().moveOrder.moveOrder.DepartmentCode,
-                    DepartmentName = x.First().moveOrder.moveOrder.DepartmentName,
-                    LocationCode = x.First().moveOrder.moveOrder.LocationCode,
-                    LocationName = x.First().moveOrder.moveOrder.LocationName,
-                    AccountCode = x.First().moveOrder.moveOrder.AccountCode,
-                    AccountTitles = x.First().moveOrder.moveOrder.AccountTitles,
-                    EmpId = x.First().moveOrder.moveOrder.CompanyCode,
-                    FullName = x.First().moveOrder.moveOrder.CompanyCode,
-                    AssetTag = x.First().moveOrder.moveOrder.AssetTag,
-                    Cip_No = x.First().moveOrder.moveOrder.Cip_No,
-                    HelpdeskNo = x.First().moveOrder.moveOrder.HelpdeskNo,
-                    IsRush = !string.IsNullOrEmpty(x.First().moveOrder.moveOrder.Rush) ? "Yes" : null,
-                    Remarks = x.First().moveOrder.moveOrder.Remarks
+                    ItemDescription = x.First().moveOrder.moveOrder.moveOrder.ItemDescription,
+                    Uom = x.First().moveOrder.moveOrder.order.Uom,
+                    ItemRemarks = x.First().moveOrder.moveOrder.moveOrder.ItemRemarks,
+                    Status = x.First().moveOrder.moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
+                    ApprovedDate = x.First().moveOrder.moveOrder.moveOrder.ApprovedDate.ToString(),
+                    DeliveryDate = x.First().moveOrder.transact.DeliveryDate.ToString(),
+                    OrderedQuantity = x.First().moveOrder.moveOrder.order.StandartQuantity,
+                    ServedOrder = x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered,
+                    UnservedOrder = x.First().moveOrder.moveOrder.order.StandartQuantity -  x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered,
+                    PreparedItem = x.First().moveOrder.moveOrder.moveOrder.IsTransact != true ? x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered : 0,
+                    SOH = x.First().soh.SOH,    
+                    CompanyCode = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
+                    CompanyName = x.First().moveOrder.moveOrder.moveOrder.CompanyName,
+                    DepartmentCode = x.First().moveOrder.moveOrder.moveOrder.DepartmentCode,
+                    DepartmentName = x.First().moveOrder.moveOrder.moveOrder.DepartmentName,
+                    LocationCode = x.First().moveOrder.moveOrder.moveOrder.LocationCode,
+                    LocationName = x.First().moveOrder.moveOrder.moveOrder.LocationName,
+                    AccountCode = x.First().moveOrder.moveOrder.moveOrder.AccountCode,
+                    AccountTitles = x.First().moveOrder.moveOrder.moveOrder.AccountTitles,
+                    EmpId = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
+                    FullName = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
+                    AssetTag = x.First().moveOrder.moveOrder.moveOrder.AssetTag,
+                    Cip_No = x.First().moveOrder.moveOrder.moveOrder.Cip_No,
+                    HelpdeskNo = x.First().moveOrder.moveOrder.moveOrder.HelpdeskNo,
+                    IsRush = !string.IsNullOrEmpty(x.First().moveOrder.moveOrder.moveOrder.Rush) ? "Yes" : null,
+                    Remarks = x.First().moveOrder.moveOrder.moveOrder.Remarks
 
                 });
 
