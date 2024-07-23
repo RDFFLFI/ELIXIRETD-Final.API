@@ -174,6 +174,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         Task<IList<ListofServedDto>> ListofServedDto();
 
+        Task<IReadOnlyList<DtoMoveOrderAssetTag>> MoveOrderAssetTag();
+
+
+
+
 
     }
 }

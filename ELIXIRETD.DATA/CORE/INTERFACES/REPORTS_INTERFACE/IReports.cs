@@ -21,7 +21,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
 
         Task<PagedList<DtoMiscIssue>> MiscIssue(UserParams userParams, string DateFrom, string DateTo, string Search);
 
-        Task<PagedList<MoveOrderReportsDto>> MoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search);
+        Task<IReadOnlyList<MoveOrderReportsDto>> MoveOrderReport(string DateFrom, string DateTo, string Search);
 
         Task<PagedList<BorrowedTransactionReportsDto>> BorrowedTransactionReports(UserParams userParams, string DateFrom, string DateTo, string Search);
 

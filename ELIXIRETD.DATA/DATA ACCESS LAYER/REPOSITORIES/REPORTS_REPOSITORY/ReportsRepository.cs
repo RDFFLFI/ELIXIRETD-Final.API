@@ -202,27 +202,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
-        public async Task<PagedList<MoveOrderReportsDto>> MoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
+        public async Task<IReadOnlyList<MoveOrderReportsDto>> MoveOrderReport( string DateFrom, string DateTo, string Search)
         {
 
-            var orderReport = _context.Orders.
+            var moveOrderReports =_context.MoveOrders
+                .Where(x => x.IsActive == true && x.IsApprove == true);
+
+            var orderReport =  _context.Orders.
                 Where(x => x.IsActive == true)
-                .GroupBy(x => new
-                {
-                    x.MIRId,
-                    x.Id,
-                    x.ItemCode,
-                    
-                })
                 .Select(x => new
                 {
-                    TrasactId = x.Key.MIRId,
-                    Id = x.Key.Id,
-                    ItemCode = x.Key.ItemCode,
-                    Uom = x.First().Uom,
-                    StandardQuantity = x.First().StandartQuantity,
-                    OrderNo = x.First().OrderNo,
-                    Remarks = x.First().Remarks,
+                    TrasactId = x.TrasactId,
+                    Id = x.Id,
+                    ItemCode = x.ItemCode,
+                    Uom = x.Uom,
+                    StandardQuantity = x.StandartQuantity,
+                    OrderNo = x.OrderNo,
+                    Remarks = x.Remarks,
                 });
 
             var transactReport = _context.TransactOrder.
@@ -238,6 +234,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                   {
                                                       ItemCode = x.Key.ItemCode,
                                                       ActualGood = x.Sum(x => x.ActualGood)
+
                                                   });
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
@@ -366,15 +363,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           });
 
 
-
-
-            var orders = _context.MoveOrders
+            var orders = moveOrderReports
                 .Where(x => x.IsActive == true && x.IsApprove == true)
                 .GroupJoin(orderReport, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
                 .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order });
 
             var ordersWithTransact = orders
-                .GroupJoin(transactReport, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
+                .GroupJoin(_context.TransactOrder, moveOrder => moveOrder.moveOrder.OrderNo, transact => transact.OrderNo, (moveOrder, transact) => new { moveOrder, transact })
                 .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrder, transact });
 
             var ordersWithSOH = ordersWithTransact
@@ -384,47 +379,41 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var reports = ordersWithSOH
                 .Where(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
                              x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
-                .GroupBy(x => new
-                {
-                    x.moveOrder.moveOrder.moveOrder.OrderNoPkey,
-                    MirId =  x.moveOrder.moveOrder.moveOrder.OrderNo,
-                    x.moveOrder.moveOrder.moveOrder.WarehouseId,
-                    x.moveOrder.moveOrder.moveOrder.ItemCode,
-                })
                 .Select(x => new MoveOrderReportsDto
                 {
-                    MIRId = x.Key.MirId,
-                    OrderNoGenus = x.First().moveOrder.moveOrder.order.OrderNo,
-                    CustomerCode = x.First().moveOrder.moveOrder.moveOrder.Customercode,
-                    CustomerName = x.First().moveOrder.moveOrder.moveOrder.CustomerName,
-                    BarcodeNo = x.Key.WarehouseId,
-                    ItemCode = x.Key.ItemCode,
-                    ItemDescription = x.First().moveOrder.moveOrder.moveOrder.ItemDescription,
-                    Uom = x.First().moveOrder.moveOrder.order.Uom,
-                    ItemRemarks = x.First().moveOrder.moveOrder.moveOrder.ItemRemarks,
-                    Status = x.First().moveOrder.moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
-                    ApprovedDate = x.First().moveOrder.moveOrder.moveOrder.ApprovedDate.ToString(),
-                    DeliveryDate = x.First().moveOrder.transact.DeliveryDate.ToString(),
-                    OrderedQuantity = x.First().moveOrder.moveOrder.order.StandardQuantity,
-                    ServedOrder = x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered,
-                    UnservedOrder = x.First().moveOrder.moveOrder.order.StandardQuantity - x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered,
-                    PreparedItem = x.First().moveOrder.moveOrder.moveOrder.IsTransact != true ? x.First().moveOrder.moveOrder.moveOrder.QuantityOrdered : 0,
-                    SOH = x.First().soh.SOH,
-                    CompanyCode = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
-                    CompanyName = x.First().moveOrder.moveOrder.moveOrder.CompanyName,
-                    DepartmentCode = x.First().moveOrder.moveOrder.moveOrder.DepartmentCode,
-                    DepartmentName = x.First().moveOrder.moveOrder.moveOrder.DepartmentName,
-                    LocationCode = x.First().moveOrder.moveOrder.moveOrder.LocationCode,
-                    LocationName = x.First().moveOrder.moveOrder.moveOrder.LocationName,
-                    AccountCode = x.First().moveOrder.moveOrder.moveOrder.AccountCode,
-                    AccountTitles = x.First().moveOrder.moveOrder.moveOrder.AccountTitles,
-                    EmpId = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
-                    FullName = x.First().moveOrder.moveOrder.moveOrder.CompanyCode,
-                    AssetTag = x.First().moveOrder.moveOrder.moveOrder.AssetTag,
-                    Cip_No = x.First().moveOrder.moveOrder.moveOrder.Cip_No,
-                    HelpdeskNo = x.First().moveOrder.moveOrder.moveOrder.HelpdeskNo,
-                    IsRush = !string.IsNullOrEmpty(x.First().moveOrder.moveOrder.moveOrder.Rush) ? "Yes" : null,
-                    Remarks = x.First().moveOrder.moveOrder.order.Remarks
+
+                    MIRId = x.moveOrder.moveOrder.moveOrder.OrderNo,
+                    OrderNoGenus = x.moveOrder.moveOrder.order.OrderNo,
+                    CustomerCode = x.moveOrder.moveOrder.moveOrder.Customercode,
+                    CustomerName = x.moveOrder.moveOrder.moveOrder.CustomerName,
+                    BarcodeNo = x.moveOrder.moveOrder.moveOrder.WarehouseId,
+                    ItemCode = x.moveOrder.moveOrder.moveOrder.ItemCode,
+                    ItemDescription = x.moveOrder.moveOrder.moveOrder.ItemDescription,
+                    Uom = x.moveOrder.moveOrder.order.Uom,
+                    ItemRemarks = x.moveOrder.moveOrder.moveOrder.ItemRemarks,
+                    Status = x.moveOrder.moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
+                    ApprovedDate = x.moveOrder.moveOrder.moveOrder.ApprovedDate.ToString(),
+                    DeliveryDate = x.moveOrder.transact.DeliveryDate.ToString(),
+                    OrderedQuantity = x.moveOrder.moveOrder.order.StandardQuantity,
+                    ServedOrder = x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
+                    UnservedOrder = x.moveOrder.moveOrder.order.StandardQuantity - x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
+                    PreparedItem = x.moveOrder.moveOrder.moveOrder.IsTransact != true ? x.moveOrder.moveOrder.moveOrder.QuantityOrdered : 0,
+                    SOH = x.soh.SOH,
+                    CompanyCode = x.moveOrder.moveOrder.moveOrder.CompanyCode,
+                    CompanyName = x.moveOrder.moveOrder.moveOrder.CompanyName,
+                    DepartmentCode = x.moveOrder.moveOrder.moveOrder.DepartmentCode,
+                    DepartmentName = x.moveOrder.moveOrder.moveOrder.DepartmentName,
+                    LocationCode = x.moveOrder.moveOrder.moveOrder.LocationCode,
+                    LocationName = x.moveOrder.moveOrder.moveOrder.LocationName,
+                    AccountCode = x.moveOrder.moveOrder.moveOrder.AccountCode,
+                    AccountTitles = x.moveOrder.moveOrder.moveOrder.AccountTitles,
+                    EmpId = x.moveOrder.moveOrder.moveOrder.EmpId,
+                    FullName = x.moveOrder.moveOrder.moveOrder.FullName,
+                    AssetTag = x.moveOrder.moveOrder.moveOrder.AssetTag,
+                    Cip_No = x.moveOrder.moveOrder.moveOrder.Cip_No,
+                    HelpdeskNo = x.moveOrder.moveOrder.moveOrder.HelpdeskNo,
+                    IsRush = !string.IsNullOrEmpty(x.moveOrder.moveOrder.moveOrder.Rush) ? "Yes" : null,
+                    Remarks = x.moveOrder.moveOrder.order.Remarks
                 });
 
             if (!string.IsNullOrEmpty(Search))
@@ -435,10 +424,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                           || x.Status.ToLower().Contains(Search.ToLower()));
             }
 
-
-            //reports = reports.OrderBy(x => x.ApprovedDate);
-
-            return await PagedList<MoveOrderReportsDto>.CreateAsync(reports, userParams.PageNumber, userParams.PageSize);
+          
+            return await reports.ToListAsync();
         }
 
 
@@ -684,8 +671,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                ReportNumber = x.returned.ReportNumber,
                                AgingDays = x.borrowed.IsApprovedReturnedDate != null ? EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate.Value , x.borrowed.IsApprovedReturnedDate.Value)
                                : x.borrowed.IsApprovedDate == null ? 0 : EF.Functions.DateDiffDay(x.borrowed.IsApprovedDate, DateTime.Now),
-                               IsActive = x.borrowed.IsActive
+                               IsActive = x.borrowed.IsActive,
+
                              
+                               
                                
                            });
 

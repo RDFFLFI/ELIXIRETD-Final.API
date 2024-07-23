@@ -15,5 +15,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE
         //Task<PagedList<DtoMRP>> GetallItemForInventoryPagination(UserParams userParams);
         Task<PagedList<DtoMRP>> GetallItemForInventoryPaginationOrig(UserParams userParams, string search);
 
+        Task<IReadOnlyList<DtoYmirSOHList>> YmirSOHList();
+
     }
 }

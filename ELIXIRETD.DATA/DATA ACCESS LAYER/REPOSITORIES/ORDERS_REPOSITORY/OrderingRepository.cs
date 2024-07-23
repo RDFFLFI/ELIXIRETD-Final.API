@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
@@ -7,6 +8,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -2666,7 +2669,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
         }
-
         public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
         {
             var orders = _context.MoveOrders.Where(x => x.IsActive == true)
@@ -3250,6 +3252,46 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return await orders.ToListAsync();
         }
 
+        public async Task<IReadOnlyList<DtoMoveOrderAssetTag>> MoveOrderAssetTag()
+        {
 
+            var wareHouseResult = _context.WarehouseReceived
+                .Where(x => x.IsActive == true && x.PoNumber != null)
+                .Join(_context.PoSummaries, warehouse => warehouse.PoSummaryId , poSummary => poSummary.Id , (warehouse , poSummary) => new {warehouse, poSummary })
+                .Select(x => new DtoMoveOrderAssetTag
+                {
+                    WareHouseId = x.warehouse.Id,
+                    PoNumber = x.warehouse.PoNumber,
+                    PrNumber = x.poSummary.PR_Number,
+                    ItemCode = x.warehouse.ItemCode,
+                    Uom = x.warehouse.Uom
+
+                });
+
+
+            var result =  _context.MoveOrders
+                .Where(x => x.IsActive == true && x.IsApprove == true)
+                .Where(x => x.AssetTag != null)
+                .GroupJoin(wareHouseResult, moveOrders => moveOrders.WarehouseId, warehouse => warehouse.WareHouseId, (moveOrders, warehouse) => new { moveOrders, warehouse })
+                .SelectMany(x => x.warehouse.DefaultIfEmpty() , (x, warehouse) => new {x.moveOrders , warehouse })
+                .Select(x => new DtoMoveOrderAssetTag
+                {
+                    PoNumber = x.warehouse.PoNumber,
+                    PrNumber = x.warehouse.PrNumber,
+                    MIRId = x.moveOrders.OrderNo,
+                    CustomerCode = x.moveOrders.Customercode,
+                    CustomerName = x.moveOrders.CustomerName,
+                    ItemCode = x.moveOrders.ItemCode,
+                    ItemDescription = x.moveOrders.ItemDescription,
+                    Uom = x.warehouse.Uom,
+                    ServedQuantity = x.moveOrders.QuantityOrdered,
+                    AssetTag = x.moveOrders.AssetTag,
+                    ApproveDate = x.moveOrders.ApprovedDate.ToString(),
+                    WareHouseId = x.moveOrders.WarehouseId,
+                });
+
+            return await result.ToListAsync();
+           
+        }
     }
 }

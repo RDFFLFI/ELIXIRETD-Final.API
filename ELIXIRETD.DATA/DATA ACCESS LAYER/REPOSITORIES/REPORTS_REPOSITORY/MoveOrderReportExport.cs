@@ -31,7 +31,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             public async Task<Unit> Handle(MoveOrderReportExportCommand command, CancellationToken cancellationToken)
             {
-                var moveOrder = await _report.Reports.MoveOrderReport(command,command.DateFrom, command.DateTo, command.Search);
+                var moveOrder = await _report.Reports.MoveOrderReport(command.DateFrom, command.DateTo, command.Search);
 
                 using (var workbook = new XLWorkbook())
                 {
@@ -86,7 +86,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         worksheet.Cell(1, index).Value = headers[index - 1];
                     }
 
-
                     for (var index = 1; index <= moveOrder.Count; index++)
                     {
                         var row = worksheet.Row(index + 1);
@@ -121,7 +120,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(28).Value = moveOrder[index - 1].AccountTitles;
                         row.Cell(29).Value = moveOrder[index - 1].EmpId;
                         row.Cell(30).Value = moveOrder[index - 1].FullName;
-
 
 
                     }

@@ -987,5 +987,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(order);
         }
 
+
+        [HttpGet("MoveOrderAssetTag")]
+        public async Task<IActionResult> MoveOrderAssetTag()
+        {
+            var result = await _unitofwork.Orders.MoveOrderAssetTag();
+
+            return Ok(result);
+        }
+
     }
 }

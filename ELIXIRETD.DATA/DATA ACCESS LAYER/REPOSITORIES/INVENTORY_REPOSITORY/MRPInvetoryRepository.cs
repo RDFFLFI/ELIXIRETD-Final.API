@@ -1,9 +1,11 @@
-﻿using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -832,9 +834,296 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             return await PagedList<DtoMRP>.CreateAsync(inventory, userParams.PageNumber, userParams.PageSize);
         }
 
-            
+        public async Task<IReadOnlyList<DtoYmirSOHList>> YmirSOHList()
+        {
+            var EndDate = DateTime.Now;
+            var StartDate = EndDate.AddDays(-30);
 
-        
+            var getWarehouseStock = _context.WarehouseReceived
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
+                                                  .GroupBy(x => new
+                                                  {
+                                                      x.ItemCode,
 
+                                                  }).Select(x => new WarehouseInventory
+                                                  {
+                                                      ItemCode = x.Key.ItemCode,
+                                                      ActualGood = x.Sum(x => x.ActualGood)
+
+                                                  });
+
+            var getMoveOrderOut = _context.MoveOrders
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
+                                         .Where(x => x.IsPrepared == true)
+                                         .GroupBy(x => new
+                                         {
+
+                                             x.ItemCode,
+
+                                         }).Select(x => new MoveOrderInventory
+                                         {
+                                             ItemCode = x.Key.ItemCode,
+                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+
+                                         });
+
+
+            var getIssueOut = _context.MiscellaneousIssueDetail
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
+                                                 .GroupBy(x => new
+                                                 {
+                                                     x.ItemCode
+
+                                                 }).Select(x => new DtoMiscIssue
+                                                 {
+
+                                                     ItemCode = x.Key.ItemCode,
+                                                     Quantity = x.Sum(x => x.Quantity)
+
+                                                 });
+
+
+            var getBorrowedOut = _context.BorrowedIssueDetails.AsNoTrackingWithIdentityResolution().Where(x => x.IsActive == true)
+                                                              .GroupBy(x => new
+                                                              {
+                                                                  x.ItemCode,
+
+                                                              }).Select(x => new DtoBorrowedIssue
+                                                              {
+
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  Quantity = x.Sum(x => x.Quantity)
+
+                                                              });
+
+            var consumed = _context.BorrowedConsumes
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive)
+                               .GroupBy(x => new
+                               {
+                                   x.ItemCode,
+                                   x.BorrowedItemPkey
+
+                               }).Select(x => new ItemStocksDto
+                               {
+                                   ItemCode = x.Key.ItemCode,
+                                   BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                                   Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
+
+                               });
+
+            var getReturned = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
+                                                            .Where(x => x.IsReturned == true)
+                                                            .Where(x => x.IsApprovedReturned == true)
+                                                            .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
+                                                            .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })
+                                                             .GroupBy(x => new
+                                                             {
+
+                                                                 x.returned.ItemCode,
+
+                                                             }).Select(x => new DtoBorrowedIssue
+                                                             {
+
+                                                                 ItemCode = x.Key.ItemCode,
+                                                                 ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
+
+                                                             });
+
+
+
+
+
+            var getSOH = (from warehouse in getWarehouseStock
+                          join moveorder in getMoveOrderOut
+                          on warehouse.ItemCode equals moveorder.ItemCode
+                          into leftJ1
+                          from moveorder in leftJ1.DefaultIfEmpty()
+
+                          join issue in getIssueOut
+                          on warehouse.ItemCode equals issue.ItemCode
+                          into leftJ2
+                          from issue in leftJ2.DefaultIfEmpty()
+
+                          join borrowed in getBorrowedOut
+                          on warehouse.ItemCode equals borrowed.ItemCode
+                          into leftJ3
+                          from borrowed in leftJ3.DefaultIfEmpty()
+
+                          join returned in getReturned
+                          on warehouse.ItemCode equals returned.ItemCode
+                          into leftJ4
+                          from returned in leftJ4.DefaultIfEmpty()
+
+                          group new
+                          {
+
+                              warehouse,
+                              moveorder,
+                              issue,
+                              borrowed,
+                              returned,
+
+                          }
+
+                          by new
+                          {
+                              warehouse.ItemCode
+                          }
+
+                          into total
+
+                          select new DtoSOH
+                          {
+
+                              ItemCode = total.Key.ItemCode,
+                              SOH = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) +
+                             total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
+                             total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
+                             total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
+                             total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)
+                          });
+
+
+
+
+
+            var getMiscellaneousIssuePerMonth = _context.MiscellaneousIssueDetail.AsNoTrackingWithIdentityResolution().Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                                                                                 .Where(x => x.IsActive == true)
+                                                                                 .GroupBy(x => new
+                                                                                 {
+
+                                                                                     x.ItemCode,
+
+                                                                                 }).Select(x => new DtoIssueInventory
+                                                                                 {
+                                                                                     ItemCode = x.Key.ItemCode,
+                                                                                     Quantity = x.Sum(x => x.Quantity),
+                                                                                 });
+
+
+            var getMoveOrderoutPerMonth = _context.MoveOrders.AsNoTrackingWithIdentityResolution().Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                                                              .Where(x => x.IsActive == true)
+                                                              .Where(x => x.IsPrepared == true)
+                                                              .GroupBy(x => new
+                                                              {
+                                                                  x.ItemCode,
+
+                                                              }).Select(x => new MoveOrderInventory
+                                                              {
+                                                                  ItemCode = x.Key.ItemCode,
+                                                                  QuantityOrdered = x.Sum(x => x.QuantityOrdered)
+
+                                                              });
+
+
+            var getConsumedPerMonth = _context.BorrowedIssueDetails.AsNoTrackingWithIdentityResolution().Where(x => x.IsActive == true && x.IsApprovedReturned == true && x.IsReturned == true)
+                                                                     .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
+                                                                     .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
+                                                                      //.Where(x => x.IsApproved == false)
+                                                                      .GroupBy(x => new
+                                                                      {
+
+                                                                          x.returned.ItemCode,
+                                                                          //x.returned.PreparedDate
+
+                                                                      }).Select(x => new DtoBorrowedIssue
+                                                                      {
+
+                                                                          ItemCode = x.Key.ItemCode,
+                                                                          Quantity = x.Sum(x => x.returned.Quantity),
+                                                                          ReturnQuantity = x.Sum(x => x.returned.Quantity)
+                                                                          - x.Sum(x => x.itemconsume.Consume),
+                                                                          //PreparedDate = x.Key.PreparedDate.ToString()
+
+
+                                                                      });
+
+            var getBorrowedOutPerMonth = _context.BorrowedIssueDetails
+               .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+                .Where(x => x.IsActive == true)
+                .GroupJoin(getConsumedPerMonth, returned => returned.ItemCode, itemconsume => itemconsume.ItemCode, (returned, itemconsume) => new { returned, itemconsume })
+                .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
+                .GroupBy(x => new
+                {
+
+                    x.returned.ItemCode,
+
+                }).Select(x => new DtoBorrowedIssue
+                {
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.ReturnQuantity)
+
+                });
+
+
+
+            var getAvarageIssuance = (from warehouse in getWarehouseStock
+                                      join moveorder in getMoveOrderoutPerMonth
+                                      on warehouse.ItemCode equals moveorder.ItemCode
+                                      into leftJ1
+                                      from moveorder in leftJ1.DefaultIfEmpty()
+
+                                      join borrowed in getBorrowedOutPerMonth
+                                      on warehouse.ItemCode equals borrowed.ItemCode
+                                      into leftJ2
+                                      from borrowed in leftJ2.DefaultIfEmpty()
+
+                                      join issue in getMiscellaneousIssuePerMonth
+                                      on warehouse.ItemCode equals issue.ItemCode
+                                      into leftJ3
+                                      from issue in leftJ3.DefaultIfEmpty()
+
+                                      group new
+                                      {
+                                          warehouse,
+                                          borrowed,
+                                          moveorder,
+                                          issue
+                                      }
+                                      by new
+                                      {
+                                          warehouse.ItemCode
+
+                                      } 
+                                      into total
+                                      select new WarehouseInventory
+                                      {
+
+                                          ItemCode = total.Key.ItemCode,
+                                          ActualGood = (total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) + total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) + total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)) / 30
+
+                                      });
+
+
+            var report = _context.Materials
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .GroupJoin(getSOH, material => material.ItemCode, soh => soh.ItemCode, (material, soh) => new { material, soh })
+                .SelectMany(x => x.soh.DefaultIfEmpty(), (x, soh) => new { x.material, soh })
+                .GroupJoin(getAvarageIssuance, material => material.material.ItemCode, issuance => issuance.ItemCode, (material, issuance) => new { material, issuance })
+                .SelectMany(x => x.issuance.DefaultIfEmpty(), (x, issuance) => new { x.material, issuance })
+                .GroupBy(x => x.material.material.ItemCode)
+               .Select(x => new DtoYmirSOHList
+                {
+                    ItemCode = x.Key,
+                    ItemDescription = x.First().material.material.ItemDescription,
+                    bufferLevel = x.First().material.material.BufferLevel,
+                    stockOnHand = x.First().material.soh.SOH,
+                    averageIssuance = decimal.Round( x.First().issuance.ActualGood,2)
+
+                });
+
+            report.OrderBy(x => x.ItemCode);
+
+
+            return await report.ToListAsync();
+        }
     }
 }
