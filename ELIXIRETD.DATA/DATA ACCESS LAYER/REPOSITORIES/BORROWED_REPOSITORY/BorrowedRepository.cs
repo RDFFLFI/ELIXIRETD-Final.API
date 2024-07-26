@@ -56,7 +56,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
             var moveorderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsPrepared == true)
+                                                  .Where(x => x.IsApprove == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -153,8 +153,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 on warehouse.ItemCode equals reserve.ItemCode
                                 into leftJ4
                                 from reserve in leftJ4.DefaultIfEmpty()
-
-
+   
                                 join borrowedReturned in BorrowedReturn
                                 on warehouse.ItemCode equals borrowedReturned.ItemCode
                                 into leftJ5
@@ -177,14 +176,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                 {
 
                                     warehouse.ItemCode,
-                                    //warehouse.ItemDescription,
-                                    //warehouse.Uom,
-                                    //WarehouseActualGood = warehouse.ActualGood != null ? warehouse.ActualGood : 0,
-                                    //MoveOrderOut = Moveorder.QuantityOrdered != null ? Moveorder.QuantityOrdered : 0,
-                                    //IssueOut = issue.Out != null ? issue.Out : 0,
-                                    //BorrowedOut = borrowOut.Out != null ? borrowOut.Out : 0,
-                                    //reserveOut = reserve.QuantityOrdered != null ? reserve.QuantityOrdered : 0,
-                                    //BorrowedReturn = borrowedReturned.In != null ? borrowedReturned.In : 0
 
 
                                 } into total
@@ -227,10 +218,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
         public async Task<IReadOnlyList<GetAvailableStocksForBorrowedIssue_Dto>> GetAvailableStocksForBorrowedIssue(string itemcode)
         {
-            var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            var getWarehouseStocks = _context.WarehouseReceived.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
                                                                .GroupBy(x => new
                                                                {
-
+                                                        
 
                                                                    x.Id,
                                                                    x.ItemCode,
@@ -248,7 +239,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                                });
 
-           var getSumWareHouseStocks = _context.WarehouseReceived.Where(x => x.IsActive == true)
+           var getSumWareHouseStocks = _context.WarehouseReceived.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
                                                                .GroupBy(x => new
                                                                {
 
@@ -264,7 +255,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
-            var reserveOut = _context.Orders.Where(x => x.IsActive == true && x.IsPrepared == true)
+            var reserveOut = _context.Orders.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true && x.IsPrepared == true)
                                             .GroupBy(x => new
                                             {
                                                 x.ItemCode,
@@ -278,8 +269,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                             });
 
 
-            var moveorderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsPrepared == true)
+            var moveorderOut = _context.MoveOrders.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
+                                                  .Where(x => x.IsApprove == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -296,7 +287,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                   });
 
 
-            var issueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+            var issueOut = _context.MiscellaneousIssueDetail.Where(x => x.ItemCode == itemcode)
+                .Where(x => x.IsActive == true)
                                                             .GroupBy(x => new
                                                             {
 
@@ -312,7 +304,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             });
 
 
-            var issueSumOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+            var issueSumOut = _context.MiscellaneousIssueDetail.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
                                                           .GroupBy(x => new
                                                           {
 
@@ -326,7 +318,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                           });
 
-            var BorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var BorrowedOut = _context.BorrowedIssueDetails.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
                                                           
                                                            .GroupBy(x => new
                                                            {
@@ -341,7 +333,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                            });
 
-            var BorrowedSumOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var BorrowedSumOut = _context.BorrowedIssueDetails.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
 
                                                .GroupBy(x => new
                                                {
@@ -369,7 +361,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                                                    });
 
-            var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var BorrowedReturn = _context.BorrowedIssueDetails
+                .Where(x => x.ItemCode == itemcode)
+                .Where(x => x.IsActive == true)
                                                  .Where(x => x.IsReturned == true)
                                                  .Where(x => x.IsApprovedReturned == true)
                                                  .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
@@ -389,7 +383,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
 
-            var BorrowedSumReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var BorrowedSumReturn = _context.BorrowedIssueDetails
+                .Where(x => x.ItemCode == itemcode)
+                .Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .Where(x => x.IsApprovedReturned == true)
                                                              .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
@@ -472,7 +468,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                     UnitCost = total.Key.UnitPrice,
 
 
-                                }).Where(x => x.RemainingStocks >= 1)
+                                }).Where(x => x.RemainingStocks > 0)
                                   .Where(x => x.ItemCode == itemcode);
 
 

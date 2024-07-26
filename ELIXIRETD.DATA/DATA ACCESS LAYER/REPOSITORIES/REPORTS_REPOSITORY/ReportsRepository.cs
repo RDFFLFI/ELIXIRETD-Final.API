@@ -238,7 +238,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                   });
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                         .Where(x => x.IsPrepared == true)
+                                         .Where(x => x.IsApprove == true)
                                          .GroupBy(x => new
                                          {
 
@@ -379,6 +379,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var reports = ordersWithSOH
                 .Where(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
                              x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
+                .OrderBy(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate)
                 .Select(x => new MoveOrderReportsDto
                 {
 
@@ -393,7 +394,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ItemRemarks = x.moveOrder.moveOrder.moveOrder.ItemRemarks,
                     Status = x.moveOrder.moveOrder.moveOrder.IsTransact != true ? "For Transaction" : "Transacted",
                     ApprovedDate = x.moveOrder.moveOrder.moveOrder.ApprovedDate.ToString(),
-                    DeliveryDate = x.moveOrder.transact.DeliveryDate.ToString(),
+                    DeliveryDate = x.moveOrder.transact.DeliveryDate.Value.Date.ToString(),
                     OrderedQuantity = x.moveOrder.moveOrder.order.StandardQuantity,
                     ServedOrder = x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
                     UnservedOrder = x.moveOrder.moveOrder.order.StandardQuantity - x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
@@ -423,7 +424,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                           || x.ItemDescription.ToLower().Contains(Search.ToLower())
                                           || x.Status.ToLower().Contains(Search.ToLower()));
             }
-
           
             return await reports.ToListAsync();
         }
@@ -822,7 +822,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                               });
 
             var getMoveOrdersOutByDate = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsPrepared == true)
+                                                            .Where(x => x.IsApprove == true)
                                                             .Where(x => x.PreparedDate.Value >= DateTime.Parse(DateFrom) && x.PreparedDate.Value <= DateTime.Parse(PlusOne))
                                                             .GroupBy(x => new
                                                             {
@@ -838,7 +838,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                             });
 
             var getMoveOrdersOutbyDatePlus = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsPrepared == true)
+                                                                .Where(x => x.IsApprove == true)
                                                                 .Where(x => x.PreparedDate.Value >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate.Value <= DateToday)
                                                                 .GroupBy(x => new
                                                                 {
@@ -1035,7 +1035,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                     .Where(x => x.IsPrepared == true)
+                                                     .Where(x => x.IsApprove == true)
                                                      .GroupBy(x => new
                                                      {
 
@@ -1629,6 +1629,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                || x.Source.ToString().Contains(Search)
                || x.TransactionType.ToLower().Contains(Search.ToLower())).ToList();
             }
+
 
             return reports;
         }

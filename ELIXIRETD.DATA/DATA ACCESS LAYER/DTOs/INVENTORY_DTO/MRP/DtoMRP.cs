@@ -19,6 +19,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
         public decimal UnitCost { get; set; }
         public decimal TotalCost { get; set; }
         public decimal SOH { get; set; }
+        public decimal PreparedQuantity { get; set; }
         public decimal Reserve { get; set; }
 
         public decimal BufferLevel { get; set; }

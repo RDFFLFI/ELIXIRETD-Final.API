@@ -90,7 +90,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                            });
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.IsPrepared == true)
+                                                    .Where(x => x.IsApprove == true)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -102,6 +102,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                         QuantityOrdered = x.Sum(x => x.QuantityOrdered),
 
                                                     });
+
+            var getNotTransacted = _context.MoveOrders.Where(x => x.IsActive == true && x.IsApprove == true)
+                                        .Where(x => x.IsTransact != true)
+                                        .GroupBy(x => new
+                                        {
+                                            x.ItemCode,
+
+                                        }).Select(x => new MoveOrderInventory
+                                        {
+
+                                            ItemCode = x.Key.ItemCode,
+                                            QuantityOrdered = x.Sum(x => x.QuantityOrdered),
+
+                                        });
 
             var getReceiptIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
                                                          .Where(x => x.TransactionType == "MiscellaneousReceipt")
@@ -171,7 +185,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                            ItemCode = x.Key.ItemCode,
                                                            BorrowedItemPkey = x.Key.BorrowedItemPkey,
                                                            Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
-
                                                        });
 
 
@@ -210,8 +223,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 {
 
                     x.borrow.ItemCode,
-                    //x.borrow.Quantity,
-                    //x.returned.ReturnQuantity
 
                 }).Select(x => new DtoBorrowedIssue
                 {
@@ -219,8 +230,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     ConsumeQuantity = x.Sum(x => x.borrow.Quantity) - x.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0)
 
                 });
-
-
 
 
             var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
@@ -238,7 +247,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getOrderingReserve = _context.Orders.Where(x => x.IsActive == true)
-                                                      .Where(x => x.IsPrepared == true)
+                                                      .Where(x => x.PreparedDate != null)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -351,8 +360,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
 
                                   ItemCode = total.Key.ItemCode,
-                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0) + total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
-                                  total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0) - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0)
+                                  Reserve = total.Sum(x => x.warehouse.ActualGood != null ? x.warehouse.ActualGood : 0)
+                                  + total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) 
+                                  - total.Sum(x => x.ordering.QuantityOrdered != null ? x.ordering.QuantityOrdered : 0)
+                                  - total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0)
                                   - total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0)
 
                               });
@@ -401,7 +412,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getMoveOrderoutPerMonth = _context.MoveOrders.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                               .Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsPrepared == true)
+                                                              .Where(x => x.IsApprove == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,
@@ -537,7 +548,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getMoveOrderOutid = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsPrepared == true)
+                                                  .Where(x => x.IsApprove == true)
                                                   .GroupBy(x => new
                                                   {
                                                       x.WarehouseId,
@@ -656,7 +667,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                 });
 
 
-            var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice != 0).GroupBy(x => new
+            var getUnitpriceTotal = getUnitPrice.Where(x => x.UnitPrice > 0).GroupBy(x => new
             {
                 x.ItemCode,
 
@@ -743,6 +754,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              into leftJ15
                              from borrow in leftJ15.DefaultIfEmpty()
 
+                             join notTransact in getNotTransacted
+                             on material.ItemCode equals notTransact.ItemCode
+                             into leftJ16
+                             from notTransact in leftJ16.DefaultIfEmpty()
+
                              orderby material.ItemCode ascending
 
                              group new
@@ -761,7 +777,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  sudggest,
                                  averageissuance,
                                  usage,
-                                 unitprice
+                                 unitprice,
+                                 notTransact,
 
 
                              }
@@ -786,7 +803,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  reserve = reserve.Reserve != null ? reserve.Reserve : 0,
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
-                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0
+                                 ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0,
+                                 PreparedQuantity= notTransact.QuantityOrdered != null ? notTransact.QuantityOrdered : 0,
 
                              }
 
@@ -810,6 +828,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalCost = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
+                                 PreparedQuantity = total.Key.PreparedQuantity,
                                  Reserve = total.Key.reserve,
 
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,
@@ -856,7 +875,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var getMoveOrderOut = _context.MoveOrders
                 .AsNoTrackingWithIdentityResolution()
                 .Where(x => x.IsActive == true)
-                                         .Where(x => x.IsPrepared == true)
+                                         .Where(x => x.IsApprove == true)
                                          .GroupBy(x => new
                                          {
 
@@ -1009,7 +1028,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getMoveOrderoutPerMonth = _context.MoveOrders.AsNoTrackingWithIdentityResolution().Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                               .Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsPrepared == true)
+                                                              .Where(x => x.IsApprove == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,

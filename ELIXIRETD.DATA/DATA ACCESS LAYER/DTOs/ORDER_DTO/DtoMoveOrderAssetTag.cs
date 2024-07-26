@@ -12,6 +12,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
          public int ? PrNumber { get; set; }
          public int MIRId { get; set; }
         public int WareHouseId { get; set; }
+        public string AcquisitionDate { get; set; }
          public string CustomerCode { get; set; }
          public string CustomerName { get; set; }
          public string ItemCode { get; set; }
@@ -20,6 +21,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
         public decimal ServedQuantity { get; set; }
         public string AssetTag { get; set; }
         public string ApproveDate { get; set; }
+    
 
     }
 }

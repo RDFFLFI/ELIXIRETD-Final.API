@@ -251,14 +251,14 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         // -------------------- ADDITIONAL
 
 
-        [HttpGet]
-        [Route("GetAllListOfWarehouseReceivingIdNull")]
-        public async Task<IActionResult> GetAllListOfWarehouseReceivingIdNull()
-        {
-            var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId();
+        //[HttpGet]
+        //[Route("GetAllListOfWarehouseReceivingIdNull")]
+        //public async Task<IActionResult> GetAllListOfWarehouseReceivingIdNull()
+        //{
+        //    var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId();
 
-            return Ok(warehouse);
-        }
+        //    return Ok(warehouse);
+        //}
 
 
         [HttpGet]
@@ -266,9 +266,9 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<IActionResult> GetAllListOfWarehouseReceivingId([FromQuery] string search)
         {
 
-            if (search == null)
+            //if (search == null)
 
-                return await GetAllListOfWarehouseReceivingIdNull();
+            //    return await GetAllListOfWarehouseReceivingIdNull();
 
 
             var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId(search);
