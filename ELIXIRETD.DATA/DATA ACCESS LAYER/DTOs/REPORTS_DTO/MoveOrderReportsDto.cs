@@ -27,8 +27,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public decimal OrderedQuantity { get; set; }
         public decimal ServedOrder {  get; set; }
         public decimal UnservedOrder { get; set; }
-
         public decimal PreparedItem { get; set; }
+        public decimal ServedPercentage { get; set; }
         public decimal SOH { get; set; }
 
         public string CompanyCode { get; set; }

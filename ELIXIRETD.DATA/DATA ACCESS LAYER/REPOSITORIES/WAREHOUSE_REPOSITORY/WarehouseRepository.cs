@@ -539,10 +539,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                       });
 
 
-
-
-
-
             var getIssueOut = _context.MiscellaneousIssueDetail
                 .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                                  .Where(x => x.IsActive == true)

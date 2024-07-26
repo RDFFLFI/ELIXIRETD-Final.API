@@ -1383,8 +1383,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             return await Borrowed.ToListAsync();
         }
 
-
-
         public async Task<bool> EditReturnQuantity(BorrowedConsume consumes)
         {
 
@@ -1532,7 +1530,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             return await borrowed.ToListAsync();
         }
-
 
         public async Task<bool> CancelIssuePerItemCode(BorrowedConsume consumes)
         {
@@ -2729,7 +2726,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
             return true;
         }
-
 
         public async Task<bool> CancelForReturned(BorrowedIssue borrowed)
         {

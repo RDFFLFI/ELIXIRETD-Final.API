@@ -205,6 +205,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<IReadOnlyList<MoveOrderReportsDto>> MoveOrderReport( string DateFrom, string DateTo, string Search)
         {
 
+            var percentage = 100;
+
             var moveOrderReports =_context.MoveOrders
                 .Where(x => x.IsActive == true && x.IsApprove == true);
 
@@ -399,6 +401,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ServedOrder = x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
                     UnservedOrder = x.moveOrder.moveOrder.order.StandardQuantity - x.moveOrder.moveOrder.moveOrder.QuantityOrdered,
                     PreparedItem = x.moveOrder.moveOrder.moveOrder.IsTransact != true ? x.moveOrder.moveOrder.moveOrder.QuantityOrdered : 0,
+                    ServedPercentage = decimal.Round((x.moveOrder.moveOrder.moveOrder.QuantityOrdered / x.moveOrder.moveOrder.order.StandardQuantity) * percentage , 2),
                     SOH = x.soh.SOH,
                     CompanyCode = x.moveOrder.moveOrder.moveOrder.CompanyCode,
                     CompanyName = x.moveOrder.moveOrder.moveOrder.CompanyName,

@@ -48,9 +48,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         ,"Uom"
                         ,"SOH"
                         ,"Ordered Quantity"
-                        ,"Prepared Item"
                         ,"Served Order"
                         ,"Unserved Order"
+                        ,"Served Percentage "
                         ,"Unserved Remarks"
                         ,"Approved Date"
                         ,"Delivery Date"
@@ -99,9 +99,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(7).Value = moveOrder[index - 1].Uom;
                         row.Cell(8).Value = moveOrder[index - 1].SOH;
                         row.Cell(9).Value = moveOrder[index - 1].OrderedQuantity;
-                        row.Cell(10).Value = moveOrder[index - 1].PreparedItem;
-                        row.Cell(11).Value = moveOrder[index - 1].ServedOrder;
-                        row.Cell(12).Value = moveOrder[index - 1].UnservedOrder;
+                        row.Cell(10).Value = moveOrder[index - 1].ServedOrder;
+                        row.Cell(11).Value = moveOrder[index - 1].UnservedOrder;
+                        row.Cell(12).Value = moveOrder[index - 1].ServedPercentage;
                         row.Cell(13).Value = moveOrder[index - 1].Remarks;
                         row.Cell(14).Value = moveOrder[index - 1].ApprovedDate;
                         row.Cell(15).Value = moveOrder[index - 1].DeliveryDate;
