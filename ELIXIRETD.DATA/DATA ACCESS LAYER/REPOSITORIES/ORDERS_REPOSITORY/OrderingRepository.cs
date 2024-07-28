@@ -197,8 +197,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return await orders.ToListAsync();
         }
 
-
-
         public async Task<IReadOnlyList<DtoForTransactNotif>> GetAllForTransactMoveOrderNotification()
         {
             var orders = _context.MoveOrders.Where(x => x.IsActive == true)

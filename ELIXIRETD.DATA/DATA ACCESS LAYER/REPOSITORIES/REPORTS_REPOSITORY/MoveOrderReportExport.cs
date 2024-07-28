@@ -47,7 +47,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         ,"Item Description"
                         ,"Uom"
                         ,"SOH"
-                        ,"Ordered Quantity"
+                        ,"Ordered Quantity" 
                         ,"Served Order"
                         ,"Unserved Order"
                         ,"Served Percentage "

@@ -58,6 +58,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
             var connectionString = configuration.GetConnectionString("DevConnection");
             optionsBuilder.UseSqlServer(connectionString).EnableSensitiveDataLogging();
             optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
+
         }
 
 

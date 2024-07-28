@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Vml;
-using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
+﻿using ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
@@ -8,17 +6,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Xml;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 {
@@ -207,11 +196,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var percentage = 100;
 
-            var moveOrderReports =_context.MoveOrders
+            var moveOrderReports = _context.MoveOrders
+                                .AsNoTracking()
                 .Where(x => x.IsActive == true && x.IsApprove == true);
 
             var orderReport =  _context.Orders.
-                Where(x => x.IsActive == true)
+                                AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                 .Select(x => new
                 {
                     TrasactId = x.TrasactId,
@@ -224,10 +215,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
             var transactReport = _context.TransactOrder.
-                Where(x => x.IsActive == true);
+                 AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true);
 
 
-            var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            var getWarehouseStock = _context.WarehouseReceived
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                                                   .GroupBy(x => new
                                                   {
                                                       x.ItemCode,
@@ -239,7 +233,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                   });
 
-            var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
+            var getMoveOrderOut = _context.MoveOrders
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                                          .Where(x => x.IsApprove == true)
                                          .GroupBy(x => new
                                          {
@@ -254,7 +250,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          });
 
 
-            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+            var getIssueOut = _context.MiscellaneousIssueDetail
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                                                  .GroupBy(x => new
                                                  {
                                                      x.ItemCode
@@ -268,7 +266,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                  });
 
 
-            var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedOut = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,
@@ -281,7 +281,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                               });
 
-            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+            var consumed = _context.BorrowedConsumes
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive)
                                .GroupBy(x => new
                                {
                                    x.ItemCode,
@@ -295,7 +297,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                });
 
-            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getReturned = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.IsActive == true)
                                                             .Where(x => x.IsReturned == true)
                                                             .Where(x => x.IsApprovedReturned == true)
                                                             .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
@@ -342,7 +346,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               issue,
                               borrowed,
                               returned,
-
                           }
 
                           by new
@@ -366,6 +369,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var orders = moveOrderReports
+              
                 .Where(x => x.IsActive == true && x.IsApprove == true)
                 .GroupJoin(orderReport, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
                 .SelectMany(x => x.order.DefaultIfEmpty(), (x, order) => new { x.moveOrder, order });
@@ -378,15 +382,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .GroupJoin(getSOH, moveOrder => moveOrder.moveOrder.moveOrder.ItemCode, soh => soh.ItemCode, (moveOrder, soh) => new { moveOrder, soh })
                 .SelectMany(x => x.soh.DefaultIfEmpty(), (x, soh) => new { x.moveOrder, soh });
 
-            var reports = ordersWithSOH
+            var moveOrderTransaction = ordersWithSOH
                 .Where(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
                              x.moveOrder.moveOrder.moveOrder.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
-                .OrderBy(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate)
+                //.OrderBy(x => x.moveOrder.moveOrder.moveOrder.ApprovedDate)
                 .Select(x => new MoveOrderReportsDto
                 {
 
                     MIRId = x.moveOrder.moveOrder.moveOrder.OrderNo,
-                    OrderNoGenus = x.moveOrder.moveOrder.order.OrderNo,
+                    //OrderNoGenus = x.First().moveOrder.moveOrder.order.OrderNo,
                     CustomerCode = x.moveOrder.moveOrder.moveOrder.Customercode,
                     CustomerName = x.moveOrder.moveOrder.moveOrder.CustomerName,
                     BarcodeNo = x.moveOrder.moveOrder.moveOrder.WarehouseId,
@@ -420,6 +424,51 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Remarks = x.moveOrder.moveOrder.order.Remarks
                 });
 
+
+            var reports = moveOrderTransaction
+                .GroupBy(x => new { x.MIRId, x.ItemCode })
+                .Select(x => new MoveOrderReportsDto
+                 {
+
+                     MIRId = x.Key.MIRId,
+                     //OrderNoGenus = x.First().moveOrder.moveOrder.order.OrderNo,
+                     CustomerCode = x.First().CustomerCode,
+                     CustomerName = x.First().CustomerName,
+                     BarcodeNo = x.First().BarcodeNo,
+                     ItemCode = x.Key.ItemCode,
+                     ItemDescription = x.First().ItemDescription,
+                     Uom = x.First().Uom,
+                     ItemRemarks = x.First().ItemRemarks,
+                     Status = x.First().Status,
+                     ApprovedDate = x.First().ApprovedDate,
+                     DeliveryDate = x.First().DeliveryDate,
+                     OrderedQuantity = x.First().OrderedQuantity,
+                     ServedOrder = x.First().ServedOrder,
+                     UnservedOrder = x.First().UnservedOrder,
+                     PreparedItem = x.First().PreparedItem,
+                     ServedPercentage = x.First().ServedPercentage,
+                     SOH = x.First().SOH,
+                     CompanyCode = x.First().CompanyCode,
+                     CompanyName = x.First().CompanyName,
+                     DepartmentCode = x.First().DepartmentCode,
+                     DepartmentName = x.First().DepartmentName,
+                     LocationCode = x.First().LocationCode,
+                     LocationName = x.First().LocationName,
+                     AccountCode = x.First().AccountCode,
+                     AccountTitles = x.First().AccountTitles,
+                     EmpId = x.First().EmpId,
+                     FullName = x.First().FullName,
+                     AssetTag = x.First().AssetTag,
+                     Cip_No = x.First().Cip_No,
+                     HelpdeskNo = x.First().HelpdeskNo,
+                     IsRush = x.First().IsRush,
+                     Remarks = x.First().Remarks
+
+
+                 });
+
+
+
             if (!string.IsNullOrEmpty(Search))
             {
                 reports = reports.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.ToLower())
@@ -427,8 +476,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                           || x.ItemDescription.ToLower().Contains(Search.ToLower())
                                           || x.Status.ToLower().Contains(Search.ToLower()));
             }
-          
-            return await reports.ToListAsync();
+
+            reports = reports.OrderBy(x => x.ApprovedDate);
+
+            return await moveOrderTransaction.ToListAsync();
         }
 
 

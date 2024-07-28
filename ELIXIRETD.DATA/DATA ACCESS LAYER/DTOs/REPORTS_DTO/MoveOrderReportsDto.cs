@@ -12,7 +12,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public int ItemCount { get; set; }
         public int MIRId { get; set; }
-        public int OrderNoGenus { get; set; }
+        //public int OrderNoGenus { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
         public int BarcodeNo { get; set; }

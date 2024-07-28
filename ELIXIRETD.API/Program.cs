@@ -34,7 +34,7 @@ builder.Services.AddSwaggerGen();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
-builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString));
+builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString, sqlOptions => sqlOptions.CommandTimeout(320)));
 
 builder.Services.AddAuthentication(authOptions =>
     {
