@@ -12,7 +12,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public int ItemCount { get; set; }
         public int MIRId { get; set; }
-        //public int OrderNoGenus { get; set; }
+        public int OrderNoPKey { get; set; }
         public string CustomerCode { get; set; }
         public string CustomerName { get; set; }
         public int BarcodeNo { get; set; }
@@ -46,6 +46,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public int? HelpdeskNo { get; set; }
         public string IsRush { get; set; }
         public string Remarks { get; set; }
+
+        public bool IsActive { get; set; }
+        public bool IsApprove { get; set; }
 
 
 

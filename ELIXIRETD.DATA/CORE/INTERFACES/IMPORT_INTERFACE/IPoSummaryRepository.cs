@@ -18,6 +18,11 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE
         Task<bool> ValidatePOAndItemcodeManual(int ponumber, string itemcode);
         Task<bool> ValidateQuantityOrder(decimal quantity);
         Task<bool> ValidationItemcodeandUom(string itemcode /*,string itemdescription */, string uom);
+
+        //Task<IReadOnlyList>
+
+
+    }      
              
 }
-    }
+    
