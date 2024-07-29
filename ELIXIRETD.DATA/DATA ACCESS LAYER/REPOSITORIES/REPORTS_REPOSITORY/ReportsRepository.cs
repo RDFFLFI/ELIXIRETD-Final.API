@@ -470,13 +470,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             if (!string.IsNullOrEmpty(Search))
             {
-                reports = reports.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.ToLower())
+                moveOrderTransaction = moveOrderTransaction.Where(x => Convert.ToString(x.MIRId).ToLower().Contains(Search.Trim().ToLower())
                                           || x.ItemCode.ToLower().Contains(Search.Trim().ToLower())
-                                          || x.ItemDescription.ToLower().Contains(Search.ToLower())
-                                          || x.Status.ToLower().Contains(Search.ToLower()));
+                                          || x.ItemDescription.ToLower().Contains(Search.Trim().ToLower())
+                                          || x.Status.ToLower().Contains(Search.Trim().ToLower()));
             }
 
-            reports = reports.OrderBy(x => x.ApprovedDate);
+            moveOrderTransaction = moveOrderTransaction.OrderBy(x => x.ApprovedDate);
 
             return await moveOrderTransaction.ToListAsync();
         }

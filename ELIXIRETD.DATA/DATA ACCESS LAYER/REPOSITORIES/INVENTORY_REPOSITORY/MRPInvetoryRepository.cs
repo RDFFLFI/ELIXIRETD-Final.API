@@ -844,8 +844,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             if(!string.IsNullOrEmpty(search))
             {
-                inventory = inventory.Where(x => x.ItemCode.ToLower().Contains(search.ToLower())
-                || x.ItemDescription.ToLower().Contains(search.ToLower()));
+                inventory = inventory.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
+                || x.ItemDescription.ToLower().Contains(search.Trim().ToLower()));
             }
 
             inventory = inventory.OrderBy(x => x.ItemCode);
@@ -872,10 +872,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                   });
 
-            var getMoveOrderOut = _context.MoveOrders
+            var getReserve = _context.Orders
                 .AsNoTrackingWithIdentityResolution()
                 .Where(x => x.IsActive == true)
-                                         .Where(x => x.IsApprove == true)
+                                         .Where(x => x.PreparedDate != null)
                                          .GroupBy(x => new
                                          {
 
@@ -959,10 +959,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
             var getSOH = (from warehouse in getWarehouseStock
-                          join moveorder in getMoveOrderOut
-                          on warehouse.ItemCode equals moveorder.ItemCode
+                          join reserve in getReserve
+                          on warehouse.ItemCode equals reserve.ItemCode
                           into leftJ1
-                          from moveorder in leftJ1.DefaultIfEmpty()
+                          from reserve in leftJ1.DefaultIfEmpty()
 
                           join issue in getIssueOut
                           on warehouse.ItemCode equals issue.ItemCode
@@ -983,7 +983,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           {
 
                               warehouse,
-                              moveorder,
+                              reserve,
                               issue,
                               borrowed,
                               returned,
@@ -1005,18 +1005,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
                              total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
-                             total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)
+                             total.Sum(x => x.reserve.QuantityOrdered != null ? x.reserve.QuantityOrdered : 0)
                           });
 
 
 
 
 
-            var getMiscellaneousIssuePerMonth = _context.MiscellaneousIssueDetail.AsNoTrackingWithIdentityResolution().Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
+            var getMiscellaneousIssuePerMonth = _context.MiscellaneousIssueDetail
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                                                  .Where(x => x.IsActive == true)
                                                                                  .GroupBy(x => new
                                                                                  {
-
                                                                                      x.ItemCode,
 
                                                                                  }).Select(x => new DtoIssueInventory
@@ -1133,9 +1134,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 {
                     ItemCode = x.Key,
                     ItemDescription = x.First().material.material.ItemDescription,
-                    bufferLevel = x.First().material.material.BufferLevel,
-                    stockOnHand = x.First().material.soh.SOH,
-                    averageIssuance = decimal.Round( x.First().issuance.ActualGood,2)
+                    BufferLevel = x.First().material.material.BufferLevel,
+                    Reserve = x.First().material.soh.SOH,
+                    AverageIssuance = decimal.Round( x.First().issuance.ActualGood,2)
 
                 });
 

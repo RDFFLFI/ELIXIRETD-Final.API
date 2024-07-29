@@ -10,8 +10,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
     {
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
-        public int bufferLevel {  get; set; } 
-        public decimal stockOnHand { get; set; }
-        public decimal averageIssuance { get; set; }
+        public int BufferLevel {  get; set; } 
+        public decimal Reserve { get; set; }
+        public decimal AverageIssuance { get; set; }
     }
 }
