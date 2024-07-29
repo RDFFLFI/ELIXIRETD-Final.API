@@ -434,7 +434,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      //OrderNoGenus = x.First().moveOrder.moveOrder.order.OrderNo,
                      CustomerCode = x.First().CustomerCode,
                      CustomerName = x.First().CustomerName,
-                     BarcodeNo = x.First().BarcodeNo,
+                     //BarcodeNo = x.First().BarcodeNo,
                      ItemCode = x.Key.ItemCode,
                      ItemDescription = x.First().ItemDescription,
                      Uom = x.First().Uom,
