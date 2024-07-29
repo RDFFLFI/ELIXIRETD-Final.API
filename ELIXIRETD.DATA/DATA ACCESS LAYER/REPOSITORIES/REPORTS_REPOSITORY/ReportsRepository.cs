@@ -464,7 +464,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      IsRush = x.First().IsRush,
                      Remarks = x.First().Remarks
 
-
                  });
 
 
@@ -1385,7 +1384,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.moveOrder.UnitPrice,
                     LineAmount = Math.Round(x.moveOrder.UnitPrice * x.moveOrder.QuantityOrdered , 2),
                     Source = x.transact.OrderNo,
-                    TransactionType = "MoveOrder",
+                    TransactionType = "Move Order",
                     Reason = "",
                     Reference = x.moveOrder.ItemRemarks,
                     SupplierName = "",
@@ -1425,7 +1424,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.warehouse.UnitPrice,
                     LineAmount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
                     Source = x.receipt.Id,
-                    TransactionType = "Receipt",
+                    TransactionType = "Miscellaneous Receipt",
                     Reason = x.receipt.Remarks,
                     Reference = x.receipt.Details,
                     SupplierName = "",
@@ -1464,7 +1463,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     UnitCost = x.issue.UnitPrice,
                     LineAmount = Math.Round(x.issue.UnitPrice * x.issue.Quantity, 2),
                     Source = x.miscDetail.Id,
-                    TransactionType = "Issue",
+                    TransactionType = "Miscellaneous Issue",
                     Reason = x.issue.Remarks,
                     Reference = x.miscDetail.Details,
                     SupplierName = "",

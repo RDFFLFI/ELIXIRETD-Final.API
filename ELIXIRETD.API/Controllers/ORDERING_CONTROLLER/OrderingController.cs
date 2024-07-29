@@ -532,8 +532,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
-
-
         [HttpGet]
         [Route("GetAvailableStockFromWarehouse")]
         public async Task<IActionResult> GetAvailableStockFromWarehouse([FromQuery] int id, [FromQuery] string itemcode)
@@ -547,6 +545,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             if (!await validate)
                 return BadRequest("No id or itemcode existing");
 
+
+            if(orders == null)
+            {
+                return Ok("[]");
+            }
 
             var resultList = new
             {

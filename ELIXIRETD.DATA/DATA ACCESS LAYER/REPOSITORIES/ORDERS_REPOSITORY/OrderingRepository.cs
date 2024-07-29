@@ -1657,7 +1657,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<ItemStocksDto> GetFirstNeeded(string itemCode)
         {
-            var getwarehouseIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
+            var getwarehouseIn = _context.WarehouseReceived
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive == true)
+                                                            
                                                            .GroupBy(x => new
                                                            {
                                                                x.Id,
@@ -1672,7 +1675,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            });
 
 
-            var getMoveOrder = _context.MoveOrders.Where(x => x.IsActive == true)
+            var getMoveOrder = _context.MoveOrders
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive == true)
                                                   .Where(x => x.IsApprove == true)
                                                   .GroupBy(x => new
                                                   {
@@ -1690,7 +1695,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
          
 
 
-            var getMiscIssue = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
+            var getMiscIssue = _context.MiscellaneousIssueDetail
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive == true)
                                                                 .GroupBy(x => new
                                                                 {
                                                                     x.ItemCode,
@@ -1704,7 +1711,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                                 });
 
-            var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedIssue = _context.BorrowedIssueDetails
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive == true)
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1720,7 +1729,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                                 });
 
-            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
+            var consumed = _context.BorrowedConsumes
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive)
                                                    .GroupBy(x => new
                                                    {
                                                        x.ItemCode,
@@ -1736,7 +1747,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-            var getBorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var getBorrowedReturn = _context.BorrowedIssueDetails
+                                              .Where(x => x.ItemCode == itemCode)
+                                              .Where(x => x.IsActive == true)
                                                              .Where(x => x.IsReturned == true)
                                                              .Where(x => x.IsApprovedReturned == true)
                                                              .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
@@ -1759,6 +1772,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var totalremaining = getwarehouseIn
+                              .Where(x => x.ItemCode == itemCode)
                               .OrderBy(x => x.RecievingDate)
                               .ThenBy(x => x.ItemCode)
                               .GroupJoin(getMoveOrder, warehouse => warehouse.WarehouseId, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
@@ -1787,11 +1801,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                               x.Sum(x => x.warehouse.warehouse.issue.Remaining == null ? 0 : x.warehouse.warehouse.issue.Remaining) -
                                               x.Sum(x => x.warehouse.borrow.Remaining == null ? 0 : x.warehouse.borrow.Remaining)
 
-                              });
+                              }).Where(x => x.Remaining > 0);
 
 
-            return await totalremaining.Where(x => x.Remaining > 0)
-                                       .Where(x => x.ItemCode == itemCode)
+            return await totalremaining
                                        .FirstOrDefaultAsync();
 
 
