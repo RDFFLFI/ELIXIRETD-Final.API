@@ -1,5 +1,8 @@
-﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using ELIXIRETD.DATA.CORE.ICONFIGURATION;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 
@@ -123,7 +126,72 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
         }
 
 
+        [HttpPost("ImportBufferLevel")]
+        public async Task<IActionResult> ImportBufferLevel ([FromBody]ImportBufferLevelDto[] itemCode)
+        {
 
+            var availableItemList = new List<ImportBufferLevelDto>();
+            var duplicateList = new List<ImportBufferLevelDto>();
+            var itemNotExist = new List<ImportBufferLevelDto>();
+
+
+            foreach (var item in itemCode)
+            {
+
+                if (itemCode.Count(x => x.ItemCode == item.ItemCode) > 1 )
+                {
+                    duplicateList.Add(item);
+                    continue;
+                }
+                else
+                {
+                    var itemCodeNotExist = await _unitOfWork.Imports.CheckItemCode(item.ItemCode);
+
+
+                    if (itemCodeNotExist == false)
+                    {
+                        itemNotExist.Add(item);
+                    }
+                    else
+                    {
+                        availableItemList.Add(item);
+                        await _unitOfWork.Imports.ImportBufferLevel(item);
+ 
+                    }
+
+                }
+
+            }
+
+            var resultList = new
+            {
+                availableItemList,
+                duplicateList,
+                itemNotExist,
+
+            };
+
+            if (!resultList.duplicateList.Any() && !resultList.itemNotExist.Any())
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Success");
+
+            }
+            else
+            {
+                return BadRequest(resultList);
+            }
+
+        }
+
+
+        [HttpGet("WarehouseOverAllStocks")]
+        public async Task<IActionResult> WarehouseOverAllStocks([FromQuery] string Search)
+        {
+            var warehouseStocks = await _unitOfWork.Imports.WarehouseOverAllStocks(Search);
+
+            return Ok(warehouseStocks);
+        }
 
 
     }

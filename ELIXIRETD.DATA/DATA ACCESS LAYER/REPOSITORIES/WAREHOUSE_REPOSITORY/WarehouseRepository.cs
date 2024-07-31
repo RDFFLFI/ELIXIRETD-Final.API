@@ -521,7 +521,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         {
 
             var moveorderOut = _context.MoveOrders
-                .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
+                //.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                       .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                       .Where(x => x.IsActive == true && x.IsApprove == true)
                                       .GroupBy(x => new
@@ -650,6 +650,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                          + total.Sum(x => x.returned.In != null ? x.returned.In : 0)
                                          - total.Sum(x => x.warehouse.warehouse.moveorder.Out)
                                          - total.Sum(x => x.warehouse.warehouse.warehouse.issue.Out)
+                                         -total.Sum(x => x.warehouse.borrowed.Out)
 
                                      }).Where(x => x.ActualGood > 0);
 
