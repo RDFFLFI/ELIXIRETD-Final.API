@@ -638,8 +638,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               {
                                   warehouse.WarehouseId,
                                   warehouse.ItemCode,
-                                  //warehouse.ActualGood,
-                                  //warehouse.UnitPrice
 
                               }
 
