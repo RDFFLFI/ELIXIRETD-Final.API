@@ -444,7 +444,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var moveorderOut = _context.MoveOrders
                 .Where(x => x.ItemCode == itemcode)
                 .Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsApprove == true)
+                                                  .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -898,7 +898,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 });
 
             var moveOrderList = _context.MoveOrders
-                .Where(x => x.IsActive == true && x.IsApprove == true)
+                .Where(x => x.IsActive == true && x.IsPrepared == true)
                 .GroupBy(x => new
                 {
                     x.WarehouseId,

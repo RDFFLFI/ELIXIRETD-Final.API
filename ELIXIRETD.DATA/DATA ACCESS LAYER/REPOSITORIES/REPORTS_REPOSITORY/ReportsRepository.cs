@@ -198,7 +198,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             var moveOrderReports = _context.MoveOrders
                                 .AsNoTracking()
-                 .Where(x => x.IsActive == true && x.IsApprove == true)
+                 .Where(x => x.IsActive == true && x.IsPrepared == true)
                  .Where(x => x.ApprovedDate.Value.Date >= DateTime.Parse(DateFrom).Date &&
                           x.ApprovedDate.Value.Date <= DateTime.Parse(DateTo).Date)
                 .Where(x => x.IsActive == true && x.IsApprove == true)
@@ -274,7 +274,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var getMoveOrderOut = _context.MoveOrders
                 .AsNoTrackingWithIdentityResolution()
                 .Where(x => x.IsActive == true)
-                                         .Where(x => x.IsApprove == true)
+                                         .Where(x => x.IsPrepared == true)
                                          .GroupBy(x => new
                                          {
 
@@ -862,7 +862,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                               });
 
             var getMoveOrdersOutByDate = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsApprove == true)
+                                                            .Where(x => x.IsPrepared == true)
                                                             .Where(x => x.PreparedDate.Value >= DateTime.Parse(DateFrom) && x.PreparedDate.Value <= DateTime.Parse(PlusOne))
                                                             .GroupBy(x => new
                                                             {
@@ -878,7 +878,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                             });
 
             var getMoveOrdersOutbyDatePlus = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsApprove == true)
+                                                                .Where(x => x.IsPrepared == true)
                                                                 .Where(x => x.PreparedDate.Value >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate.Value <= DateToday)
                                                                 .GroupBy(x => new
                                                                 {
@@ -1075,7 +1075,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                     .Where(x => x.IsApprove == true)
+                                                     .Where(x => x.IsPrepared == true)
                                                      .GroupBy(x => new
                                                      {
 

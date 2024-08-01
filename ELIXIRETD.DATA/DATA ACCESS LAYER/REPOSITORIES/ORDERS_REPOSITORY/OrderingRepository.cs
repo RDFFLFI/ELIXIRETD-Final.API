@@ -1591,7 +1591,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         {
             var TotaloutMoveOrder = await _context.MoveOrders.Where(x => x.WarehouseId == id)
                                                              .Where(x => x.IsActive == true)
-                                                             .Where(x => x.IsApprove == true)
+                                                             .Where(x => x.IsPrepared == true)
                                                              .Where(x => x.ItemCode == itemcode)
                                                              .SumAsync(x => x.QuantityOrdered);
 
@@ -1678,7 +1678,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var getMoveOrder = _context.MoveOrders
                                               .Where(x => x.ItemCode == itemCode)
                                               .Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsApprove == true)
+                                                  .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
                                                       x.ItemCode,
@@ -1822,7 +1822,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var moveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                 .Where(x => x.IsApprove == true)
+                                                 .Where(x => x.IsPrepared == true)
                                                  .GroupBy(x => new
                                                  {
                                                      x.ItemCode,
@@ -3274,7 +3274,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var result =  _context.MoveOrders
-                .Where(x => x.IsActive == true && x.IsApprove == true)
+                .Where(x => x.IsActive == true && x.IsPrepared == true)
                 .Where(x => x.AssetTag != null)
                 .GroupJoin(wareHouseResult, moveOrders => moveOrders.WarehouseId, warehouse => warehouse.WareHouseId, (moveOrders, warehouse) => new { moveOrders, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty() , (x, warehouse) => new {x.moveOrders , warehouse })

@@ -523,7 +523,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var moveorderOut = _context.MoveOrders
                 //.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                       .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
-                                      .Where(x => x.IsActive == true && x.IsApprove == true)
+                                      .Where(x => x.IsActive == true && x.IsPrepared == true)
                                       .GroupBy(x => new
                                       {
                                           x.WarehouseId,
@@ -652,7 +652,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                          - total.Sum(x => x.warehouse.warehouse.warehouse.issue.Out)
                                          -total.Sum(x => x.warehouse.borrowed.Out)
 
-                                     }).Where(x => x.ActualGood > 0);
+                                     })/*.Where(x => x.ActualGood > 0)*/;
 
             return await warehouseInventory.ToListAsync();
                          

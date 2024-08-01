@@ -90,7 +90,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                            });
 
             var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                    .Where(x => x.IsApprove == true)
+                                                    .Where(x => x.IsPrepared == true)
                                                     .GroupBy(x => new
                                                     {
                                                         x.ItemCode,
@@ -103,7 +103,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                     });
 
-            var getNotTransacted = _context.MoveOrders.Where(x => x.IsActive == true && x.IsApprove == true)
+            var getNotTransacted = _context.MoveOrders.Where(x => x.IsActive == true && x.IsPrepared == true)
                                         .Where(x => x.IsTransact != true)
                                         .GroupBy(x => new
                                         {
@@ -403,7 +403,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getMoveOrderoutPerMonth = _context.MoveOrders.Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                               .Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsApprove == true)
+                                                              .Where(x => x.IsPrepared == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,
@@ -536,7 +536,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getMoveOrderOutid = _context.MoveOrders
                 .Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsApprove == true)
+                                                  .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
                                                       x.WarehouseId,
@@ -1017,7 +1017,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
             var getMoveOrderoutPerMonth = _context.MoveOrders.AsNoTrackingWithIdentityResolution().Where(x => x.PreparedDate >= StartDate && x.PreparedDate <= EndDate)
                                                               .Where(x => x.IsActive == true)
-                                                              .Where(x => x.IsApprove == true)
+                                                              .Where(x => x.IsPrepared == true)
                                                               .GroupBy(x => new
                                                               {
                                                                   x.ItemCode,

@@ -56,7 +56,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
             var moveorderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsApprove == true)
+                                                  .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
 
@@ -270,7 +270,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
 
             var moveorderOut = _context.MoveOrders.Where(x => x.ItemCode == itemcode).Where(x => x.IsActive == true)
-                                                  .Where(x => x.IsApprove == true)
+                                                  .Where(x => x.IsPrepared == true)
                                                   .GroupBy(x => new
                                                   {
 
