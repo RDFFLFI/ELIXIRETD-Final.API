@@ -119,7 +119,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         //====================================================== Update Orders ==================================================================
 
-        Task<bool> AddNewOrders(Ordering Orders);
+        Task<bool> AddNewOrders(Ordering Orders, CancellationToken cancellation);
         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/);
 
         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search/* , bool status*/);

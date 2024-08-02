@@ -18,7 +18,8 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public UserService(
                                    StoreContext context,
-                                   IConfiguration configuration)
+                                   IConfiguration configuration
+            )
         {
             _context = context;
             _configuration = configuration;

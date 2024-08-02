@@ -28,7 +28,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPost]
         [Route("AddNewOrders")]
-        public async Task<IActionResult> AddNewOrders([FromBody] Ordering[] order)
+        public async Task<IActionResult> AddNewOrders([FromBody] Ordering[] order, CancellationToken cancellation)
         {
             if (ModelState.IsValid != true )
               return new JsonResult("Something went Wrong!") { StatusCode = 500 };
@@ -36,26 +36,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 
                 List<Ordering> DuplicateList = new List<Ordering>();
                 List<Ordering> AvailableImport = new List<Ordering>();
-                //List<Ordering> CustomerCodeNotExist = new List<Ordering>();
                 List<Ordering> CustomerNameNotExist = new List<Ordering>();
-                List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> ItemCodesExist = new List<Ordering>();
-                //List<Ordering> ItemDescriptionNotExist = new List<Ordering>();
-                //List<Ordering> QuantityInValid = new List<Ordering>();
+                List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
                 List<Ordering> AccountCodeEmpty = new List<Ordering>();
                 List<Ordering> AccountTitleEmpty = new List<Ordering>();
-                //List<Ordering> DepartmentCodeanNameNotExist = new List <Ordering>();
-                //List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
-                //List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
 
                 foreach (Ordering items in order)
                 {
-
-                    //if (items.QuantityOrdered <= 0)
-                    //{
-                    //    QuantityInValid.Add(items);
-                    //
 
                     if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.Customercode == items.Customercode && x.CustomerType == items.CustomerType) > 1)
                     {
@@ -66,15 +55,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                  
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
-                        //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName , items.CustomerType);
                         var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription, items.Uom);
-                        //var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
                         var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
-                    //var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
-                    //var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.Department);
-                    //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
-                    //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
+                        
 
                     if (validateOrderNoAndItemcode == true)
                     {
@@ -85,11 +69,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         PreviousDateNeeded.Add(items);
                     }
 
-                    //else if (validateCustomerCode == false)
-                    //{
-                    //    CustomerCodeNotExist.Add(items);
-                    //}
-
                     else if (validateCustomerName == false)
                     {
                         CustomerNameNotExist.Add(items);
@@ -99,7 +78,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     {
                         ItemCodesExist.Add(items);
                     }
-
+                    else if (validateUom == false)
+                    {
+                        UomNotExist.Add(items);
+                    }
                     else if (string.IsNullOrEmpty(items.AccountCode))
                     {
                         AccountCodeEmpty.Add(items);
@@ -110,25 +92,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         AccountTitleEmpty.Add(items);
                     }
 
-                    //else if (validateItemDescription == false)
-                    //{
-                    //    ItemDescriptionNotExist.Add(items);
-                    //}
-
-                    else if (validateUom == false)
-                    {
-                        UomNotExist.Add(items);
-                    }
-
                     else
                     {
 
                         items.SyncDate = DateTime.Now;
                         AvailableImport.Add(items);
-                        await _unitofwork.Orders.AddNewOrders(items);
+                        await _unitofwork.Orders.AddNewOrders(items, cancellation);
 
                     }
-
                 }
 
                 var resultList = new
@@ -141,7 +112,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    PreviousDateNeeded,
                    AccountCodeEmpty,
                    AccountTitleEmpty
-
                 };
 
                 if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 
@@ -587,7 +557,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
             order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
             order.DepartmentName = details.Department;
-
             order.DepartmentCode = details.DepartmentCode;
             order.CompanyCode = details.CompanyCode;
             order.CompanyName = details.CompanyName;

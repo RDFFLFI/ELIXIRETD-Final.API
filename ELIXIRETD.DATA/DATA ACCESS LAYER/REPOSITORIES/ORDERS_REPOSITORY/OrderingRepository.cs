@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Wordprocessing;
-using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
+﻿using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto;
@@ -8,8 +6,6 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.Notification_Dto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.PreperationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.TransactDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +71,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                          CustomerName = x.Key.CustomerName,
                                          IsActive = x.Key.IsActive,
                                          Rush = x.Key.Rush != null ? true : false,
-                      
+
                                      }).Where(x => x.Rush == true);
 
             return await orders.ToListAsync();
@@ -320,16 +316,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                      x.moveorders.Rush,
 
                  }).Select(x => new DtoForApprovalMoveOrderNotif
-            {
-           MIRId = x.Key.OrderNo,
-           CustomerCode = x.Key.Customercode,
-           CustomerName = x.Key.CustomerName,
-           Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
-           OrderDate = x.Key.OrderDate.ToString(),
-           PreparedDate = x.Key.PreparedDate.ToString(),
-           Rush = x.Key.Rush != null ? true : false,
+                 {
+                     MIRId = x.Key.OrderNo,
+                     CustomerCode = x.Key.Customercode,
+                     CustomerName = x.Key.CustomerName,
+                     Quantity = x.Sum(x => x.moveorders.QuantityOrdered),
+                     OrderDate = x.Key.OrderDate.ToString(),
+                     PreparedDate = x.Key.PreparedDate.ToString(),
+                     Rush = x.Key.Rush != null ? true : false,
 
-       }).Where(x => x.Rush == true);
+                 }).Where(x => x.Rush == true);
 
             return await orders.ToListAsync();
 
@@ -529,7 +525,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<bool> ValidateDateNeeded(Ordering orders)
         {
-            var dateNow = DateTime.Now/*.AddDays(-5)*/;
+            var dateNow = DateTime.Now.AddDays(-5);
 
             if (Convert.ToDateTime(orders.DateNeeded).Date < dateNow.Date)
                 return false;
@@ -564,7 +560,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-        public async Task<bool> ValidateItemCode(string ItemCode, string itemdescription , string uom)
+        public async Task<bool> ValidateItemCode(string ItemCode, string itemdescription, string uom)
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == ItemCode)
                                                 .Where(x => x.ItemDescription == itemdescription)
@@ -661,20 +657,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         //=========================================== MIR Update In Ordering Preparation Schedule============================================================
 
         //Customer
-        public async Task<bool> AddNewOrders(Ordering Orders)
+        public async Task<bool> AddNewOrders(Ordering Orders, CancellationToken cancellation)
         {
 
-            var existing = await _context.Customers.Where(x => x.CustomerName == Orders.CustomerName)
-                                                   .FirstOrDefaultAsync();
+            var existing = await _context.Customers
+                .FirstOrDefaultAsync(x => x.CustomerName == Orders.CustomerName,cancellation);
+
             if (existing == null)
                 return false;
-
 
             Orders.IsActive = true;
             Orders.StandartQuantity = Orders.QuantityOrdered;
 
-
-            await _context.Orders.AddAsync(Orders);
+            await _context.Orders.AddAsync(Orders,cancellation);
             return true;
 
         }
@@ -720,7 +715,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-            var orders = _context.Orders.OrderBy(x => x.SyncDate)                               
+            var orders = _context.Orders.OrderBy(x => x.SyncDate)
                                    .OrderBy(x => x.TrasactId)
 
 
@@ -765,7 +760,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                            x.DateNeeded,
                                            x.OrderDate,
                                            x.Rush,
-                                          
+
 
                                        }).Select(x => new GetAllListOfMirDto
                                        {
@@ -787,7 +782,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-        public async Task<PagedList<GetAllListOfMirDto>> GetAllListOfMir(UserParams userParams, bool status , string search)
+        public async Task<PagedList<GetAllListOfMirDto>> GetAllListOfMir(UserParams userParams, bool status, string search)
         {
 
             var orders = _context.Orders
@@ -857,7 +852,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             OrderedDate = x.Key.OrderDate.ToString(),
                                             IsRush = x.Key.Rush != null ? true : false,
                                             Rush = x.Key.Rush,
-                                           
+
                                         }).ToListAsync();
 
         }
@@ -897,7 +892,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 AccountTitles = x.AccountTitles,
                                                 EmpId = x.EmpId,
                                                 FullName = x.FullName
-                                                
+
                                             }).ToList()
 
                                         });
@@ -951,7 +946,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                });
 
             var getBorrowedIssue = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                              
+
                                                                 .GroupBy(x => new
                                                                 {
 
@@ -1028,7 +1023,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var orders = _context.Orders
-                .Where(ordering =>ordering.PreparedDate == null && ordering.IsActive == true)
+                .Where(ordering => ordering.PreparedDate == null && ordering.IsActive == true)
                 .Where(x => listofMirIds.Contains(x.TrasactId))
                 .GroupJoin(getReserve, ordering => ordering.ItemCode, warehouse => warehouse.ItemCode, (ordering, warehouse) => new { ordering, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.ordering, warehouse })
@@ -1050,12 +1045,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.ordering.FullName,
                     x.ordering.AssetTag,
                     Reserve = x.warehouse.Reserve != null ? x.warehouse.Reserve : 0
-                    
+
                 })
                 .Select(total => new AllOrdersPerMIRIDsDTO
                 {
 
-                    Id = total.Key.Id, 
+                    Id = total.Key.Id,
                     OrderNo = total.Key.OrderNo,
                     MIRId = total.Key.TrasactId,
                     CustomerCode = total.Key.Customercode,
@@ -1075,7 +1070,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     StockOnHand = total.Key.Reserve > 0 ? total.Key.Reserve : 0,
                     AssetTag = total.Key.AssetTag
 
-                   
+
                 }).ToList();
 
             foreach (var order in orders)
@@ -1103,7 +1098,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     stockOnHandDict[order.ItemCode] = 0;
                 }
 
-                order.StockOnHand = stockOnHandDict[order.ItemCode] ;
+                order.StockOnHand = stockOnHandDict[order.ItemCode];
                 order.Reserve = reserveDict[order.ItemCode];
 
             }
@@ -1132,7 +1127,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var Ordertransact = await _context.Orders.Where(x => x.TrasactId == orders.TrasactId)
                                              .ToListAsync();
-          
+
 
             foreach (var items in Ordertransact)
             {
@@ -1164,7 +1159,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-                         
+
         public async Task<bool> CancelOrders(Ordering orders)
         {
             var existing = await _context.Orders.Where(x => x.Id == orders.Id)
@@ -1176,7 +1171,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             existing.IsActive = false;
             existing.IsCancelBy = orders.IsCancelBy;
             existing.Modified_Date = DateTime.Now;
-            
+
             existing.IsCancel = true;
             existing.CancelDate = DateTime.Now;
             existing.Remarks = orders.Remarks;
@@ -1219,11 +1214,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                               Uom = x.Uom,
                                               QuantityOrder = x.QuantityOrdered,
                                               ItemRemarks = x.ItemRemarks,
-                                           
+
                                           }).ToList()
-                                          
+
                                       }).Where(x => x.IsRush == status);
-                                    
+
 
             return await orders.ToListAsync();
 
@@ -1239,7 +1234,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                         .Select(x => new GetallOrderfroScheduleApproveDto
                                         {
                                             MIRId = x.TrasactId,
-                                            OrderId = x.Id, 
+                                            OrderId = x.Id,
                                             Department = x.Department,
                                             CustomerName = x.CustomerName,
                                             CustomerCode = x.Customercode,
@@ -1250,7 +1245,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                             QuantityOrder = x.QuantityOrdered,
                                             ItemRemarks = x.ItemRemarks,
                                             AssetTag = x.AssetTag
-                                            
+
 
                                         });
 
@@ -1398,13 +1393,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDateNoSearch(UserParams userParams, bool status)
         {
-           
+
             var orders = _context.Orders.GroupBy(x => new
             {
                 x.TrasactId,
                 x.CustomerName,
                 x.Customercode,
-              
+
                 x.PreparedDate,
                 x.IsApproved,
                 x.IsMove,
@@ -1431,7 +1426,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Id = x.Key.TrasactId,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-               
+
                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsMove = x.Key.IsMove,
@@ -1443,7 +1438,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CompanyCode = x.Key.CompanyCode,
                 LocationCode = x.Key.LocationCode,
                 LocationName = x.Key.LocationName,
-                    
+
                 IsRush = x.Key.Rush != null ? true : false,
                 Rush = x.Key.Rush,
 
@@ -1453,7 +1448,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
-        public async Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(UserParams userParams, bool status , string search)
+        public async Task<PagedList<TotalListOfApprovedPreparedDateDto>> TotalListOfApprovedPreparedDate(UserParams userParams, bool status, string search)
         {
 
             var orders = _context.Orders.GroupBy(x => new
@@ -1461,7 +1456,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.TrasactId,
                 x.CustomerName,
                 x.Customercode,
-              
+
                 x.PreparedDate,
                 x.IsApproved,
                 x.IsMove,
@@ -1489,7 +1484,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 Id = x.Key.TrasactId,
                 CustomerName = x.Key.CustomerName,
                 CustomerCode = x.Key.Customercode,
-               
+
                 TotalOrders = x.Sum(x => x.QuantityOrdered),
                 PreparedDate = x.Key.PreparedDate.ToString(),
                 IsMove = x.Key.IsMove,
@@ -1501,8 +1496,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 CompanyCode = x.Key.CompanyCode,
                 LocationCode = x.Key.LocationCode,
                 LocationName = x.Key.LocationName,
-                    
-                IsRush = x.Key.Rush != null  ? true : false,
+
+                IsRush = x.Key.Rush != null ? true : false,
                 Rush = x.Key.Rush,
 
             }).Where(x => x.IsRush == status)
@@ -1538,7 +1533,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                    .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
                    .GroupBy(x => new
                    {
-                       x.ordering.Id,        
+                       x.ordering.Id,
                        x.ordering.OrderNo,
                        x.ordering.TrasactId,
                        x.ordering.OrderDate,
@@ -1578,8 +1573,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                        EmpId = total.Key.EmpId,
                        FullName = total.Key.FullName,
                        AssetTag = total.Key.AssetTag
-                       
-                     
+
+
                    });
 
             return await orders.ToListAsync();
@@ -1606,7 +1601,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
                                                  .GroupBy(x => new
                                                  {
-                                                   
+
                                                      x.BorrowedItemPkey
 
                                                  }).Select(x => new ItemStocksDto
@@ -1660,7 +1655,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var getwarehouseIn = _context.WarehouseReceived
                                               .Where(x => x.ItemCode == itemCode)
                                               .Where(x => x.IsActive == true)
-                                                            
+
                                                            .GroupBy(x => new
                                                            {
                                                                x.Id,
@@ -1692,7 +1687,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                   });
 
-         
+
 
 
             var getMiscIssue = _context.MiscellaneousIssueDetail
@@ -2000,15 +1995,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
         {
-            var orders = _context.Orders.Where(x => x.IsMove == false)
+            var orders = _context.Orders
+                .Where(x => x.IsMove == false)
                 .Where(x => x.IsActive == true)
                 .Select(x => new GetMoveOrderDetailsForMoveOrderDto
                 {
                     Id = x.Id,
                     MIRId = x.TrasactId,
-                    
                     OrderNoGenus = x.OrderNo,
-
                     Department = x.Department,
                     DepartmentCode = x.DepartmentCode,
                     CompanyName = x.CompanyName,
@@ -2019,13 +2013,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     AccountTitles = x.AccountTitles,
                     EmpId = x.EmpId,
                     FullName = x.FullName,
-
-
                     Remarks = x.Remarks,
-
                     CustomerName = x.CustomerName,
                     CustomerCode = x.Customercode,
-
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemdDescription,
                     Uom = x.Uom,
@@ -2034,21 +2024,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     OrderDate = x.OrderDate.ToString(),
                     DateNeeded = x.DateNeeded.ToString(),
                     PrepareDate = x.PreparedDate.ToString(),
-
                     HelpDeskNo = x.HelpdeskNo,
-
                     CustomerType = x.CustomerType,
-                    Rush = x.Rush,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                    Rush = x.Rush,
                     ItemRemarks = x.ItemRemarks,
                     Cip_no = x.Cip_No,
                     AssetTag = x.AssetTag,
                     DateApproved = x.DateApproved.ToString(),
                     Approver = x.Approver,
                     Requestor = x.Requestor
-
-                    
-                    
-
 
 
                 });
@@ -2089,7 +2073,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             {
                 items.IsApproved = null;
                 items.ApprovedDate = null;
-                
+
             }
 
             if (existMOveOrders != null)
@@ -2126,7 +2110,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             return await orders.Where(x => x.OrderNo == id)
                                .Where(x => x.IsActive == true)
-                               
+
                                .ToListAsync();
         }
 
@@ -2207,14 +2191,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .GroupBy(x => new
                 {
 
-                   x.OrderNo,
-                   x.UnitPrice,
-                   x.ItemCode,
-                   x.ItemDescription,
-                   x.Uom,
-                   x.QuantityOrdered,
-                   x.Id
-                   
+                    x.OrderNo,
+                    x.UnitPrice,
+                    x.ItemCode,
+                    x.ItemDescription,
+                    x.Uom,
+                    x.QuantityOrdered,
+                    x.Id
+
 
                 })
                 .Select(x => new ViewMoveOrderForApprovalDto
@@ -2246,15 +2230,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 UnitCost = x.Sum(x => x.UnitCost) / x.Sum(x => x.Quantity),
                 Quantity = x.Sum(x => x.Quantity)
 
-           
+
             });
 
             var moverders = _context.Orders
             .GroupJoin(_context.MoveOrders, order => order.TrasactId, moveorder => moveorder.OrderNo, (order, moveorder) => new { order, moveorder })
             .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.order, moveorder })
-            .GroupJoin(UnitPriceTotal, order => order.order.ItemCode , unitcost => unitcost.ItemCode , (order ,unitcost) => new { order , unitcost })
-            .SelectMany(x => x.unitcost.DefaultIfEmpty() , (x , unitcost) => new {x.order , unitcost})
-            .Where(x =>  x.order.moveorder.IsActive == true && x.order.moveorder.IsReject == null && x.order.moveorder.IsApprove == null && x.order.moveorder.IsPrepared == true && x.order.order.IsMove == true)
+            .GroupJoin(UnitPriceTotal, order => order.order.ItemCode, unitcost => unitcost.ItemCode, (order, unitcost) => new { order, unitcost })
+            .SelectMany(x => x.unitcost.DefaultIfEmpty(), (x, unitcost) => new { x.order, unitcost })
+            .Where(x => x.order.moveorder.IsActive == true && x.order.moveorder.IsReject == null && x.order.moveorder.IsApprove == null && x.order.moveorder.IsPrepared == true && x.order.order.IsMove == true)
             .GroupBy(x => new
             {
                 x.order.order.TrasactId,
@@ -2293,7 +2277,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 AccountTitles = x.Key.AccountTitles,
                 EmpId = x.Key.EmpId,
                 FullName = x.Key.FullName,
-                IsRush = x.Key.Rush != null ?  true : false,
+                IsRush = x.Key.Rush != null ? true : false,
                 Status = x.Key.IsPrepared == true && x.Key.IsApprove == null ? "For Approval" : "Approve",
                 Order = x.GroupBy(x => new
                 {
@@ -2489,7 +2473,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ApprovedDate = x.First().moveOrder.ApprovedDate.ToString(),
                     Quantity = x.First().order.StandartQuantity,
                     ServedQuantity = x.Sum(x => x.moveOrder.QuantityOrdered),
-                    UnservedQuantity =  x.First().order.StandartQuantity - x.Sum(x => x.moveOrder.QuantityOrdered),
+                    UnservedQuantity = x.First().order.StandartQuantity - x.Sum(x => x.moveOrder.QuantityOrdered),
                     CompanyCode = x.First().moveOrder.CompanyCode,
                     CompanyName = x.First().moveOrder.CompanyName,
                     DepartmentCode = x.First().moveOrder.DepartmentCode,
@@ -2604,7 +2588,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = true;
                 items.PreparedBy = null;
                 items.IsApproveReject = null;
-                
+
 
             }
 
@@ -2621,10 +2605,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         // ================================================== MIR MoveOrder Approval ========================================================
 
-        public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination(UserParams userParams , bool status)
+        public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPagination(UserParams userParams, bool status)
         {
 
-         
+
             var orders = _context.MoveOrders.Where(x => x.IsActive == true)
                      .GroupBy(x => new
                      {
@@ -2633,7 +2617,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                          x.CustomerName,
                          x.Customercode,
                          x.AddressOrder,
-                      
+
                          x.PreparedDate,
                          x.IsApprove,
                          x.IsPrepared,
@@ -2645,7 +2629,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
                      }).Where(x => x.Key.IsApprove == true)
-                       
+
 
 
               .Select(x => new ApprovedMoveOrderPaginationDto
@@ -2655,7 +2639,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   Department = x.Key.Department,
                   CustomerName = x.Key.CustomerName,
                   CustomerCode = x.Key.Customercode,
-                  Address = x.Key.AddressOrder,             
+                  Address = x.Key.AddressOrder,
                   Quantity = x.Sum(x => x.QuantityOrdered),
                   PreparedDate = x.Key.PreparedDate.ToString(),
                   IsApprove = x.Key.IsApprove != null,
@@ -2672,7 +2656,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
         }
-        public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
+        public async Task<PagedList<ApprovedMoveOrderPaginationDto>> ApprovedMoveOrderPaginationOrig(UserParams userParams, string search, bool status)
         {
             var orders = _context.MoveOrders.Where(x => x.IsActive == true)
                     .GroupBy(x => new
@@ -2682,7 +2666,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                         x.CustomerName,
                         x.Customercode,
                         x.AddressOrder,
-                      
+
                         x.PreparedDate,
                         x.IsApprove,
                         x.IsPrepared,
@@ -2703,7 +2687,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                  CustomerName = x.Key.CustomerName,
                  CustomerCode = x.Key.Customercode,
                  Address = x.Key.AddressOrder,
-              
+
                  Quantity = x.Sum(x => x.QuantityOrdered),
                  PreparedDate = x.Key.PreparedDate.ToString(),
                  IsApprove = x.Key.IsApprove != null,
@@ -2803,7 +2787,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
 
-          
+
 
             return await orders.FirstOrDefaultAsync();
 
@@ -2834,11 +2818,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         }
 
 
-        public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPagination(UserParams userParams , bool status)
+        public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPagination(UserParams userParams, bool status)
         {
 
             var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
-                                           
+
                                             .GroupBy(x => new
                                             {
 
@@ -2873,10 +2857,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search , bool status)
+        public async Task<PagedList<RejectedMoveOrderPaginationDto>> RejectedMoveOrderPaginationOrig(UserParams userParams, string search, bool status)
         {
 
-            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true )
+            var orders = _context.MoveOrders.Where(x => x.IsApproveReject == true)
                                           .GroupBy(x => new
                                           {
 
@@ -2931,18 +2915,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.IsReject = null;
                 items.IsApprove = null;
                 items.IsApproveReject = null;
-                
+
             }
 
             foreach (var items in existingorders)
             {
-                
+
                 items.IsReject = null;
                 items.RejectBy = null;
                 items.Remarks = null;
                 items.RejectedDate = null;
                 items.IsMove = false;
-                
+
             }
 
             return true;
@@ -2951,7 +2935,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
         //=================================================================== MIR Transact MoveOrder =======================================================
 
 
-        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status , string search)
+        public async Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status, string search)
         {
 
 
@@ -2982,12 +2966,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                 DateNeeded = x.Key.DateNeeded.ToString("MM/dd/yyyy"),
                                                 PreparedDate = x.Key.PreparedDate.ToString(),
                                                 IsApproved = x.Key.IsApprove != null,
-                                                IsRush = x.Key.Rush != null ? true: false,
+                                                IsRush = x.Key.Rush != null ? true : false,
                                                 Rush = x.Key.Rush
 
                                             });
 
-            if(!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(search))
             {
                 orders = orders
                     .Where(x => x.MIRId.ToString().ToLower().Contains(search.ToLower()));
@@ -3104,7 +3088,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                   UnitCost = x.Key.UnitCost,
                   TotalCost = x.Key.TotalCost,
                   AssetTag = x.Key.AssetTag
-                  
+
 
               });
 
@@ -3125,12 +3109,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                        .ToListAsync();
 
             transact.PreparedBy = transact.PreparedBy;
-            
+
 
 
             await _context.TransactOrder.AddAsync(transact);
 
- 
+
             foreach (var itemss in existing)
             {
                 itemss.IsTransact = true;
@@ -3153,9 +3137,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             }).Select(x => new ListofOrderDto
             {
-               TransactId = x.Key.TrasactId,
+                TransactId = x.Key.TrasactId,
                 CustomerCode = x.Key.Customercode,
-               CustomerName = x.Key.CustomerName,
+                CustomerName = x.Key.CustomerName,
                 IsPrepared = x.Key.IsPrepared,
                 IsApproved = x.Key.IsApproved,
                 IsActive = x.Key.IsActive
@@ -3167,7 +3151,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.order, moveorder })
             .GroupBy(x => new
             {
-             
+
                 x.order.TransactId,
                 x.order.CustomerCode,
                 x.order.CustomerName,
@@ -3202,26 +3186,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             }).Select(x => new TrackingofOrderingTransactionDto
             {
-               TransactId = x.Key.TransactId,
-               CustomerCode = x.Key.CustomerCode,
-               CustomerName = x.Key.CustomerName,
+                TransactId = x.Key.TransactId,
+                CustomerCode = x.Key.CustomerCode,
+                CustomerName = x.Key.CustomerName,
                 OrderStatus = (x.Key.IsPrepared && x.Key.IsApproved.HasValue && x.Key.IsServed.HasValue && x.Key.IsServed.Value) ? "Served" :
                   (x.Key.IsPrepared && x.Key.IsApproved.HasValue && (!x.Key.IsServed.HasValue || !x.Key.IsServed.Value)) ? "Approved" :
                   (x.Key.IsPrepared && (!x.Key.IsApproved.HasValue || (!x.Key.IsServed.HasValue && !x.Key.IsServed.Value))) ? "Preparing" :
                   (x.Key.IsActive == true) ? "UnServed" : "For Preparation"
-                  
+
 
             });
 
-            return await List.ToListAsync();   
+            return await List.ToListAsync();
         }
 
         public async Task<IList<ListofServedDto>> ListofServedDto()
         {
 
             var orders = _context.Orders
-                  .GroupJoin(_context.MoveOrders , ordering => ordering.TrasactId , moveorder => moveorder.OrderNo , (ordering, moveorder) => new {ordering , moveorder})
-                  .SelectMany(x => x.moveorder.DefaultIfEmpty() , (x , moveorder) => new {x.ordering , moveorder})
+                  .GroupJoin(_context.MoveOrders, ordering => ordering.TrasactId, moveorder => moveorder.OrderNo, (ordering, moveorder) => new { ordering, moveorder })
+                  .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.ordering, moveorder })
                   .GroupBy(order => order.ordering.TrasactId)
                  .Select(group => new ListofServedDto
                  {
@@ -3235,7 +3219,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                          OrderNo = x.ordering.OrderNo,
                          CustomerType = x.ordering.CustomerType,
                          ItemCode = x.ordering.ItemCode,
-                         ItemCategory =  x.ordering.Category,
+                         ItemCategory = x.ordering.Category,
                          Uom = x.ordering.Uom,
                          QuantityOrdered = x.ordering.QuantityOrdered,
                          CompanyCode = x.ordering.CompanyCode,
@@ -3260,24 +3244,24 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var wareHouseResult = _context.WarehouseReceived
                 .Where(x => x.IsActive == true)
-                .GroupJoin(_context.PoSummaries, warehouse => warehouse.PoSummaryId , poSummary => poSummary.Id , (warehouse , poSummary) => new {warehouse, poSummary })
-                .SelectMany(x => x.poSummary.DefaultIfEmpty() , (x, poSummary) => new {x.warehouse, poSummary })
+                .GroupJoin(_context.PoSummaries, warehouse => warehouse.PoSummaryId, poSummary => poSummary.Id, (warehouse, poSummary) => new { warehouse, poSummary })
+                .SelectMany(x => x.poSummary.DefaultIfEmpty(), (x, poSummary) => new { x.warehouse, poSummary })
                 .Select(x => new DtoMoveOrderAssetTag
                 {
                     WareHouseId = x.warehouse.Id,
-                    PoNumber = x.warehouse.PoNumber ,
-                    PrNumber = x.poSummary.PR_Number != null ? x.poSummary.PR_Number  : 0,
+                    PoNumber = x.warehouse.PoNumber,
+                    PrNumber = x.poSummary.PR_Number != null ? x.poSummary.PR_Number : 0,
                     ItemCode = x.warehouse.ItemCode,
                     AcquisitionDate = x.warehouse.ActualReceivingDate.Date.ToString()
 
                 });
 
 
-            var result =  _context.MoveOrders
+            var result = _context.MoveOrders
                 .Where(x => x.IsActive == true && x.IsPrepared == true)
                 .Where(x => x.AssetTag != null)
                 .GroupJoin(wareHouseResult, moveOrders => moveOrders.WarehouseId, warehouse => warehouse.WareHouseId, (moveOrders, warehouse) => new { moveOrders, warehouse })
-                .SelectMany(x => x.warehouse.DefaultIfEmpty() , (x, warehouse) => new {x.moveOrders , warehouse })
+                .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.moveOrders, warehouse })
                 .GroupJoin(_context.Materials, moveOrders => moveOrders.moveOrders.ItemCode, material => material.ItemCode, (moveOrders, material) => new { moveOrders, material })
                 .SelectMany(x => x.material.DefaultIfEmpty(), (x, material) => new { x.moveOrders, material })
                 .OrderBy(x => x.moveOrders.moveOrders.ApprovedDate)
@@ -3299,7 +3283,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 });
 
             return await result.ToListAsync();
-           
+
         }
     }
 }
