@@ -26,7 +26,6 @@ namespace ELIXIRETD.DATA.SERVICES
     {
         private readonly StoreContext _context;
         private readonly IMediator _mediator;
-        private CancellationToken _cancellation;
 
         private IDbContextTransaction _transaction;
 
@@ -70,12 +69,11 @@ namespace ELIXIRETD.DATA.SERVICES
         public IReports Reports { get; set; }
 
 
-        public UnitOfWork(StoreContext context, IMediator mediator,CancellationToken cancellation)
+        public UnitOfWork(StoreContext context, IMediator mediator)
 
         {
             _context = context;
             _mediator = mediator;
-            _cancellation = cancellation;
 
 
             Users = new UserRepository(_context);
@@ -102,7 +100,7 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public async Task CompleteAsync()
         {
-            await _context.SaveChangesAsync(_cancellation);
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()

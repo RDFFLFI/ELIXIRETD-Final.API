@@ -651,9 +651,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
         }
 
-
-
-
         //=========================================== MIR Update In Ordering Preparation Schedule============================================================
 
         //Customer
