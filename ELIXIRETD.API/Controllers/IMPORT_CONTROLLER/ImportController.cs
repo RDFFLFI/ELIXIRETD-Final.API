@@ -105,6 +105,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     else if (validateItemcodeAndUom == false)
                     {
                         itemcodeanduomNotExist.Add(items);
+
                     }
                     else if (validateQuantity == false)
                         quantityInValid.Add(items);
