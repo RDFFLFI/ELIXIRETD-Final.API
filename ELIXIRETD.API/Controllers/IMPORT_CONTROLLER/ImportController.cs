@@ -3,8 +3,12 @@ using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY.ExportMaterial;
+using static ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY.MoveOrderReportExport;
 
 namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 {
@@ -13,11 +17,13 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
     {
         private IUnitOfWork _unitOfWork;
         private readonly StoreContext _context;
+        private readonly IMediator _mediator;
 
-        public ImportController(IUnitOfWork unitOfWork , StoreContext context)
+        public ImportController(IUnitOfWork unitOfWork, StoreContext context , IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _context = context;
+            _mediator = mediator;
         }
 
 
@@ -26,18 +32,18 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
         public async Task<IActionResult> AddNewPo([FromBody] PoSummary[] posummary)
         {
 
-            if (!ModelState.IsValid) 
-            return new JsonResult("Something went Wrong!") { StatusCode = StatusCodes.Status500InternalServerError };
+            if (!ModelState.IsValid)
+                return new JsonResult("Something went Wrong!") { StatusCode = StatusCodes.Status500InternalServerError };
             {
 
                 List<PoSummary> duplicateList = new List<PoSummary>();
                 List<PoSummary> availableImport = new List<PoSummary>();
                 List<PoSummary> supplierNotExist = new List<PoSummary>();
-                List<PoSummary> itemcodeNotExist = new List<PoSummary>(); 
+                List<PoSummary> itemcodeNotExist = new List<PoSummary>();
                 List<PoSummary> uomCodeNotExist = new List<PoSummary>();
                 List<PoSummary> quantityInValid = new List<PoSummary>();
                 List<PoSummary> itemcodeanduomNotExist = new List<PoSummary>();
-              
+
 
 
 
@@ -45,59 +51,72 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 foreach (PoSummary items in posummary)
                 {
 
+                    var uomExist = await _context.Uoms
+                        .Where(x => x.UomDescription == items.Uom)
+                        .FirstOrDefaultAsync();
+
+                    if (uomExist is null)
+                    {
+                        uomCodeNotExist.Add(items);
+                        continue;
+                    }
+
+                    items.Uom = uomExist.UomCode;
+
+
                     if (items.Ordered <= 0)
                     {
                         quantityInValid.Add(items);
                     }
 
-                   else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
+                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
                     {
                         duplicateList.Add(items);
                         continue;
                     }
 
-                        var validateSupplier = await _unitOfWork.Imports.CheckSupplier(items.VendorName);
-                        var validateItemCode = await _unitOfWork.Imports.CheckItemCode(items.ItemCode);
-                        var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
-                        var validateUom = await _unitOfWork.Imports.CheckUomCode(items.Uom);
-                        var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
-                        var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode /*, items.ItemDescription */, items.Uom);
+                    var validateSupplier = await _unitOfWork.Imports.CheckSupplier(items.VendorName);
+                    var validateItemCode = await _unitOfWork.Imports.CheckItemCode(items.ItemCode);
+                    var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
+                    var validateUom = await _unitOfWork.Imports.CheckUomCode(items.Uom);
+                    var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
+                    var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode /*, items.ItemDescription */, items.Uom);
 
 
-                        if (validatePoandItem == true)
-                        {
-                            duplicateList.Add(items);
-                        }
+                    if (validatePoandItem == true)
+                    {
+                        duplicateList.Add(items);
+                    }
 
-                        else if (validateSupplier == false)
-                        {
-                            supplierNotExist.Add(items);
-                        }
+                    else if (validateSupplier == false)
+                    {
+                        supplierNotExist.Add(items);
+                    }
 
-                        else if (validateUom == false)
-                        {
-                            uomCodeNotExist.Add(items);
-                        }
+                    else if (validateUom == false)
+                    {
+                        uomCodeNotExist.Add(items);
+                    }
 
-                        else if (validateItemCode == false)
-                        {
-                            itemcodeNotExist.Add(items);
-                        }
-                        else if (validateItemcodeAndUom == false)
-                        {
+                    else if (validateItemCode == false)
+                    {
+                        itemcodeNotExist.Add(items);
+                    }
+                    else if (validateItemcodeAndUom == false)
+                    {
                         itemcodeanduomNotExist.Add(items);
-                        }
-                        else if(validateQuantity == false)
-                             quantityInValid.Add(items);
+                    }
+                    else if (validateQuantity == false)
+                        quantityInValid.Add(items);
 
-                        else
-                        {
+                    else
+                    {
                         availableImport.Add(items);
                         await _unitOfWork.Imports.AddNewPORequest(items);
-                        }
-                        
+                    }
+
                 }
-                    
+
                 var resultList = new
                 {
                     availableImport,
@@ -122,12 +141,12 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     return BadRequest(resultList);
                 }
             }
-         
+
         }
 
 
         [HttpPost("ImportBufferLevel")]
-        public async Task<IActionResult> ImportBufferLevel ([FromBody]ImportBufferLevelDto[] itemCode)
+        public async Task<IActionResult> ImportBufferLevel([FromBody] ImportBufferLevelDto[] itemCode)
         {
 
             var availableItemList = new List<ImportBufferLevelDto>();
@@ -138,7 +157,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
             foreach (var item in itemCode)
             {
 
-                if (itemCode.Count(x => x.ItemCode == item.ItemCode) > 1 )
+                if (itemCode.Count(x => x.ItemCode == item.ItemCode) > 1)
                 {
                     duplicateList.Add(item);
                     continue;
@@ -156,7 +175,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     {
                         availableItemList.Add(item);
                         await _unitOfWork.Imports.ImportBufferLevel(item);
- 
+
                     }
 
                 }
@@ -192,6 +211,35 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 
             return Ok(warehouseStocks);
         }
+
+        [HttpGet("ExportMaterial")]
+        public async Task<IActionResult> ExportMaterial([FromQuery] ExportMaterialCommand command)
+        {
+            var filePath = $"MaterialList.xlsx";
+
+            try
+            {
+                await _mediator.Send(command);
+                var memory = new MemoryStream();
+                await using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                var result = File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    filePath);
+                System.IO.File.Delete(filePath);
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                return Conflict(e.Message);
+            }
+
+        }
+
+
 
 
     }
