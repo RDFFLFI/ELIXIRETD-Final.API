@@ -2456,6 +2456,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     x.moveOrder.OrderNo,
                     x.moveOrder.OrderNoPkey,
                     x.moveOrder.ItemCode,
+                    x.moveOrder.UnitPrice,
+
 
                 }).Select(x => new ViewMoveOrderForApprovalDto
                 {
@@ -2469,6 +2471,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Quantity = x.First().order.StandartQuantity,
                     ServedQuantity = x.Sum(x => x.moveOrder.QuantityOrdered),
                     UnservedQuantity = x.First().order.StandartQuantity - x.Sum(x => x.moveOrder.QuantityOrdered),
+                    UnitCost = x.Key.UnitPrice,
                     CompanyCode = x.First().moveOrder.CompanyCode,
                     CompanyName = x.First().moveOrder.CompanyName,
                     DepartmentCode = x.First().moveOrder.DepartmentCode,
@@ -2491,6 +2494,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
                     x.Moveorders.MIRId,
                     x.Moveorders.ItemCode,
+                    x.Moveorders.UnitCost,
 
 
                 }).Select(x => new ViewMoveOrderForApprovalDto
@@ -2505,6 +2509,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Quantity = x.First().Moveorders.Quantity,
                     ServedQuantity = x.First().Moveorders.ServedQuantity,
                     UnservedQuantity = x.First().Moveorders.UnservedQuantity,
+                    UnitCost = x.Key.UnitCost,
                     TQuantity = x.First().tQuantity.TQuantity,
                     CompanyCode = x.First().Moveorders.CompanyCode,
                     CompanyName = x.First().Moveorders.CompanyName,
