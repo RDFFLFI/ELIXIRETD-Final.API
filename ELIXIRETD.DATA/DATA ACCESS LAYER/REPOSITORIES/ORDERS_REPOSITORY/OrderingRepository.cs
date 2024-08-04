@@ -2440,7 +2440,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var totalbyMir = _context.MoveOrders.GroupBy(x => new
             {
                 x.OrderNo,
-
             }).Select(x => new ViewMoveOrderForApprovalDto
             {
                 MIRId = x.Key.OrderNo,

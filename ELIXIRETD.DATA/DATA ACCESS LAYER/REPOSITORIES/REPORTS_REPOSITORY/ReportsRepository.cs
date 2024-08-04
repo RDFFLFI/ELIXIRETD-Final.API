@@ -7,6 +7,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using ELIXIRETD.DATA.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
@@ -477,7 +478,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                             into leftJ
                             from receipt in leftJ.DefaultIfEmpty()                   
 
-                            where receipt.ReceivingDate.Date >= DateTime.Parse(DateFrom).Date && receipt.ReceivingDate.Date <= DateTime.Parse(DateTo).Date && receipt.IsActive == true && receipt.TransactionType == "MiscellaneousReceipt"
+                            where receiptHeader.TransactionDate.Date >= DateTime.Parse(DateFrom).Date && receiptHeader.TransactionDate.Date <= DateTime.Parse(DateTo).Date && receipt.IsActive == true && receipt.TransactionType == "MiscellaneousReceipt"
 
                             select new DtoMiscReports
                             {
@@ -529,7 +530,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var issues = _context.MiscellaneousIssues
                        .GroupJoin(_context.MiscellaneousIssueDetail, receipt => receipt.Id, issue => issue.IssuePKey, (receipt, issue) => new { receipt, issue })
                        .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.receipt, issue })
-                       .Where(x => x.issue.PreparedDate >= DateTime.Parse(DateFrom) && x.issue.PreparedDate <= DateTime.Parse(DateTo) && x.issue.IsActive == true )
+                       .Where(x => x.receipt.TransactionDate.Date >= DateTime.Parse(DateFrom) && x.receipt.TransactionDate.Date <= DateTime.Parse(DateTo) && x.issue.IsActive == true )
                        .Select(x => new DtoMiscIssue
                        {
 
@@ -1397,7 +1398,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var receiptConsol = _context.MiscellaneousReceipts
                 .GroupJoin(_context.WarehouseReceived, receipt => receipt.Id, warehouse => warehouse.MiscellaneousReceiptId, (receipt, warehouse) => new { receipt, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.receipt, warehouse })
-                .Where(x => x.warehouse.ReceivingDate.Date >= dateFrom && x.warehouse.ReceivingDate.Date <= dateTo)
+                .Where(x => x.receipt.TransactionDate.Date >= dateFrom && x.receipt.TransactionDate.Date <= dateTo)
                 .Where(x => x.warehouse.IsActive == true && x.warehouse.TransactionType == "MiscellaneousReceipt") 
                 .Select(x => new ConsolidateFinanceReportDto
                 {
@@ -1437,7 +1438,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Join(_context.MiscellaneousIssueDetail, miscDatail => miscDatail.Id, issue => issue.IssuePKey,
                 (miscDetail, issue) => new { miscDetail, issue })
                 .Where(x => x.issue.IsActive == true)
-                .Where(x => x.issue.PreparedDate.Date >= dateFrom && x.issue.PreparedDate.Date <= dateTo)
+                .Where(x => x.miscDetail.TransactionDate.Date >= dateFrom && x.miscDetail.TransactionDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                    Id = x.issue.Id,

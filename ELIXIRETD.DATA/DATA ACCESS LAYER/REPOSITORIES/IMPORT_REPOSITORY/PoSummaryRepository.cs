@@ -4,6 +4,8 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.EntityFrameworkCore;
 
@@ -246,6 +248,66 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
             warehouseInventory = warehouseInventory.OrderBy(x => x.ItemCode);
 
             return warehouseInventory.ToList();
+        }
+
+        public async Task<bool> AddImportReceipt(ImportMiscReceiptDto items)
+        {
+
+            var addItem = new MiscellaneousReceipt
+            {
+                SupplierCode = items.SupplierCode,
+                supplier = items.SupplierCode,
+                TotalQuantity = items.TotalQuantity,
+                PreparedDate = DateTime.Now,
+                PreparedBy = items.PreparedBy,
+                Remarks = items.Remarks,
+                IsActive = true,
+                TransactionDate = DateTime.Now,
+                CompanyCode = items.CompanyCode,
+                CompanyName = items.CompanyName,
+                DepartmentCode = items.DepartmentCode,
+                DepartmentName = items.DepartmentName,
+                LocationCode = items.LocationCode,
+                LocationName = items.LocationName,
+                Details = items.Details,
+
+            };
+
+            await _context.MiscellaneousReceipts.AddAsync(addItem);
+
+            return true;
+        }
+
+        public async Task<bool> AddImportReceiptToWarehouse(ImportMiscReceiptDto.WarehouseReceiptDto item)
+        {
+
+            var addItem = new Warehouse_Receiving
+            {
+                ItemCode = item.ItemCode,
+                ItemDescription = item.ItemDescription,
+                Uom = item.Uom,
+                Supplier = item.SupplierName,
+                ReceivingDate = DateTime.Now,
+                ActualGood = item.Quantity,
+                ActualDelivered = item.Quantity,
+                TransactionType = "MiscellaneousReceipt",
+                MiscellaneousReceiptId = item.MiscellaneousReceiptId,
+                IsActive = true,
+                IsWarehouseReceived = true,
+                ActualReceivingDate = DateTime.Now,
+                UnitPrice = item.UnitCost,
+                AccountCode = item.AccountCode,
+                AccountTitles = item.AccountTitles,
+                EmpId = item.AccountCode,
+                FullName = item.FullName,
+
+            };
+
+            await _context.WarehouseReceived.AddAsync(addItem);
+
+
+            return true;
+
         }
     }
 }

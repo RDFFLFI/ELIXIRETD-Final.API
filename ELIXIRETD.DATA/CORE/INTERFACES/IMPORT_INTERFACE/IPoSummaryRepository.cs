@@ -27,6 +27,15 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE
 
         Task<IReadOnlyList<WarehouseOverAllStocksDto>> WarehouseOverAllStocks(string Search);
 
+        Task<bool> AddImportReceipt(ImportMiscReceiptDto items);
+
+        Task<bool> AddImportReceiptToWarehouse(ImportMiscReceiptDto.WarehouseReceiptDto item);
+
+
+
+
+        
+
 
 
 

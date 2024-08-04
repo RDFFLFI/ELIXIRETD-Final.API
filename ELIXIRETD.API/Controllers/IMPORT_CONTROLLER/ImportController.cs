@@ -2,6 +2,7 @@
 using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
@@ -240,8 +241,92 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 
         }
 
+        [HttpPost("ImportMiscReceipt")]
+        public async Task<IActionResult> ImportMiscReceipt([FromBody]ImportMiscReceiptDto items)
+        {
+            var availableList = new List<ImportMiscReceiptDto.WarehouseReceiptDto>();
+            var itemCodeNotExist = new List<ImportMiscReceiptDto.WarehouseReceiptDto>();
+            var uomNotExist = new List<ImportMiscReceiptDto.WarehouseReceiptDto>();
+            //var unitCostEmpty = new List<ImportMiscReceiptDto.WarehouseReceiptDto>();
 
+            var supplierCodeExist = await _context.Suppliers
+                .FirstOrDefaultAsync(x => x.IsActive == true && x.SupplierCode == items.SupplierCode);
 
+            if (supplierCodeExist is null)
+            {
+                return BadRequest("Supplier not Exist");
+            }
+
+            var addMiscReceipt = new MiscellaneousReceipt
+            {
+                SupplierCode = items.SupplierCode,
+                supplier = items.SupplierCode,
+                TotalQuantity = items.WarehouseReceipt.Sum(x => x.Quantity),
+                PreparedDate = DateTime.Now,
+                PreparedBy = items.PreparedBy,
+                Remarks = items.Remarks,
+                IsActive = true,
+                TransactionDate = DateTime.Now,
+                CompanyCode = items.CompanyCode,
+                CompanyName = items.CompanyName,
+                DepartmentCode = items.DepartmentCode,
+                DepartmentName = items.DepartmentName,
+                LocationCode = items.LocationCode,
+                LocationName = items.LocationName,
+                Details = items.Details,
+            };
+            
+            await _context.MiscellaneousReceipts.AddAsync(addMiscReceipt);
+            await _context.SaveChangesAsync();
+
+            
+            foreach(var item in items.WarehouseReceipt)
+            {
+
+                var uomExist = await _context.Uoms.FirstOrDefaultAsync(x => x.UomCode == item.Uom);
+
+                if (uomExist is null)
+                {
+                    uomNotExist.Add(item);
+                }
+
+                var itemCodeExist = await _context.Materials
+                    .Where(x => x.ItemCode == item.ItemCode && x.ItemDescription == item.ItemDescription
+                    && x.UomId == uomExist.Id)
+                    .FirstOrDefaultAsync();    
+
+                if (itemCodeExist is null)
+                {
+                    itemCodeNotExist.Add(item);
+                }
+                else
+                {
+                    item.MiscellaneousReceiptId = addMiscReceipt.Id;
+                    availableList.Add(item);
+                    await _unitOfWork.Imports.AddImportReceiptToWarehouse(item);
+                }
+            }
+
+            var resultList = new
+            {
+                availableList,
+                itemCodeNotExist,
+                uomNotExist,
+
+            };
+
+            if (!resultList.itemCodeNotExist.Any() && !resultList.uomNotExist.Any())
+            {
+                await _unitOfWork.CompleteAsync();
+                return Ok("Success Misc");
+
+            }
+            else
+            {
+                return BadRequest(resultList);
+            }
+
+        }
 
     }
 
