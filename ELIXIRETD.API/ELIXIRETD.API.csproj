@@ -44,6 +44,6 @@
     <ProjectReference Include="..\ELIXIRETD.DATA\ELIXIRETD.DATA.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/appveyor.json" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/aspire-8.0.json" /></VisualStudio></ProjectExtensions>
 
 </Project>
