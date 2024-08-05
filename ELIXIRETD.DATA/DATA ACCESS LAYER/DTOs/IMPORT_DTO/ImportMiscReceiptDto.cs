@@ -32,8 +32,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO
             public string ItemDescription { get; set; }
             public int MiscellaneousReceiptId { get; set; }
             public string Uom { get; set; }
-            public decimal Quantity { get; set; }
-            public decimal UnitCost { get; set; }
+            public string Quantity { get; set; }
+            public string UnitCost { get; set; }
             public string AccountCode { get; set; }
             public string AccountTitles { get; set; }
 

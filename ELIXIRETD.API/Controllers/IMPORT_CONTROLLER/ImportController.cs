@@ -41,29 +41,10 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 List<PoSummary> availableImport = new List<PoSummary>();
                 List<PoSummary> supplierNotExist = new List<PoSummary>();
                 List<PoSummary> itemcodeNotExist = new List<PoSummary>();
-                List<PoSummary> uomCodeNotExist = new List<PoSummary>();
                 List<PoSummary> quantityInValid = new List<PoSummary>();
-                List<PoSummary> itemcodeanduomNotExist = new List<PoSummary>();
-
-
-
-
 
                 foreach (PoSummary items in posummary)
                 {
-
-                    var uomExist = await _context.Uoms
-                        .Where(x => x.UomDescription == items.Uom)
-                        .FirstOrDefaultAsync();
-
-                    if (uomExist is null)
-                    {
-                        uomCodeNotExist.Add(items);
-                        continue;
-                    }
-
-                    items.Uom = uomExist.UomCode;
-
 
                     if (items.Ordered <= 0)
                     {
@@ -77,12 +58,12 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     }
 
                     var validateSupplier = await _unitOfWork.Imports.CheckSupplier(items.VendorName);
-                    var validateItemCode = await _unitOfWork.Imports.CheckItemCode(items.ItemCode);
+                    var validateItemCode = await _context.Materials
+                        .Include(x => x.Uom)
+                        .FirstOrDefaultAsync(x => x.ItemCode == items.ItemCode && x.IsActive);
                     var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
-                    var validateUom = await _unitOfWork.Imports.CheckUomCode(items.Uom);
                     var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
                     var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode /*, items.ItemDescription */, items.Uom);
-
 
                     if (validatePoandItem == true)
                     {
@@ -94,29 +75,20 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         supplierNotExist.Add(items);
                     }
 
-                    else if (validateUom == false)
-                    {
-                        uomCodeNotExist.Add(items);
-                    }
-
-                    else if (validateItemCode == false)
+                    else if (validateItemCode is null)
                     {
                         itemcodeNotExist.Add(items);
-                    }
-                    else if (validateItemcodeAndUom == false)
-                    {
-                        itemcodeanduomNotExist.Add(items);
-
                     }
                     else if (validateQuantity == false)
                         quantityInValid.Add(items);
 
                     else
                     {
+                        items.ItemDescription = validateItemCode.ItemDescription;
+                        items.Uom = validateItemCode.Uom.UomCode;
                         availableImport.Add(items);
                         await _unitOfWork.Imports.AddNewPORequest(items);
                     }
-
                 }
 
                 var resultList = new
@@ -125,13 +97,10 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     duplicateList,
                     supplierNotExist,
                     itemcodeNotExist,
-                    uomCodeNotExist,
                     quantityInValid,
-                    itemcodeanduomNotExist,
-                    //unitPriceInvalid
                 };
 
-                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && uomCodeNotExist.Count == 0 && quantityInValid.Count == 0 && itemcodeanduomNotExist.Count == 0 /*&& unitPriceInvalid.Count == 0*/)
+                if (duplicateList.Count == 0 && supplierNotExist.Count == 0 && itemcodeNotExist.Count == 0 && quantityInValid.Count == 0  /*&& unitPriceInvalid.Count == 0*/)
                 {
                     await _unitOfWork.CompleteAsync();
                     return Ok("Successfully Add!");
@@ -139,7 +108,6 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
 
                 else
                 {
-
                     return BadRequest(resultList);
                 }
             }
@@ -260,8 +228,8 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
             var addMiscReceipt = new MiscellaneousReceipt
             {
                 SupplierCode = items.SupplierCode,
-                supplier = items.SupplierCode,
-                TotalQuantity = items.WarehouseReceipt.Sum(x => x.Quantity),
+                supplier = items.SupplierName,
+                TotalQuantity = items.WarehouseReceipt.Sum(x => decimal.Parse(x.Quantity)),
                 PreparedDate = DateTime.Now,
                 PreparedBy = items.PreparedBy,
                 Remarks = items.Remarks,
@@ -291,8 +259,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 }
 
                 var itemCodeExist = await _context.Materials
-                    .Where(x => x.ItemCode == item.ItemCode && x.ItemDescription == item.ItemDescription
-                    && x.UomId == uomExist.Id)
+                    .Where(x => x.ItemCode == item.ItemCode)
                     .FirstOrDefaultAsync();    
 
                 if (itemCodeExist is null)
@@ -302,6 +269,8 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                 else
                 {
                     item.MiscellaneousReceiptId = addMiscReceipt.Id;
+                    item.ItemDescription = itemCodeExist.ItemDescription;
+                    item.SupplierName = addMiscReceipt.supplier;
                     availableList.Add(item);
                     await _unitOfWork.Imports.AddImportReceiptToWarehouse(item);
                 }

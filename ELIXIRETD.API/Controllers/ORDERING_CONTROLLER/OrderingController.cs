@@ -38,7 +38,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 List<Ordering> AvailableImport = new List<Ordering>();
                 List<Ordering> CustomerNameNotExist = new List<Ordering>();
                 List<Ordering> ItemCodesExist = new List<Ordering>();
-                List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
                 List<Ordering> AccountCodeEmpty = new List<Ordering>();
                 List<Ordering> AccountTitleEmpty = new List<Ordering>();
@@ -56,8 +55,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName , items.CustomerType);
-                        var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription, items.Uom);
-                        var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
+                        var validateItemCode = await _context.Materials
+                        .Include(x => x.Uom)
+                        .FirstOrDefaultAsync(x => x.ItemCode == items.ItemCode && x.IsActive);
                         
 
                     if (validateOrderNoAndItemcode == true)
@@ -74,13 +74,9 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         CustomerNameNotExist.Add(items);
                     }
 
-                    else if (validateItemCode == false)
+                    else if (validateItemCode is null)
                     {
                         ItemCodesExist.Add(items);
-                    }
-                    else if (validateUom == false)
-                    {
-                        UomNotExist.Add(items);
                     }
                     else if (string.IsNullOrEmpty(items.AccountCode))
                     {
@@ -94,7 +90,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
                     else
                     {
-
+                        items.ItemdDescription = validateItemCode.ItemDescription;
+                        items.Uom = validateItemCode.Uom.UomCode;
                         items.SyncDate = DateTime.Now;
                         AvailableImport.Add(items);
                         await _unitofwork.Orders.AddNewOrders(items, cancellation);
@@ -107,14 +104,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    AvailableImport,
                    DuplicateList,
                    ItemCodesExist,
-                   UomNotExist,
                    CustomerNameNotExist,
                    PreviousDateNeeded,
                    AccountCodeEmpty,
                    AccountTitleEmpty
                 };
 
-                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 
+                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && PreviousDateNeeded.Count == 0 
                     && AccountTitleEmpty.Count == 0 && AccountCodeEmpty.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();

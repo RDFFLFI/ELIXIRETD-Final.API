@@ -283,22 +283,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
 
             var addItem = new Warehouse_Receiving
             {
+                
                 ItemCode = item.ItemCode,
                 ItemDescription = item.ItemDescription,
                 Uom = item.Uom,
                 Supplier = item.SupplierName,
                 ReceivingDate = DateTime.Now,
-                ActualGood = item.Quantity,
-                ActualDelivered = item.Quantity,
+                ActualGood = decimal.Parse(item.Quantity),
+                ActualDelivered = decimal.Parse(item.Quantity),
                 TransactionType = "MiscellaneousReceipt",
                 MiscellaneousReceiptId = item.MiscellaneousReceiptId,
                 IsActive = true,
                 IsWarehouseReceived = true,
                 ActualReceivingDate = DateTime.Now,
-                UnitPrice = item.UnitCost,
+                UnitPrice = decimal.Parse(item.UnitCost),
                 AccountCode = item.AccountCode,
                 AccountTitles = item.AccountTitles,
-                EmpId = item.AccountCode,
+                EmpId = item.EmpId,
                 FullName = item.FullName,
 
             };
