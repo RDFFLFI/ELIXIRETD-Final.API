@@ -792,7 +792,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  averageissuance = averageissuance.ActualGood != null ? averageissuance.ActualGood : 0,
                                  usage = usage.Reserve != null ? usage.Reserve : 0,
                                  ConsumeQuantity = consume.ConsumeQuantity != null ? consume.ConsumeQuantity : 0,
-                                 PreparedQuantity= notTransact.QuantityOrdered != null ? notTransact.QuantityOrdered : 0,
+                                 //PreparedQuantity= notTransact.QuantityOrdered != null ? notTransact.QuantityOrdered : 0,
 
                              }
 
@@ -816,7 +816,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                  BorrowConsume = total.Key.ConsumeQuantity,
                                  TotalCost = Math.Round(total.Key.TotalPrice, 2),
                                  SOH = total.Key.SOH,
-                                 PreparedQuantity = total.Key.PreparedQuantity,
+                                 PreparedQuantity = total.First().notTransact.QuantityOrdered != null ? total.First().notTransact.QuantityOrdered : 0,
                                  Reserve = total.Key.reserve,
 
                                  SuggestedPo = total.Key.sudggest >= 0 ? total.Key.sudggest : 0,

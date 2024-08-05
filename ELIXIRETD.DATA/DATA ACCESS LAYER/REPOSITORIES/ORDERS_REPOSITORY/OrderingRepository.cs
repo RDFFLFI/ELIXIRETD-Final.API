@@ -2444,8 +2444,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             {
                 MIRId = x.Key.OrderNo,
                 TQuantity = x.Sum(x => x.QuantityOrdered),
+                TUnitCost = x.Sum(x => x.UnitPrice),
+     
             });
 
+
+           
             var moveOrders = _context.MoveOrders
                 .Where(x => x.OrderNo == id && x.IsActive == true)
                 .Join(_context.Orders, moveOrder => moveOrder.OrderNoPkey, order => order.Id, (moveOrder, order) => new { moveOrder, order })
@@ -2507,9 +2511,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     ApprovedDate = x.First().Moveorders.ApprovedDate,
                     Quantity = x.First().Moveorders.Quantity,
                     ServedQuantity = x.First().Moveorders.ServedQuantity,
+                    TQuantity = x.First().tQuantity.TQuantity,
                     UnservedQuantity = x.First().Moveorders.UnservedQuantity,
                     UnitCost = x.Key.UnitCost,
-                    TQuantity = x.First().tQuantity.TQuantity,
+                    TUnitCost = x.First().tQuantity.TUnitCost,
                     CompanyCode = x.First().Moveorders.CompanyCode,
                     CompanyName = x.First().Moveorders.CompanyName,
                     DepartmentCode = x.First().Moveorders.DepartmentCode,

@@ -72,5 +72,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO.MoveOrderDto
         public decimal UnservedQuantity { get; set; }
 
 
+
+
     }
 }
