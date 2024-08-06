@@ -285,8 +285,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               issue,
                               borrowed,
                               returned,
-                              //receipt,
-
 
                           }
                           by new
@@ -370,11 +368,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   {
                                       posummary,
                                       receive,
-
                                   }
                                   by new
                                   {
-
                                       posummary.ItemCode,
 
                                   } into total
@@ -943,9 +939,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                                              });
 
 
-
-
-
             var getSOH = (from warehouse in getWarehouseStock
                           join reserve in getReserve
                           on warehouse.ItemCode equals reserve.ItemCode
@@ -995,9 +988,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
                              total.Sum(x => x.reserve.QuantityOrdered != null ? x.reserve.QuantityOrdered : 0)
                           });
-
-
-
 
 
             var getMiscellaneousIssuePerMonth = _context.MiscellaneousIssueDetail
@@ -1123,8 +1113,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                     ItemCode = x.Key,
                     ItemDescription = x.First().material.material.ItemDescription,
                     BufferLevel = x.First().material.material.BufferLevel,
-                    Reserve = x.First().material.soh.SOH,
-                    AverageIssuance = decimal.Round( x.First().issuance.ActualGood,2)
+                    Reserve = x.First().material.soh.SOH != null ? x.First().material.soh.SOH : 0 ,
+                    AverageIssuance = decimal.Round( x.First().issuance.ActualGood != null ? x.First().issuance.ActualGood : 0,2)
 
                 });
 

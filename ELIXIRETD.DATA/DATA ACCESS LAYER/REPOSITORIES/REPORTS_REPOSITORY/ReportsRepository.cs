@@ -15,9 +15,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
     public class ReportsRepository : IReports
     {
         private readonly  StoreContext _context;
-
-    
-
         public ReportsRepository(StoreContext storeContext)
         {
             _context = storeContext;
@@ -736,7 +733,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
-            var cancelled = _context.Orders.Where(x => x.IsActive == false || x.QuantityOrdered != x.StandartQuantity)
+            var cancelled = _context.Orders.Where(x => x.IsCancel == true || x.QuantityOrdered != x.StandartQuantity)
                                         .GroupBy(x => new
                                         {
                                             x.TrasactId,
@@ -764,7 +761,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             CustomerCode = x.Key.Customercode,
                                             CustomerName = x.Key.CustomerName,
                                             ItemCode = x.Key.ItemCode,
-                                            //ItemRemarks = x.First().ItemRemarks,
 
                                             CancelledDate = x.First().CancelDate != null 
                                             ? x.First().CancelDate: x.First().Modified_Date == null
@@ -774,14 +770,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             ItemDescription = x.Key.ItemdDescription,
                                             QuantityOrdered = x.Sum(x => x.QuantityOrdered),
                                             Reason = x.Key.Remarks,
-                                            //DepartmentCode = x.First().DepartmentCode,
-                                            //Department = x.First().Department,
-                                            //CompanyCode = x.First().CompanyCode,
-                                            //CompanyName = x.First().CompanyName,
-                                            //LocationCode = x.First().LocationCode,
-                                            //LocationName = x.First().LocationName,
-                                            //AccountCode = x.First().AccountCode,
-                                            //AccountTitles = x.First().AccountTitles,
 
                                         });
 
@@ -820,7 +808,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            CancelledDate = x.First().cancel.CancelledDate,
                            Reason = x.First().cancel.Reason != null ? x.First().cancel.Reason : x.First().order.Remarks,
                            QuantityOrdered = x.Sum(x => x.cancel.QuantityOrdered) != null && x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered) != 0 ?
-                           x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered) : x.Sum(x => x.cancel.QuantityOrdered),
+                           x.Sum(x => x.order.StandartQuantity) - x.Sum(x => x.order.QuantityOrdered) : x.Sum(x => x.order.StandartQuantity),
 
                            DepartmentCode = x.First().order.DepartmentCode,
                            Department = x.First().order.Department,
@@ -1675,7 +1663,425 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             return reports;
         }
 
+        public async Task<IReadOnlyList<ConsolidateAuditReportDto>> ConsolidateAuditReport(string DateFrom, string DateTo, string Search)
+        {
 
+            var dateFrom = DateTime.Parse(DateFrom).Date;
+            var dateTo = DateTime.Parse(DateTo).Date;
+
+            var receivingConsol = _context.WarehouseReceived
+                .Where(x => x.TransactionType == "Receiving" && x.IsActive == true)
+                .Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+                    Id = x.Id,
+                    TransactionDate = x.ActualReceivingDate.Date.ToString(),
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemDescription,
+                    Uom = x.Uom,
+                    Category = "",
+                    Quantity = x.ActualGood,
+                    UnitCost = x.UnitPrice,
+                    LineAmount = Math.Round(x.UnitPrice * x.ActualGood, 2),
+                    Source = x.PoNumber,
+                    TransactionType = "Receiving",
+                    Status = "",
+                    Reason = "",
+                    Reference = x.SINumber,
+                    SupplierName = x.Supplier,
+                    EncodedBy = x.AddedBy,
+                    CompanyCode = "10",
+                    CompanyName = "RDF Corporate Services",
+                    DepartmentCode = "0010",
+                    DepartmentName = "Corporate Common",
+                    LocationCode = "0001",
+                    LocationName = "Head Office",
+                    AccountTitleCode = "117701",
+                    AccountTitle = "Materials & Supplies Inventory",
+                    EmpId = "",
+                    Fullname = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Rush = ""
+
+                }).ToList();
+
+            var moveOrderConsol = _context.TransactOrder
+                .Join(_context.MoveOrders, transact => transact.OrderNo,
+                moveOrder => moveOrder.OrderNo, (transact, moveOrder) => new { transact, moveOrder })
+               .Where(x => x.transact.IsTransact == true && x.transact.IsActive == true && x.moveOrder.IsActive == true)
+               .Where(x => x.transact.DeliveryDate.Value >= dateFrom.Date && x.transact.DeliveryDate.Value <= dateTo)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+                    Id = x.transact.Id,
+                    TransactionDate = x.transact.DeliveryDate.Value.Date.ToString(),
+                    ItemCode = x.moveOrder.ItemCode,
+                    ItemDescription = x.moveOrder.ItemDescription,
+                    Uom = x.moveOrder.Uom,
+                    Category = x.moveOrder.Category,
+                    Quantity = Math.Round(x.moveOrder.QuantityOrdered, 2),
+                    UnitCost = x.moveOrder.UnitPrice,
+                    LineAmount = Math.Round(x.moveOrder.UnitPrice * x.moveOrder.QuantityOrdered, 2),
+                    Source = x.transact.OrderNo,
+                    TransactionType = "Move Order",
+                    Status = "Transacted",
+                    Reason = "",
+                    Reference = x.moveOrder.ItemRemarks,
+                    SupplierName = "",
+                    EncodedBy = x.transact.PreparedBy,
+                    CompanyCode = x.moveOrder.CompanyCode,
+                    CompanyName = x.moveOrder.CompanyName,
+                    DepartmentCode = x.moveOrder.DepartmentCode,
+                    DepartmentName = x.moveOrder.DepartmentName,
+                    LocationCode = x.moveOrder.LocationCode,
+                    LocationName = x.moveOrder.LocationName,
+                    AccountTitleCode = x.moveOrder.AccountCode,
+                    AccountTitle = x.moveOrder.AccountTitles,
+                    EmpId = x.moveOrder.EmpId,
+                    Fullname = x.moveOrder.FullName,
+                    AssetTag = x.moveOrder.AssetTag,
+                    CIPNo = x.moveOrder.Cip_No,
+                    Helpdesk = x.moveOrder.HelpdeskNo,
+                    //Remarks = x.moveOrder.Remarks,
+                    Rush = x.moveOrder.Rush
+
+                }).ToList();
+
+            var receiptConsol = _context.MiscellaneousReceipts
+                .GroupJoin(_context.WarehouseReceived, receipt => receipt.Id, warehouse => warehouse.MiscellaneousReceiptId, (receipt, warehouse) => new { receipt, warehouse })
+                .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.receipt, warehouse })
+                .Where(x => x.receipt.TransactionDate.Date >= dateFrom && x.receipt.TransactionDate.Date <= dateTo)
+                .Where(x => x.warehouse.IsActive == true && x.warehouse.TransactionType == "MiscellaneousReceipt")
+                .Select(x => new ConsolidateAuditReportDto
+                {
+                    Id = x.warehouse.Id,
+                    TransactionDate = x.receipt.TransactionDate.Date.ToString(),
+                    ItemCode = x.warehouse.ItemCode,
+                    ItemDescription = x.warehouse.ItemDescription,
+                    Uom = x.warehouse.Uom,
+                    Category = "",
+                    Quantity = x.warehouse.ActualGood,
+                    UnitCost = x.warehouse.UnitPrice,
+                    LineAmount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
+                    Source = x.receipt.Id,
+                    TransactionType = "Miscellaneous Receipt",
+                    Status = "",
+                    Reason = x.receipt.Remarks,
+                    Reference = x.receipt.Details,
+                    SupplierName = "",
+                    EncodedBy = x.receipt.PreparedBy,
+                    CompanyCode = x.receipt.CompanyCode,
+                    CompanyName = x.receipt.CompanyName,
+                    DepartmentCode = x.receipt.DepartmentCode,
+                    DepartmentName = x.receipt.DepartmentName,
+                    LocationCode = x.receipt.LocationCode,
+                    LocationName = x.receipt.LocationName,
+                    AccountTitleCode = x.warehouse.AccountCode,
+                    AccountTitle = x.warehouse.AccountTitles,
+                    EmpId = x.warehouse.EmpId,
+                    Fullname = x.warehouse.FullName,
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    //Remarks = x.receipt.Remarks,
+                    Rush = ""
+                }).ToList();
+
+            var issueConsol = _context.MiscellaneousIssues
+                .Join(_context.MiscellaneousIssueDetail, miscDatail => miscDatail.Id, issue => issue.IssuePKey,
+                (miscDetail, issue) => new { miscDetail, issue })
+                .Where(x => x.issue.IsActive == true)
+                .Where(x => x.miscDetail.TransactionDate.Date >= dateFrom && x.miscDetail.TransactionDate.Date <= dateTo)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+                    Id = x.issue.Id,
+                    TransactionDate = x.miscDetail.TransactionDate.Date.ToString(),
+                    ItemCode = x.issue.ItemCode,
+                    ItemDescription = x.issue.ItemDescription,
+                    Uom = x.issue.Uom,
+                    Category = "",
+                    Quantity = Math.Round(x.issue.Quantity, 2),
+                    UnitCost = x.issue.UnitPrice,
+                    LineAmount = Math.Round(x.issue.UnitPrice * x.issue.Quantity, 2),
+                    Source = x.miscDetail.Id,
+                    TransactionType = "Miscellaneous Issue",
+                    Status = "",
+                    Reason = x.issue.Remarks,
+                    Reference = x.miscDetail.Details,
+                    SupplierName = "",
+                    EncodedBy = x.issue.PreparedBy,
+                    CompanyCode = x.miscDetail.CompanyCode,
+                    CompanyName = x.miscDetail.CompanyName,
+                    DepartmentCode = x.miscDetail.DepartmentCode,
+                    DepartmentName = x.miscDetail.DepartmentName,
+                    LocationCode = x.miscDetail.LocationCode,
+                    LocationName = x.miscDetail.LocationName,
+                    AccountTitleCode = x.issue.AccountCode,
+                    AccountTitle = x.issue.AccountTitles,
+                    EmpId = x.issue.EmpId,
+                    Fullname = x.issue.FullName,
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    //Remarks = x.issue.Remarks,
+                    Rush = ""
+
+
+                }).ToList();
+
+            var borrowedConsol = _context.BorrowedIssues
+                .Join(_context.BorrowedIssueDetails, borrow => borrow.Id, borrowDetail => borrowDetail.BorrowedPKey,
+                (borrow, borrowDetail) => new { borrow, borrowDetail })
+                .Where(x => x.borrowDetail.IsActive == true)
+                .Where(x => x.borrowDetail.PreparedDate.Date >= dateFrom && x.borrowDetail.PreparedDate.Date <= dateTo)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+
+                    Id = x.borrowDetail.Id,
+                    TransactionDate = x.borrowDetail.PreparedDate.Date.ToString(),
+                    ItemCode = x.borrowDetail.ItemCode,
+                    ItemDescription = x.borrowDetail.ItemDescription,
+                    Uom = x.borrowDetail.Uom,
+                    Category = "",
+                    Quantity = Math.Round(x.borrowDetail.Quantity, 2),
+                    UnitCost = x.borrowDetail.UnitPrice,
+                    LineAmount = Math.Round(x.borrowDetail.UnitPrice * x.borrowDetail.Quantity, 2),
+                    Source = x.borrow.Id,
+                    TransactionType = "Borrow",
+                    Status = "",
+                    Reason = x.borrow.Remarks,
+                    Reference = x.borrow.Details,
+                    SupplierName = "",
+                    EncodedBy = x.borrow.PreparedBy,
+                    CompanyCode = "",
+                    CompanyName = "",
+                    DepartmentCode = "",
+                    DepartmentName = "",
+                    LocationCode = "",
+                    LocationName = "",
+                    AccountTitleCode = "",
+                    AccountTitle = "",
+                    EmpId = "",
+                    Fullname = "",
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    //Remarks = x.borrow.Remarks,
+                    Rush = ""
+
+                }).ToList();
+
+            var consumeList = _context.BorrowedConsumes
+                .Where(x => x.IsActive == true)
+                .Select(x => new BorrowedConsolidatedDto
+                {
+                    Id = x.Id,
+                    BorrowedId = x.BorrowedItemPkey,
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemDescription,
+                    Uom = x.Uom,
+                    Consumed = x.Consume,
+                    CompanyCode = x.CompanyCode,
+                    CompanyName = x.CompanyName,
+                    DepartmentCode = x.DepartmentCode,
+                    DepartmentName = x.DepartmentName,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    AccountCode = x.AccountCode,
+                    AccountTitles = x.AccountTitles,
+                    EmpId = x.EmpId,
+                    FullName = x.FullName,
+                    ReportNumber = x.ReportNumber,
+
+                });
+
+            var returnList = _context.BorrowedIssueDetails
+                .Where(x => x.IsActive == true && x.IsApprovedReturned == true)
+                .GroupJoin(consumeList, borrowDetails => borrowDetails.Id, consume => consume.BorrowedId
+                , (borrowDetails, consume) => new { borrowDetails, consume })
+                .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.borrowDetails, consume })
+                .Select(x => new BorrowedConsolidatedDto
+                {
+                    Id = x.borrowDetails.Id,
+                    BorrowedId = x.borrowDetails.BorrowedPKey,
+                    ItemCode = x.borrowDetails.ItemCode,
+                    ItemDescription = x.borrowDetails.ItemDescription,
+                    Uom = x.borrowDetails.Uom,
+                    BorrowedQuantity = x.borrowDetails.Quantity != null ? x.borrowDetails.Quantity : 0,
+                    Consumed = x.consume.Consumed != null ? x.consume.Consumed : 0,
+                    CompanyCode = x.consume.CompanyCode,
+                    CompanyName = x.consume.CompanyName,
+                    DepartmentCode = x.consume.DepartmentCode,
+                    DepartmentName = x.consume.DepartmentName,
+                    LocationCode = x.consume.LocationCode,
+                    LocationName = x.consume.LocationName,
+                    AccountCode = x.consume.AccountCode,
+                    AccountTitles = x.consume.AccountTitles,
+                    EmpId = x.consume.EmpId,
+                    FullName = x.consume.FullName,
+                    ReportNumber = x.consume.ReportNumber,
+                    UnitPrice = x.borrowDetails.UnitPrice
+
+                });
+
+            var borrowedIssueList = _context.BorrowedIssues
+                .Where(x => x.IsActive == true);
+
+            var returnedConsol = returnList
+                .GroupJoin(borrowedIssueList, borrowDetail => borrowDetail.BorrowedId, borrow => borrow.Id,
+                (borrowDetail, borrow) => new { borrowDetail, borrow })
+                .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.borrowDetail, borrow })
+                .Where(x => x.borrow.PreparedDate.Date >= dateFrom && x.borrow.PreparedDate.Date <= dateTo)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+
+                    Id = x.borrowDetail.Id,
+                    TransactionDate = x.borrow.PreparedDate.Date.ToString(),
+                    ItemCode = x.borrowDetail.ItemCode,
+                    ItemDescription = x.borrowDetail.ItemDescription,
+                    Uom = x.borrowDetail.Uom,
+                    Category = "",
+                    Quantity = x.borrowDetail.BorrowedQuantity - x.borrowDetail.Consumed,
+                    UnitCost = x.borrowDetail.UnitPrice,
+                    LineAmount = Math.Round(x.borrowDetail.UnitPrice.Value * x.borrowDetail.BorrowedQuantity - x.borrowDetail.Consumed, 2),
+                    Source = x.borrow.Id,
+                    TransactionType = "Returned",
+                    Status = "",
+                    Reason = x.borrowDetail.Remarks,
+                    Reference = x.borrowDetail.Details,
+                    SupplierName = "",
+                    EncodedBy = x.borrow.PreparedBy,
+                    CompanyCode = x.borrowDetail.CompanyCode,
+                    CompanyName = x.borrowDetail.CompanyName,
+                    DepartmentCode = x.borrowDetail.DepartmentCode,
+                    DepartmentName = x.borrowDetail.DepartmentName,
+                    LocationCode = x.borrowDetail.LocationCode,
+                    LocationName = x.borrowDetail.LocationName,
+                    AccountTitleCode = x.borrowDetail.AccountCode,
+                    AccountTitle = x.borrowDetail.AccountTitles,
+                    EmpId = x.borrowDetail.EmpId,
+                    Fullname = x.borrowDetail.FullName,
+                    AssetTag = "",
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    //Remarks = x.borrowDetail.Remarks,
+                    Rush = ""
+
+                }).ToList();
+
+
+
+            var cancelledConsol = _context.Orders
+                 .Where(x => x.IsCancel == true || x.StandartQuantity != x.QuantityOrdered)
+                .Where(x => (x.CancelDate.Value.Date >= DateTime.Parse(DateFrom).Date
+                       && x.CancelDate.Value.Date <= DateTime.Parse(DateTo).Date)
+                       || (x.Modified_Date != null && x.Modified_Date.Value.Date >= DateTime.Parse(DateFrom).Date
+                && x.Modified_Date.Value.Date <= DateTime.Parse(DateTo).Date))
+                //.Where(x => (x.Modified_Date.Value.Date  >= DateTime.Parse(DateFrom).Date
+                //       //&& x.Modified_Date.Value.Date <= DateTime.Parse(DateTo).Date && x.Modified_Date != null))
+
+                .Select(x => new ConsolidateAuditReportDto
+                {
+                    Id = x.Id,
+                    TransactionDate = x.CancelDate.Value.Date.ToString() ?? "",
+                    ItemCode = x.ItemCode,
+                    ItemDescription = x.ItemdDescription,
+                    Uom = x.Uom,
+                    Category = "",
+                    Quantity = x.StandartQuantity != x.QuantityOrdered ? x.StandartQuantity - x.QuantityOrdered : x.StandartQuantity,
+                    UnitCost = 0,
+                    LineAmount = 0,
+                    Source = x.TrasactId,
+                    TransactionType = "",
+                    Status = "Cancelled",
+                    Reason = x.Remarks,
+                    Reference = "",
+                    SupplierName = "",
+                    EncodedBy = x.PreparedBy,
+                    CompanyCode = x.CompanyCode,
+                    CompanyName = x.CompanyName,
+                    DepartmentCode = x.DepartmentCode,
+                    DepartmentName = x.Department,
+                    LocationCode = x.LocationCode,
+                    LocationName = x.LocationName,
+                    AccountTitleCode = x.AccountCode,
+                    AccountTitle = x.AccountTitles,
+                    EmpId = x.EmpId,
+                    Fullname = x.FullName,
+                    AssetTag = x.AssetTag,
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Rush = x.Rush
+
+                }).ToList();
+
+
+            var consolidateList = receivingConsol
+                .Concat(moveOrderConsol)
+                .Concat(receiptConsol)
+                .Concat(issueConsol)
+                .Concat(borrowedConsol)
+                .Concat(returnedConsol)
+                .Concat(cancelledConsol)
+                .ToList();
+
+            var materials = await _context.Materials
+                .Include(x => x.Uom)
+                .Include(x => x.ItemCategory)
+                .ToListAsync();
+
+            var reports = consolidateList
+                .Join(materials,
+                 consol => consol.ItemCode, material => material.ItemCode,
+                 (consol, material) => new ConsolidateAuditReportDto
+                 {
+                     Id = consol.Id,
+                     TransactionDate = consol.TransactionDate,
+                     ItemCode = material.ItemCode,                                        
+                     ItemDescription = material.ItemDescription,
+                     Uom = material.Uom.UomCode,
+                     Category = material.ItemCategory.ItemCategoryName,
+                     Quantity = consol.Quantity,
+                     UnitCost = consol.UnitCost,
+                     LineAmount = consol.LineAmount,
+                     Source = consol.Source,
+                     TransactionType = consol.TransactionType,
+                     Status = consol.Status,
+                     Reason = consol.Reason,
+                     Reference = consol.Reference,
+                     SupplierName = consol.SupplierName,
+                     EncodedBy = consol.EncodedBy,
+                     CompanyCode = consol.CompanyCode,
+                     CompanyName = consol.CompanyName,
+                     DepartmentCode = consol.DepartmentCode,
+                     DepartmentName = consol.DepartmentName,
+                     LocationCode = consol.LocationCode,
+                     LocationName = consol.LocationName,
+                     AccountTitleCode = consol.AccountTitleCode,
+                     AccountTitle = consol.AccountTitle,
+                     EmpId = consol.EmpId,
+                     Fullname = consol.Fullname,
+                     AssetTag = consol.AssetTag,
+                     CIPNo = consol.CIPNo,
+                     Helpdesk = consol.Helpdesk,
+                     Rush = consol.Rush
+
+                 }).ToList();
+
+            if (!string.IsNullOrEmpty(Search))
+            {
+                reports = reports.Where(x => x.ItemCode.ToLower().Contains(Search.ToLower())
+                || x.ItemDescription.ToLower().Contains(Search.ToLower())
+                || x.Source.ToString().Contains(Search)
+                || x.TransactionType.ToLower().Contains(Search.ToLower())
+                || x.Status.ToLower().Contains(Search.ToLower())).ToList();
+            }
+
+
+            return reports;
+
+        }
     }
 
 }

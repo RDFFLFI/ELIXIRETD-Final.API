@@ -610,8 +610,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                             CustomerCode = x.Key.CustomerCode,
                                                             CustomerName = x.Key.CustomerName,
                                                             //IsActive = x.Key.IsActive
-
-
                                                         });
 
             return  await returned.ToListAsync();
