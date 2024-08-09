@@ -826,7 +826,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              });
 
 
-            if(!string.IsNullOrEmpty(search))
+            if(!string.IsNullOrEmpty(search)) 
             {
                 inventory = inventory.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower())
                 || x.ItemDescription.ToLower().Contains(search.Trim().ToLower()));

@@ -147,7 +147,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.moveorder.moveorder.QuantityOrdered,
                     MoveOrderDate = x.moveorder.moveorder.PreparedDate.ToString(),
                     MoveOrderBy = x.moveorder.moveorder.PreparedBy,
-                    TransactedBy = x.moveorder.moveorder.PreparedBy,
+                    TransactedBy = x.moveorder.transact.PreparedBy,
                     TransactionType = x.moveorder.moveorder.IsActive,
                     TransactedDate = x.moveorder.moveorder.DateApproved.ToString(),
                     DeliveryDate = x.moveorder.transact.DeliveryDate.ToString(),
@@ -1659,6 +1659,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                || x.TransactionType.ToLower().Contains(Search.ToLower())).ToList();
             }
 
+            reports = reports.OrderBy(x => x.TransactionDate).ToList();
+
 
             return reports;
         }
@@ -1937,7 +1939,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 {
 
                     Id = x.borrowDetail.Id,
-                    TransactionDate = x.borrow.PreparedDate.Date.ToString(),
+                    TransactionDate = x.borrow.PreparedDate.Date.ToString() ,
                     ItemCode = x.borrowDetail.ItemCode,
                     ItemDescription = x.borrowDetail.ItemDescription,
                     Uom = x.borrowDetail.Uom,
@@ -1984,7 +1986,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateAuditReportDto
                 {
                     Id = x.Id,
-                    TransactionDate = x.CancelDate.Value.Date.ToString() ?? "",
+                    TransactionDate = x.CancelDate.Value.Date.ToString() != null ? x.CancelDate.Value.Date.ToString() : x.Modified_Date.Value.Date.ToString(),
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemdDescription,
                     Uom = x.Uom,
@@ -2077,6 +2079,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || x.TransactionType.ToLower().Contains(Search.ToLower())
                 || x.Status.ToLower().Contains(Search.ToLower())).ToList();
             }
+
+            reports = reports.OrderBy(x => x.TransactionDate).ToList();
 
 
             return reports;
