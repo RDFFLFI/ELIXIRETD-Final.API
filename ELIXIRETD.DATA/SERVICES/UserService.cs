@@ -69,12 +69,12 @@ namespace ELIXIRETD.DATA.SERVICES
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
 
-                Subject = new ClaimsIdentity(new Claim[] {
+                Subject = new ClaimsIdentity(new Claim[] { 
                     new Claim("id", user.Id.ToString()),
                     new Claim(ClaimTypes.Name , user.FullName)
 
                 }),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = null,
                 SigningCredentials = new SigningCredentials
                (new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
 

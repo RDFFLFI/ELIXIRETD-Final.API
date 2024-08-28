@@ -98,9 +98,9 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<ActionResult<IEnumerable<PoSummaryDto>>> GetAllAvailablePoWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search)
         {
 
-            if (search == null)
+            //if (search == null)
 
-                return await GetAllPoWithPagination(userParams);
+            //    return await GetAllPoWithPagination(userParams);
 
             var posummary = await _unitOfWork.Receives.GetPoSummaryByStatusWithPaginationOrig(userParams, search);
 

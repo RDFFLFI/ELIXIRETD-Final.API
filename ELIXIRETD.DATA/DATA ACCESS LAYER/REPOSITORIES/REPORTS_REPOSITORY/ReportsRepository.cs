@@ -147,7 +147,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.moveorder.moveorder.QuantityOrdered,
                     MoveOrderDate = x.moveorder.moveorder.PreparedDate.ToString(),
                     MoveOrderBy = x.moveorder.moveorder.PreparedBy,
-                    TransactedBy = x.moveorder.transact.PreparedBy,
+                    TransactedBy = x.moveorder.transact.PreparedBy ,
                     TransactionType = x.moveorder.moveorder.IsActive,
                     TransactedDate = x.moveorder.moveorder.DateApproved.ToString(),
                     DeliveryDate = x.moveorder.transact.DeliveryDate.ToString(),
@@ -728,8 +728,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
-        
-
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
@@ -747,9 +745,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                             x.ItemdDescription,
                                             Remarks = x.Remarks,
                                            
-
-
-
 
                                         }).Select(x => new DtoCancelledReports
                                         {
@@ -1303,12 +1298,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<IReadOnlyList<ConsolidateFinanceReportDto>> ConsolidateFinanceReport(string DateFrom, string DateTo, string Search)
         {
-            var dateFrom = DateTime.Parse(DateFrom).Date;
-            var dateTo = DateTime.Parse(DateTo).Date;
 
             var receivingConsol = _context.WarehouseReceived
                 .Where(x => x.TransactionType == "Receiving" && x.IsActive == true)
-                .Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
+                //.Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 { 
                     Id = x.Id,
@@ -1347,7 +1340,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Join(_context.MoveOrders, transact => transact.OrderNo,
                 moveOrder => moveOrder.OrderNo, (transact, moveOrder) => new { transact, moveOrder})       
                .Where(x => x.transact.IsTransact == true && x.transact.IsActive == true && x.moveOrder.IsActive == true)
-               .Where(x => x.transact.DeliveryDate.Value >= dateFrom.Date && x.transact.DeliveryDate.Value <= dateTo)
+               //.Where(x => x.transact.DeliveryDate.Value >= dateFrom.Date && x.transact.DeliveryDate.Value <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.transact.Id,
@@ -1386,7 +1379,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var receiptConsol = _context.MiscellaneousReceipts
                 .GroupJoin(_context.WarehouseReceived, receipt => receipt.Id, warehouse => warehouse.MiscellaneousReceiptId, (receipt, warehouse) => new { receipt, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.receipt, warehouse })
-                .Where(x => x.receipt.TransactionDate.Date >= dateFrom && x.receipt.TransactionDate.Date <= dateTo)
+                //.Where(x => x.receipt.TransactionDate.Date >= dateFrom && x.receipt.TransactionDate.Date <= dateTo)
                 .Where(x => x.warehouse.IsActive == true && x.warehouse.TransactionType == "MiscellaneousReceipt") 
                 .Select(x => new ConsolidateFinanceReportDto
                 {
@@ -1403,7 +1396,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     TransactionType = "Miscellaneous Receipt",
                     Reason = x.receipt.Remarks,
                     Reference = x.receipt.Details,
-                    SupplierName = "",
+                    SupplierName = x.receipt.supplier,
                     EncodedBy = x.receipt.PreparedBy,
                     CompanyCode = x.receipt.CompanyCode,
                     CompanyName = x.receipt.CompanyName,
@@ -1426,7 +1419,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Join(_context.MiscellaneousIssueDetail, miscDatail => miscDatail.Id, issue => issue.IssuePKey,
                 (miscDetail, issue) => new { miscDetail, issue })
                 .Where(x => x.issue.IsActive == true)
-                .Where(x => x.miscDetail.TransactionDate.Date >= dateFrom && x.miscDetail.TransactionDate.Date <= dateTo)
+                //.Where(x => x.miscDetail.TransactionDate.Date >= dateFrom && x.miscDetail.TransactionDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                    Id = x.issue.Id,
@@ -1467,7 +1460,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Join(_context.BorrowedIssueDetails, borrow => borrow.Id, borrowDetail => borrowDetail.BorrowedPKey,
                 (borrow, borrowDetail) => new { borrow, borrowDetail })
                 .Where(x => x.borrowDetail.IsActive == true)
-                .Where(x => x.borrowDetail.PreparedDate.Date >= dateFrom && x.borrowDetail.PreparedDate.Date <= dateTo)
+                //.Where(x => x.borrowDetail.PreparedDate.Date >= dateFrom && x.borrowDetail.PreparedDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.borrowDetail.Id,
@@ -1563,7 +1556,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .GroupJoin(borrowedIssueList, borrowDetail => borrowDetail.BorrowedId, borrow => borrow.Id,
                 (borrowDetail, borrow) => new { borrowDetail, borrow })
                 .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.borrowDetail, borrow })
-                .Where(x => x.borrow.PreparedDate.Date >= dateFrom && x.borrow.PreparedDate.Date <= dateTo)
+                //.Where(x => x.borrow.PreparedDate.Date >= dateFrom && x.borrow.PreparedDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
 
@@ -1600,6 +1593,37 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 }).ToList();
 
+            if (!string.IsNullOrEmpty(DateFrom) && !string.IsNullOrEmpty(DateTo))
+            {
+                var dateFrom = DateTime.Parse(DateFrom).Date;
+                var dateTo = DateTime.Parse(DateTo).Date;
+
+                receivingConsol = receivingConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+                moveOrderConsol = moveOrderConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+                receiptConsol = receiptConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+                issueConsol = issueConsol
+                     .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+                borrowedConsol = borrowedConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+                returnedConsol = returnedConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    .ToList();
+
+            }
+
             var consolidateList = receivingConsol
                 .Concat(moveOrderConsol)
                 .Concat(receiptConsol) 
@@ -1608,12 +1632,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Concat(returnedConsol)
                 .ToList();
 
+            consolidateList = consolidateList
+                .OrderBy(x => x.TransactionDate)
+                .ToList();
+
             var materials = await _context.Materials
                 .Include(x => x.Uom)
                 .Include(x => x.ItemCategory)
                 .ToListAsync();
 
-            var reports = consolidateList
+            var creditConsol = consolidateList
                 .Join(materials, 
                  consol => consol.ItemCode, material => material.ItemCode,
                  (consol, material) =>  new ConsolidateFinanceReportDto
@@ -1651,16 +1679,57 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                  }).ToList();
 
-            if(!string.IsNullOrEmpty(Search))
+            var debitConsol = consolidateList
+                .Where(x => string.IsNullOrEmpty(DateFrom) && string.IsNullOrEmpty(DateTo))
+                .Join(materials,
+                 consol => consol.ItemCode, material => material.ItemCode,
+                 (consol, material) => new ConsolidateFinanceReportDto
+                 {
+                     Id = consol.Id,
+                     TransactionDate = consol.TransactionDate,
+                     ItemCode = material.ItemCode,
+                     ItemDescription = material.ItemDescription,
+                     Uom = material.Uom.UomCode,
+                     Category = material.ItemCategory.ItemCategoryName,
+                     Quantity = consol.Quantity,
+                     UnitCost = consol.UnitCost,
+                     LineAmount = consol.LineAmount * -1,
+                     Source = consol.Source,
+                     TransactionType = consol.TransactionType,
+                     Reason = consol.Reason,
+                     Reference = consol.Reference,
+                     SupplierName = consol.SupplierName,
+                     EncodedBy = consol.EncodedBy,
+                     CompanyCode = consol.CompanyCode,
+                     CompanyName = consol.CompanyName,
+                     DepartmentCode = consol.DepartmentCode,
+                     DepartmentName = consol.DepartmentName,
+                     LocationCode = consol.LocationCode,
+                     LocationName = consol.LocationName,
+                     AccountTitleCode = consol.AccountTitleCode,
+                     AccountTitle = consol.AccountTitle,
+                     EmpId = consol.EmpId,
+                     Fullname = consol.Fullname,
+                     AssetTag = consol.AssetTag,
+                     CIPNo = consol.CIPNo,
+                     Helpdesk = consol.Helpdesk,
+                     //Remarks = consol.Remarks,
+                     Rush = consol.Rush
+
+                 }).ToList();
+
+            var reports = creditConsol
+                .Concat(debitConsol)
+                .ToList();
+
+            if (!string.IsNullOrEmpty(Search))
             {
                reports = reports.Where(x => x. ItemCode.ToLower().Contains(Search.ToLower())
                || x.ItemDescription.ToLower().Contains(Search.ToLower()) 
                || x.Source.ToString().Contains(Search)
-               || x.TransactionType.ToLower().Contains(Search.ToLower())).ToList();
+               || x.TransactionType.ToLower().Contains(Search.ToLower()))
+                     .ToList();
             }
-
-            reports = reports.OrderBy(x => x.TransactionDate).ToList();
-
 
             return reports;
         }
@@ -1708,6 +1777,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Rush = ""
 
                 }).ToList();
+            
+            
+
 
             var moveOrderConsol = _context.TransactOrder
                 .Join(_context.MoveOrders, transact => transact.OrderNo,
@@ -1761,7 +1833,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     TransactionDate = x.receipt.TransactionDate.Date.ToString(),
                     ItemCode = x.warehouse.ItemCode,
                     ItemDescription = x.warehouse.ItemDescription,
-                    Uom = x.warehouse.Uom,
+                    Uom = x.warehouse.Uom, 
                     Category = "",
                     Quantity = x.warehouse.ActualGood,
                     UnitCost = x.warehouse.UnitPrice,
@@ -1771,7 +1843,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Status = "",
                     Reason = x.receipt.Remarks,
                     Reference = x.receipt.Details,
-                    SupplierName = "",
+                    SupplierName = x.receipt.supplier,
                     EncodedBy = x.receipt.PreparedBy,
                     CompanyCode = x.receipt.CompanyCode,
                     CompanyName = x.receipt.CompanyName,
@@ -2077,10 +2149,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || x.ItemDescription.ToLower().Contains(Search.ToLower())
                 || x.Source.ToString().Contains(Search)
                 || x.TransactionType.ToLower().Contains(Search.ToLower())
-                || x.Status.ToLower().Contains(Search.ToLower())).ToList();
+                || x.Status.ToLower().Contains(Search.ToLower()))
+                    .ToList();
             }
 
-            reports = reports.OrderBy(x => x.TransactionDate).ToList();
+            reports = reports
+                .OrderBy(x => x.TransactionDate)
+                .ToList();
 
 
             return reports;

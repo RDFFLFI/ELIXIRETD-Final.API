@@ -837,7 +837,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             return await PagedList<DtoMRP>.CreateAsync(inventory, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<IReadOnlyList<DtoYmirSOHList>> YmirSOHList()
+        public async Task<IReadOnlyList<DtoYmirSOHList>> YmirSOHList(string itemCode)
         {
             var EndDate = DateTime.Now;
             var StartDate = EndDate.AddDays(-30);
@@ -1103,6 +1103,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var report = _context.Materials
                 .AsNoTracking()
                 .Where(x => x.IsActive == true)
+                .Where(x => x.ItemCode == itemCode)
                 .GroupJoin(getSOH, material => material.ItemCode, soh => soh.ItemCode, (material, soh) => new { material, soh })
                 .SelectMany(x => x.soh.DefaultIfEmpty(), (x, soh) => new { x.material, soh })
                 .GroupJoin(getAvarageIssuance, material => material.material.ItemCode, issuance => issuance.ItemCode, (material, issuance) => new { material, issuance })

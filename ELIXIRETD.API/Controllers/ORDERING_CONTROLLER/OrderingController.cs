@@ -957,11 +957,25 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
 
         [HttpGet("MoveOrderAssetTag")]
-        public async Task<IActionResult> MoveOrderAssetTag()
+        public async Task<ActionResult<IEnumerable<DtoMoveOrderAssetTag>>> MoveOrderAssetTag([FromQuery] UserParams userParams)
         {
-            var result = await _unitofwork.Orders.MoveOrderAssetTag();
+            var assetTag = await _unitofwork.Orders.MoveOrderAssetTag(userParams);
 
-            return Ok(result);
+            Response.AddPaginationHeader(assetTag.CurrentPage, assetTag.PageSize, assetTag.TotalCount, assetTag.TotalPages, assetTag.HasNextPage, assetTag.HasPreviousPage);
+
+            var assetTagResult = new
+            {
+                assetTag,
+                assetTag.CurrentPage,
+                assetTag.PageSize,
+                assetTag.TotalCount,
+                assetTag.TotalPages,
+                assetTag.HasNextPage,
+                assetTag.HasPreviousPage
+            };
+
+            return Ok(assetTagResult);
+
         }
 
     }

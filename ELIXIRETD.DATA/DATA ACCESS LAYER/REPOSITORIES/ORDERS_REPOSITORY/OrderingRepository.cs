@@ -3260,7 +3260,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return await orders.ToListAsync();
         }
 
-        public async Task<IReadOnlyList<DtoMoveOrderAssetTag>> MoveOrderAssetTag()
+        public async Task<PagedList<DtoMoveOrderAssetTag>> MoveOrderAssetTag(UserParams userParams)
         {
 
             var wareHouseResult = _context.WarehouseReceived
@@ -3303,8 +3303,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     AcquisitionDate = x.moveOrders.warehouse.AcquisitionDate
                 });
 
-            return await result.ToListAsync();
+
+            return await PagedList<DtoMoveOrderAssetTag>.CreateAsync(result, userParams.PageNumber, userParams.PageSize);
 
         }
+
     }
 }

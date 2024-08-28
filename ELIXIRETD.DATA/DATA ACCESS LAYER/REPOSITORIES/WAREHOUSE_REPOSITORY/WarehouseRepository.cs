@@ -280,9 +280,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var poSummary = (from posummary in _context.PoSummaries
                              where posummary.IsActive == true
 
-                             
-                             orderby posummary.ImportDate
-
                              join warehouse in _context.WarehouseReceived
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
@@ -292,71 +289,53 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              into leftJ1
                              from material in leftJ1.DefaultIfEmpty()
 
+                             group new
+                             {
+                                 posummary,
+                                 receive,
+                                 material,
+
+                             }
+                              by new
+                              {
+                                  posummary.Id,
+                                  posummary.ItemCode,
+                              }
+                             into receive
                              select new WarehouseReceivingDto
                              {
-                                 Id = posummary.Id,
-                                 PoNumber = posummary.PO_Number,
-                                 PoDate = posummary.PO_Date,
-                                 PrNumber = posummary.PR_Number,
-                                 PrDate = posummary.PR_Date,
-                                 ItemCode = posummary.ItemCode,
-                                 ItemDescription = posummary.ItemDescription,
-                                 Supplier = posummary.VendorName,
-                                 Uom = posummary.Uom,
-                                 QuantityOrdered = posummary.Ordered,
-                                 IsActive = posummary.IsActive,
-                                 TotalReject = receive.TotalReject != null ? receive.TotalReject : 0,
-                                 UnitPrice = posummary.UnitPrice != null ? posummary.UnitPrice : 0,
-                                 ActualRemaining = 0,
-                                 ActualGood = receive != null && receive.IsActive != false ? receive.ActualDelivered : 0,
-                                 LotSection = material.LotSection.SectionName,
-                                 LotSectionId = material.LotSectionId,
+                                 Id = receive.Key.Id,
+                                 PoNumber = receive.First().posummary.PO_Number,
+                                 PoDate = receive.First().posummary.PO_Date,
+                                 PrNumber = receive.First().posummary.PR_Number,
+                                 PrDate = receive.First().posummary.PR_Date,
+                                 ItemCode = receive.Key.ItemCode,
+                                 ItemDescription = receive.First().material.ItemDescription,
+                                 Uom = receive.First().material.Uom.UomCode,
+                                 Supplier = receive.First().receive.Supplier,
+                                 QuantityOrdered = receive.First().posummary.Ordered,
+                                 ActualGood = receive.Sum(x => x.receive.ActualGood),
+                                 ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood),
+                                 IsActive = receive.First().receive.IsActive,
+                                 TotalReject = receive.Sum(x => x.receive.TotalReject),
+                                 UnitPrice = receive.First().posummary.UnitPrice,
+                                 LotSection = receive.First().material.LotSection.SectionName,
+                                 LotSectionId = receive.First().material.LotSectionId
 
-                             }).GroupBy(x => new
-                             {
-                                 x.Id,
-                                 x.PoNumber,
-                                 x.PoDate,
-                                 x.PrNumber,
-                                 x.PrDate,
-                                 x.ItemCode,
-                                 x.ItemDescription,
-                                 x.Uom,
-                                 x.Supplier,
-                                 x.QuantityOrdered,
-                                 x.IsActive,
-                                 x.UnitPrice,
-                                 x.LotSection,
-                                 x.LotSectionId,
-                              
-                             })
-                                                  .Select(receive => new WarehouseReceivingDto
-                                                  {
-                                                      Id = receive.Key.Id,
-                                                      PoNumber = receive.Key.PoNumber,
-                                                      PoDate = receive.Key.PoDate,
-                                                      PrNumber = receive.Key.PrNumber,
-                                                      PrDate = receive.Key.PrDate,
-                                                      ItemCode = receive.Key.ItemCode,
-                                                      ItemDescription = receive.Key.ItemDescription,
-                                                      Uom = receive.Key.Uom,
-                                                      Supplier = receive.Key.Supplier,
-                                                      QuantityOrdered = receive.Sum(x => x.QuantityOrdered),
-                                                      ActualGood = receive.Sum(x => x.ActualGood),
-                                                      ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood ),
-                                                      IsActive = receive.Key.IsActive,
-                                                      TotalReject = receive.Sum(x => x.TotalReject),
-                                                      UnitPrice = receive.Key.UnitPrice,
-                                                      LotSection = receive.Key.LotSection,
-                                                      LotSectionId = receive.Key.LotSectionId
+                             }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
+                               .Where(x => x.IsActive == true);
 
-                                                  }).OrderByDescending(x => x.PoNumber)
-                                                    .Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
-                                                    .Where(x => x.IsActive == true)
-                                                    .Where(x => Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
-                                                    ||Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
-                                                    || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower())
-                                                    || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower()));
+
+            if(!string.IsNullOrEmpty(search))
+            {
+              poSummary = poSummary.Where(x => Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
+                                     || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
+                                     || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower()));
+            }
+
+
+            poSummary = poSummary.OrderBy(x => x.PoNumber);
+
 
             return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
         }
