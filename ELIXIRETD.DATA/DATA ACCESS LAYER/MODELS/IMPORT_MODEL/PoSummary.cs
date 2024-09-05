@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 {
     public class PoSummary : BaseEntity
     {
-        public int PR_Number { get; set; }
+        public string PR_Number { get; set; }
 
         public string PR_Year_Number { get; set; }
 

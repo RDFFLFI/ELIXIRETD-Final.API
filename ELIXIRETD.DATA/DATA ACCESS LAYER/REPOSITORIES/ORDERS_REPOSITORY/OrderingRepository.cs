@@ -3268,7 +3268,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 {
                     WareHouseId = x.warehouse.Id,
                     PoNumber = x.warehouse.PoNumber,
-                    PrNumber = x.poSummary.PR_Number != null ? x.poSummary.PR_Number : 0,
+                    PrNumber = x.poSummary.PR_Number != null ? x.poSummary.PR_Number : null,
                     ItemCode = x.warehouse.ItemCode,
                     AcquisitionDate = x.warehouse.ActualReceivingDate.Date.ToString()
 

@@ -13,7 +13,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
 
         public string SINumber { get; set; }
         public DateTime PoDate { get; set; }
-        public int PrNumber { get; set; }
+        public string PrNumber { get; set; }
         public DateTime PrDate { get; set; }
 
         public string PR_Year_Number { get; set; }
