@@ -60,8 +60,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string MoveOrderDate { get; set; }
         public string MoveOrderBy { get; set; }
         public string TransactedBy { get; set; }
-        public bool TransactionType { get; set; }
-        public string TransactedDate { get; set; }
+        public string TransactionType { get; set; }
+        public DateTime TransactedDate { get; set; }
         public string DeliveryDate { get; set; }
 
         public string ItemRemarks { get; set; }

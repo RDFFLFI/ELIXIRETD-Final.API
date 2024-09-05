@@ -1986,8 +1986,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-
-
         public async Task<GetMoveOrderDetailsForMoveOrderDto> GetMoveOrderDetailsForMoveOrder(int orderId)
         {
             var orders = _context.Orders
@@ -2154,7 +2152,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             return true;
 
         }
-
 
         public async Task<bool> CancelMoveOrder(MoveOrder moveOrder)
         {

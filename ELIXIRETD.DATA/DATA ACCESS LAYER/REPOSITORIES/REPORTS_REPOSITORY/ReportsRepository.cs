@@ -32,6 +32,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                       {
                                                           WarehouseId = x.Id,
                                                           PoNumber = x.PoNumber,
+                                                          PR_Year_Number = x.PR_Year_Number,
                                                           ReceiveDate = x.ReceivingDate.ToString(),
                                                           ItemCode = x.ItemCode,
                                                           ItemDescrption = x.ItemDescription,
@@ -123,11 +124,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<DtoTransactReports>> TransactedMoveOrderReport(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
+
+            var materialList = _context.Materials
+                .Include(x => x.Uom)
+                .Select(x => new
+                {
+                    x.ItemCode,
+                    x.ItemDescription,
+                    x.Uom.UomCode
+                });
+
+
             var orders = _context.MoveOrders
                 .Where(x => x.IsActive == true)
                 .GroupJoin(_context.TransactOrder, moveorder => moveorder.OrderNo, transact => transact.OrderNo, (moveorder, transact) => new { moveorder, transact })
                 .SelectMany(x => x.transact.DefaultIfEmpty(), (x , transact) => new {x.moveorder, transact })
-                .GroupJoin(_context.Materials , moveorder => moveorder.moveorder.ItemCode , material => material.ItemCode, (moveorder, material) => new {moveorder,material})
+                .GroupJoin(materialList, moveorder => moveorder.moveorder.ItemCode , material => material.ItemCode, (moveorder, material) => new {moveorder,material})
                 .SelectMany(x => x.material.DefaultIfEmpty(), (x, material) => new {x.moveorder, material})
                 .Where(x => x.moveorder.transact.IsActive == true && x.moveorder.transact.IsTransact == true 
                 && x.moveorder.transact.DeliveryDate.Value.Date >= DateTime.Parse(DateFrom).Date 
@@ -138,18 +150,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     MIRId = x.moveorder.moveorder.OrderNo,
                     Id = x.moveorder.moveorder.Id,
                     Requestor = x.moveorder.moveorder.Requestor,
-                    Approver = x.moveorder.moveorder.Approver,
+                    Approver = x.moveorder.moveorder.PreparedBy,
                     CustomerName = x.moveorder.moveorder.CustomerName,
                     CustomerCode = x.moveorder.moveorder.Customercode,
                     ItemCode = x.material.ItemCode,
                     ItemDescription = x.material.ItemDescription,
-                    Uom = x.material.Uom.UomCode,
+                    Uom = x.material.UomCode,
                     Quantity = x.moveorder.moveorder.QuantityOrdered,
                     MoveOrderDate = x.moveorder.moveorder.PreparedDate.ToString(),
                     MoveOrderBy = x.moveorder.moveorder.PreparedBy,
                     TransactedBy = x.moveorder.transact.PreparedBy ,
-                    TransactionType = x.moveorder.moveorder.IsActive,
-                    TransactedDate = x.moveorder.moveorder.DateApproved.ToString(),
+                    TransactionType = "Pick-Up",
+                    TransactedDate = x.moveorder.transact.PreparedDate.Value.Date,
                     DeliveryDate = x.moveorder.transact.DeliveryDate.ToString(),
                     CustomerType = x.moveorder.moveorder.CustomerType,
                     DateNeeded = x.moveorder.moveorder.DateNeeded.ToString(),
@@ -183,7 +195,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || Convert.ToString(x.ItemCode).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.CustomerName).ToLower().Contains(Search.Trim().ToLower())
                 || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
+
+                
             }
+
+            orders = orders
+                .OrderBy(x => x.TransactedDate)
+                .ThenBy(x => x.ItemCode);
+
 
             return await PagedList<DtoTransactReports>.CreateAsync(orders, userParams.PageNumber, userParams.PageSize);
 
@@ -1344,7 +1363,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.transact.Id,
-                    TransactionDate = x.transact.DeliveryDate.Value,
+                    TransactionDate = x.transact.PreparedDate.Value,
                     ItemCode = x.moveOrder.ItemCode,
                     ItemDescription = x.moveOrder.ItemDescription,
                     Uom = x.moveOrder.Uom,
@@ -1632,9 +1651,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Concat(returnedConsol)
                 .ToList();
 
-            consolidateList = consolidateList
-                .OrderBy(x => x.TransactionDate)
-                .ToList();
+            //consolidateList = consolidateList
+            //    .OrderBy(x => x.TransactionDate)
+            //    .ToList();
 
             var materials = await _context.Materials
                 .Include(x => x.Uom)
@@ -1731,6 +1750,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      .ToList();
             }
 
+            reports = reports
+                .OrderBy(x => x.TransactionDate.Date)
+                .ThenBy(x => x.ItemCode)
+                .ToList();
+                
+
             return reports;
         }
 
@@ -1789,7 +1814,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Select(x => new ConsolidateAuditReportDto
                 {
                     Id = x.transact.Id,
-                    TransactionDate = x.transact.DeliveryDate.Value.Date.ToString(),
+                    TransactionDate = x.transact.PreparedDate.Value.Date.ToString(),
                     ItemCode = x.moveOrder.ItemCode,
                     ItemDescription = x.moveOrder.ItemDescription,
                     Uom = x.moveOrder.Uom,
@@ -1833,7 +1858,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     TransactionDate = x.receipt.TransactionDate.Date.ToString(),
                     ItemCode = x.warehouse.ItemCode,
                     ItemDescription = x.warehouse.ItemDescription,
-                    Uom = x.warehouse.Uom, 
+                    Uom = x.warehouse.Uom,  
                     Category = "",
                     Quantity = x.warehouse.ActualGood,
                     UnitCost = x.warehouse.UnitPrice,

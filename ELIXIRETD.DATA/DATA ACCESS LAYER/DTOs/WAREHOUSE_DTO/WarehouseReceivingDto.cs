@@ -16,6 +16,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
         public int PrNumber { get; set; }
         public DateTime PrDate { get; set; }
 
+        public string PR_Year_Number { get; set; }
+
         public string ItemCode { get; set; }
         public string ItemDescription { get; set; }
         public string Supplier { get; set; }

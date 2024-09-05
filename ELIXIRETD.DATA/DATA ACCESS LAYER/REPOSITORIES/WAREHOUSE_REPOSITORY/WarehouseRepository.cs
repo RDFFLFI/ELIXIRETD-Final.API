@@ -283,6 +283,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              join warehouse in _context.WarehouseReceived
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
+                             //where receive.IsActive == true
 
                              join material in _context.Materials
                              on posummary.ItemCode equals material.ItemCode
@@ -299,38 +300,39 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                               by new
                               {
                                   posummary.Id,
+                                  posummary.PO_Number,
                                   posummary.ItemCode,
                               }
                              into receive
                              select new WarehouseReceivingDto
                              {
                                  Id = receive.Key.Id,
-                                 PoNumber = receive.First().posummary.PO_Number,
+                                 PoNumber = receive.Key.PO_Number,
                                  PoDate = receive.First().posummary.PO_Date,
                                  PrNumber = receive.First().posummary.PR_Number,
                                  PrDate = receive.First().posummary.PR_Date,
+                                 PR_Year_Number = receive.First().posummary.PR_Year_Number,
                                  ItemCode = receive.Key.ItemCode,
                                  ItemDescription = receive.First().material.ItemDescription,
                                  Uom = receive.First().material.Uom.UomCode,
                                  Supplier = receive.First().receive.Supplier,
                                  QuantityOrdered = receive.First().posummary.Ordered,
-                                 ActualGood = receive.Sum(x => x.receive.ActualGood),
-                                 ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood),
-                                 IsActive = receive.First().receive.IsActive,
-                                 TotalReject = receive.Sum(x => x.receive.TotalReject),
+                                 ActualGood = receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
+                                 ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
+                                 IsActive = receive.First().posummary.IsActive,
+                                 TotalReject = receive.Sum(x => x.receive.TotalReject != null ? x.receive.TotalReject : 0),
                                  UnitPrice = receive.First().posummary.UnitPrice,
                                  LotSection = receive.First().material.LotSection.SectionName,
-                                 LotSectionId = receive.First().material.LotSectionId
+                                 LotSectionId = receive.First().material.LotSectionId 
 
-                             }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0))
-                               .Where(x => x.IsActive == true);
+                             }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0));
 
 
             if(!string.IsNullOrEmpty(search))
             {
-              poSummary = poSummary.Where(x => Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
+              poSummary = poSummary.Where(x => x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
                                      || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
-                                     || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower()));
+                                     || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
             }
 
 
@@ -352,7 +354,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             existingPo.CancelBy = summary.CancelBy;
             existingPo.IsCancelled = true;
             existingPo.DateCancelled = DateTime.Now;
-
 
             return true;
         }
@@ -449,6 +450,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                     Id = x.Id,
                     PoNumber = x.PoNumber,
+                    PR_Year_Number = x.PR_Year_Number,
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemDescription,
                     ActualGood = x.ActualDelivered,
@@ -474,6 +476,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                {
                    Id = x.Id,
                    PoNumber = x.PoNumber,
+                   PR_Year_Number = x.PR_Year_Number,
                    ItemCode = x.ItemCode,
                    ItemDescription = x.ItemDescription,
                    ActualGood = x.ActualDelivered,
@@ -637,134 +640,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                          
         }
 
-        //public async Task<IReadOnlyList<ListofwarehouseReceivingIdDto>> ListOfWarehouseReceivingId()
-        //{
-        //    var moveorderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-        //                                 .Where(x => x.IsPrepared == true)
-        //                                 .GroupBy(x => new
-        //                                 {
-
-        //                                     x.ItemCode,
-        //                                     x.WarehouseId,
-        //                                 }).Select(x => new ItemStocksDto
-        //                                 {
-
-        //                                     ItemCode = x.Key.ItemCode,
-        //                                     Out = x.Sum(x => x.QuantityOrdered),
-        //                                     warehouseId = x.Key.WarehouseId
-        //                                 });
-
-        //    var IssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-        //                                                    .Where(x => x.IsTransact == true)
-        //                                                    .GroupBy(x => new
-        //                                                    {
-        //                                                        x.ItemCode,
-        //                                                        x.WarehouseId,
-        //                                                    }).Select(x => new ItemStocksDto
-        //                                                    {
-
-        //                                                        ItemCode = x.Key.ItemCode,
-        //                                                        Out = x.Sum(x => x.Quantity),
-        //                                                        warehouseId = x.Key.WarehouseId
-        //                                                    });
-
-
-        //    var BorrowOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-        //                                                 //.Where(x => x.IsApproved == false)
-        //                                                 .GroupBy(x => new
-        //                                                 {
-        //                                                     x.ItemCode,
-        //                                                     x.WarehouseId,
-
-        //                                                 }).Select(x => new ItemStocksDto
-        //                                                 {
-        //                                                     ItemCode = x.Key.ItemCode,
-        //                                                     Out = x.Sum(x => x.Quantity),
-        //                                                     warehouseId = x.Key.WarehouseId
-
-        //                                                 });
-
-        //    var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
-        //                                            .GroupBy(x => new
-        //                                            {
-        //                                                x.ItemCode,
-        //                                                x.BorrowedItemPkey
-
-        //                                            }).Select(x => new ItemStocksDto
-        //                                            {
-        //                                                ItemCode = x.Key.ItemCode,
-        //                                                BorrowedItemPkey = x.Key.BorrowedItemPkey,
-        //                                                Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
-
-        //                                            });
-
-
-
-        //    var BorrowedReturn = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-        //                                                     .Where(x => x.IsReturned == true)
-        //                                                     .Where(x => x.IsApprovedReturned == true)
-        //                                                     .GroupJoin(consumed, returned => returned.Id, itemconsume => itemconsume.BorrowedItemPkey, (returned, itemconsume) => new { returned, itemconsume })
-        //                                                     .SelectMany(x => x.itemconsume.DefaultIfEmpty(), (x, itemconsume) => new { x.returned, itemconsume })
-        //                                                     .GroupBy(x => new
-        //                                                     {
-        //                                                         x.returned.ItemCode,
-        //                                                         x.returned.WarehouseId,
-
-        //                                                     }).Select(x => new ItemStocksDto
-        //                                                     {
-
-        //                                                         ItemCode = x.Key.ItemCode,
-        //                                                         In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
-        //                                                         warehouseId = x.Key.WarehouseId,
-
-        //                                                     });
-
-
-        //    var warehouseInventory = _context.WarehouseReceived
-        //                          .Where(x => x.IsActive == true)
-        //                          .GroupJoin(IssueOut, warehouse => warehouse.Id, issue => issue.warehouseId, (warehouse, issue) => new { warehouse, issue })
-        //                          .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
-        //                          .GroupJoin(moveorderOut, warehouse => warehouse.warehouse.Id, moveorder => moveorder.warehouseId, (warehouse, moveorder) => new { warehouse, moveorder })
-        //                          .SelectMany(x => x.moveorder.DefaultIfEmpty(), (x, moveorder) => new { x.warehouse, moveorder })
-        //                          .GroupJoin(BorrowOut, warehouse => warehouse.warehouse.warehouse.Id, borrowed => borrowed.warehouseId, (warehouse, borrowed) => new { warehouse, borrowed })
-        //                          .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
-        //                          .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.Id, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
-        //                          .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
-        //                          .GroupBy(x => new
-        //                          {
-
-        //                              x.warehouse.warehouse.warehouse.warehouse.Id,
-        //                              x.warehouse.warehouse.warehouse.warehouse.PoNumber,
-        //                              x.warehouse.warehouse.warehouse.warehouse.ItemCode,
-        //                              x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
-        //                              x.warehouse.warehouse.warehouse.warehouse.ReceivingDate,
-        //                              x.warehouse.warehouse.warehouse.warehouse.LotSection,
-        //                              x.warehouse.warehouse.warehouse.warehouse.Uom,
-        //                              x.warehouse.warehouse.warehouse.warehouse.ActualGood,
-        //                              x.warehouse.warehouse.warehouse.warehouse.Supplier,
-        //                              MoveOrderOut = x.warehouse.warehouse.moveorder.Out != null ? x.warehouse.warehouse.moveorder.Out : 0,
-        //                              Issueout = x.warehouse.warehouse.warehouse.issue.Out != null ? x.warehouse.warehouse.warehouse.issue.Out : 0,
-        //                              Borrowout = x.warehouse.borrowed.Out != null ? x.warehouse.borrowed.Out : 0,
-        //                              Borrowedreturn = x.returned.In != null ? x.returned.In : 0,
-
-        //                          }) .OrderBy(x => x.Key.ItemCode)
-        //                             .ThenBy(x => x.Key.ReceivingDate)
-        //                             .Select(total => new ListofwarehouseReceivingIdDto
-        //                             {
-        //                                 Id = total.Key.Id,
-        //                                 ItemCode = total.Key.ItemCode,
-        //                                 ItemDescription = total.Key.ItemDescription,
-        //                                 ReceivingDate = total.Key.ReceivingDate.ToString("MM/dd/yyyy"),
-        //                                 ActualGood  = total.Key.ActualGood + total.Key.Borrowedreturn - total.Key.Issueout - total.Key.Borrowout - total.Key.MoveOrderOut ,
-
-        //                             });
-
-        //    return await warehouseInventory.ToListAsync();
-
-        //}
-
-
-        // Notification
 
         public async Task<IReadOnlyList<WarehouseReceivingDto>> PoSummaryForWarehouseNotif()
         {
@@ -807,7 +682,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                    x.Supplier,
                                    x.QuantityOrdered,
                                    x.IsActive,
-
 
                                })
                                                      .Select(receive => new WarehouseReceivingDto

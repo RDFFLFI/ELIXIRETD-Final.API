@@ -1,4 +1,5 @@
-﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,6 +8,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
     public class Warehouse_Receiving : BaseEntity
     {
         public int PoSummaryId { get; set; }
+        //public virtual PoSummary PoSummary { get; set; }
+
+        public string PR_Year_Number { get; set; }
+
         public string ItemCode { get; set; }
 
         public string ItemDescription { get; set; }
@@ -42,9 +47,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public string AccountTitles { get; set; }
         public string EmpId { get; set; }
         public string FullName { get; set; }
-
-
-
 
 
     }

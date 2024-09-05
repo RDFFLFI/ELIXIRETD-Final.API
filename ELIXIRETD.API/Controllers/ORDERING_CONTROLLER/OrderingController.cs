@@ -562,7 +562,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.AccountTitles = details.AccountTitles;
             order.EmpId = details.EmpId;
             order.FullName = details.FullName;
-            
+
             order.CustomerName = details.CustomerName;
             order.Customercode = details.CustomerCode;
             order.AddressOrder = details.Address;
@@ -638,12 +638,15 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> AddSavePreparedMoveOrder([FromBody] MoveOrder[] orders)
         {
 
-            foreach (MoveOrder items in orders)
+            foreach (var items in orders)
             {
                 if (!await _unitofwork.Orders.SavePreparedMoveOrder(items))
                     return BadRequest("No order no exist");
 
+                items.PreparedBy =  User.Identity.Name;
+
             }
+
             await _unitofwork.CompleteAsync();
 
             return new JsonResult("Successfully added!");
