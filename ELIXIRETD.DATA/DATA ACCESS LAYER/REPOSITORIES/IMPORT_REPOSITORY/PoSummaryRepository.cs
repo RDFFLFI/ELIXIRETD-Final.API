@@ -86,7 +86,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
             return true;
         }
 
-        public async Task<bool> ValidatePOAndItemcodeManual(int ponumber, string itemcode)
+        public async Task<bool> ValidatePOAndItemcodeManual(string ponumber, string itemcode)
         {
             var validate = await _context.PoSummaries.Where(x => x.PO_Number == ponumber)
                                                      .Where(x => x.ItemCode == itemcode)

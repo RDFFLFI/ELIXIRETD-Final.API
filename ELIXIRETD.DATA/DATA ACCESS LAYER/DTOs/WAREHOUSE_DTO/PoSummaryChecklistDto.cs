@@ -9,8 +9,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
     public class PoSummaryChecklistDto
     {
         public int Id { get; set; }
-        public int PO_Number { get; set; }
-        public int PR_Number { get; set; }
+        public string PO_Number { get; set; }
+        public string PR_Number { get; set; }
         public DateTime PR_Date { get; set; }
         public DateTime PO_Date { get; set; }
         public string ItemCode { get; set; }

@@ -15,7 +15,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public string ItemCode { get; set; }
 
         public string ItemDescription { get; set; }
-        public int PoNumber { get; set; }
+        public string PoNumber { get; set; }
         public string Uom { get; set; }
         public string Supplier { get; set; }
 

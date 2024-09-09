@@ -18,7 +18,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
         [Column(TypeName = "Date")]
         public DateTime PR_Date { get; set; }
 
-        public int PO_Number { get; set; }
+        public string PO_Number { get; set; }
 
 
         [Column(TypeName = "Date")]

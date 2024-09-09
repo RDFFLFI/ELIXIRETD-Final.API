@@ -7,7 +7,7 @@
         public string ItemCode { get; set; }
         public string ItemDescrption { get; set; }
         public string Category { get; set; }
-        public int PoNumber { get; set; }
+        public string PoNumber { get; set; }
         public string PR_Year_Number { get; set; }
         public string SINumber { get; set; }
         public string SupplierName { get; set; }

@@ -9,7 +9,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
     public class WarehouseReceivingDto
     {
         public int Id { get; set; }
-        public int PoNumber { get; set; }
+        public string PoNumber { get; set; }
 
         public string SINumber { get; set; }
         public DateTime PoDate { get; set; }
