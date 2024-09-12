@@ -198,12 +198,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              into leftJ1
                              from material in leftJ1.DefaultIfEmpty()
 
-                              //from warehouse in _context.WarehouseReceived
-                              //join lotsection in _context.LotSections
-                              //on warehouse.LotSection equals lotsection.SectionName
-                              //into leftj2 
-                              //from lotsection in leftj2.DefaultIfEmpty()
-
                                select new WarehouseReceivingDto
                                {
 
@@ -707,12 +701,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                      .Where(x => x.IsActive == true);
 
             return await poSummary.ToListAsync();
-
+              
         }
-
 
         public async Task<IReadOnlyList<CancelledPoDto>> CancelledPoSummaryNotif()
         {
+
             var poSummary = (from posummary in _context.PoSummaries
                              where posummary.IsActive == false
                              where posummary.IsCancelled == true
@@ -746,24 +740,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.ActualGood,
                                  x.DateCancelled,
 
+                             }).Select(receive => new CancelledPoDto
+                             {
+                                 Id = receive.Key.Id,
+                                 PO_Number = receive.Key.PO_Number,
+                                 ItemCode = receive.Key.ItemCode,
+                                 ItemDescription = receive.Key.ItemDescription,
+                                 Supplier = receive.Key.Supplier,
+                                 ActualGood = receive.Sum(x => x.ActualGood),
+                                 QuantityOrdered = receive.Key.QuantityOrdered,
+                                 IsActive = receive.Key.IsActive,
+                                 DateCancelled = receive.Key.DateCancelled,
+                                 TotalReject = receive.Sum(x => x.TotalReject),
+                                 ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-                             })
-                                                 .Select(receive => new CancelledPoDto
-                                                 {
-                                                     Id = receive.Key.Id,
-                                                     PO_Number = receive.Key.PO_Number,
-                                                     ItemCode = receive.Key.ItemCode,
-                                                     ItemDescription = receive.Key.ItemDescription,
-                                                     Supplier = receive.Key.Supplier,
-                                                     ActualGood = receive.Sum(x => x.ActualGood),
-                                                     QuantityOrdered = receive.Key.QuantityOrdered,
-                                                     IsActive = receive.Key.IsActive,
-                                                     DateCancelled = receive.Key.DateCancelled,
-                                                     TotalReject = receive.Sum(x => x.TotalReject),
-                                                     ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
+                             }).OrderBy(x => x.PO_Number)
+                               .Where(x => x.IsActive == false);
 
-                                                 }).OrderBy(x => x.PO_Number)
-                                                   .Where(x => x.IsActive == false);
 
             return await poSummary.ToListAsync();
         }

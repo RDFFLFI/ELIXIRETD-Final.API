@@ -64,6 +64,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public DateTime TransactedDate { get; set; }
         public string DeliveryDate { get; set; }
 
+        public string PicUp_Date { get; set; }
+
         public string ItemRemarks { get; set; }
 
 

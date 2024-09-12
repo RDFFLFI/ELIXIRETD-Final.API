@@ -2045,10 +2045,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                            .FirstOrDefaultAsync();
 
             orders.UnitPrice = UnitCost.UnitPrice;
-            orders.PreparedBy = orders.PreparedBy;
 
-            await _context.MoveOrders.AddAsync(orders);
+           await _context.MoveOrders.AddAsync(orders);
 
+           
             return true;
 
         }
@@ -2146,6 +2146,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 x.RejectedDate = null;
                 x.RejectedDateTempo = null;
                 x.IsReject = null;
+                x.Approver = order.Approver;
+                x.PreparedBy = order.PreparedBy;
 
             }
 
@@ -2604,7 +2606,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 items.RejectedDateTempo = DateTime.Now;
                 items.Remarks = moveOrder.Remarks;
                 items.IsReject = true;
-                items.PreparedBy = null;
                 items.IsApproveReject = null;
 
 
@@ -2635,7 +2636,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                          x.CustomerName,
                          x.Customercode,
                          x.AddressOrder,
-
                          x.PreparedDate,
                          x.IsApprove,
                          x.IsPrepared,
@@ -2802,9 +2802,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     UnitCost = x.Key.UnitCost,
                     TotalCost = x.Key.TotalCost
                 }).Where(x => x.MIRId == id);
-
-
-
 
 
             return await orders.FirstOrDefaultAsync();
@@ -3270,8 +3267,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     PoNumber = x.warehouse.PoNumber,
                     PrNumber = x.poSummary.PR_Number != null ? x.poSummary.PR_Number : null,
                     ItemCode = x.warehouse.ItemCode,
-                    AcquisitionDate = x.warehouse.ActualReceivingDate.Date.ToString()
+                    AcquisitionDate = x.warehouse.ActualReceivingDate.Date.ToString(),
+                    Unit_Price = x.warehouse.UnitPrice
 
+                });
+
+            var transactedMaterial = _context.TransactOrder
+                .Where(x => x.IsActive == true )
+                .Select(x => new
+                {
+                    x.Id,
+                    x.OrderNo,
+                    x.PreparedDate,
+                    x.DeliveryDate,
+                    
                 });
 
 
@@ -3282,22 +3291,34 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.moveOrders, warehouse })
                 .GroupJoin(_context.Materials, moveOrders => moveOrders.moveOrders.ItemCode, material => material.ItemCode, (moveOrders, material) => new { moveOrders, material })
                 .SelectMany(x => x.material.DefaultIfEmpty(), (x, material) => new { x.moveOrders, material })
-                .OrderBy(x => x.moveOrders.moveOrders.ApprovedDate)
+                .GroupJoin(transactedMaterial, moveOrders => moveOrders.moveOrders.moveOrders.OrderNo , transact => transact.OrderNo , (moveOrders, transact) => new {moveOrders, transact })
+                .SelectMany(x => x.transact.DefaultIfEmpty() , (x , transact) => new {x.moveOrders, transact })
+                .OrderBy(x => x.moveOrders.moveOrders.moveOrders.ApprovedDate)
                 .Select(x => new DtoMoveOrderAssetTag
                 {
-                    PoNumber = x.moveOrders.warehouse.PoNumber,
-                    PrNumber = x.moveOrders.warehouse.PrNumber,
-                    MIRId = x.moveOrders.moveOrders.OrderNo,
-                    CustomerCode = x.moveOrders.moveOrders.Customercode,
-                    CustomerName = x.moveOrders.moveOrders.CustomerName,
-                    ItemCode = x.material.ItemCode,
-                    ItemDescription = x.material.ItemDescription,
-                    Uom = x.material.Uom.UomCode,
-                    ServedQuantity = x.moveOrders.moveOrders.QuantityOrdered,
-                    AssetTag = x.moveOrders.moveOrders.AssetTag,
-                    ApproveDate = x.moveOrders.moveOrders.ApprovedDate.ToString(),
-                    WareHouseId = x.moveOrders.moveOrders.WarehouseId,
-                    AcquisitionDate = x.moveOrders.warehouse.AcquisitionDate
+                    PoNumber = x.moveOrders.moveOrders.warehouse.PoNumber,
+                    PrNumber = x.moveOrders.moveOrders.warehouse.PrNumber,
+                    MIRId = x.moveOrders.moveOrders.moveOrders.OrderNo,
+                    WareHouseId = x.moveOrders.moveOrders.moveOrders.WarehouseId,
+                    AcquisitionDate = x.moveOrders.moveOrders.warehouse.AcquisitionDate,
+                    CustomerCode = x.moveOrders.moveOrders.moveOrders.Customercode,
+                    CustomerName = x.moveOrders.moveOrders.moveOrders.CustomerName,
+                    ItemCode = x.moveOrders.material.ItemCode,
+                    ItemDescription = x.moveOrders.material.ItemDescription,
+                    Uom = x.moveOrders.material.Uom.UomCode,
+                    ServedQuantity = x.moveOrders.moveOrders.moveOrders.QuantityOrdered,
+                    AssetTag = x.moveOrders.moveOrders.moveOrders.AssetTag,
+                    ApproveDate = x.moveOrders.moveOrders.moveOrders.ApprovedDate.ToString(),
+                    Release_Date = x.transact.DeliveryDate.ToString(),
+                    Unit_Price = x.moveOrders.moveOrders.warehouse.Unit_Price,
+                    Company_Code = x.moveOrders.moveOrders.moveOrders.CompanyCode,
+                    Company_Name = x.moveOrders.moveOrders.moveOrders.CompanyName,
+                    Department_Code = x.moveOrders.moveOrders.moveOrders.DepartmentCode,
+                    Department_Name = x.moveOrders.moveOrders.moveOrders.DepartmentName,
+                    Location_Code = x.moveOrders.moveOrders.moveOrders.LocationCode,
+                    Location_Name = x.moveOrders.moveOrders.moveOrders.LocationName,
+                    Major_Category_Name = x.moveOrders.material.ItemCategory.ItemCategoryName,
+                    //Minor_Category_Name = x.moveOrders.material.
                 });
 
 

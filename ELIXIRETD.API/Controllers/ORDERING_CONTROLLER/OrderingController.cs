@@ -589,7 +589,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.HelpdeskNo = details.HelpDeskNo;
 
             order.Requestor = details.Requestor;
-            order.Approver = details.Approver;
+            order.Approver = User.Identity.Name;
             order.DateApproved = Convert.ToDateTime(details.DateApproved);
 
 
@@ -644,6 +644,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                     return BadRequest("No order no exist");
 
                 items.PreparedBy =  User.Identity.Name;
+                items.Approver = User.Identity.Name;
 
             }
 

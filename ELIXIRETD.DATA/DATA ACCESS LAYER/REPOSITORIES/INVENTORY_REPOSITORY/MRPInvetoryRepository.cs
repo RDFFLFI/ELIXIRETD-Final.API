@@ -1110,8 +1110,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 .SelectMany(x => x.issuance.DefaultIfEmpty(), (x, issuance) => new { x.material, issuance })
                 .GroupBy(x => x.material.material.ItemCode)
                .Select(x => new DtoYmirSOHList
-                {
-                    ItemCode = x.Key,
+               {
+                    id = x.Key,
                     ItemDescription = x.First().material.material.ItemDescription,
                     BufferLevel = x.First().material.material.BufferLevel,
                     Reserve = x.First().material.soh.SOH != null ? x.First().material.soh.SOH : 0 ,
@@ -1119,8 +1119,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                 });
 
-            report.OrderBy(x => x.ItemCode);
-
+            report.OrderBy(x => x.id);
 
             return await report.ToListAsync();
         }

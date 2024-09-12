@@ -395,7 +395,14 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         }
 
 
+        [HttpGet]
+        [Route("GeneralLedgerReport")]
+        public async Task<IActionResult> GeneralLedgerReport([FromQuery] string DateFrom, [FromQuery] string DateTo)
+        {
+            var reports = await _unitofwork.Reports.GeneralLedgerReport(DateFrom, DateTo);
 
+            return Ok(reports);
+        }
 
 
 

@@ -55,9 +55,10 @@ namespace ELIXIRETD.API.Controllers.INVENTORY_CONTROLLER
 
 
         [HttpGet]
-        [Route("YmirSOHList")]
-        public async Task<IActionResult> YmirSOHList(string itemCode)
+        [Route("YmirSOHList/{itemCode}")]
+        public async Task<IActionResult> YmirSOHList([FromRoute] string itemCode)
         {
+
             var result = await _unitofwork.Inventory.YmirSOHList(itemCode);
 
             return Ok(result);
