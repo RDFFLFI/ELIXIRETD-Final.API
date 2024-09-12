@@ -701,7 +701,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                            .Select(x => new DtoBorrowedAndReturned
                            {
 
-                               BorrowedId = x.borrowed.Id,
+                               BorrowedId = x.borrowed.Id, 
                                CustomerCode = x.borrowed.CustomerCode,
                                CustomerName = x.borrowed.CustomerName,
                                EmpIdByIssue = x.borrowed.EmpId,
