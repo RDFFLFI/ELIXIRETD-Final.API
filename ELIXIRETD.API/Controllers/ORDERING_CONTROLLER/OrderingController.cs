@@ -643,8 +643,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 if (!await _unitofwork.Orders.SavePreparedMoveOrder(items))
                     return BadRequest("No order no exist");
 
-                items.PreparedBy =  User.Identity.Name;
-                items.Approver = User.Identity.Name;
+                items.PreparedBy =  items.PreparedBy;
+                items.Approver = items.Approver;
 
             }
 
@@ -929,7 +929,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 items.IsTransact = true;
                 items.IsActive = true;
                 items.PreparedDate = DateTime.Now;
-                items.PreparedBy = User.Identity.Name;
+                items.PreparedBy = items.PreparedBy;
 
                 if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
                     return BadRequest("no order exist");
