@@ -68,6 +68,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
 
         public string ItemRemarks { get; set; }
 
+        public string Reference {  get; set; }
+
 
 
 

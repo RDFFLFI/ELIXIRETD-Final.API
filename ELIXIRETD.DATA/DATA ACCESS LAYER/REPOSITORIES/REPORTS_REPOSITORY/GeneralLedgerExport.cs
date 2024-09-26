@@ -32,7 +32,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             public async Task<Unit> Handle(GeneralLedgerExportCommand command, CancellationToken cancellationToken)
             {
                 var ledger = await _report.Reports
-                    .ConsolidateFinanceReport(command.DateFrom, command.DateTo, command.Search);
+                    .GeneralLedgerReport(command.DateFrom, command.DateTo);
 
                 using (var workbook = new XLWorkbook())
                 {
@@ -40,16 +40,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     var worksheet = workbook.Worksheets.Add($"General Ledger Report");
                     var headers = new List<string>
                     {
+                        "SyncId",
                         "Mark",
                         "Mark 2",
-                        "CIP#",
+                        "Asset /CIP#",
                         "Accounting Tag#",
                         "Transaction Date",
-                        "Supplier/Creditor",
+                        "Supplier/Customer",
+                        "Account Title Code",
+                        "Account Title",
                         "Company Code",
                         "Company",
-                        "Business Unit Code",
-                        "Business Unit",
+                        "Division Code",
+                        "Division",
                         "Deparment Code",
                         "Department",
                         "Unit Code",
@@ -58,35 +61,55 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         "Sub-Unit Name",
                         "Location Code",
                         "Location",
-                        "Account Title Code",
-                        "Account Title",
+                        "PO#",
                         "Ref. No.",
-                        "PO",
                         "Item Code",
                         "Description",
                         "Category",
                         "Qty.",
-                        "Uom",
+                        "unit",
                         "Unit Price",
                         "Line Amount",
                         "Voucher No.",
-                        "Transaction Number",
-                        "Transaction Type",
+                        "Voucher/GJNO.",
+                        "Account Type",
                         "DR/CR",
                         "Asset Code",
                         "Asset",
-                        "CIP",
-                        "Helpdesk Number",
-                        "Service Provider Code",
+                        "Service Provide Code",
                         "Service Provider",
                         "BOA",
                         "Allocation",
+                        "Account Group",
+                        "Account Sub Group",
+                        "Financial Statement",
+                        "Unit Responsible",
                         "Batch",
-                        "Reason",
                         "Remarks",
+                        "Payroll Period",
+                        "Position",
+                        "Payroll type 1",
+                        "Payroll Type 2",
+                        "Additional Description for DEPR",
+                        "Remaining BV for DEPR",
+                        "Useful life",
                         "Month",
                         "Year",
-                        "Division"
+                        "Division",
+                        "Particulars",
+                        "Month 2",
+                        "Farm Type",
+                        "Jean Marks",
+                        "From",
+                        "Change To",
+                        "Reason",
+                        "Checking Remarks",
+                        "BOA 2",
+                        "System",
+                        "Books"
+
+
+
                     };
 
                     var range = worksheet.Range(worksheet.Cell(1, 1), worksheet.Cell(1, headers.Count));
@@ -104,54 +127,34 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     {
                         var row = worksheet.Row(index + 1);
 
-                        row.Cell(1).Value = "";
-                        row.Cell(2).Value = "";
-                        row.Cell(3).Value = ledger[index - 1].CIPNo;
-                        row.Cell(4).Value = "";
-                        row.Cell(5).Value = ledger[index - 1].TransactionDate;
-                        row.Cell(6).Value = ledger[index - 1].SupplierName;
-                        row.Cell(7).Value = ledger[index - 1].CompanyCode;
-                        row.Cell(8).Value = ledger[index - 1].CompanyName;
-                        row.Cell(9).Value = "";
-                        row.Cell(10).Value = "";
-                        row.Cell(11).Value = ledger[index - 1].DepartmentCode;
-                        row.Cell(12).Value = ledger[index - 1].DepartmentName;
-                        row.Cell(13).Value = "";
-                        row.Cell(14).Value = "";
-                        row.Cell(15).Value = "";
-                        row.Cell(16).Value = "";
-                        row.Cell(17).Value = ledger[index - 1].LocationCode;
-                        row.Cell(18).Value = ledger[index - 1].LocationName;
-                        row.Cell(19).Value = ledger[index - 1].AccountTitleCode;
-                        row.Cell(20).Value = ledger[index - 1].AccountTitle;
-                        row.Cell(21).Value = ledger[index - 1].Reference;
-                        row.Cell(22).Value = ledger[index - 1].Source;
-                        row.Cell(23).Value = ledger[index - 1].ItemCode;
-                        row.Cell(24).Value = ledger[index - 1].ItemDescription;
-                        row.Cell(25).Value = ledger[index - 1].Category;
-                        row.Cell(26).Value = ledger[index - 1].Quantity;
-                        row.Cell(27).Value = ledger[index - 1].Uom;
-                        row.Cell(28).Value = ledger[index - 1].UnitCost;
-                        row.Cell(29).Value = ledger[index - 1].LineAmount;
-                        row.Cell(30).Value = "";
-                        row.Cell(31).Value = ledger[index - 1].Source;
-                        row.Cell(32).Value = ledger[index - 1].TransactionType;
-                        row.Cell(33).Value = "";
-                        row.Cell(34).Value = "";
-                        row.Cell(35).Value = ledger[index - 1].AssetTag;
-                        row.Cell(36).Value = ledger[index - 1].CIPNo;
-                        row.Cell(37).Value = ledger[index - 1].Helpdesk;
-                        row.Cell(38).Value = "";
-                        row.Cell(39).Value = "";
-                        row.Cell(40).Value = "Elixir ETD";
-                        row.Cell(41).Value = "";
-                        row.Cell(42).Value = "";
-                        row.Cell(43).Value = ledger[index - 1].Reason;
-                        row.Cell(44).Value = "";
-                        row.Cell(45).Value = ledger[index - 1].TransactionDate.Date.Month;
-                        row.Cell(46).Value = ledger[index - 1].TransactionDate.Date.Year;
-                        row.Cell(7).Value = "";
-
+                        row.Cell(1).Value = ledger[index - 1].SyncId;
+                        row.Cell(4).Value = ledger[index - 1].Asset_Cip;
+                        row.Cell(6).Value = ledger[index - 1].Transaction_Date;
+                        row.Cell(7).Value = ledger[index - 1].Supplier;
+                        row.Cell(8).Value = ledger[index - 1].Account_Title_Code;
+                        row.Cell(9).Value = ledger[index - 1].Account_Title_Name;
+                        row.Cell(10).Value = ledger[index - 1].Company_Code;
+                        row.Cell(11).Value = ledger[index - 1].Company_Name;
+                        row.Cell(13).Value = ledger[index - 1].Department_Code;
+                        row.Cell(14).Value = ledger[index - 1].Department_Name;
+                        row.Cell(20).Value = ledger[index - 1].Location_Code;
+                        row.Cell(21).Value = ledger[index - 1].Location;
+                        row.Cell(22).Value = ledger[index - 1].Po;
+                        row.Cell(23).Value = ledger[index - 1].Reference_No;
+                        row.Cell(24).Value = ledger[index - 1].Item_Code;
+                        row.Cell(25).Value = ledger[index - 1].Description;
+                        row.Cell(26).Value = ledger[index - 1].Category;
+                        row.Cell(27).Value = ledger[index - 1].Quantity;
+                        row.Cell(28).Value = ledger[index - 1].Uom;
+                        row.Cell(29).Value = ledger[index - 1].Unit_Price;
+                        row.Cell(30).Value = ledger[index - 1].Line_Amount;
+                        row.Cell(34).Value = ledger[index - 1].DR_CR;
+                        row.Cell(36).Value = ledger[index - 1].Asset;
+                        row.Cell(37).Value = ledger[index - 1].Service_Provider_Code;
+                        row.Cell(38).Value = ledger[index - 1].Service_Provider;
+                        row.Cell(54).Value = ledger[index - 1].Transaction_Date.Date.Month;
+                        row.Cell(55).Value = ledger[index - 1].Transaction_Date.Date.Year;
+                        row.Cell(66).Value = ledger[index - 1].System;
 
                     }
 

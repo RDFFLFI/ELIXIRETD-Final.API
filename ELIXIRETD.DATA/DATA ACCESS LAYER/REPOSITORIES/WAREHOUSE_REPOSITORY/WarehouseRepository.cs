@@ -156,27 +156,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  x.IsActive,
                                  x.DateCancelled,
                                 
-                             })
+                             }).Select(receive => new CancelledPoDto
+                             {
+                                 Id = receive.Key.Id,
+                                 PO_Number = receive.Key.PO_Number,
+                                 ItemCode = receive.Key.ItemCode,
+                                 ItemDescription = receive.Key.ItemDescription,
+                                 Supplier = receive.Key.Supplier,
+                                 IsActive = receive.Key.IsActive,
+                                 DateCancelled = receive.Key.DateCancelled,
+                                 ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
 
-
-                                                 .Select(receive => new CancelledPoDto
-                                                 {
-                                                     Id = receive.Key.Id,
-                                                     PO_Number = receive.Key.PO_Number,
-                                                     ItemCode = receive.Key.ItemCode,
-                                                     ItemDescription = receive.Key.ItemDescription,
-                                                     Supplier = receive.Key.Supplier,
-                                                     IsActive = receive.Key.IsActive,
-                                                     DateCancelled = receive.Key.DateCancelled,
-                                                     ActualRemaining = receive.Key.QuantityOrdered - receive.Sum(x => x.ActualGood),
-
-                                                 })/*.OrderByDescending(x => x.PO_Number)*/
-                                                   .Where(x => x.IsActive == false)
-                                                   .Where(x => Convert.ToString(x.PO_Number).ToLower().Contains(search.Trim().ToLower())
+                             }).Where(x => x.IsActive == false)
+                               .Where(x => Convert.ToString(x.PO_Number).ToLower().Contains(search.Trim().ToLower())
                                                   || Convert.ToString(x.ItemCode).ToLower().Contains(search.Trim().ToLower())
                                                   || Convert.ToString(x.ItemDescription).ToLower().Contains(search.Trim().ToLower())
                                                   || Convert.ToString(x.Supplier).ToLower().Contains(search.Trim().ToLower()));
-
 
             return await PagedList<CancelledPoDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
         }

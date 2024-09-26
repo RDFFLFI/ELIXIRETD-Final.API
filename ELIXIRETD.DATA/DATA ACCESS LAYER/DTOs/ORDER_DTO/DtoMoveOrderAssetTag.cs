@@ -54,14 +54,5 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
         public string Major_Category_Name { get; set; }
         public string Minor_Category_Name { get;set;}
 
-
-        
-
-
-
-
-
-
-
     }
 }
