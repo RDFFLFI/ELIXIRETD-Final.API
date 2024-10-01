@@ -304,7 +304,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  ItemCode = receive.Key.ItemCode,
                                  ItemDescription = receive.First().material.ItemDescription,
                                  Uom = receive.First().material.Uom.UomCode,
-                                 Supplier = receive.First().receive.Supplier,
+                                 Supplier = receive.First().posummary.VendorName,
                                  QuantityOrdered = receive.First().posummary.Ordered,
                                  ActualGood = receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
                                  ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
