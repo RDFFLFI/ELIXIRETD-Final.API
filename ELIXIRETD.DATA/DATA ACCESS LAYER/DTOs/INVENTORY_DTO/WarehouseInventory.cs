@@ -14,6 +14,9 @@
 
         public decimal TotalUnitPrice { get; set; }
 
+        public decimal Quantity { get; set; }
+
+
 
     }
 }

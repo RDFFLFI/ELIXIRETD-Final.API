@@ -146,9 +146,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(10).Style.Protection.SetLocked(false);
                         row.Cell(11).Value = ledger[index - 1].Company_Name;
                         row.Cell(11).Style.Protection.SetLocked(false);
-                        row.Cell(13).Value = ledger[index - 1].Department_Code;
-                        row.Cell(13).Style.Protection.SetLocked(false);
-                        row.Cell(14).Value = ledger[index - 1].Department_Name;
+                        row.Cell(14).Value = ledger[index - 1].Department_Code;
+                        row.Cell(14).Style.Protection.SetLocked(false);
+                        row.Cell(15).Value = ledger[index - 1].Department_Name;
+                        row.Cell(15).Style.Protection.SetLocked(false);
+
                         row.Cell(20).Value = ledger[index - 1].Location_Code;
                         row.Cell(20).Style.Protection.SetLocked(false);
                         row.Cell(21).Value = ledger[index - 1].Location;

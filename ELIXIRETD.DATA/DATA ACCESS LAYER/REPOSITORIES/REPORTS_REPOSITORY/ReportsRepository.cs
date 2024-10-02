@@ -1191,10 +1191,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               
                           });
 
-
             var wareHouseUnitCost = _context.WarehouseReceived
                 .Where(x => x.IsActive == true)
-                .Where(x => x.ActualReceivingDate.Date >= DateTime.Parse(DateFrom) && x.ActualReceivingDate.Date <= DateTime.Parse(PlusOne))
+                .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
                 .Select(x => new
                 {
                     x.Id,
@@ -1236,6 +1235,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var borrowedUnitCost = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+                 .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(PlusOne))
                                                               .GroupBy(x => new
                                                               {
                                                                   x.WarehouseId,
@@ -1256,6 +1256,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                             .Where(x => x.IsApprovedReturned == true)
                                                             .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
                                                             .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })
+                                                             .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(DateFrom)
+                                                                       && x.returned.IsApprovedReturnedDate.Value <= DateTime.Parse(PlusOne))
                                                              .GroupBy(x => new
                                                              {
                                                                  x.returned.WarehouseId,
@@ -1314,13 +1316,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                     WarehouseId = x.Key.Id,
                                     ItemCode = x.Key.ItemCode,
-                                    UnitPrice = Math.Round(x.First().warehouse.UnitPrice * (x.First().warehouse.ActualGood + x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),2),
-                                    ActualGood = x.First().warehouse.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity))
-
+                                    UnitPrice = Math.Round(x.Sum(x => x.warehouse.UnitPrice) * (x.First().warehouse.ActualGood + x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),2),
+                                    ActualGood = x.First().warehouse.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),
+                                  
                                 });
 
 
-            var getUnitpriceTotal = getUnitPrice
+            var getUnitprice = getUnitPrice
                  .Where(x => x.UnitPrice > 0)
                  .GroupBy(x => new
                  {
@@ -1329,9 +1331,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                  }).Select(x => new WarehouseInventory
                  {
                      ItemCode = x.Key.ItemCode,
-                      UnitPrice = Math.Round(x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),2) ,
+                      UnitPrice = Math.Round(x.Sum(x => x.UnitPrice != null ? x.UnitPrice : 0) / x.Sum(x => x.ActualGood),2),
                      ActualGood = x.Sum(x => x.ActualGood),
-                     TotalUnitPrice = x.Sum(x => x.UnitPrice)
+
+                 });
+
+            var getUnitpriceTotal = getUnitprice
+                 .GroupBy(x => new
+                 {
+                     x.ItemCode,
+
+                 }).Select(x => new WarehouseInventory
+                 {
+                     ItemCode = x.Key.ItemCode,
+                     UnitPrice = x.First().UnitPrice,
+                     TotalUnitPrice = Math.Round((x.First().UnitPrice * x.First().ActualGood),2),
 
                  });
 
@@ -1477,7 +1491,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var receivingConsol =  _context.WarehouseReceived
                 .AsNoTracking()
                 .Where(x => x.TransactionType == "Receiving" && x.IsActive == true)
-                //.Where(x => x.ActualReceivingDate.Date >= dateFrom && x.ActualReceivingDate.Date <= dateTo)
                 .Select(x => new ConsolidateFinanceReportDto
                 { 
                     Id = x.Id,
@@ -1516,7 +1529,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .AsNoTracking()
                 .Join(_context.MoveOrders, transact => transact.OrderNo,
                 moveOrder => moveOrder.OrderNo, (transact, moveOrder) => new { transact, moveOrder})       
-               .Where(x => x.transact.IsTransact == true && x.transact.IsActive == true && x.moveOrder.IsActive == true)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
                     Id = x.transact.Id,
@@ -2315,9 +2327,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          Quantity = x.warehouse.ActualGood,
                          Unit_Price = x.warehouse.UnitPrice,
                          Line_Amount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
-                         Po = x.warehouse.PoNumber,
+                         Po = "N/a",
                          Reason = "",
-                         Reference_No = x.warehouse.SINumber,
+                         Reference_No = x.warehouse.PoNumber,
                          Supplier = x.warehouse.Supplier,
                          Company_Code = "10",
                          Company_Name = "RDF Corporate Services",
@@ -2331,7 +2343,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                          Asset_Cip = "",
                          System = "ElixirETD_Receiver",
                          Service_Provider_Code = x.user.EmpId,
-                         Service_Provider = x.warehouse.FullName,
+                         Service_Provider = x.user.FullName,
 
 
                      }).ToList();
@@ -2356,11 +2368,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = Math.Round(x.transact.moveOrder.QuantityOrdered, 2),
                     Unit_Price = x.transact.moveOrder.UnitPrice,
                     Line_Amount = Math.Round(x.transact.moveOrder.UnitPrice * x.transact.moveOrder.QuantityOrdered, 2),
-                    Po = Convert.ToString(x.transact.transact.OrderNo),
+                    Po = "N/a",
                     Service_Provider_Code = x.user.EmpId,
                     Service_Provider = x.transact.transact.PreparedBy,
                     Reason = "",
-                    Reference_No = x.transact.moveOrder.ItemRemarks,
+                    Reference_No = Convert.ToString(x.transact.transact.OrderNo),
                     Sub_Unit = "",
                     Supplier = x.transact.moveOrder.CustomerName,
                     Company_Code = x.transact.moveOrder.CompanyCode,
@@ -2395,12 +2407,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.receipt.warehouse.ActualGood,
                     Unit_Price = x.receipt.warehouse.UnitPrice,
                     Line_Amount = Math.Round(x.receipt.warehouse.UnitPrice * x.receipt.warehouse.ActualGood, 2),
-                    Po = Convert.ToString(x.receipt.receipt.Id),
+                    Po = "N/a",
                     System = "ElixirETD_MiscellaneousReceipt",
                     Service_Provider_Code = x.user.EmpId,
                     Service_Provider = x.receipt.receipt.PreparedBy,
                     Reason = x.receipt.receipt.Remarks,
-                    Reference_No = x.receipt.receipt.Details,
+                    Reference_No = Convert.ToString(x.receipt.receipt.Id),
                     Supplier = x.receipt.receipt.supplier,
                     Company_Code = x.receipt.receipt.CompanyCode,
                     Company_Name = x.receipt.receipt.CompanyName,
@@ -2434,12 +2446,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = Math.Round(x.miscDetail.issue.Quantity, 2),
                     Unit_Price = x.miscDetail.issue.UnitPrice,
                     Line_Amount = Math.Round(x.miscDetail.issue.UnitPrice * x.miscDetail.issue.Quantity, 2),
-                    Po = Convert.ToString(x.miscDetail.miscDetail.Id),
+                    Po = "N/a",
                     System = "ElixirETD_MiscellaneousIssue",
                     Service_Provider_Code = x.miscDetail.miscDetail.PreparedBy,
                     Service_Provider = x.user.FullName,
                     Reason = x.miscDetail.issue.Remarks,
-                    Reference_No = x.miscDetail.miscDetail.Details,
+                    Reference_No = Convert.ToString(x.miscDetail.miscDetail.Id),
                     Supplier = "",
                     Company_Code = x.miscDetail.miscDetail.CompanyCode,
                     Company_Name = x.miscDetail.miscDetail.CompanyName,
@@ -2473,12 +2485,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = Math.Round(x.borrow.borrowDetail.Quantity, 2),
                     Unit_Price = x.borrow.borrowDetail.UnitPrice,
                     Line_Amount = Math.Round(x.borrow.borrowDetail.UnitPrice * x.borrow.borrowDetail.Quantity, 2),
-                    Po = Convert.ToString(x.borrow.borrow.Id),
+                    Po = "N/a",
                     System = "ElixirETD_Borrow",
                     Service_Provider_Code = x.user.EmpId,
                     Service_Provider = x.borrow.borrow.ApproveBy,
                     Reason = x.borrow.borrow.Remarks,
-                    Reference_No = x.borrow.borrow.Details,
+                    Reference_No = Convert.ToString(x.borrow.borrow.Id),
                     Supplier = x.borrow.borrow.CustomerName,
                     Company_Code = "",
                     Company_Name = "",
@@ -2570,12 +2582,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.borrowDetail.borrowDetail.BorrowedQuantity - x.borrowDetail.borrowDetail.Consumed,
                     Unit_Price = x.borrowDetail.borrowDetail.UnitPrice,
                     Line_Amount = Math.Round(x.borrowDetail.borrowDetail.UnitPrice.Value * x.borrowDetail.borrowDetail.BorrowedQuantity - x.borrowDetail.borrowDetail.Consumed, 2),
-                    Po = Convert.ToString(x.borrowDetail.borrowDetail.Id),
+                    Po = "N/a",
                     System = "ElixirETD_Returned",
                     Service_Provider_Code = x.user.EmpId,
                     Service_Provider = x.borrowDetail.borrowDetail.TransactedBy,
                     Reason = x.borrowDetail.borrowDetail.Remarks,
-                    Reference_No = x.borrowDetail.borrowDetail.Details,
+                    Reference_No = Convert.ToString(x.borrowDetail.borrowDetail.Id),
                     Supplier = x.borrowDetail.borrowDetail.CustomerName,
                     Company_Code = x.borrowDetail.borrowDetail.CompanyCode,
                     Company_Name = x.borrowDetail.borrowDetail.CompanyName,
