@@ -49,5 +49,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
         public string FullName { get; set; }
 
 
+        public string RRNo { get; set; }
+        public string RRDate { get; set; }
+
+
     }
 }

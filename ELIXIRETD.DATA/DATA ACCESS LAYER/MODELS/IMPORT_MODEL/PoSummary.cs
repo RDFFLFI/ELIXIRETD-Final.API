@@ -56,6 +56,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
         public string CancelBy { get; set; }
         public bool? IsCancelled { get; set; }
 
+
+        public string ? RRNo { get; set; }
+
+        public string RRDate { get; set; }
+
         //public DateTime SyncDate { get; set; } 
 
 

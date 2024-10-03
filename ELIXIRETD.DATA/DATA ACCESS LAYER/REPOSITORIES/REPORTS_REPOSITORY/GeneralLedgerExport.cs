@@ -96,7 +96,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         "Useful Life",
                         "Month",
                         "Year",
-                        "Division",
                         "Particulars",
                         "Month 2",
                         "Farm Type",
@@ -183,8 +182,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(52).Style.Protection.SetLocked(false);
                         row.Cell(53).Value = ledger[index - 1].Transaction_Date.Date.Year.ToString();
                         row.Cell(53).Style.Protection.SetLocked(false);
-                        row.Cell(64).Value = ledger[index - 1].System;
-                        row.Cell(64).Style.Protection.SetLocked(false);
+                        row.Cell(63).Value = ledger[index - 1].System;
+                        row.Cell(63).Style.Protection.SetLocked(false);
 
                     }
 
