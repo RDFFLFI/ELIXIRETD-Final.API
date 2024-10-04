@@ -32,6 +32,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                           WarehouseId = x.Id,
                                                           PoNumber = x.PoNumber,
                                                           PR_Year_Number = x.PR_Year_Number,
+                                                          RRNumber = x.RRNo,
+                                                          RRDate = x.RRDate.Value.Date,
                                                           ReceiveDate = x.ReceivingDate.ToString(),
                                                           ItemCode = x.ItemCode,
                                                           ItemDescrption = x.ItemDescription,

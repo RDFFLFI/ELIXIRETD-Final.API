@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ELIXIRETD.DATA.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241003083912_createRRNo")]
-    partial class createRRNo
+    [Migration("20241004005232_createRRNumberInPO")]
+    partial class createRRNumberInPO
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -350,8 +350,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("PR_Year_Number")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RRDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RRNo")
                         .HasColumnType("nvarchar(max)");
@@ -1684,8 +1684,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<int>("PoSummaryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RRDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RRNo")
                         .HasColumnType("nvarchar(max)");

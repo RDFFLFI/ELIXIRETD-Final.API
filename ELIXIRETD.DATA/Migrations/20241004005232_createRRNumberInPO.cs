@@ -1,17 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ELIXIRETD.DATA.Migrations
 {
-    public partial class createRRNo : Migration
+    public partial class createRRNumberInPO : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "RRDate",
                 table: "WarehouseReceived",
-                type: "nvarchar(max)",
+                type: "datetime2",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
@@ -20,10 +21,10 @@ namespace ELIXIRETD.DATA.Migrations
                 type: "nvarchar(max)",
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "RRDate",
                 table: "PoSummaries",
-                type: "nvarchar(max)",
+                type: "datetime2",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(

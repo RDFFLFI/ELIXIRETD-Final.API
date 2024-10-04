@@ -50,7 +50,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL
 
 
         public string RRNo { get; set; }
-        public string RRDate { get; set; }
+        public DateTime? RRDate { get; set; }
 
 
     }

@@ -348,8 +348,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("PR_Year_Number")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RRDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RRNo")
                         .HasColumnType("nvarchar(max)");
@@ -1682,8 +1682,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<int>("PoSummaryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RRDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RRNo")
                         .HasColumnType("nvarchar(max)");

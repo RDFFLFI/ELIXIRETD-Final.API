@@ -93,7 +93,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                         row.Cell(1).Value = moveOrder[index - 1].MIRId;
                         row.Cell(2).Value = moveOrder[index - 1].CustomerCode;
                         row.Cell(3).Value = moveOrder[index - 1].CustomerName;
-                        //row.Cell(4).Value = moveOrder[index - 1].BarcodeNo;
                         row.Cell(4).Value = moveOrder[index - 1].ItemCode;
                         row.Cell(5).Value = moveOrder[index - 1].ItemDescription;
                         row.Cell(6).Value = moveOrder[index - 1].Uom;

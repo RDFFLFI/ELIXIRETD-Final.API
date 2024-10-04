@@ -51,7 +51,7 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                         quantityInValid.Add(items);
                     }
 
-                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.ItemCode == items.ItemCode) > 1)
+                    else if (posummary.Count(x => x.PO_Number == items.PO_Number && x.RRNo == items.RRNo && x.ItemCode == items.ItemCode) > 1)
                     {
                         duplicateList.Add(items);
                         continue;
@@ -61,9 +61,9 @@ namespace ELIXIRETD.API.Controllers.IMPORT_CONTROLLER
                     var validateItemCode = await _context.Materials
                         .Include(x => x.Uom)
                         .FirstOrDefaultAsync(x => x.ItemCode == items.ItemCode && x.IsActive);
-                    var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number, items.ItemCode);
+                    var validatePoandItem = await _unitOfWork.Imports.ValidatePOAndItemcodeManual(items.PO_Number,items.RRNo, items.ItemCode);
                     var validateQuantity = await _unitOfWork.Imports.ValidateQuantityOrder(items.Ordered);
-                    var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode /*, items.ItemDescription */, items.Uom);
+                    var validateItemcodeAndUom = await _unitOfWork.Imports.ValidationItemcodeandUom(items.ItemCode, items.Uom);
 
                     if (validatePoandItem == true)
                     {

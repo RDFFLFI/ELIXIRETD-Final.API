@@ -52,7 +52,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
         public async Task<bool> ValidationItemcodeandUom(string itemcode /*,string itemdescription */ , string uom)
         {
             var validate = await _context.Materials.Where(x => x.ItemCode == itemcode)
-                                                   //.Where(x => x.ItemDescription == itemdescription)
                                                    .Where(x => x.Uom.UomCode == uom)
                                                    .Where(x => x.IsActive == true)
                                                    .FirstOrDefaultAsync();
@@ -86,9 +85,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
             return true;
         }
 
-        public async Task<bool> ValidatePOAndItemcodeManual(string ponumber, string itemcode)
+        public async Task<bool> ValidatePOAndItemcodeManual(string ponumber,string rrNo, string itemcode)
         {
-            var validate = await _context.PoSummaries.Where(x => x.PO_Number == ponumber)
+            var validate = await _context.PoSummaries.Where(x => x.PO_Number == ponumber && x.RRNo == rrNo)
                                                      .Where(x => x.ItemCode == itemcode)
                                                      .FirstOrDefaultAsync();
 

@@ -298,6 +298,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  Id = receive.Key.Id,
                                  PoNumber = receive.Key.PO_Number,
                                  PoDate = receive.First().posummary.PO_Date,
+                                 RRNumber = receive.First().posummary.RRNo,
+                                 RRDate = receive.First().posummary.RRDate,
                                  PrNumber = receive.First().posummary.PR_Number,
                                  PrDate = receive.First().posummary.PR_Date,
                                  PR_Year_Number = receive.First().posummary.PR_Year_Number,
@@ -312,7 +314,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  TotalReject = receive.Sum(x => x.receive.TotalReject != null ? x.receive.TotalReject : 0),
                                  UnitPrice = receive.First().posummary.UnitPrice,
                                  LotSection = receive.First().material.LotSection.SectionName,
-                                 LotSectionId = receive.First().material.LotSectionId 
+                                 LotSectionId = receive.First().material.LotSectionId,
+                                 
 
                              }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0));
 
@@ -439,6 +442,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
                     Id = x.Id,
                     PoNumber = x.PoNumber,
+                    RRNumber = x.RRNo,
+                    RRDate = x.RRDate,
                     PR_Year_Number = x.PR_Year_Number,
                     ItemCode = x.ItemCode,
                     ItemDescription = x.ItemDescription,
@@ -465,6 +470,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                {
                    Id = x.Id,
                    PoNumber = x.PoNumber,
+                   RRNumber = x.RRNo,
+                   RRDate = x.RRDate,
                    PR_Year_Number = x.PR_Year_Number,
                    ItemCode = x.ItemCode,
                    ItemDescription = x.ItemDescription,
@@ -531,8 +538,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var BorrowOut = _context.BorrowedIssueDetails
                 .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                .Where(x => x.IsActive == true)
-                                                         //.Where(x => x.IsApproved == false)
-                                                         //.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                                          .GroupBy(x => new
                                                          {
                                                              x.WarehouseId,
@@ -543,7 +548,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                              warehouseId = x.Key.WarehouseId,
                                                              ItemCode = x.Key.ItemCode,
                                                              Out = x.Sum(x => x.Quantity),
-
 
                                                          });
 
