@@ -85,9 +85,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
             return true;
         }
 
-        public async Task<bool> ValidatePOAndItemcodeManual(string ponumber,string rrNo, string itemcode)
+        public async Task<bool> ValidateRRAndItemcodeManual(string ponumber,string rrNo, string itemcode)
         {
             var validate = await _context.PoSummaries.Where(x => x.PO_Number == ponumber && x.RRNo == rrNo)
+                                                     .Where(x => x.ItemCode == itemcode)
+                                                     .FirstOrDefaultAsync();
+
+            if (validate == null)
+                return false;
+
+            return true;
+        }
+
+
+        public async Task<bool> ValidatePOAndItemcodeManual(string ponumber, string itemcode)
+        {
+            var validate = await _context.PoSummaries.Where(x => x.PO_Number == ponumber)
                                                      .Where(x => x.ItemCode == itemcode)
                                                      .FirstOrDefaultAsync();
 

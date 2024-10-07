@@ -16,7 +16,10 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE
         Task<bool> CheckItemCode(string rawmaterial);
         Task<bool> CheckUomCode(string uom);
         Task<bool> CheckSupplier(string supplier);
-        Task<bool> ValidatePOAndItemcodeManual(string ponumber ,string rrNo, string itemcode);
+        Task<bool> ValidateRRAndItemcodeManual(string ponumber ,string rrNo, string itemcode);
+
+        Task<bool> ValidatePOAndItemcodeManual(string ponumber, string itemcode);
+
         Task<bool> ValidateQuantityOrder(decimal quantity);
         Task<bool> ValidationItemcodeandUom(string itemcode /*,string itemdescription */, string uom);
 
