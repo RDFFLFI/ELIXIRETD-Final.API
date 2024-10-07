@@ -315,6 +315,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  UnitPrice = receive.First().posummary.UnitPrice,
                                  LotSection = receive.First().material.LotSection.SectionName,
                                  LotSectionId = receive.First().material.LotSectionId,
+                                 SINumber = receive.First().posummary.SINumber,
+                                 ReceiveDate = receive.First().posummary.ReceiveDate,
                                  
 
                              }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0));

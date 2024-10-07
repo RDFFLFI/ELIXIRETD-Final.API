@@ -45,6 +45,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
 
         public string TransactionType { get; set; }
 
+        public DateTime ? ReceiveDate { get; set; }
+
 
 
     }

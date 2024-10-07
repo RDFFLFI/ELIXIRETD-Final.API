@@ -61,6 +61,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 
         public DateTime? RRDate { get; set; }
 
+        public DateTime? ReceiveDate { get; set; }
+        public string SINumber { get; set; }
+
+
         //public DateTime SyncDate { get; set; } 
 
 
