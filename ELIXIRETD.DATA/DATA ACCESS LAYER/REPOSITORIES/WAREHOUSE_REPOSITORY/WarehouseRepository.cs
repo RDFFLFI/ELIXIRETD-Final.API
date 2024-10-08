@@ -309,7 +309,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  Supplier = receive.First().posummary.VendorName,
                                  QuantityOrdered = receive.First().posummary.Ordered,
                                  ActualGood = receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
-                                 ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
+                                 ActualRemaining = receive.First().posummary.ActualReceiving,
                                  IsActive = receive.First().posummary.IsActive,
                                  TotalReject = receive.Sum(x => x.receive.TotalReject != null ? x.receive.TotalReject : 0),
                                  UnitPrice = receive.First().posummary.UnitPrice,
