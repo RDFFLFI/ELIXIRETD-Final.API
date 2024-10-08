@@ -66,6 +66,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 
         public decimal? ActualRemaining { get; set; }
 
+        public bool? IsReceived { get; set; } = false;
+
         //public DateTime SyncDate { get; set; } 
 
 

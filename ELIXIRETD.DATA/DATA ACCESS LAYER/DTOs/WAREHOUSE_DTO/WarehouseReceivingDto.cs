@@ -47,6 +47,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.WAREHOUSE_DTO
 
         public DateTime ? ReceiveDate { get; set; }
 
+        public decimal QuantityDelivered { get; set; }
+
 
 
     }
