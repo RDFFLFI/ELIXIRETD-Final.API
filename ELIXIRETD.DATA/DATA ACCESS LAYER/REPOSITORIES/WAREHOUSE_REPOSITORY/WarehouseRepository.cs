@@ -43,13 +43,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                 receive.LotSection = lotSectionExist.LotSection.SectionName;
             }
 
-            var poExist = await _context.PoSummaries.FirstOrDefaultAsync(x => x.IsReceived == false && x.Id == receive.PoSummaryId);
+            var poExist = await _context.PoSummaries
+                .FirstOrDefaultAsync(x => x.IsReceived == false && x.Id == receive.PoSummaryId);
                 
             poExist.IsReceived = true;
                 
-
-
-
             await _context.WarehouseReceived.AddAsync(receive);
 
             return true;
@@ -402,8 +400,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  SINumber = receive.First().posummary.SINumber,
                                  ReceiveDate = receive.First().posummary.ReceiveDate,
                                  QuantityDelivered = receive.First().posummary.Delivered,
-
-
 
                              });
 

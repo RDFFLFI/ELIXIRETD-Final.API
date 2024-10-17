@@ -63,12 +63,12 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                     duplicateList.Add(items);
 
                 }
-
                 else
                 {
 
                     
-                    var existingSuppliers = await _context.Suppliers.FirstOrDefaultAsync(x => x.Supplier_No == items.Supplier_No && items.Supplier_No != null);
+                    var existingSuppliers = await _context.Suppliers
+                        .FirstOrDefaultAsync(x => x.Supplier_No == items.Supplier_No && items.Supplier_No != null);
 
                     if (existingSuppliers != null)
                     {
@@ -182,8 +182,6 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
 
             return Ok(existingSupplier);
         }
-
-
 
 
         [HttpGet]

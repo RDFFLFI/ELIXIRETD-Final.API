@@ -982,5 +982,22 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         }
 
+        [HttpPut("IsAssetTag")]
+        public async Task<IActionResult> IsAssetTag([FromBody] IsAssetTagDto[] asset)
+        {
+
+            foreach (var item in asset)
+            {
+                var  items = await _unitofwork.Orders.IsAssetTag(item);
+
+                if (items == false)
+                    return BadRequest("MIR/Item not exist");
+            }
+
+            await _unitofwork.CompleteAsync();
+            return Ok("success");
+
+        }
+
     }
 }

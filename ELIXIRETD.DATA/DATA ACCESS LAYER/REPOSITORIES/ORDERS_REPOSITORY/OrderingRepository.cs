@@ -3285,8 +3285,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var result = _context.MoveOrders
-                .Where(x => x.IsActive == true && x.IsPrepared == true)
-                .Where(x => x.AssetTag != null)
+                .Where(x => x.IsActive == true && x.IsPrepared == true )
+                .Where(x => x.AssetTag != null && x.Is_Asset_Tag != true)
                 .GroupJoin(wareHouseResult, moveOrders => moveOrders.WarehouseId, warehouse => warehouse.WareHouseId, (moveOrders, warehouse) => new { moveOrders, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.moveOrders, warehouse })
                 .GroupJoin(_context.Materials, moveOrders => moveOrders.moveOrders.ItemCode, material => material.ItemCode, (moveOrders, material) => new { moveOrders, material })
@@ -3326,5 +3326,19 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
+        public async Task<bool> IsAssetTag(IsAssetTagDto asset)
+        {
+            var moveOrder = await _context.MoveOrders
+                .FirstOrDefaultAsync(x => x.OrderNo == asset.MIRId);
+
+            if (moveOrder is null)
+                return false;
+
+            moveOrder.Is_Asset_Tag = true;
+
+            return true;
+
+        }
+        
     }
 }

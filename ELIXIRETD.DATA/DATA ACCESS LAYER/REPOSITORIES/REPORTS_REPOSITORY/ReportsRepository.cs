@@ -2313,42 +2313,42 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
-                var receivingConsol = _context.WarehouseReceived
-                     .AsNoTracking()
-                     .Join(userList, warehouse => warehouse.AddedBy , user => user.FullName, (warehouse, user) => new {warehouse, user })
-                     .Where(x => x.warehouse.TransactionType == "Receiving" && x.warehouse.IsActive == true)
-                     .Select(x => new GeneralLedgerReportDto
-                     {
+                //var receivingConsol = _context.WarehouseReceived
+                //     .AsNoTracking()
+                //     .Join(userList, warehouse => warehouse.AddedBy , user => user.FullName, (warehouse, user) => new {warehouse, user })
+                //     .Where(x => x.warehouse.TransactionType == "Receiving" && x.warehouse.IsActive == true)
+                //     .Select(x => new GeneralLedgerReportDto
+                //     {
 
-                         SyncId = x.warehouse.Id,
-                         Transaction_Date = x.warehouse.ActualReceivingDate.Date,
-                         Item_Code = x.warehouse.ItemCode, 
-                         Description = x.warehouse.ItemDescription,
-                         Uom = x.warehouse.Uom,
-                         Category = "",
-                         Quantity = x.warehouse.ActualGood,
-                         Unit_Price = x.warehouse.UnitPrice,
-                         Line_Amount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
-                         Po = "N/a",
-                         Reason = "",
-                         Reference_No = x.warehouse.PoNumber,
-                         Supplier = x.warehouse.Supplier,
-                         Company_Code = "10",
-                         Company_Name = "RDF Corporate Services",
-                         Department_Code = "0010",
-                         Department_Name = "Corporate Common",
-                         Location_Code = "0001",
-                         Location = "Head Office",
-                         Account_Title_Code = "117701",
-                         Account_Title_Name = "Materials & Supplies Inventory",
-                         Asset = "",
-                         Asset_Cip = "",
-                         System = "ElixirETD_Receiver",
-                         Service_Provider_Code = x.user.EmpId,
-                         Service_Provider = x.user.FullName,
+                //         SyncId = x.warehouse.Id,
+                //         Transaction_Date = x.warehouse.ActualReceivingDate.Date,
+                //         Item_Code = x.warehouse.ItemCode, 
+                //         Description = x.warehouse.ItemDescription,
+                //         Uom = x.warehouse.Uom,
+                //         Category = "",
+                //         Quantity = x.warehouse.ActualGood,
+                //         Unit_Price = x.warehouse.UnitPrice,
+                //         Line_Amount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
+                //         Po = "N/a",
+                //         Reason = "",
+                //         Reference_No = x.warehouse.PoNumber,
+                //         Supplier = x.warehouse.Supplier,
+                //         Company_Code = "10",
+                //         Company_Name = "RDF Corporate Services",
+                //         Department_Code = "0010",
+                //         Department_Name = "Corporate Common",
+                //         Location_Code = "0001",
+                //         Location = "Head Office",
+                //         Account_Title_Code = "117701",
+                //         Account_Title_Name = "Materials & Supplies Inventory",
+                //         Asset = "",
+                //         Asset_Cip = "",
+                //         System = "ElixirETD_Receiver",
+                //         Service_Provider_Code = x.user.EmpId,
+                //         Service_Provider = x.user.FullName,
 
 
-                     }).ToList();
+                //     }).ToList();
 
 
             var moveOrderConsol = _context.TransactOrder
@@ -2361,7 +2361,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                .Where(x => x.transact.transact.IsTransact == true && x.transact.transact.IsActive == true && x.transact.moveOrder.IsActive == true)
                 .Select(x => new GeneralLedgerReportDto
                 {
-                    SyncId = x.transact.transact.Id,
+                    SyncId = x.transact.moveOrder.Id,
                     Transaction_Date = x.transact.transact.PreparedDate.Value,
                     Item_Code = x.transact.moveOrder.ItemCode,
                     Description = x.transact.moveOrder.ItemDescription,
@@ -2389,7 +2389,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Asset_Cip = $"{x.transact.moveOrder.AssetTag} {x.transact.moveOrder.Cip_No}",
                     System = "ElixirETD_MoveOrder",
                   
-                });
+                }).ToList();
 
             var receiptConsol = _context.MiscellaneousReceipts
                 .AsNoTracking()
@@ -2454,7 +2454,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Service_Provider = x.user.FullName,
                     Reason = x.miscDetail.issue.Remarks,
                     Reference_No = Convert.ToString(x.miscDetail.miscDetail.Id),
-                    Supplier = "",
+                    Supplier = x.miscDetail.issue.Customer,
                     Company_Code = x.miscDetail.miscDetail.CompanyCode,
                     Company_Name = x.miscDetail.miscDetail.CompanyName,
                     Department_Code = x.miscDetail.miscDetail.DepartmentCode,
@@ -2586,11 +2586,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Line_Amount = Math.Round(x.borrowDetail.borrowDetail.UnitPrice.Value * x.borrowDetail.borrowDetail.BorrowedQuantity - x.borrowDetail.borrowDetail.Consumed, 2),
                     Po = "N/a",
                     System = "ElixirETD_Returned",
+                    
                     Service_Provider_Code = x.user.EmpId,
                     Service_Provider = x.borrowDetail.borrowDetail.TransactedBy,
                     Reason = x.borrowDetail.borrowDetail.Remarks,
                     Reference_No = Convert.ToString(x.borrowDetail.borrowDetail.Id),
-                    Supplier = x.borrowDetail.borrowDetail.CustomerName,
+                    Supplier = x.borrowDetail.borrow.CustomerName,
                     Company_Code = x.borrowDetail.borrowDetail.CompanyCode,
                     Company_Name = x.borrowDetail.borrowDetail.CompanyName,
                     Department_Code = x.borrowDetail.borrowDetail.DepartmentCode,
@@ -2601,6 +2602,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Account_Title_Name = x.borrowDetail.borrowDetail.AccountTitles,
                     Asset= "",
                     Asset_Cip = "",
+                    
 
                 });
 
@@ -2610,13 +2612,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 var dateFrom = DateTime.Parse(DateFrom).Date;
                 var dateTo = DateTime.Parse(DateTo).Date;
 
-                receivingConsol = receivingConsol
-                    .Where(x => x.Transaction_Date.Date >= dateFrom && x.Transaction_Date.Date <= dateTo)
-                    .ToList()
-                    ;
+                //receivingConsol = receivingConsol
+                //    .Where(x => x.Transaction_Date.Date >= dateFrom && x.Transaction_Date.Date <= dateTo)
+                //    .ToList()
+                //    ;
 
                 moveOrderConsol = moveOrderConsol
                     .Where(x => x.Transaction_Date.Date >= dateFrom && x.Transaction_Date.Date <= dateTo)
+                    .ToList()
                     ;
 
                 receiptConsol = receiptConsol
@@ -2636,9 +2639,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ;
 
             }
+            else
+            {
+                moveOrderConsol = moveOrderConsol.Where(x => x.SyncId == null).ToList();
+                receiptConsol = receiptConsol.Where(x => x.SyncId == null); 
+                issueConsol=  issueConsol.Where(x => x.SyncId == null);
+                borrowedConsol = borrowedConsol.Where(x => x.SyncId == null);
+                returnedConsol = returnedConsol.Where(x => x.SyncId == null);
+            }
 
-            var consolidateList = receivingConsol
-                .Concat(await moveOrderConsol.ToListAsync())
+
+            var consolidateList =  moveOrderConsol
                 .Concat(await receiptConsol.ToListAsync())
                 .Concat(await issueConsol.ToListAsync())
                 .Concat(await borrowedConsol.ToListAsync())
@@ -2664,7 +2675,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      Category = material.ItemCategory.ItemCategoryName,
                      Quantity = consol.Quantity,
                      Unit_Price = consol.Unit_Price,
-                     Line_Amount = consol.Line_Amount,
+                     Line_Amount = - Math.Abs(consol.Line_Amount.Value),
                      Po = consol.Po,
                      Service_Provider_Code = consol.Service_Provider_Code,
                      Service_Provider = consol.Service_Provider,
@@ -2702,7 +2713,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                      Category = material.ItemCategory.ItemCategoryName,
                      Quantity = consol.Quantity,
                      Unit_Price = consol.Unit_Price,
-                     Line_Amount = -Math.Abs(consol.Line_Amount.Value),
+                     Line_Amount = consol.Line_Amount,
                      Po = consol.Po,
                      Service_Provider_Code = consol.Service_Provider_Code,
                      Service_Provider = consol.Service_Provider,

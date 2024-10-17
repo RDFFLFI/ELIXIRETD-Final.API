@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL;
@@ -46,6 +47,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
         public virtual DbSet<BorrowedConsume> BorrowedConsumes { get; set; }
 
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
+
+        public virtual DbSet<FuelRegister> FuelRegisters { get; set; }
+
+        public virtual DbSet<Fuel> Fuels { get; set; }
 
 
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

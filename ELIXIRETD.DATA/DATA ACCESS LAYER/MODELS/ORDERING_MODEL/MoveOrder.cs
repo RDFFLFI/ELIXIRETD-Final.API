@@ -107,6 +107,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
 
         public string Plate_No { get; set; }
 
+        public bool? Is_Asset_Tag { get; set; }
+
 
     }
 }

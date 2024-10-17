@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE;
+using ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
@@ -56,6 +57,10 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
         ITransactType TransactType { get; }
 
         IReports Reports { get; }
+
+        IFuelRepository Fuel{ get; }
+        IFuelRegisterRepository FuelRegister { get; }
+
 
         Task CompleteAsync();
 

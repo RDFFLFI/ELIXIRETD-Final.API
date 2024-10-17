@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE;
+using ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
@@ -9,6 +10,7 @@ using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository;
@@ -68,6 +70,9 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public IReports Reports { get; set; }
 
+        public IFuelRepository Fuel { get; set; }
+
+        public IFuelRegisterRepository FuelRegister { get; set; }
 
         public UnitOfWork(StoreContext context, IMediator mediator)
 
@@ -95,6 +100,8 @@ namespace ELIXIRETD.DATA.SERVICES
             Inventory = new MRPInvetoryRepository(_context);
             TransactType = new TransactTypeRepository(_context);
             Reports = new ReportsRepository(_context);
+            Fuel = new FuelRepository(_context);
+            FuelRegister = new FuelRegisterRepository(_context);
 
         }
 
