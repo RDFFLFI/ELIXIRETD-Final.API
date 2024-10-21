@@ -3285,17 +3285,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
 
             var result = _context.MoveOrders
-                .Where(x => x.IsActive == true && x.IsPrepared == true )
+                .Where(x => x.IsActive == true && x.IsPrepared == true)
                 .Where(x => x.AssetTag != null && x.Is_Asset_Tag != true)
                 .GroupJoin(wareHouseResult, moveOrders => moveOrders.WarehouseId, warehouse => warehouse.WareHouseId, (moveOrders, warehouse) => new { moveOrders, warehouse })
                 .SelectMany(x => x.warehouse.DefaultIfEmpty(), (x, warehouse) => new { x.moveOrders, warehouse })
                 .GroupJoin(_context.Materials, moveOrders => moveOrders.moveOrders.ItemCode, material => material.ItemCode, (moveOrders, material) => new { moveOrders, material })
                 .SelectMany(x => x.material.DefaultIfEmpty(), (x, material) => new { x.moveOrders, material })
-                .GroupJoin(transactedMaterial, moveOrders => moveOrders.moveOrders.moveOrders.OrderNo , transact => transact.OrderNo , (moveOrders, transact) => new {moveOrders, transact })
-                .SelectMany(x => x.transact.DefaultIfEmpty() , (x , transact) => new {x.moveOrders, transact })
+                .GroupJoin(transactedMaterial, moveOrders => moveOrders.moveOrders.moveOrders.OrderNo, transact => transact.OrderNo, (moveOrders, transact) => new { moveOrders, transact })
+                .SelectMany(x => x.transact.DefaultIfEmpty(), (x, transact) => new { x.moveOrders, transact })
                 .OrderBy(x => x.moveOrders.moveOrders.moveOrders.ApprovedDate)
                 .Select(x => new DtoMoveOrderAssetTag
                 {
+                    Id = x.moveOrders.moveOrders.moveOrders.Id,
                     PoNumber = x.moveOrders.moveOrders.warehouse.PoNumber,
                     PrNumber = x.moveOrders.moveOrders.warehouse.PrNumber,
                     MIRId = x.moveOrders.moveOrders.moveOrders.OrderNo,
@@ -3326,10 +3327,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         }
 
-        public async Task<bool> IsAssetTag(IsAssetTagDto asset)
+        public async Task<bool> IsAssetTag(IsAssetTagDto id)
         {
             var moveOrder = await _context.MoveOrders
-                .FirstOrDefaultAsync(x => x.OrderNo == asset.MIRId);
+                .FirstOrDefaultAsync(x => x.Id == id.id);
 
             if (moveOrder is null)
                 return false;

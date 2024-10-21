@@ -269,20 +269,97 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         }
 
 
+        public async Task<PagedList<WarehouseReceivingDto>> GetPoSummaryByStatusWithPaginationOrig(UserParams userParams, string search)
+        {
+            var poSummary = (from posummary in _context.PoSummaries
+                             where posummary.IsActive == true
+
+                             join warehouse in _context.WarehouseReceived
+                             on posummary.Id equals warehouse.PoSummaryId into leftJ
+                             from receive in leftJ.DefaultIfEmpty()
+                                 //where receive.IsActive == true
+
+                             join material in _context.Materials
+                             on posummary.ItemCode equals material.ItemCode
+                             into leftJ1
+                             from material in leftJ1.DefaultIfEmpty()
+
+                             group new
+                             {
+                                 posummary,
+                                 receive,
+                                 material,
+
+                             }
+                              by new
+                              {
+                                  posummary.Id,
+                                  posummary.PO_Number,
+                                  posummary.ItemCode,
+                              }
+                             into receive
+                             select new WarehouseReceivingDto
+                             {
+                                 Id = receive.Key.Id,
+                                 PoNumber = receive.Key.PO_Number,
+                                 PoDate = receive.First().posummary.PO_Date,
+                                 //RRNumber = receive.First().posummary.RRNo,
+                                 //RRDate = receive.First().posummary.RRDate,
+                                 PrNumber = receive.First().posummary.PR_Number,
+                                 PrDate = receive.First().posummary.PR_Date,
+                                 PR_Year_Number = receive.First().posummary.PR_Year_Number,
+                                 ItemCode = receive.Key.ItemCode,
+                                 ItemDescription = receive.First().material.ItemDescription,
+                                 Uom = receive.First().material.Uom.UomCode,
+                                 Supplier = receive.First().posummary.VendorName,
+                                 QuantityOrdered = receive.First().posummary.Ordered,
+                                 ActualGood = receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
+                                 ActualRemaining = receive.First().posummary.Ordered - receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0) ,
+                                 IsActive = receive.First().posummary.IsActive,
+                                 TotalReject = receive.Sum(x => x.receive.TotalReject != null ? x.receive.TotalReject : 0),
+                                 UnitPrice = receive.First().posummary.UnitPrice,
+                                 LotSection = receive.First().material.LotSection.SectionName,
+                                 LotSectionId = receive.First().material.LotSectionId,
+                                 SINumber = receive.First().posummary.SINumber,
+                                 ReceiveDate = receive.First().posummary.ReceiveDate,
+                                 QuantityDelivered = receive.First().posummary.Delivered
+
+
+
+                             }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0));
+
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                poSummary = poSummary.Where(x => x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
+                                       || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
+                                       || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
+            }
+
+
+            poSummary = poSummary.OrderBy(x => x.PoNumber);
+
+
+            return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
+        }
+
+
+
         //public async Task<PagedList<WarehouseReceivingDto>> GetPoSummaryByStatusWithPaginationOrig(UserParams userParams, string search)
         //{
         //    var poSummary = (from posummary in _context.PoSummaries
-        //                     where posummary.IsActive == true
+        //                     where posummary.IsActive == true && posummary.IsReceived != true
 
         //                     join warehouse in _context.WarehouseReceived
         //                     on posummary.Id equals warehouse.PoSummaryId into leftJ
         //                     from receive in leftJ.DefaultIfEmpty()
-        //                     //where receive.IsActive == true
+        //                         //where receive.IsActive == true
 
         //                     join material in _context.Materials
         //                     on posummary.ItemCode equals material.ItemCode
         //                     into leftJ1
         //                     from material in leftJ1.DefaultIfEmpty()
+
 
         //                     group new
         //                     {
@@ -322,18 +399,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         //                         LotSectionId = receive.First().material.LotSectionId,
         //                         SINumber = receive.First().posummary.SINumber,
         //                         ReceiveDate = receive.First().posummary.ReceiveDate,
-        //                         QuantityDelivered = receive.First().posummary.Delivered
+        //                         QuantityDelivered = receive.First().posummary.Delivered,
 
-                                 
-
-        //                     }).Where(x => x.ActualRemaining != 0 && (x.ActualRemaining > 0));
+        //                     });
 
 
-        //    if(!string.IsNullOrEmpty(search))
+        //    if (!string.IsNullOrEmpty(search))
         //    {
-        //      poSummary = poSummary.Where(x => x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
-        //                             || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
-        //                             || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
+        //        poSummary = poSummary.Where(x => x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
+        //                               || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
+        //                               || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
         //    }
 
 
@@ -342,81 +417,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
         //    return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
         //}
-
-
-
-        public async Task<PagedList<WarehouseReceivingDto>> GetPoSummaryByStatusWithPaginationOrig(UserParams userParams, string search)
-        {
-            var poSummary = (from posummary in _context.PoSummaries
-                             where posummary.IsActive == true && posummary.IsReceived != true
-
-                             join warehouse in _context.WarehouseReceived
-                             on posummary.Id equals warehouse.PoSummaryId into leftJ
-                             from receive in leftJ.DefaultIfEmpty()
-                                 //where receive.IsActive == true
-
-                             join material in _context.Materials
-                             on posummary.ItemCode equals material.ItemCode
-                             into leftJ1
-                             from material in leftJ1.DefaultIfEmpty()
-
-
-                             group new
-                             {
-                                 posummary,
-                                 receive,
-                                 material,
-
-                             }
-                              by new
-                              {
-                                  posummary.Id,
-                                  posummary.PO_Number,
-                                  posummary.ItemCode,
-                              }
-                             into receive
-                             select new WarehouseReceivingDto
-                             {
-                                 Id = receive.Key.Id,
-                                 PoNumber = receive.Key.PO_Number,
-                                 PoDate = receive.First().posummary.PO_Date,
-                                 RRNumber = receive.First().posummary.RRNo,
-                                 RRDate = receive.First().posummary.RRDate,
-                                 PrNumber = receive.First().posummary.PR_Number,
-                                 PrDate = receive.First().posummary.PR_Date,
-                                 PR_Year_Number = receive.First().posummary.PR_Year_Number,
-                                 ItemCode = receive.Key.ItemCode,
-                                 ItemDescription = receive.First().material.ItemDescription,
-                                 Uom = receive.First().material.Uom.UomCode,
-                                 Supplier = receive.First().posummary.VendorName,
-                                 QuantityOrdered = receive.First().posummary.Ordered,
-                                 ActualGood = receive.Sum(x => x.receive.ActualGood != null ? x.receive.ActualGood : 0),
-                                 ActualRemaining = receive.First().posummary.ActualRemaining,
-                                 IsActive = receive.First().posummary.IsActive,
-                                 TotalReject = receive.Sum(x => x.receive.TotalReject != null ? x.receive.TotalReject : 0),
-                                 UnitPrice = receive.First().posummary.UnitPrice,
-                                 LotSection = receive.First().material.LotSection.SectionName,
-                                 LotSectionId = receive.First().material.LotSectionId,
-                                 SINumber = receive.First().posummary.SINumber,
-                                 ReceiveDate = receive.First().posummary.ReceiveDate,
-                                 QuantityDelivered = receive.First().posummary.Delivered,
-
-                             });
-
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                poSummary = poSummary.Where(x => x.ItemDescription.ToLower().Contains(search.Trim().ToLower())
-                                       || Convert.ToString(x.PoNumber).ToLower().Contains(search.Trim().ToLower())
-                                       || x.ItemCode.ToLower().Contains(search.Trim().ToLower()));
-            }
-
-
-            poSummary = poSummary.OrderBy(x => x.PoNumber);
-
-
-            return await PagedList<WarehouseReceivingDto>.CreateAsync(poSummary, userParams.PageNumber, userParams.PageSize);
-        }
 
 
         public async Task<bool> CancelPo(PoSummary summary)

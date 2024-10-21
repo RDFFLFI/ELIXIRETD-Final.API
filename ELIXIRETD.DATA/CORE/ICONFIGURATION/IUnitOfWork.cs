@@ -58,7 +58,6 @@ namespace ELIXIRETD.DATA.CORE.ICONFIGURATION
 
         IReports Reports { get; }
 
-        IFuelRepository Fuel{ get; }
         IFuelRegisterRepository FuelRegister { get; }
 
 

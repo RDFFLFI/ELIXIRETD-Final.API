@@ -50,7 +50,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT
 
         public virtual DbSet<FuelRegister> FuelRegisters { get; set; }
 
-        public virtual DbSet<Fuel> Fuels { get; set; }
 
 
        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

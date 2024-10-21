@@ -10,13 +10,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
         public string Plate_No { get; set; }
         public string Driver { get; set; }
 
-        public int? FuelId { get; set; }
-        public virtual Fuel Fuel { get; set; }
+        public int MaterialId { get; set; }
+        public virtual Material Material { get; set; }
 
         public int? Warehouse_ReceivingId { get; set; }
         public virtual Warehouse_Receiving Warehouse_Receiving { get; set; }
 
-        public decimal Liters {  get; set; }
+        public decimal? Liters {  get; set; }
         public string Asset { get; set; }
 
         public decimal? Odometer { get; set; }

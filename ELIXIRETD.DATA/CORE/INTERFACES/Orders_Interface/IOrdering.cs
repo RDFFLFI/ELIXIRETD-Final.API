@@ -177,7 +177,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<PagedList<DtoMoveOrderAssetTag>> MoveOrderAssetTag(UserParams userParams);
 
 
-        Task<bool> IsAssetTag(IsAssetTagDto asset);
+        Task<bool> IsAssetTag(IsAssetTagDto id);
 
 
 

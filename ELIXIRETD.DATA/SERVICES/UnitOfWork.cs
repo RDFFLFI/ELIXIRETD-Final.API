@@ -70,7 +70,6 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public IReports Reports { get; set; }
 
-        public IFuelRepository Fuel { get; set; }
 
         public IFuelRegisterRepository FuelRegister { get; set; }
 
@@ -100,7 +99,6 @@ namespace ELIXIRETD.DATA.SERVICES
             Inventory = new MRPInvetoryRepository(_context);
             TransactType = new TransactTypeRepository(_context);
             Reports = new ReportsRepository(_context);
-            Fuel = new FuelRepository(_context);
             FuelRegister = new FuelRegisterRepository(_context);
 
         }

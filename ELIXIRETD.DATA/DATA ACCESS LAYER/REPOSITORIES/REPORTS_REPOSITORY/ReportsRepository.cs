@@ -188,7 +188,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     DateApproved = x.moveorder.moveorder.ApprovedDate.ToString(),
                     PicUp_Date = x.moveorder.transact.DeliveryDate.ToString(),
                     Rush = x.moveorder.moveorder.Rush,
-                    Reference = $"{x.moveorder.moveorder.LocationName} {x.moveorder.moveorder.OrderNo}"
+                    Reference = x.moveorder.moveorder.LocationName.Contains("Common") || x.moveorder.moveorder.LocationName.Contains("Head Office") || x.moveorder.moveorder.LocationName.Contains("Central Depot") ?
+                    $" {x.moveorder.moveorder.DepartmentName} {x.moveorder.moveorder.OrderNo}" : $" {x.moveorder.moveorder.LocationName} {x.moveorder.moveorder.OrderNo}"
 
                 });
 

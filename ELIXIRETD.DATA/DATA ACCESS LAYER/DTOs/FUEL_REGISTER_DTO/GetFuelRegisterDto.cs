@@ -1,17 +1,14 @@
-﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
 {
-    public class CreateFuelRegisterDto
+    public class GetFuelRegisterDto
     {
-        public int ? Id { get; set; }
+        public int? Id { get; set; }
 
         public string Source { get; set; }
 
@@ -20,8 +17,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
         public string Driver { get; set; }
 
         public int? MaterialId { get; set; }
+        public string Item_Code { get; set; }
+        public string Item_Description { get; set; }
+
+        public string Uom {  get; set; }
+        public string Item_Categories { get; set; }
 
         public int? Warehouse_ReceivingId { get; set; }
+
+        public decimal Unit_Cost { get; set; }
 
         public decimal Liters { get; set; }
         public string Asset { get; set; }
@@ -37,7 +41,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
         public string Location_Name { get; set; }
 
         public string Added_By { get; set; }
+        public DateTime Created_At { get; set; }
         public string Modified_By { get; set; }
+        public DateTime? Updated_At { get; set; }
+
+        public bool Is_Reject { get; set; } = false;
+        public string Reject_Remarks { get; set; }
+        public string Reject_By { get; set; }
+
+
+        public bool Is_Approve { get; set; }
+        public string Approve_By { get; set; }
+        public DateTime? Approve_At { get; set; }
+
+        public bool? Is_Transact { get; set; }
+        public string Transact_By { get; set; }
+        public string Transact_At { get; set; }
+
 
         public string Remarks { get; set; }
 

@@ -518,7 +518,8 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 else
                 {
                     var existingItemCategory = await _unitOfWork.Materials.GetByItemCategory(items.ItemCategory_No);
-                    if (existingItemCategory != null)
+
+                    if (existingItemCategory != null )
                     {
                         bool hasChanged = false;
 
@@ -778,9 +779,11 @@ namespace ELIXIRETD.API.Controllers.SETUP_CONTROLLER
                 allList.Add(item);
             }
 
+            string diesel = "DIESEL";
+
             var allListSelect = allList.Select(x => x.Material_No);
             var allDelete = await _context.Materials.ToListAsync();
-            var allMaterialList = allDelete.Where(x => !allListSelect.Contains(x.Material_No)).ToList();
+            var allMaterialList = allDelete.Where(x => !allListSelect.Contains(x.Material_No) && x.ItemDescription != diesel).ToList();
 
             if (allMaterialList.Count() > 0)
             {

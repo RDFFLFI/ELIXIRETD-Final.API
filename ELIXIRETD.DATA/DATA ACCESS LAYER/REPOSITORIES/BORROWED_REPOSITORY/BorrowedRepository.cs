@@ -197,9 +197,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var GetAvailableItem =  getAvailable.GroupBy(x => new
             {
                 x.ItemCode,
-                //x.ItemDescription,
-                //x.Uom,
-                //x.RemainingStocks
 
             }).Select(x => new GetAvailableStocksForBorrowedIssue_Dto
             {
