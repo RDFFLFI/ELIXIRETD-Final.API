@@ -226,27 +226,43 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
 
                }).ToListAsync();
 
+            var fuelRegister = _context.FuelRegisters
+             .Include(m => m.Material)
+             .Where(fr => fr.Is_Active == true)
+             .Where(fr => fr.Is_Approve == false)
+             .GroupBy(fr => new
+             {
+                 fr.Warehouse_ReceivingId,
+
+             }).Select(fr => new
+             {
+                 itemCode = fr.First().Material.ItemCode,
+                 WarehouseId = fr.Key.Warehouse_ReceivingId,
+                 Quantity = fr.Sum(fr => fr.Liters.Value)
+             });
 
             var warehouseInventory = wareHouseStocks
-                                   .GroupJoin(moveOrderOut, warehouse => warehouse.WarehouseId, moveOrder => moveOrder.WarehouseId, (warehouse,moveOrder) => new { warehouse, moveOrder } )
-                                   .SelectMany(x => x.moveOrder.DefaultIfEmpty(), (x,moveOrder) => new {x.warehouse, moveOrder })
+                                   .GroupJoin(moveOrderOut, warehouse => warehouse.WarehouseId, moveOrder => moveOrder.WarehouseId, (warehouse, moveOrder) => new { warehouse, moveOrder })
+                                   .SelectMany(x => x.moveOrder.DefaultIfEmpty(), (x, moveOrder) => new { x.warehouse, moveOrder })
                                    .GroupJoin(issueOut, warehouse => warehouse.warehouse.WarehouseId, issue => issue.WarehouseId, (warehouse, issue) => new { warehouse, issue })
                                    .SelectMany(x => x.issue.DefaultIfEmpty(), (x, issue) => new { x.warehouse, issue })
                                    .GroupJoin(borrowOut, warehouse => warehouse.warehouse.warehouse.WarehouseId, borrow => borrow.WarehouseId, (warehouse, borrow) => new { warehouse, borrow })
                                    .SelectMany(x => x.borrow.DefaultIfEmpty(), (x, borrow) => new { x.warehouse, borrow })
                                    .GroupJoin(borrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.WarehouseId, returned => returned.WarehouseId, (warehouse, returned) => new { warehouse, returned })
                                    .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
+                                   .GroupJoin(fuelRegister, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.WarehouseId, fuel => fuel.WarehouseId, (warehouse, fuel) => new { warehouse, fuel })
+                                   .SelectMany(x => x.fuel.DefaultIfEmpty(), (x, fuel) => new { x.warehouse, fuel })
                                    .Select(x => new WarehouseOverAllStocksDto
                                    {
-                                       WarehouseId = x.warehouse.warehouse.warehouse.warehouse.WarehouseId,
-                                       ItemCode = x.warehouse.warehouse.warehouse.warehouse.ItemCode,
-                                       ItemDescription = x.warehouse.warehouse.warehouse.warehouse.ItemDescription,
-                                       Quantity = x.warehouse.warehouse.warehouse.warehouse.Quantity
-                                       +(x.returned?.Quantity ?? 0)
-                                       - (x.warehouse.warehouse.warehouse.moveOrder?.Quantity ?? 0)
-                                       - (x.warehouse.warehouse.issue?.Quantity ?? 0)
-                                       -(x.warehouse.borrow?.Quantity ?? 0)
-                                         ,
+                                       WarehouseId = x.warehouse.warehouse.warehouse.warehouse.warehouse.WarehouseId,
+                                       ItemCode = x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode,
+                                       ItemDescription = x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemDescription,
+                                       Quantity = x.warehouse.warehouse.warehouse.warehouse.warehouse.Quantity
+                                       + (x.warehouse.returned?.Quantity ?? 0)
+                                       - (x.warehouse.warehouse.warehouse.warehouse.moveOrder?.Quantity ?? 0)
+                                       - (x.warehouse.warehouse.warehouse.issue?.Quantity ?? 0)
+                                       - (x.warehouse.warehouse.borrow?.Quantity ?? 0)
+                                       - (x.fuel.Quantity != null ? x.fuel.Quantity : 0),
 
                                    }).Where(x => x.Quantity > 0);
 

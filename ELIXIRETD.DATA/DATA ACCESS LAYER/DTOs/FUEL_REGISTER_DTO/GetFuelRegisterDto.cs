@@ -56,7 +56,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
 
         public bool? Is_Transact { get; set; }
         public string Transact_By { get; set; }
-        public string Transact_At { get; set; }
+        public DateTime? Transact_At { get; set; }
 
 
         public string Remarks { get; set; }

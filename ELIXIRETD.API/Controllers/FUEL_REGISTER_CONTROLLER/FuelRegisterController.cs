@@ -80,5 +80,91 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         }
 
 
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveFuel([FromBody]ApproveFuelDto[] fuel)
+        {
+
+
+            foreach(var item in fuel)
+            {
+                var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(item.Id);
+                if (fuelNotExist is false)
+                    return BadRequest("fuel not exist!");
+
+                item.Approve_By = User.Identity.Name;
+
+                await _unitofwork.FuelRegister.ApproveFuel(item);
+
+            }
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully approve");
+        }
+
+        [HttpPost("reject")]
+        public async Task<IActionResult> RejectFuel([FromBody] RejectFuelDto[] fuel)
+        {
+
+
+            foreach (var item in fuel)
+            {
+                var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(item.Id);
+                if (fuelNotExist is false)
+                    return BadRequest("fuel not exist!");
+
+                item.Reject_By = User.Identity.Name;
+
+                await _unitofwork.FuelRegister.RejectFuel(item);
+
+            }
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully reject");
+        }
+
+        [HttpPost("transact")]
+        public async Task<IActionResult> TransactFuel([FromBody] TransactedFuelDto[] fuel)
+        {
+
+
+            foreach (var item in fuel)
+            {
+                var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(item.Id);
+                if (fuelNotExist is false)
+                    return BadRequest("fuel not exist!");
+
+                item.Transacted_By = User.Identity.Name;
+
+                await _unitofwork.FuelRegister.TransactFuel(item);
+
+            }
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully transacted");
+        }
+
+        [HttpPost("cancel")]
+        public async Task<IActionResult> CancelFuel([FromBody] int id)
+        {
+            var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(id);
+            if (fuelNotExist is false)
+                return BadRequest("fuel not exist!");
+
+
+            await _unitofwork.FuelRegister.CancelFuel(id);
+
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully cancel");
+        }
+
+
+
+
+
     }
 }

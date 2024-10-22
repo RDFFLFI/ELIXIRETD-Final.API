@@ -40,7 +40,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
 
         public bool? Is_Transact {  get; set; }
         public string Transact_By { get; set; }
-        public string Transact_At { get; set; }
+        public DateTime? Transact_At { get; set; }
 
         public bool Is_Reject { get; set; } = false;
         public string Reject_Remarks { get; set; }

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Vml;
 using ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.IMPORT_DTO;
@@ -277,7 +278,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              join warehouse in _context.WarehouseReceived
                              on posummary.Id equals warehouse.PoSummaryId into leftJ
                              from receive in leftJ.DefaultIfEmpty()
-                                 //where receive.IsActive == true
 
                              join material in _context.Materials
                              on posummary.ItemCode equals material.ItemCode
@@ -303,8 +303,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                  Id = receive.Key.Id,
                                  PoNumber = receive.Key.PO_Number,
                                  PoDate = receive.First().posummary.PO_Date,
-                                 //RRNumber = receive.First().posummary.RRNo,
-                                 //RRDate = receive.First().posummary.RRDate,
                                  PrNumber = receive.First().posummary.PR_Number,
                                  PrDate = receive.First().posummary.PR_Date,
                                  PR_Year_Number = receive.First().posummary.PR_Year_Number,
@@ -583,7 +581,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
         {
 
             var moveorderOut = _context.MoveOrders
-                //.Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                       .Where(x => x.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                       .Where(x => x.IsActive == true && x.IsPrepared == true)
                                       .GroupBy(x => new
@@ -668,8 +665,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                                  x.returned.WarehouseId,
                                                                  x.returned.ItemCode,
 
-                                                                 //x.itemconsume.Consume
-
                                                              }).Select(x => new ItemStocksDto
                                                              {
                                                                  warehouseId = x.Key.WarehouseId,
@@ -677,6 +672,24 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                                                  In = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.itemconsume.Consume),
 
                                                              });
+
+            var fuelRegister = _context.FuelRegisters
+                .Include(m => m.Material)
+                .Where(fr => fr.Is_Active == true)
+                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Material.ItemCode.ToLower().Contains(search.Trim().ToLower()))
+                .GroupBy(fr => new
+                {
+                    fr.Material.ItemCode,
+                    fr.Warehouse_ReceivingId,
+
+                }).Select(fr => new
+                {
+                    itemCode = fr.Key.ItemCode,
+                    WarehouseId = fr.Key.Warehouse_ReceivingId,
+                    Quantity = fr.Sum(fr => fr.Liters.Value)
+
+                });
 
 
             var warehouseInventory = _context.WarehouseReceived
@@ -689,34 +702,36 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                                    .SelectMany(x => x.borrowed.DefaultIfEmpty(), (x, borrowed) => new { x.warehouse, borrowed })
                                    .GroupJoin(BorrowedReturn, warehouse => warehouse.warehouse.warehouse.warehouse.Id, returned => returned.warehouseId, (warehouse, returned) => new { warehouse, returned })
                                    .SelectMany(x => x.returned.DefaultIfEmpty(), (x, returned) => new { x.warehouse, returned })
+                                   .GroupJoin(fuelRegister,warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.Id , fuel => fuel.WarehouseId, (warehouse, fuel) => new {warehouse,fuel})
+                                   .SelectMany(x => x.fuel.DefaultIfEmpty() , (x , fuel) => new {x.warehouse , fuel })
                                    .GroupBy(x => new
                                    {
 
-                                       x.warehouse.warehouse.warehouse.warehouse.Id,
-                                       x.warehouse.warehouse.warehouse.warehouse.ItemCode,
+                                       x.warehouse.warehouse.warehouse.warehouse.warehouse.Id,
+                                       x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode,
 
                                    }).
                                      Where(x => x.Key.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                                     .OrderBy(x => x.Key.ItemCode)
-                                    .ThenBy(x => x.First().warehouse.warehouse.warehouse.warehouse.ActualReceivingDate)
+                                    .ThenBy(x => x.First().warehouse.warehouse.warehouse.warehouse.warehouse.ActualReceivingDate)
                                    .Select(total => new ListofwarehouseReceivingIdDto
                                      {
                                          Id = total.Key.Id,
                                          ItemCode = total.Key.ItemCode,
-                                       ItemDescription = total.First().warehouse.warehouse.warehouse.warehouse.ItemDescription,
-                                       ReceivingDate = total.First().warehouse.warehouse.warehouse.warehouse.ActualReceivingDate.ToString(),
-                                       ActualGood = total.First().warehouse.warehouse.warehouse.warehouse.ActualGood
-                                         + total.Sum(x => x.returned.In != null ? x.returned.In : 0)
-                                         - total.Sum(x => x.warehouse.warehouse.moveorder.Out)
-                                         - total.Sum(x => x.warehouse.warehouse.warehouse.issue.Out)
-                                         -total.Sum(x => x.warehouse.borrowed.Out)
+                                       ItemDescription = total.First().warehouse.warehouse.warehouse.warehouse.warehouse.ItemDescription,
+                                       ReceivingDate = total.First().warehouse.warehouse.warehouse.warehouse.warehouse.ActualReceivingDate.ToString(),
+                                       ActualGood = total.First().warehouse.warehouse.warehouse.warehouse.warehouse.ActualGood
+                                         + total.Sum(x => x.warehouse.returned.In != null ? x.warehouse.returned.In : 0)
+                                         - total.Sum(x => x.warehouse.warehouse.warehouse.moveorder.Out)
+                                         - total.Sum(x => x.warehouse.warehouse.warehouse.warehouse.issue.Out)
+                                         - total.Sum(x => x.warehouse.warehouse.borrowed.Out)
+                                         - total.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)
 
-                                     })/*.Where(x => x.ActualGood > 0)*/;
+                                     });
 
             return await warehouseInventory.ToListAsync();
                          
         }
-
 
         public async Task<IReadOnlyList<WarehouseReceivingDto>> PoSummaryForWarehouseNotif()
         {
@@ -840,8 +855,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
                              }).OrderBy(x => x.PO_Number)
                                .Where(x => x.IsActive == false);
 
-
             return await poSummary.ToListAsync();
+
         }
 
     }

@@ -206,6 +206,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var fuelRegister = _context.FuelRegisters
                 .Include(x => x.Material)
                 .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Active == true)
                 .GroupBy(fr => fr.Material.ItemCode)
                 .Select(fr => new
                 {
@@ -440,6 +441,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             var fuelRegister = _context.FuelRegisters
                 .Include(m => m.Material)
+                .Where(fr => fr.Is_Active == true)
                 .Where(fr => fr.Is_Approve == false && fr.Material.ItemCode == itemCode)
                 .GroupBy(fr => new
                 {
@@ -658,12 +660,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         public async Task<bool> RejectFuel(RejectFuelDto fuel)
         {
-            throw new NotImplementedException();
+            var fuelExist = await _context.FuelRegisters
+                .FirstOrDefaultAsync(f => f.Id == fuel.Id);
+
+            fuelExist.Reject_Remarks = fuel.Reject_Remarks;
+            fuelExist.Reject_By = fuel.Reject_By;
+            fuelExist.Is_Reject = true;
+
+            return true;
         }
 
-        public Task<bool> TransactFuel(TransactedFuelDto fuel)
+        public async Task<bool> TransactFuel(TransactedFuelDto fuel)
         {
-            throw new NotImplementedException();
+            var fuelExist = await _context.FuelRegisters
+                .FirstOrDefaultAsync(f => f.Id == fuel.Id);
+
+            fuelExist.Transact_At = DateTime.Now;
+            fuelExist.Transact_By = fuel.Transacted_By;
+            fuelExist.Is_Transact = true;
+
+            return true;
         }
 
         public async Task<bool> CancelFuel(int id)
