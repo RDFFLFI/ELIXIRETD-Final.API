@@ -35,6 +35,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP
 
         public decimal ReturnedBorrowed { get; set; }
         public decimal BorrowConsume { get; set; }
+
+        public decimal FuelRegistration { get; set; }
+
         public decimal SuggestedPo { get; set; }
         public decimal ReserveUsage { get; set; }
         public decimal AverageIssuance { get; set; }

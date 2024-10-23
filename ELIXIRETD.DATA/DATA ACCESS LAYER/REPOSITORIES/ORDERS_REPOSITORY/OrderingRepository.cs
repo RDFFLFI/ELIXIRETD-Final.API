@@ -3345,7 +3345,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                 .OrderBy(x => x.moveOrders.moveOrders.moveOrders.ApprovedDate)
                 .Select(x => new DtoMoveOrderAssetTag
                 {
-                    Id = x.moveOrders.moveOrders.moveOrders.Id,
+                    Id = x.moveOrders.moveOrders.moveOrders.Id.ToString(),
                     PoNumber = x.moveOrders.moveOrders.warehouse.PoNumber,
                     PrNumber = x.moveOrders.moveOrders.warehouse.PrNumber,
                     MIRId = x.moveOrders.moveOrders.moveOrders.OrderNo,
@@ -3378,8 +3378,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
         public async Task<bool> IsAssetTag(IsAssetTagDto id)
         {
+
+
             var moveOrder = await _context.MoveOrders
-                .FirstOrDefaultAsync(x => x.Id == id.id);
+                .FirstOrDefaultAsync(x => x.Id == Convert.ToInt32(id.id));
 
             if (moveOrder is null)
                 return false;

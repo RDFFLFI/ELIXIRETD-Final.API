@@ -10,7 +10,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
 {
     public class DtoMoveOrderAssetTag
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string? PoNumber { get; set; }
         public string PrNumber { get; set; }
         public int MIRId { get; set; }

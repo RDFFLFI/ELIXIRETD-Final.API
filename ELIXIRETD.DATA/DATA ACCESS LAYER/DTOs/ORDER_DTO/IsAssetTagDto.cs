@@ -8,6 +8,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO
 {
     public class IsAssetTagDto
     {
-        public int? id { get; set; }
+        public string id { get; set; }
     }
 }
