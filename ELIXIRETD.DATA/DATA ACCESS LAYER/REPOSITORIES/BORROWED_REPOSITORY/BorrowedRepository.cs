@@ -113,7 +113,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                              });
 
 
-            var fuelRegister = _context.FuelRegisters
+         var fuelRegister = _context.FuelRegisters
         .Include(m => m.Material)
         .Where(fr => fr.Is_Active == true)
         .Where(fr => fr.Is_Approve == false)
@@ -127,8 +127,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             Quantity = fr.Sum(fr => fr.Liters.Value)
 
         });
-
-
 
             var getAvailable = (from warehouse in getWarehouseStocks
                                 join issue in issueOut
@@ -974,7 +972,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
                     Details = x.Key.Details
-                    //UnitCost = x.Key.UnitCost
 
                 }).OrderByDescending(x => x.BorrowedDate);
 
@@ -1001,7 +998,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                          BorrowedPKey = x.Key.BorrowedPKey,
                                                          IsActive = x.Key.IsActive,
                                                          TotalQuantity = x.Sum(x => x.Quantity),
-                                                         //UnitCost = x.Sum(x => x.UnitPrice)
 
                                                      });
 
@@ -1029,7 +1025,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
                     x.issues.Details
-                    ////x.borrowed.UnitCost
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
                 {
@@ -1050,7 +1045,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
                     Details = x.Key.Details
-                    //UnitCost = x.Key.UnitCost
 
                 }).OrderByDescending(x => x.BorrowedDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
 
@@ -1178,12 +1172,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                     {
                                                         x.ItemCode,
                                                         x.BorrowedItemPkey,
-                                                        //x.BorrowedPkey
 
                                                     }).Select(x => new DTOGetItemForReturned
                                                     {
                                                         BorrowedItemPkey = x.Key.BorrowedItemPkey,
-                                                        //BorrowedPKey = x.Key.BorrowedPkey,
                                                         ItemCode = x.Key.ItemCode,
                                                         ConsumedQuantity = x.Sum(x => x.Consume),
 
@@ -1279,7 +1271,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                               x.AccountTitles,
                                                               x.ReportNumber,
 
-                                                                                                                                              x.IsActive
+                                                              x.IsActive
                                                           })
                                                           .Select(x => new DtoGetConsumedItem
                                                           {
@@ -1539,7 +1531,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.ReturnedDate,
                                   x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
-                                  //x.borrow.IsApprovedDate,
                                   x.borrow.ReturnBy,
       
                                 
@@ -1551,7 +1542,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   PreparedBy = x.Key.PreparedBy,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
-                                  //IsApproveDate = x.Key.IsApprovedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
@@ -1653,8 +1643,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
-
-                                  //x.borrow.IsReturned,
 
                               }).Select(x => new DtoGetAllReturnedItem
                               {
@@ -1911,11 +1899,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                             EmpId = x.EmpId,
                                             FullName = x.FullName,
                                             TotalQuantity = x.TotalQuantity,
-                                            //PreparedBy = x.PreparedBy,
                                             RejectDate = x.IsRejectDate.ToString(),
                                             Remarks = x.Reason,
                                             RejectBy = x.RejectBy,
-                                            //BorrowedDate = x.PreparedDate.ToString(),
                                             TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy"),
                                 
 
@@ -1949,11 +1935,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                      EmpId = x.EmpId,
                                      FullName = x.FullName,
                                      TotalQuantity = x.TotalQuantity,
-                                     //PreparedBy = x.PreparedBy,
                                      RejectDate = x.IsRejectDate.ToString(),
                                      Remarks = x.Reason,
                                      RejectBy = x.RejectBy,
-                                     //BorrowedDate = x.PreparedDate.ToString(),
                                      TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                  }).OrderByDescending(x => x.RejectDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower()));
@@ -1982,7 +1966,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                 BorrowedPKey = x.Key.BorrowedPKey,
                                                 IsActive = x.Key.IsActive,
                                                 TotalQuantity = x.Sum(x => x.Quantity),
-                                                //UnitCost = x.Sum(x => x.UnitPrice)
 
                                             });
 
@@ -2008,7 +1991,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
-                    //x.borrowed.UnitCost
                     x.issues.Details
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
@@ -2029,7 +2011,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
-                    //UnitCost = x.Key.UnitCost
                     Details = x.Key.Details
 
                 }).OrderByDescending(x => x.BorrowedDate);
@@ -2056,7 +2037,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                               BorrowedPKey = x.Key.BorrowedPKey,
                                               IsActive = x.Key.IsActive,
                                               TotalQuantity = x.Sum(x => x.Quantity),
-                                              //UnitCost = x.Sum(x => x.UnitPrice)
 
                                           });
 
@@ -2082,7 +2062,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.issues.TransactionDate,
                     x.issues.IsApprovedDate,
                     x.issues.StatusApproved,
-                    //x.borrowed.UnitCost
                     x.issues.Details
 
                 }).Select(x => new GetAllBorrowedReceiptWithPaginationDto
@@ -2103,7 +2082,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     TransactionDate = x.Key.TransactionDate.ToString(),
                     ApproveDate = x.Key.IsApprovedDate.ToString(),
                     StatusApprove = x.Key.StatusApproved,
-                    //UnitCost = x.Key.UnitCost
                     Details = x.Key.Details
 
                 }).OrderByDescending(x => x.BorrowedDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
@@ -2232,7 +2210,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.IsApprovedDate = null;
                 item.IsReject = true;
                 item.IsRejectDate = DateTime.Now;
-                //item.ReturnQuantity = 0;
 
             }
 
@@ -2258,11 +2235,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                  EmpId = x.EmpId,
                                                  FullName = x.FullName,
                                                  TotalQuantity = x.TotalQuantity,
-                                                 //PreparedBy = x.PreparedBy,
                                                  RejectDate = x.IsRejectDate.ToString(),
                                                  Remarks = x.Reason,
                                                  RejectBy = x.RejectBy,
-                                                 //BorrowedDate = x.PreparedDate.ToString(),
                                                  TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                              }).OrderByDescending(x => x.RejectDate);
@@ -2284,11 +2259,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                CustomerName = x.CustomerName,
                                                CustomerCode = x.CustomerCode,
                                                TotalQuantity = x.TotalQuantity,
-                                               //PreparedBy = x.PreparedBy,
                                                RejectDate = x.IsRejectDate.ToString(),
                                                Remarks = x.Remarks,
                                                RejectBy = x.RejectBy,
-                                               //BorrowedDate = x.PreparedDate.ToString(),
                                                TransactionDate = x.TransactionDate.ToString("MM/dd/yyyy")
 
                                            }).OrderByDescending(x  => x.RejectDate).Where(x => (Convert.ToString(x.BorrowedPKey)).ToLower().Contains(search.Trim().ToLower())
@@ -2329,28 +2302,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.BorrowedPKey,
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
-                                  //x.borrow.IsApprovedReturned,
                                   x.borrow.BorrowedDate,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
-
-                                  //x.borrow.IsReturned,
 
                               }).Select(x => new DtoGetAllReturnedItem
                               {
 
                                   Id = x.Key.BorrowedPKey,
                                   PreparedBy = x.Key.PreparedBy,
-                                  //IsApproveReturn = x.Key.IsApprovedReturned != null ? false : true,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                                   BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
-                                  //IsReturned = x.Key.IsReturned != null ? true : false,
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
-                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
-
 
                               });
 
@@ -2378,7 +2344,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
-                    //x.borrowdetail.UnitCost
                     x.borrowissue.Details
 
 
@@ -2386,7 +2351,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
@@ -2403,8 +2367,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     AgingDays = x.Key.IsApprovedReturnedDate != null ?
                     EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value)
                     : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
-                    //UnitCost = x.Key.UnitCost,
-                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
 
 
@@ -2441,26 +2403,20 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                   x.borrow.PreparedBy,
                                   x.borrow.ReturnedDate,
                                   x.borrow.BorrowedDate,
-                                  //x.borrow.IsApprovedReturned,
                                   x.borrow.IsApprovedReturnedDate,
                                   x.borrow.ReturnBy,
-
-                                  //x.borrow.IsReturned,
 
                               }).Select(x => new DtoGetAllReturnedItem
                               {
 
                                   Id = x.Key.BorrowedPKey,
                                   PreparedBy = x.Key.PreparedBy,
-                                  //IsApproveReturn = x.Key.IsApprovedReturned != null ? false : true,
                                   ReturnedDate = x.Key.ReturnedDate.ToString(),
                                   ApproveReturnDate = x.Key.IsApprovedReturnedDate.ToString(),
                                   ReturnBy = x.Key.ReturnBy,
                                   BorrowedDate = x.Key.BorrowedDate.ToString(),
                                   TotalBorrowedQuantity = x.Sum(x => x.borrow.Quantity),
-                                  //IsReturned = x.Key.IsReturned != null ? true : false,
                                   ConsumedQuantity = x.Sum(x => x.consume.ConsumedQuantity != null ? x.consume.ConsumedQuantity : 0),
-                                  //UnitCost = x.Sum(x => x.borrow.UnitPrice != null ? x.borrow.UnitPrice : 0),
 
 
                               });
@@ -2491,7 +2447,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     x.borrowdetail.ConsumedQuantity,
                     x.borrowdetail.TotalBorrowedQuantity,
                     x.borrowissue.IsActive,
-                    //x.borrowdetail.UnitCost
                     x.borrowissue.Details
 
 
@@ -2499,7 +2454,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
 
                 }).Select(x => new DtoGetAllReturnedItem
                 {
-                    //TransactionId = x.Key.BorrowedPKey,
                     Id = x.Key.Id,
                     CustomerCode = x.Key.CustomerCode,
                     CustomerName = x.Key.CustomerName,
@@ -2518,8 +2472,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                     AgingDays = x.Key.IsApprovedReturnedDate != null ?
                     EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, x.Key.IsApprovedReturnedDate.Value)
                     : EF.Functions.DateDiffDay(x.Key.IsApprovedDate.Value, DateTime.Now),
-                    //UnitCost = x.Key.UnitCost,
-                    //TotalCost = x.Key.UnitCost * x.Key.ConsumedQuantity
                     Details = x.Key.Details
 
 
@@ -2598,7 +2550,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                 item.IsReturned = null;
                 item.ReturnedDate = null;
                 item.IsApprovedReturned = null;
-                //item.ReturnQuantity = 0;
                 item.IsReturned = false;
                 
             }

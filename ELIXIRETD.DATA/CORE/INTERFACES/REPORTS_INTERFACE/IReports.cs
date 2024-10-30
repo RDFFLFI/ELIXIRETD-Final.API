@@ -28,7 +28,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.REPORTS_INTERFACE
         Task<PagedList<DtoBorrowedAndReturned>> ReturnBorrowedReports(UserParams userParams, string DateFrom, string DateTo, string Search);
 
 
-
+        Task<PagedList<FuelRegisterReportsDto>> FuelRegisterReports(UserParams userParams, string DateFrom, string DateTo, string Search);
 
 
         Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams, string DateFrom, string DateTo, string Search);

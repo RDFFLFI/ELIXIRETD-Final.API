@@ -46,8 +46,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
 
             var poExist = await _context.PoSummaries
                 .FirstOrDefaultAsync(x => x.IsReceived == false && x.Id == receive.PoSummaryId);
+
+            if(poExist is not null)
+            {
+                poExist.IsReceived = true;
+            }
                 
-            poExist.IsReceived = true;
+
                 
             await _context.WarehouseReceived.AddAsync(receive);
 

@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.SERVICES;
@@ -195,6 +196,31 @@ namespace ELIXIRETD.API.Controllers.REPORTS_CONTROLLER
         {
 
             var inventory = await _unitofwork.Reports.ReturnBorrowedReports(userParams, DateFrom, DateTo ,Search );
+
+            Response.AddPaginationHeader(inventory.CurrentPage, inventory.PageSize, inventory.TotalCount, inventory.TotalPages, inventory.HasNextPage, inventory.HasPreviousPage);
+
+            var inventoryResult = new
+            {
+                inventory,
+                inventory.CurrentPage,
+                inventory.PageSize,
+                inventory.TotalCount,
+                inventory.TotalPages,
+                inventory.HasNextPage,
+                inventory.HasPreviousPage
+            };
+
+            return Ok(inventoryResult);
+
+        }
+
+
+        [HttpGet]
+        [Route("FuelRegisterReports")]
+        public async Task<ActionResult<IEnumerable<FuelRegisterReportsDto>>> FuelRegisterReports([FromQuery] UserParams userParams, [FromQuery] string DateFrom, [FromQuery] string DateTo, [FromQuery] string Search)
+        {
+
+            var inventory = await _unitofwork.Reports.FuelRegisterReports (userParams, DateFrom, DateTo, Search);
 
             Response.AddPaginationHeader(inventory.CurrentPage, inventory.PageSize, inventory.TotalCount, inventory.TotalPages, inventory.HasNextPage, inventory.HasPreviousPage);
 

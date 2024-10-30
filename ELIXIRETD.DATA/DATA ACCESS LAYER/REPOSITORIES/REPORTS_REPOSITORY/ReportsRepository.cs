@@ -4,7 +4,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORYDTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.MISCELLANEOUS_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.ORDER_DTO;
-using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO; 
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
@@ -752,6 +752,52 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         }
 
+        public async Task<PagedList<FuelRegisterReportsDto>> FuelRegisterReports(UserParams userParams, string DateFrom, string DateTo, string Search)
+        {
+            var results = _context.FuelRegisters
+                .Include(m => m.Material)
+                .ThenInclude(id => id.ItemCategory)
+                .Include(w => w.Warehouse_Receiving)
+                .Where(r => r.Is_Transact == true)
+                .Select(r => new FuelRegisterReportsDto
+                {
+                    Id = r.Id,
+                    Source = r.Source,
+                    Plate_No = r.Plate_No,
+                    Driver = r.Driver,
+                    Item_Code = r.Material.ItemCode,
+                    Item_Description = r.Material.ItemDescription,
+                    Uom = r.Material.Uom.UomCode,
+                    Item_Categories = r.Material.ItemCategory.ItemCategoryName,
+                    Warehouse_ReceivingId = r.Warehouse_ReceivingId,
+                    Unit_Cost = r.Warehouse_Receiving.UnitPrice,
+                    Liters = r.Liters.Value,
+                    Asset = r.Asset,
+                    Odometer = r.Odometer,
+                    Company_Code = r.Company_Code,
+                    Company_Name = r.Company_Name,
+                    Department_Code = r.Department_Code,
+                    Department_Name = r.Department_Name,
+                    Location_Code = r.Location_Code,
+                    Location_Name = r.Location_Name,
+                    Added_By = r.Added_By,
+                    Created_At = r.Created_At,
+                    Modified_By = r.Modified_By,
+                    Approve_By = r.Approve_By,
+                    Transact_At = r.Transact_At,
+                    Remarks = r.Remarks,
+
+                });
+
+            if(!string.IsNullOrEmpty(DateTo) && !string.IsNullOrEmpty(DateFrom))
+            {
+                results = results
+                    .Where(r => r.Transact_At.Value.Date >= Convert.ToDateTime(DateFrom).Date && r.Transact_At.Value.Date <= Convert.ToDateTime(DateTo).Date);
+            }
+
+            return await PagedList<FuelRegisterReportsDto>.CreateAsync(results, userParams.PageNumber, userParams.PageSize);
+        }
+
         public async Task<PagedList<DtoCancelledReports>> CancelledReports(UserParams userParams , string DateFrom, string DateTo, string Search )
         {
 
@@ -1018,6 +1064,40 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                                         });
 
+            var fuelRegisterByDate = _context.FuelRegisters
+                .Where(fr => fr.Is_Active == true)
+                .Where(fr => fr.Is_Approve == false)
+                .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
+                .GroupBy(fr => new
+                {
+                      fr.Material.ItemCode,
+
+                }).Select(fr => new
+                {
+                      itemCode = fr.Key.ItemCode,
+                     Quantity = fr.Sum(fr => fr.Liters.Value)
+
+                });
+
+
+            var fuelRegisterByDatePlus = _context.FuelRegisters
+                .Include(m => m.Material)
+                .Where(fr => fr.Is_Active == true)
+                .Where(fr => fr.Is_Approve == false)
+                .Where(x => x.Created_At.Date >= DateTime.Parse(PlusOne).AddDays(1).Date && x.Created_At.Date <= (DateToday).Date)
+                .GroupBy(fr => new
+                {
+                     fr.Material.ItemCode,
+
+                }).Select(fr => new
+                {
+                      itemCode = fr.Key.ItemCode,
+                      Quantity = fr.Sum(fr => fr.Liters.Value)
+
+                });
+
+
+
 
             var getReceiveIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
                                                          .Where(x => x.TransactionType == "Receiving")
@@ -1143,6 +1223,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                                                              });
 
+
+            var fuelRegisterOut = _context.FuelRegisters
+               .Include(m => m.Material)
+               .Where(fr => fr.Is_Active == true)
+               .Where(fr => fr.Is_Approve == false)
+               .GroupBy(fr => new
+               {
+                   fr.Material.ItemCode,
+
+               }).Select(fr => new
+               {
+                   itemCode = fr.Key.ItemCode,
+                   Quantity = fr.Sum(fr => fr.Liters.Value)
+
+               });
+
+
             var getSOH = (from warehouse in getWarehouseStock
                           join moveorder in getMoveOrderOut
                           on warehouse.ItemCode equals moveorder.ItemCode
@@ -1164,6 +1261,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           into leftJ4
                           from returned in leftJ4.DefaultIfEmpty()
 
+                          join fuel in getReturned
+                          on warehouse.ItemCode equals fuel.ItemCode
+                          into leftJ5
+                          from fuel in leftJ5.DefaultIfEmpty()
+
                           group new
                           {
 
@@ -1172,6 +1274,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                               issue,
                               borrowed,
                               returned,
+                              fuel,
 
                           }
 
@@ -1190,7 +1293,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
                              total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
-                             total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0)
+                             total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0) -
+                             total.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)
                               
                           });
 
@@ -1274,6 +1378,25 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                                                  ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume),
 
                                                              });
+            var fuelRegisterCost = _context.FuelRegisters
+             .Include(m => m.Material)
+             .Where(fr => fr.Is_Active == true)
+             .Where(fr => fr.Is_Approve == false)
+             .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).AddDays(1).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
+            .GroupBy(fr => new
+            {
+                fr.Material.ItemCode,
+                fr.Warehouse_ReceivingId,
+
+            }).Select(fr => new
+            {
+                itemCode = fr.Key.ItemCode,
+                WarehouseId = fr.Key.Warehouse_ReceivingId,
+                Quantity = fr.Sum(fr => fr.Liters.Value)
+
+            });
+
+
 
 
             var getUnitPrice = (from warehouse in wareHouseUnitCost
@@ -1297,6 +1420,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                 into leftJ4
                                 from returned in leftJ4.DefaultIfEmpty()
 
+                                join fuel in fuelRegisterCost
+                                on warehouse.Id equals fuel.WarehouseId
+                                into leftJ5
+                                from fuel in leftJ5.DefaultIfEmpty()
                                 group new
                                 {
                                     warehouse,
@@ -1304,6 +1431,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                     issue,
                                     borrow,
                                     returned,
+                                    fuel,
 
                                 }
 
@@ -1320,7 +1448,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                     WarehouseId = x.Key.Id,
                                     ItemCode = x.Key.ItemCode,
                                     UnitPrice = Math.Round(x.Sum(x => x.warehouse.UnitPrice) * (x.First().warehouse.ActualGood + x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),2),
-                                    ActualGood = x.First().warehouse.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),
+                                    ActualGood = x.First().warehouse.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) 
+                                    - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity) -
+                                    x.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)),
                                   
                                 });
 
@@ -1424,7 +1554,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                      on material.ItemCode equals unit.ItemCode
                                      into leftJ14 
                                      from unit in leftJ14.DefaultIfEmpty()
-               
+
+                                     join fuel in fuelRegisterByDate
+                                     on material.ItemCode equals fuel.itemCode
+                                     into leftJ15
+                                     from fuel in leftJ15.DefaultIfEmpty()
+
+                                     join fuelPlus in fuelRegisterByDatePlus
+                                     on material.ItemCode equals fuelPlus.itemCode
+                                     into leftJ16
+                                     from fuelPlus in leftJ16.DefaultIfEmpty()
+
 
                                      group new
                                      {
@@ -1444,6 +1584,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          receiveInPlus,
                                          receiptInPlus,
                                          unit,
+                                         fuel,
+                                         fuelPlus,
                                      }
 
                                      by new                             
@@ -1464,13 +1606,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          TotalIssue = total.Sum(x => x.issue.Quantity),
                                          TotalBorrowed = total.Sum(x => x.borrowed.Quantity),
                                          TotalReturned = total.Sum(x => x.returned.ReturnQuantity),
+                                         TotalFuelRegister = total.Sum(x => x.fuel.Quantity),
                                          Ending = (total.Sum(x => x.receipt.Quantity) + total.Sum(x => x.receiveIn.Quantity) + total.Sum(x => x.returned.ReturnQuantity)) - 
-                                         (total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity)),
+                                         (total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity) + total.Sum(x => x.fuel.Quantity)),
                                          UnitCost = total.Sum(x => x.unit.UnitPrice) ,
                                          Amount =  total.Sum(x => x.unit.TotalUnitPrice),
                                          CurrentStock = total.Sum(x => x.SOH.SOH),
                                          PurchaseOrder = total.Sum(x => x.receiveInPlus.Quantity) + total.Sum(x => x.receiptInPlus.Quantity) + total.Sum(x => x.returnedPlus.ReturnQuantity),
-                                         OtherPlus = total.Sum(x => x.moverorderPlus.QuantityOrdered) + total.Sum(x => x.issuePlus.Quantity) + total.Sum(x => x.borrowedPlus.Quantity),
+                                         OtherPlus = total.Sum(x => x.moverorderPlus.QuantityOrdered) + total.Sum(x => x.issuePlus.Quantity) + total.Sum(x => x.borrowedPlus.Quantity) + total.Sum(x => x.fuelPlus.Quantity),
 
                                      });
 
@@ -2783,6 +2926,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
             return reports.ToList();
         }
+
+
     }
 
 }

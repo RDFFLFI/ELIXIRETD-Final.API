@@ -19,6 +19,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public decimal TotalIssue {  get; set; }
         public decimal TotalBorrowed { get; set; }
         public decimal TotalReturned { get; set; }
+        public decimal TotalFuelRegister { get; set; }
 
         public decimal UnitCost { get; set; } 
 
