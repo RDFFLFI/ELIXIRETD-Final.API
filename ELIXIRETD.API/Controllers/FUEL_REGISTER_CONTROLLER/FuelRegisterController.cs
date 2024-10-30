@@ -80,7 +80,7 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         }
 
 
-        [HttpPost("approve")]
+        [HttpPut("approve")]
         public async Task<IActionResult> ApproveFuel([FromBody]ApproveFuelDto[] fuel)
         {
 
@@ -102,7 +102,7 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully approve");
         }
 
-        [HttpPost("reject")]
+        [HttpPut("reject")]
         public async Task<IActionResult> RejectFuel([FromBody] RejectFuelDto[] fuel)
         {
 
@@ -124,7 +124,7 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully reject");
         }
 
-        [HttpPost("transact")]
+        [HttpPut("transact")]
         public async Task<IActionResult> TransactFuel([FromBody] TransactedFuelDto[] fuel)
         {
 
@@ -146,8 +146,8 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully transacted");
         }
 
-        [HttpPost("cancel")]
-        public async Task<IActionResult> CancelFuel([FromBody] int id)
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelFuel([FromRoute] int id)
         {
             var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(id);
             if (fuelNotExist is false)
@@ -161,10 +161,5 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
 
             return Ok("Successfully cancel");
         }
-
-
-
-
-
     }
 }

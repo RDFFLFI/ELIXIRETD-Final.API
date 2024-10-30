@@ -780,6 +780,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Department_Name = r.Department_Name,
                     Location_Code = r.Location_Code,
                     Location_Name = r.Location_Name,
+                    Account_Title_Code = r.Account_Title_Code,
+                    Account_Title_Name = r.Account_Title_Name,
+                    EmpId = r.EmpId,
+                    Fullname = r.Fullname,
                     Added_By = r.Added_By,
                     Created_At = r.Created_At,
                     Modified_By = r.Modified_By,
@@ -1340,7 +1344,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
 
-
             var borrowedUnitCost = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
                  .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(PlusOne))
                                                               .GroupBy(x => new
@@ -1709,6 +1712,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
+
             var receiptConsol = _context.MiscellaneousReceipts
                 .AsNoTracking()
                 .GroupJoin(_context.WarehouseReceived, receipt => receipt.Id, warehouse => warehouse.MiscellaneousReceiptId, (receipt, warehouse) => new { receipt, warehouse })
@@ -1923,6 +1927,48 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
+
+            var fuelRegisterConsol = _context.FuelRegisters
+                .Include(m => m.Material)
+                .ThenInclude(id => id.ItemCategory)
+                .Include(w => w.Warehouse_Receiving)
+                .Where(r => r.Is_Transact == true)
+                .Select(x => new ConsolidateFinanceReportDto
+                {
+
+                    Id = x.Id,
+                    TransactionDate = x.Transact_At.Value.Date,
+                    ItemCode = x.Material.ItemCode,
+                    ItemDescription = x.Material.ItemDescription,
+                    Uom = x.Material.Uom.UomCode,
+                    Category = "",
+                    Quantity = x.Liters,
+                    UnitCost = x.Warehouse_Receiving.UnitPrice,
+                    LineAmount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
+                    Source = Convert.ToString(x.Id),
+                    TransactionType = "Returned",
+                    Reason = x.Remarks,
+                    Reference = "",
+                    SupplierName = "",
+                    EncodedBy = x.Transact_By,
+                    CompanyCode = x.Company_Code,
+                    CompanyName = x.Company_Name,
+                    DepartmentCode = x.Department_Code,
+                    DepartmentName = x.Department_Name,
+                    LocationCode = x.Location_Code,
+                    LocationName = x.Location_Name,
+                    AccountTitleCode = x.Account_Title_Code,
+                    AccountTitle = x.Account_Title_Name,
+                    EmpId = x.EmpId,
+                    Fullname = x.Fullname,
+                    AssetTag = x.Asset,
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Rush = ""
+
+                });
+
+
             if (!string.IsNullOrEmpty(DateFrom) && !string.IsNullOrEmpty(DateTo))
             {
                 var dateFrom = DateTime.Parse(DateFrom).Date;
@@ -1953,6 +1999,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
                     ;
 
+                fuelRegisterConsol = fuelRegisterConsol
+                    .Where(x => x.TransactionDate.Date >= dateFrom && x.TransactionDate.Date <= dateTo)
+                    ;
+
             }
 
             var consolidateList = receivingConsol
@@ -1960,7 +2010,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Concat( await receiptConsol.ToListAsync()) 
                 .Concat( await issueConsol.ToListAsync())
                 .Concat( await borrowedConsol.ToListAsync())
-                .Concat( await returnedConsol.ToListAsync());
+                .Concat( await returnedConsol.ToListAsync())
+                .Concat(await fuelRegisterConsol.ToListAsync());
 
 
             var materials = _context.Materials
@@ -2372,6 +2423,46 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 }).ToList();
 
+            var fuelRegisterConsol = _context.FuelRegisters
+                .Include(m => m.Material)
+                .ThenInclude(id => id.ItemCategory)
+                .Include(w => w.Warehouse_Receiving)
+                .Where(r => r.Is_Transact == true)
+                .Select(x => new ConsolidateAuditReportDto
+                {
+
+                    Id = x.Id,
+                    TransactionDate = x.Transact_At.Value.Date.ToString(),
+                    ItemCode = x.Material.ItemCode,
+                    ItemDescription = x.Material.ItemDescription,
+                    Uom = x.Material.Uom.UomCode,
+                    Category = "",
+                    Quantity = x.Liters,
+                    UnitCost = x.Warehouse_Receiving.UnitPrice,
+                    LineAmount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
+                    Source = Convert.ToString(x.Id),
+                    TransactionType = "Returned",
+                    Reason = x.Remarks,
+                    Reference = "",
+                    SupplierName = "",
+                    EncodedBy = x.Transact_By,
+                    CompanyCode = x.Company_Code,
+                    CompanyName = x.Company_Name,
+                    DepartmentCode = x.Department_Code,
+                    DepartmentName = x.Department_Name,
+                    LocationCode = x.Location_Code,
+                    LocationName = x.Location_Name,
+                    AccountTitleCode = x.Account_Title_Code,
+                    AccountTitle = x.Account_Title_Name,
+                    EmpId = x.EmpId,
+                    Fullname = x.Fullname,
+                    AssetTag = x.Asset,
+                    CIPNo = "",
+                    Helpdesk = 0,
+                    Rush = ""
+
+                });
+
 
             var consolidateList = receivingConsol
                 .Concat(moveOrderConsol)
@@ -2380,6 +2471,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Concat(borrowedConsol)
                 .Concat(returnedConsol)
                 .Concat(cancelledConsol)
+                .Concat(fuelRegisterConsol)
                 .ToList();
 
             var materials = await _context.Materials
@@ -2750,6 +2842,43 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
+              var fuelRegisterConsol = _context.FuelRegisters
+                .Include(m => m.Material)
+                .ThenInclude(id => id.ItemCategory)
+                .Include(w => w.Warehouse_Receiving)
+                .Where(r => r.Is_Transact == true)
+                .Select(x => new GeneralLedgerReportDto
+                {
+
+                    SyncId = x.Id,
+                    Transaction_Date = x.Transact_At.Value.Date,
+                    Item_Code = x.Material.ItemCode,
+                    Description = x.Material.ItemDescription,
+                    Uom = x.Material.Uom.UomCode,
+                    Category = "",
+                    Quantity = x.Liters,
+                    Unit_Price = x.Warehouse_Receiving.UnitPrice,
+                    Line_Amount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
+                    Po = "N/a",
+                    System = "ElixirETD_Fuel_Register",
+                    Service_Provider_Code = "",
+                    Service_Provider = x.Transact_By,
+                    Reason = x.Remarks,
+                    Reference_No = Convert.ToString(x.Id),
+                    Supplier = x.Driver,
+                    Company_Code = x.Company_Code,
+                    Company_Name = x.Company_Name,
+                    Department_Code = x.Department_Code,
+                    Department_Name = x.Department_Name,
+                    Location_Code = x.Location_Code,
+                    Location = x.Location_Name,
+                    Account_Title_Code = x.Account_Title_Code,
+                    Account_Title_Name = x.Account_Title_Name,
+                    Asset = x.Asset,
+                    Asset_Cip = "",
+
+                });
+
 
             if (!string.IsNullOrEmpty(DateFrom) && !string.IsNullOrEmpty(DateTo))
             {
@@ -2782,6 +2911,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     .Where(x => x.Transaction_Date.Date >= dateFrom && x.Transaction_Date.Date <= dateTo)
                     ;
 
+                returnedConsol = returnedConsol
+                    .Where(x => x.Transaction_Date.Date >= dateFrom && x.Transaction_Date.Date <= dateTo)
+                    ;
             }
             else
             {
@@ -2790,6 +2922,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 issueConsol=  issueConsol.Where(x => x.SyncId == null);
                 borrowedConsol = borrowedConsol.Where(x => x.SyncId == null);
                 returnedConsol = returnedConsol.Where(x => x.SyncId == null);
+                fuelRegisterConsol = fuelRegisterConsol.Where(x => x.SyncId == null);
+
             }
 
 
@@ -2797,7 +2931,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Concat(await receiptConsol.ToListAsync())
                 .Concat(await issueConsol.ToListAsync())
                 .Concat(await borrowedConsol.ToListAsync())
-                .Concat(await returnedConsol.ToListAsync());
+                .Concat(await returnedConsol.ToListAsync())
+                .Concat(await fuelRegisterConsol.ToListAsync());
 
 
             var materials = _context.Materials

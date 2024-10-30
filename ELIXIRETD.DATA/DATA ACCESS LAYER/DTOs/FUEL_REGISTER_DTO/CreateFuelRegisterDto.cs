@@ -36,6 +36,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
         public string Location_Code { get; set; }
         public string Location_Name { get; set; }
 
+        public string Account_Title_Code { get; set; }
+        public string Account_Title_Name { get; set; }
+        public string EmpId { get; set; }
+
+        public string Fullname { get; set; }
+
         public string Added_By { get; set; }
         public string Modified_By { get; set; }
 

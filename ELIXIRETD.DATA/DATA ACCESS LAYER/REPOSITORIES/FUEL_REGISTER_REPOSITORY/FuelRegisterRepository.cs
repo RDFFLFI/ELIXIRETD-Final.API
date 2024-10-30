@@ -66,6 +66,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 fuelRegisterExist.Department_Name = fuel.Department_Name;
                 fuelRegisterExist.Location_Code = fuel.Location_Code;
                 fuelRegisterExist.Location_Name = fuel.Location_Name;
+                fuelRegisterExist.Account_Title_Code = fuel.Account_Title_Code;
+                fuelRegisterExist.Account_Title_Name = fuel.Account_Title_Name;
+                fuelRegisterExist.EmpId = fuel.EmpId;
+                fuelRegisterExist.Fullname = fuel.Fullname;
                 fuelRegisterExist.Modified_By = fuel.Modified_By;
                 fuelRegisterExist.Updated_At = DateTime.Now;
                 fuelRegisterExist.Remarks = fuel.Remarks;
@@ -90,6 +94,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Department_Name = fuel.Department_Name,
                     Location_Code   = fuel.Location_Code,
                     Location_Name = fuel.Location_Name,
+                    Account_Title_Code = fuel.Account_Title_Code,
+                    Account_Title_Name = fuel.Account_Title_Name,
+                    EmpId = fuel.EmpId,
+                    Fullname = fuel.Fullname,   
                     Added_By = fuel.Added_By,
                     Remarks = fuel.Remarks,
 
@@ -565,6 +573,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Department_Name = f.Department_Name,
                     Location_Code  = f.Location_Code,
                     Location_Name = f.Location_Name,
+                    Account_Title_Code = f.Account_Title_Code,
+                    Account_Title_Name = f.Account_Title_Name,
+                    EmpId = f.EmpId,
+                    Fullname = f.Fullname,
                     Added_By = f.Added_By,
                     Created_At = f.Created_At,
                     Modified_By = f.Modified_By,
@@ -673,7 +685,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
         public async Task<bool> TransactFuel(TransactedFuelDto fuel)
         {
             var fuelExist = await _context.FuelRegisters
-                .FirstOrDefaultAsync(f => f.Id == fuel.Id);
+                .FirstOrDefaultAsync(f => f.Id == fuel.Id && f.Is_Approve);
+
+            if(fuelExist == null)
+            {
+                return false;
+            }
+        
 
             fuelExist.Transact_At = DateTime.Now;
             fuelExist.Transact_By = fuel.Transacted_By;
