@@ -536,7 +536,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Source = f.Source,
                     Plate_No = f.Plate_No,
                     UserId = f.UserId.Value,
-                    Driver = $"{f.User.EmpId}:{f.User.FullName}",
+                    Driver = f.User.FullName,
                     MaterialId = f.MaterialId,
                     Item_Code = f.Material.ItemCode,
                     Item_Description = f.Material.ItemDescription,  
@@ -576,9 +576,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
 
             if (!string.IsNullOrEmpty(Search))
-                results = results.Where(r => r.Driver.Contains(Search.ToLower()) ||
-                r.Plate_No.Contains(Search.ToLower())
-                || r.Item_Code.Contains(Search.ToLower()));
+                results = results.Where( r => r.Driver.Contains(Search));
 
 
             if(UserId is not null)
