@@ -1,4 +1,5 @@
 ﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL;
 
 namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
@@ -8,7 +9,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
        
         public string Source { get; set; }
         public string Plate_No { get; set; }
-        public string Driver { get; set; }
+
+        public int ? UserId { get; set; }
+        public virtual User User { get; set; }
 
         public int MaterialId { get; set; }
         public virtual Material Material { get; set; }

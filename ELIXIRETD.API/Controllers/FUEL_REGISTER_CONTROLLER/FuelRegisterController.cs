@@ -58,10 +58,10 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         }
 
         [HttpGet("page")]
-        public async Task<ActionResult<IEnumerable<GetFuelRegisterDto>>> GetFuelRegister([FromQuery] UserParams userParams, [FromQuery] string Search, [FromQuery]string Status)
+        public async Task<ActionResult<IEnumerable<GetFuelRegisterDto>>> GetFuelRegister([FromQuery] UserParams userParams, [FromQuery] string Search, [FromQuery]string Status, [FromQuery]int? UserId)
         {
 
-            var fuel = await _unitofwork.FuelRegister.GetFuelRegister(userParams, Search, Status);
+            var fuel = await _unitofwork.FuelRegister.GetFuelRegister(userParams, Search, Status,UserId);
 
             Response.AddPaginationHeader(fuel.CurrentPage, fuel.PageSize, fuel.TotalCount, fuel.TotalPages, fuel.HasNextPage, fuel.HasPreviousPage);
 

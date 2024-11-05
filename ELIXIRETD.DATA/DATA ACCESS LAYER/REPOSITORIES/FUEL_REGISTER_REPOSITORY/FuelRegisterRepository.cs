@@ -54,22 +54,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             {
                 fuelRegisterExist.Source = fuel.Source;
                 fuelRegisterExist.Plate_No = fuel.Plate_No;
-                fuelRegisterExist.Driver = fuel.Driver;
+                fuelRegisterExist.UserId = fuel.UserId;
                 fuelRegisterExist.MaterialId = fuel.MaterialId.Value;
                 fuelRegisterExist.Warehouse_ReceivingId = fuel.Warehouse_ReceivingId;
                 fuelRegisterExist.Liters = fuel.Liters;
                 fuelRegisterExist.Asset = fuel.Asset;
                 fuelRegisterExist.Odometer = fuel.Odometer;
-                fuelRegisterExist.Company_Code = fuel.Company_Code;
-                fuelRegisterExist.Company_Name = fuel.Company_Name;
-                fuelRegisterExist.Department_Code = fuel.Department_Code;
-                fuelRegisterExist.Department_Name = fuel.Department_Name;
-                fuelRegisterExist.Location_Code = fuel.Location_Code;
-                fuelRegisterExist.Location_Name = fuel.Location_Name;
-                fuelRegisterExist.Account_Title_Code = fuel.Account_Title_Code;
-                fuelRegisterExist.Account_Title_Name = fuel.Account_Title_Name;
-                fuelRegisterExist.EmpId = fuel.EmpId;
-                fuelRegisterExist.Fullname = fuel.Fullname;
                 fuelRegisterExist.Modified_By = fuel.Modified_By;
                 fuelRegisterExist.Updated_At = DateTime.Now;
                 fuelRegisterExist.Remarks = fuel.Remarks;
@@ -82,22 +72,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 {
                     Source = fuel.Source,
                     Plate_No = fuel.Plate_No,
-                    Driver = fuel.Driver,
+                    UserId = fuel.UserId,
                     MaterialId = fuel.MaterialId.Value,
                     Warehouse_ReceivingId = fuel.Warehouse_ReceivingId,
                     Liters = fuel.Liters,
                     Asset = fuel.Asset,
                     Odometer = fuel.Odometer,
-                    Company_Code = fuel.Company_Code,
-                    Company_Name = fuel.Company_Name,
-                    Department_Code = fuel.Department_Code,
-                    Department_Name = fuel.Department_Name,
-                    Location_Code   = fuel.Location_Code,
-                    Location_Name = fuel.Location_Name,
-                    Account_Title_Code = fuel.Account_Title_Code,
-                    Account_Title_Name = fuel.Account_Title_Name,
-                    EmpId = fuel.EmpId,
-                    Fullname = fuel.Fullname,   
                     Added_By = fuel.Added_By,
                     Remarks = fuel.Remarks,
 
@@ -307,7 +287,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
         public async Task<IReadOnlyList<GetMaterialStockByWarehouseDto>> GetMaterialStockByWarehouse(string itemCode)
         {
 
-            var getWarehouseStocks = _context.WarehouseReceived
+            itemCode = "DIESEL";
+
+               var getWarehouseStocks = _context.WarehouseReceived
                 .Where(x => x.ItemCode == itemCode)
                 .Where(x => x.IsActive == true)
                 .Select(x => new WarehouseInventory
@@ -320,9 +302,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     UnitPrice = x.UnitPrice
 
                 });
-
-
-
 
 
             var moveorderOut = _context.MoveOrders
@@ -536,7 +515,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         }
 
-        public async Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status)
+        public async Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status, int ? UserId)
         {
             const string forApproval = "For Approval";
             const string approved = "Approved";
@@ -556,7 +535,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Id = f.Id,
                     Source = f.Source,
                     Plate_No = f.Plate_No,
-                    Driver = f.Driver,
+                    UserId = f.UserId.Value,
+                    Driver = $"{f.User.EmpId}:{f.User.FullName}",
                     MaterialId = f.MaterialId,
                     Item_Code = f.Material.ItemCode,
                     Item_Description = f.Material.ItemDescription,  
@@ -605,6 +585,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 r.Plate_No.Contains(Search.ToLower())
                 || r.Item_Code.Contains(Search.ToLower()));
 
+
+            if(UserId is not null)
+            {
+                results = results.Where(r => r.UserId == r.UserId);
+            }
+
             if(!string.IsNullOrEmpty(Status))
             {
                 switch (Status)
@@ -637,8 +623,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             }
 
 
-            results = results.OrderBy(r => r.Id);
 
+            results = results.OrderBy(r => r.Id);
 
 
             return await PagedList<GetFuelRegisterDto>.CreateAsync(results,userParams.PageNumber, userParams.PageSize);
@@ -665,6 +651,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             fuelExist.Approve_At = DateTime.Now;
             fuelExist.Approve_By = fuel.Approve_By;
             fuelExist.Is_Approve = true;
+            fuelExist.Company_Code = fuel.Company_Code; 
+            fuelExist.Company_Name = fuel.Company_Name;
+            fuelExist.Department_Code = fuel.Department_Code;
+            fuelExist.Department_Name  = fuel.Department_Name;
+            fuelExist.Location_Code = fuel.Location_Code;
+            fuelExist.Location_Name = fuel.Location_Name;
+            fuelExist.EmpId = fuel.EmpId;
+            fuelExist.Fullname = fuel.Fullname;
 
             return true;
 

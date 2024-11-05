@@ -562,7 +562,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.AccountTitles = details.AccountTitles;
             order.EmpId = details.EmpId;
             order.FullName = details.FullName;
-
             order.CustomerName = details.CustomerName;
             order.Customercode = details.CustomerCode;
             order.AddressOrder = details.Address;

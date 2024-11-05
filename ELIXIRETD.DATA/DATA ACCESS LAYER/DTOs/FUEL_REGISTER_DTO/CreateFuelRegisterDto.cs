@@ -17,7 +17,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
 
         public string Plate_No { get; set; }
 
-        public string Driver { get; set; }
+        public int? UserId { get; set; }
 
         public int? MaterialId { get; set; }
 
@@ -27,20 +27,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
         public string Asset { get; set; }
 
         public decimal? Odometer { get; set; }
-        public string Company_Code { get; set; }
-        public string Company_Name { get; set; }
 
-        public string Department_Code { get; set; }
-        public string Department_Name { get; set; }
-
-        public string Location_Code { get; set; }
-        public string Location_Name { get; set; }
-
-        public string Account_Title_Code { get; set; }
-        public string Account_Title_Name { get; set; }
-        public string EmpId { get; set; }
-
-        public string Fullname { get; set; }
 
         public string Added_By { get; set; }
         public string Modified_By { get; set; }
