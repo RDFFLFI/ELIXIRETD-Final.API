@@ -48,6 +48,14 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok(results); 
         }
 
+        [HttpGet("user-role")]
+        public async Task<IActionResult> GetDriverUser()
+        {
+            var results = await _unitofwork.FuelRegister.GetDriverUser();
+
+            return Ok(results);
+        }
+
 
         [HttpGet("material-available-item")]
         public async Task<IActionResult> GetMaterialStockByWarehouse(string itemCode)

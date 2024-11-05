@@ -703,5 +703,34 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             return true;
         }
+
+        public async Task<IReadOnlyList<GetDriverUserDto>> GetDriverUser()
+        {
+            string roleName = "DRIVER";
+
+            var role = _context.Roles
+                .AsNoTrackingWithIdentityResolution()
+                .Where(r => r.RoleName.ToUpper() == roleName)
+                .Select(x => x.Id);
+
+            var user = await _context.Users
+                .AsNoTrackingWithIdentityResolution()
+                .Include(u => u.UserRole)
+                .AsSplitQuery()
+                .Where(u => u.IsActive == true &&
+                role.Contains(u.UserRoleId))
+                .Select(u => new GetDriverUserDto
+                {
+                    Id = u.Id,
+                    EmpId = u.EmpId,
+                    Fullname  = u.FullName,
+                    Username = u.UserName,
+                    Role = u.UserRole.RoleName
+
+                }).ToListAsync();
+
+            return user;
+
+        }
     }
 }

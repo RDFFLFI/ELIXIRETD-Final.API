@@ -31,6 +31,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE
 
         Task<bool> FuelRegisterNotExist(int id);
 
+        Task<IReadOnlyList<GetDriverUserDto>> GetDriverUser();
+
 
 
     }
