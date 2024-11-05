@@ -46,16 +46,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         public async Task<bool> CreateFuelRegister(CreateFuelRegisterDto fuel)
         {
+
+
             var fuelRegisterExist = await _context.FuelRegisters
                 .FirstOrDefaultAsync(fr => fr.Id == fuel.Id);
 
+            var material = await _context.Materials
+                .FirstOrDefaultAsync(m => m.ItemCode.ToUpper() == fuel.Item_Code);
 
             if (fuelRegisterExist is not null)
             {
-                fuelRegisterExist.Source = fuel.Source;
-                fuelRegisterExist.Plate_No = fuel.Plate_No;
                 fuelRegisterExist.UserId = fuel.UserId;
-                fuelRegisterExist.MaterialId = fuel.MaterialId.Value;
+                fuelRegisterExist.MaterialId = material.Id;
                 fuelRegisterExist.Warehouse_ReceivingId = fuel.Warehouse_ReceivingId;
                 fuelRegisterExist.Liters = fuel.Liters;
                 fuelRegisterExist.Asset = fuel.Asset;
@@ -70,10 +72,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
                 var newFuelRegister = new FuelRegister
                 {
-                    Source = fuel.Source,
-                    Plate_No = fuel.Plate_No,
+                    Source = "ELIXIR ETD",
                     UserId = fuel.UserId,
-                    MaterialId = fuel.MaterialId.Value,
+                    MaterialId = material.Id,
                     Warehouse_ReceivingId = fuel.Warehouse_ReceivingId,
                     Liters = fuel.Liters,
                     Asset = fuel.Asset,
@@ -86,7 +87,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 await _context.FuelRegisters.AddAsync(newFuelRegister);
 
             }
-
           
             return true;
         }
@@ -284,10 +284,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         }
 
-        public async Task<IReadOnlyList<GetMaterialStockByWarehouseDto>> GetMaterialStockByWarehouse(string itemCode)
+        public async Task<IReadOnlyList<GetMaterialStockByWarehouseDto>> GetMaterialStockByWarehouse()
         {
 
-            itemCode = "DIESEL";
+           var itemCode = "DIESEL";
 
                var getWarehouseStocks = _context.WarehouseReceived
                 .Where(x => x.ItemCode == itemCode)
@@ -561,20 +561,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Created_At = f.Created_At,
                     Modified_By = f.Modified_By,
                     Updated_At = f.Updated_At,
-
                     Is_Reject = f.Is_Reject,
                     Reject_Remarks = f.Reject_Remarks,
                     Reject_By = f.Reject_By,
-
                     Is_Approve = f.Is_Approve,
                     Approve_At = f.Approve_At,
                     Approve_By = f.Approve_By,
-
                     Is_Transact = f.Is_Transact,
                     Transact_At = f.Transact_At,
                     Transact_By = f.Transact_By,
-
-
                     Remarks = f.Remarks 
 
                 });

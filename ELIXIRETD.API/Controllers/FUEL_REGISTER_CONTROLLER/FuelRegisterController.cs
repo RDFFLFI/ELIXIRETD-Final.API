@@ -24,15 +24,8 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         public async Task<IActionResult> CreateFuelRegister(CreateFuelRegisterDto fuel)
         {
 
-            var fuelnotExist = await _unitofwork.FuelRegister.MaterialNotExist(fuel.MaterialId.Value);
-            if (fuelnotExist is false)
-                return BadRequest("material not exist!");
-
-            var warehousenotExist = await _unitofwork.FuelRegister.WarehouseNotExist(fuel.MaterialId.Value);
-            if (fuelnotExist is false)
-                return BadRequest("material not exist!");
-
             fuel.Added_By = User.Identity.Name;
+            fuel.Modified_By = User.Identity.Name;
 
             await _unitofwork.FuelRegister.CreateFuelRegister(fuel);
             await _unitofwork.CompleteAsync();
@@ -58,9 +51,9 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
 
 
         [HttpGet("material-available-item")]
-        public async Task<IActionResult> GetMaterialStockByWarehouse(string itemCode)
+        public async Task<IActionResult> GetMaterialStockByWarehouse()
         {
-            var results = await _unitofwork.FuelRegister.GetMaterialStockByWarehouse(itemCode);
+            var results = await _unitofwork.FuelRegister.GetMaterialStockByWarehouse();
 
             return Ok(results);
         }
