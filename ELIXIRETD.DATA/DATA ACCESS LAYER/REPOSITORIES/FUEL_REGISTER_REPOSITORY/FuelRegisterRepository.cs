@@ -527,6 +527,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var results =  _context.FuelRegisters
                 .Include(r => r.Material)
                 .ThenInclude(r => r.Uom)
+                .Include(x => x.User)
                 .Include(r => r.Material)
                 .ThenInclude(r => r.ItemCategory)
                 .Where(f => f.Is_Active)
@@ -534,12 +535,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 {
                     Id = f.Id,
                     Source = f.Source,
-                    Plate_No = f.Plate_No,
+                    //Plate_No = f.Plate_No,
                     UserId = f.UserId.Value,
                     Driver = f.User.FullName,
                     MaterialId = f.MaterialId,
                     Item_Code = f.Material.ItemCode,
-                    Item_Description = f.Material.ItemDescription,  
+                    Item_Description = f.Material.ItemDescription,
                     Uom = f.Material.Uom.UomCode,
                     Item_Categories = f.Material.ItemCategory.ItemCategoryName,
                     Warehouse_ReceivingId = f.Warehouse_ReceivingId,
@@ -547,11 +548,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Liters = f.Liters.Value,
                     Asset = f.Asset,
                     Odometer = f.Odometer,
-                    Company_Code = f.Company_Code,  
+                    Company_Code = f.Company_Code,
                     Company_Name = f.Company_Name,
                     Department_Code = f.Department_Code,
                     Department_Name = f.Department_Name,
-                    Location_Code  = f.Location_Code,
+                    Location_Code = f.Location_Code,
                     Location_Name = f.Location_Name,
                     Account_Title_Code = f.Account_Title_Code,
                     Account_Title_Name = f.Account_Title_Name,
@@ -570,21 +571,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Is_Transact = f.Is_Transact,
                     Transact_At = f.Transact_At,
                     Transact_By = f.Transact_By,
-                    Remarks = f.Remarks 
+                    Remarks = f.Remarks
 
                 });
 
 
             if (!string.IsNullOrEmpty(Search))
-                results = results.Where( r => r.Driver.Contains(Search));
+                results = results.Where(r => r.Driver.Contains(Search)
+                || r.Id.ToString().Contains(Search));
 
 
-            if(UserId is not null)
+            if (UserId is not null)
             {
-                results = results.Where(r => r.UserId == r.UserId);
+                results = results.Where(r => r.UserId == UserId);
+
             }
 
-            if(!string.IsNullOrEmpty(Status))
+            if (!string.IsNullOrEmpty(Status))
             {
                 switch (Status)
                 {
@@ -635,7 +638,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             return true;
         }
-
+ 
         public async Task<bool> ApproveFuel(ApproveFuelDto fuel)
         {
             var fuelExist = await _context.FuelRegisters

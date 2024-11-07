@@ -89,7 +89,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BorrowedConsumes");
+                    b.ToTable("BorrowedConsumes", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL.BorrowedIssue", b =>
@@ -180,7 +180,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BorrowedIssues");
+                    b.ToTable("BorrowedIssues", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.BORROWED_MODEL.BorrowedIssueDetails", b =>
@@ -289,7 +289,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BorrowedIssueDetails");
+                    b.ToTable("BorrowedIssueDetails", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegister", b =>
@@ -407,7 +407,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("Warehouse_ReceivingId");
 
-                    b.ToTable("FuelRegisters");
+                    b.ToTable("FuelRegisters", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL.PoSummary", b =>
@@ -498,7 +498,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PoSummaries");
+                    b.ToTable("PoSummaries", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL.MiscellaneousIssue", b =>
@@ -562,7 +562,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MiscellaneousIssues");
+                    b.ToTable("MiscellaneousIssues", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL.MiscellaneousIssueDetails", b =>
@@ -629,7 +629,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MiscellaneousIssueDetail");
+                    b.ToTable("MiscellaneousIssueDetail", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.INVENTORY_MODEL.MiscellaneousReceipt", b =>
@@ -690,7 +690,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MiscellaneousReceipts");
+                    b.ToTable("MiscellaneousReceipts", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL.GenerateOrderNo", b =>
@@ -709,7 +709,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GenerateOrders");
+                    b.ToTable("GenerateOrders", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL.MoveOrder", b =>
@@ -893,7 +893,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MoveOrders");
+                    b.ToTable("MoveOrders", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL.Ordering", b =>
@@ -1077,7 +1077,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL.TransactMoveOrder", b =>
@@ -1141,7 +1141,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransactOrder");
+                    b.ToTable("TransactOrder", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Company", b =>
@@ -1169,7 +1169,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Customer", b =>
@@ -1233,7 +1233,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.ItemCategory", b =>
@@ -1273,7 +1273,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemCategories");
+                    b.ToTable("ItemCategories", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Location", b =>
@@ -1301,7 +1301,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotNames", b =>
@@ -1329,7 +1329,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lotnames");
+                    b.ToTable("Lotnames", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotSection", b =>
@@ -1359,7 +1359,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("LotNamesId");
 
-                    b.ToTable("LotSections");
+                    b.ToTable("LotSections", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Material", b =>
@@ -1426,7 +1426,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("UomId");
 
-                    b.ToTable("Materials");
+                    b.ToTable("Materials", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Reason", b =>
@@ -1456,7 +1456,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("MainMenuId");
 
-                    b.ToTable("Reasons");
+                    b.ToTable("Reasons", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Supplier", b =>
@@ -1505,7 +1505,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.TransactionType", b =>
@@ -1530,7 +1530,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionTypes", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.Uom", b =>
@@ -1573,7 +1573,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Uoms");
+                    b.ToTable("Uoms", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.MainMenu", b =>
@@ -1607,7 +1607,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MainMenus");
+                    b.ToTable("MainMenus", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.Module", b =>
@@ -1643,7 +1643,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("MainMenuId");
 
-                    b.ToTable("Modules");
+                    b.ToTable("Modules", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.User", b =>
@@ -1697,7 +1697,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasIndex("UserRoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.UserRole", b =>
@@ -1728,7 +1728,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL.UserRoleModules", b =>
@@ -1750,7 +1750,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoleModules");
+                    b.ToTable("RoleModules", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL.Warehouse_Receiving", b =>
@@ -1850,7 +1850,7 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WarehouseReceived");
+                    b.ToTable("WarehouseReceived", (string)null);
                 });
 
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegister", b =>

@@ -1080,7 +1080,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 }).Select(fr => new
                 {
                       itemCode = fr.Key.ItemCode,
-                     Quantity = fr.Sum(fr => fr.Liters.Value)
+                     Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                 });
 
@@ -1097,7 +1097,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 }).Select(fr => new
                 {
                       itemCode = fr.Key.ItemCode,
-                      Quantity = fr.Sum(fr => fr.Liters.Value)
+                      Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                 });
 
@@ -1240,7 +1240,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                }).Select(fr => new
                {
                    itemCode = fr.Key.ItemCode,
-                   Quantity = fr.Sum(fr => fr.Liters.Value)
+                   Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                });
 
@@ -1266,8 +1266,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           into leftJ4
                           from returned in leftJ4.DefaultIfEmpty()
 
-                          join fuel in getReturned
-                          on warehouse.ItemCode equals fuel.ItemCode
+                          join fuel in fuelRegisterOut
+                          on warehouse.ItemCode equals fuel.itemCode
                           into leftJ5
                           from fuel in leftJ5.DefaultIfEmpty()
 
@@ -1299,7 +1299,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                              total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
                              total.Sum(x => x.moveorder.QuantityOrdered != null ? x.moveorder.QuantityOrdered : 0) -
-                             total.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)
+                             total.Sum(x => x.fuel.Quantity.Value)
                               
                           });
 
@@ -1396,7 +1396,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             {
                 itemCode = fr.Key.ItemCode,
                 WarehouseId = fr.Key.Warehouse_ReceivingId,
-                Quantity = fr.Sum(fr => fr.Liters.Value)
+                Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
             });
 
@@ -1454,7 +1454,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                     UnitPrice = Math.Round(x.Sum(x => x.warehouse.UnitPrice) * (x.First().warehouse.ActualGood + x.Sum(x => x.returned.ReturnQuantity) - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity)),2),
                                     ActualGood = x.First().warehouse.ActualGood + (x.Sum(x => x.returned.ReturnQuantity) 
                                     - x.Sum(x => x.moveorder.Quantity) - x.Sum(x => x.issue.Quantity) - x.Sum(x => x.borrow.Quantity) -
-                                    x.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)),
+                                    x.Sum(x => x.fuel.Quantity.Value)),
                                   
                                 });
 
@@ -1610,14 +1610,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                          TotalIssue = total.Sum(x => x.issue.Quantity),
                                          TotalBorrowed = total.Sum(x => x.borrowed.Quantity),
                                          TotalReturned = total.Sum(x => x.returned.ReturnQuantity),
-                                         TotalFuelRegister = total.Sum(x => x.fuel.Quantity),
+                                         TotalFuelRegister = total.Sum(x => x.fuel.Quantity.Value),
                                          Ending = (total.Sum(x => x.receipt.Quantity) + total.Sum(x => x.receiveIn.Quantity) + total.Sum(x => x.returned.ReturnQuantity)) - 
-                                         (total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity) + total.Sum(x => x.fuel.Quantity)),
+                                         (total.Sum(x => x.borrowed.Quantity) + total.Sum(x => x.moveorder.QuantityOrdered) + total.Sum(x => x.issue.Quantity) + total.Sum(x => x.fuel.Quantity.Value)),
                                          UnitCost = total.Sum(x => x.unit.UnitPrice) ,
                                          Amount =  total.Sum(x => x.unit.TotalUnitPrice),
                                          CurrentStock = total.Sum(x => x.SOH.SOH),
                                          PurchaseOrder = total.Sum(x => x.receiveInPlus.Quantity) + total.Sum(x => x.receiptInPlus.Quantity) + total.Sum(x => x.returnedPlus.ReturnQuantity),
-                                         OtherPlus = total.Sum(x => x.moverorderPlus.QuantityOrdered) + total.Sum(x => x.issuePlus.Quantity) + total.Sum(x => x.borrowedPlus.Quantity) + total.Sum(x => x.fuelPlus.Quantity),
+                                         OtherPlus = total.Sum(x => x.moverorderPlus.QuantityOrdered) + total.Sum(x => x.issuePlus.Quantity) + total.Sum(x => x.borrowedPlus.Quantity) + total.Sum(x => x.fuelPlus.Quantity.Value),
 
                                      });
 
