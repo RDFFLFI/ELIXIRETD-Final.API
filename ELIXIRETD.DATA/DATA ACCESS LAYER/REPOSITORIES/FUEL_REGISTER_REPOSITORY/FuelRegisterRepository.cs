@@ -519,7 +519,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
         {
             const string forApproval = "For Approval";
             const string approved = "Approved";
-            const string forTransacted = "For Transacted";
+            const string forTransacted = "For Transaction";
             const string transacted = "Transacted";
             const string rejected = "Rejected";
 
@@ -592,7 +592,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 switch (Status)
                 {
                     case forApproval:
-                        results = results.Where(r => r.Is_Approve == false);
+                        results = results.Where(r => r.Is_Approve == false && r.Is_Reject == false);
                         break;
 
                     case approved:
@@ -600,7 +600,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                         break;
 
                     case forTransacted:
-                        results = results.Where(r => r.Is_Approve == true && r.Is_Transact == false);
+                        results = results.Where(r => r.Is_Approve == true && r.Is_Transact == null);
                         break;
 
                     case transacted:
@@ -653,6 +653,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             fuelExist.Department_Name  = fuel.Department_Name;
             fuelExist.Location_Code = fuel.Location_Code;
             fuelExist.Location_Name = fuel.Location_Name;
+            fuelExist.Account_Title_Code = fuel.Account_Title_Code;
+            fuelExist.Account_Title_Name = fuelExist.Account_Title_Name;
             fuelExist.EmpId = fuel.EmpId;
             fuelExist.Fullname = fuel.Fullname;
 

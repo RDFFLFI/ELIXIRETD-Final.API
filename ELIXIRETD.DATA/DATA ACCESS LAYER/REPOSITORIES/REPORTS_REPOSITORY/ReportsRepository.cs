@@ -907,169 +907,186 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
         public async Task<PagedList<DtoInventoryMovement>> InventoryMovementReports(UserParams userParams , string DateFrom , string PlusOne , string Search)
         {
             var DateToday = DateTime.Today;
+ 
+            var getWarehouseStock = _context.WarehouseReceived
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
 
-         
-            var getWarehouseStock = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                              .GroupBy(x => new
-                                                              {
-                                                                  x.ItemCode,
+                }).Select(x => new WarehouseInventory
+                {
+                    ItemCode = x.Key.ItemCode,
+                    ActualGood = x.Sum(x => x.ActualGood)
+                });
 
-                                                              }).Select(x => new WarehouseInventory
-                                                              {
-                                                                  ItemCode = x.Key.ItemCode,
-                                                                  ActualGood = x.Sum(x=> x.ActualGood)
-                                                              });
+            var getMoveOrdersOutByDate = _context.MoveOrders
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.IsPrepared == true)                                                      
+                .Where(x => x.PreparedDate.Value >= DateTime.Parse(DateFrom) && x.PreparedDate.Value <= DateTime.Parse(PlusOne))
+               .GroupBy(x => new
+               {
 
-            var getMoveOrdersOutByDate = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsPrepared == true)
-                                                            .Where(x => x.PreparedDate.Value >= DateTime.Parse(DateFrom) && x.PreparedDate.Value <= DateTime.Parse(PlusOne))
-                                                            .GroupBy(x => new
-                                                            {
+                   x.ItemCode,
 
-                                                                x.ItemCode,
+               }).Select(x => new MoveOrderInventory
+               {
 
-                                                            }).Select(x => new MoveOrderInventory
-                                                            {
+                   ItemCode = x.Key.ItemCode,
+                   QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
-                                                                ItemCode = x.Key.ItemCode,
-                                                                QuantityOrdered = x.Sum(x=> x.QuantityOrdered)
+               });
 
-                                                            });
+            var getMoveOrdersOutbyDatePlus = _context.MoveOrders
+                 .AsNoTracking()
+                 .Where(x => x.IsActive == true)
+                 .Where(x => x.IsPrepared == true)                                                               
+                 .Where(x => x.PreparedDate.Value >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate.Value <= DateToday)
+                 .GroupBy(x => new
+                 {
 
-            var getMoveOrdersOutbyDatePlus = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                                .Where(x => x.IsPrepared == true)
-                                                                .Where(x => x.PreparedDate.Value >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate.Value <= DateToday)
-                                                                .GroupBy(x => new
-                                                                {
+                     x.ItemCode,
 
-                                                                    x.ItemCode,
+                 }).Select(x => new MoveOrderInventory
+                 {
 
-                                                                }).Select(x => new MoveOrderInventory
-                                                                {
+                     ItemCode = x.Key.ItemCode,
+                     QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
-                                                                    ItemCode = x.Key.ItemCode,
-                                                                    QuantityOrdered = x.Sum(x => x.QuantityOrdered)
-
-                                                                });
-
-
-            var getIssueOutByDate = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                                     .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(PlusOne))
-                                                                     .GroupBy(x => new
-                                                                     {
-                                                                         x.ItemCode,
-
-                                                                     }).Select(x => new DtoMiscIssue
-                                                                     {
-
-                                                                         ItemCode = x.Key.ItemCode,
-                                                                         Quantity = x.Sum(x => x.Quantity)
-
-                                                                     });
-
-            var getIssueOutByDatePlus = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                                         .Where(x => x.PreparedDate >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate <= (DateToday))
-                                                                         .GroupBy(x => new
-                                                                         {
-
-                                                                             x.ItemCode,
-
-                                                                         }).Select(x => new DtoMiscIssue
-                                                                         {
-
-                                                                             ItemCode = x.Key.ItemCode,
-                                                                             Quantity = x.Sum(x => x.Quantity)
-
-                                                                         });
-
-            var getBorrowedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                    .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(PlusOne))
-                                                                    .GroupBy(x => new
-                                                                    {
-                                                                        x.ItemCode,
-
-                                                                    }).Select(x => new DtoBorrowedIssue
-                                                                    {
-                                                                        ItemCode = x.Key.ItemCode,
-                                                                        Quantity = x.Sum(x => x.Quantity)
+                 });
 
 
-                                                                    });
+            var getIssueOutByDate = _context.MiscellaneousIssueDetail
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+
+                }).Select(x => new DtoMiscIssue
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
+
+                });
+
+            var getIssueOutByDatePlus = _context.MiscellaneousIssueDetail
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.PreparedDate >= DateTime.Parse(PlusOne).AddDays(1) && x.PreparedDate <= (DateToday))
+                .GroupBy(x => new
+                {
+
+                    x.ItemCode,
+
+                }).Select(x => new DtoMiscIssue
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
+
+                });
+
+            var getBorrowedOutByDate = _context.BorrowedIssueDetails
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+
+                }).Select(x => new DtoBorrowedIssue
+                {
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
+
+                });
 
 
-            var getBorrowedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                  .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne).AddDays(1)
-                                                                  && x.BorrowedDate <= (DateToday))
-                                                                  .GroupBy(x => new
-                                                                  {
-                                                                      x.ItemCode,
+            var getBorrowedOutByDatePlus = _context.BorrowedIssueDetails
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)                                                               
+                .Where(x => x.BorrowedDate >= DateTime.Parse(PlusOne).AddDays(1)
+                 && x.BorrowedDate <= (DateToday))
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
 
-                                                                  }).Select(x => new DtoBorrowedIssue
-                                                                  {
-                                                                      ItemCode = x.Key.ItemCode,
-                                                                      Quantity = x.Sum(x => x.Quantity)
+                }).Select(x => new DtoBorrowedIssue
+                {
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
 
-                                                                  });
-
-
-            var consumed = _context.BorrowedConsumes.Where(x => x.IsActive)
-                                           .GroupBy(x => new
-                                           {
-                                               x.ItemCode,
-                                               x.BorrowedItemPkey
-
-                                           }).Select(x => new ItemStocksDto
-                                           {
-                                               ItemCode = x.Key.ItemCode,
-                                               BorrowedItemPkey = x.Key.BorrowedItemPkey,
-                                               Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
-
-                                           });
+                });
 
 
 
+            var consumed = _context.BorrowedConsumes
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+                    x.BorrowedItemPkey
 
-            var getReturnedOutByDate = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                       .Where(x => x.IsReturned == true)
-                                                                       .Where(x => x.IsApprovedReturned == true)
-                                                                       .GroupJoin(consumed, returned => returned.Id , consume => consume.BorrowedItemPkey , (returned , consume) => new { returned, consume})
-                                                                       .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.returned , consume })
-                                                                       .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(DateFrom) 
-                                                                       && x.returned.IsApprovedReturnedDate.Value <= DateTime.Parse(PlusOne))
-                                                                       .GroupBy(x => new
-                                                                       {
-                                                                           x.returned.ItemCode,
+                }).Select(x => new ItemStocksDto
+                {
+                    ItemCode = x.Key.ItemCode,
+                    BorrowedItemPkey = x.Key.BorrowedItemPkey,
+                    Consume = x.Sum(x => x.Consume != null ? x.Consume : 0)
 
-                                                                       }).Select(x => new DtoBorrowedIssue
-                                                                       {
+                });
 
-                                                                           ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity =x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
-                                                                           
-                                                                       });
+            var getReturnedOutByDate = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.IsReturned == true)
+                .Where(x => x.IsApprovedReturned == true)
+                .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
+                .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })
+                .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(DateFrom)
+                 && x.returned.IsApprovedReturnedDate.Value <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+                    x.returned.ItemCode,
 
+                }).Select(x => new DtoBorrowedIssue
+                {
 
+                    ItemCode = x.Key.ItemCode,
+                    ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
 
-            var getReturnedOutByDatePlus = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                                        .Where(x => x.IsReturned == true)
-                                                                        .Where(x => x.IsApprovedReturned == true)
-                                                                        .GroupJoin(consumed, returned => returned.Id , consume => consume.BorrowedItemPkey , (returned , consume) => new { returned, consume})
-                                                                        .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.returned , consume })
-                                                                        .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(PlusOne).AddDays(1) 
-                                                                        && x.returned.IsApprovedReturnedDate.Value <= (DateToday))
-                                                                        .GroupBy(x => new
-                                                                        {
-                                                                            x.returned.ItemCode,
+                });
 
-                                                                        }).Select(x => new DtoBorrowedIssue
-                                                                        {
+            var getReturnedOutByDatePlus = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .Where(x => x.IsActive == true)                                                                    
+                .Where(x => x.IsReturned == true)
+                .Where(x => x.IsApprovedReturned == true)
+                .GroupJoin(consumed, returned => returned.Id , consume => consume.BorrowedItemPkey , (returned , consume) => new { returned, consume})
+                .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.returned , consume })
+                .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(PlusOne).AddDays(1)
+                 && x.returned.IsApprovedReturnedDate.Value <= (DateToday))
+                 .GroupBy(x => new
+                 {
+                     x.returned.ItemCode,
 
-                                                                           ItemCode = x.Key.ItemCode,
-                                                                           ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
+                 }).Select(x => new DtoBorrowedIssue
+                 {
 
-                                                                        });
+                     ItemCode = x.Key.ItemCode,
+                     ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
+
+                 });
 
             var fuelRegisterByDate = _context.FuelRegisters
+                .AsNoTracking()
                 .Where(fr => fr.Is_Active == true)
                 .Where(fr => fr.Is_Approve == false)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
@@ -1086,7 +1103,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
 
             var fuelRegisterByDatePlus = _context.FuelRegisters
+                .AsNoTrackingWithIdentityResolution()
                 .Include(m => m.Material)
+                .AsSplitQuery()
                 .Where(fr => fr.Is_Active == true)
                 .Where(fr => fr.Is_Approve == false)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(PlusOne).AddDays(1).Date && x.Created_At.Date <= (DateToday).Date)
@@ -1100,137 +1119,153 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                       Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                 });
+ 
+            var getReceiveIn = _context.WarehouseReceived
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)                                                        
+                .Where(x => x.TransactionType == "Receiving")                                                    
+                .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+
+                }).Select(x => new DtoReceiveIn
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.ActualGood)
+
+                });
+
+            var getReceiveInPlus = _context.WarehouseReceived
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)                                                       
+                .Where(x => x.TransactionType == "Receiving")                                                      
+                .Where(x => x.ActualReceivingDate >= DateTime.Parse(PlusOne).AddDays(1) && x.ActualReceivingDate <= DateToday)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+
+                }).Select(x => new DtoReceiveIn
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.ActualGood)
+
+                });
+
+            var getReceiptIn = _context.WarehouseReceived
+                .AsNoTracking() 
+                .Where(x => x.IsActive == true)
+                .Where(x => x.TransactionType == "MiscellaneousReceipt")
+                .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+
+                    x.ItemCode,
+
+                }).Select(x => new DtoRecieptIn
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.ActualGood)
+
+                });
 
 
+            var getReceiptInPlus = _context.WarehouseReceived.AsNoTracking()
+                .AsNoTracking()
+                .Where(x => x.IsActive == true  )
+                .Where(x => x.TransactionType == "MiscellaneousReceipt")
+                .Where(x => x.ActualReceivingDate >= DateTime.Parse(PlusOne).AddDays(1) && x.ActualReceivingDate <= DateToday)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
+
+                }).Select(x => new DtoRecieptIn
+                {
+
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.ActualGood)
+
+                });
 
 
-            var getReceiveIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                         .Where(x => x.TransactionType == "Receiving")
-                                                         .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
-                                                         .GroupBy(x => new
-                                                         {
-                                                             x.ItemCode,
+            var getMoveOrderOut = _context.MoveOrders
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)                                                     
+                .Where(x => x.IsPrepared == true)
+                .GroupBy(x => new
+                {
 
-                                                         }).Select(x => new DtoReceiveIn
-                                                         {
+                    x.ItemCode,
 
-                                                             ItemCode = x.Key.ItemCode,
-                                                             Quantity = x.Sum(x => x.ActualGood)
+                }).Select(x => new MoveOrderInventory
+                {
+                    ItemCode = x.Key.ItemCode,
+                    QuantityOrdered = x.Sum(x => x.QuantityOrdered)
 
-                                                         });
-
-            var getReceiveInPlus = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                        .Where(x => x.TransactionType == "Receiving")
-                                                        .Where(x => x.ActualReceivingDate >= DateTime.Parse(PlusOne).AddDays(1) && x.ActualReceivingDate <= DateToday)
-                                                        .GroupBy(x => new
-                                                        {
-                                                            x.ItemCode,
-
-                                                        }).Select(x => new DtoReceiveIn
-                                                        {
-
-                                                            ItemCode = x.Key.ItemCode,
-                                                            Quantity = x.Sum(x => x.ActualGood)
-
-                                                        });
-
-            var getReceiptIn = _context.WarehouseReceived.Where(x => x.IsActive == true)
-                                                         .Where(x => x.TransactionType == "MiscellaneousReceipt")
-                                                             .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
-                                                             .GroupBy(x => new
-                                                             {
-                           
-                                                                 x.ItemCode,
-
-                                                             }).Select(x => new DtoRecieptIn
-                                                             {
-
-                                                                 ItemCode = x.Key.ItemCode,
-                                                                 Quantity = x.Sum(x => x.ActualGood)
-
-                                                             });
+                });
 
 
-            var getReceiptInPlus = _context.WarehouseReceived.Where(x => x.IsActive == true  )
-                                                            .Where(x => x.TransactionType == "MiscellaneousReceipt")
-                                                            .Where(x => x.ActualReceivingDate >= DateTime.Parse(PlusOne).AddDays(1) && x.ActualReceivingDate <= DateToday)
-                                                            .GroupBy(x => new
-                                                            {
-                                                                x.ItemCode,
+            var getIssueOut = _context.MiscellaneousIssueDetail
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .GroupBy(x => new
+                {
 
-                                                            }).Select(x => new DtoRecieptIn
-                                                            {
+                    x.ItemCode
 
-                                                                ItemCode = x.Key.ItemCode,
-                                                                Quantity = x.Sum(x => x.ActualGood)
+                }).Select(x => new DtoMiscIssue
+                {
 
-                                                            });
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
 
-
-            var getMoveOrderOut = _context.MoveOrders.Where(x => x.IsActive == true)
-                                                     .Where(x => x.IsPrepared == true)
-                                                     .GroupBy(x => new
-                                                     {
-
-                                                         x.ItemCode,
-
-                                                     }).Select(x => new MoveOrderInventory
-                                                     {
-                                                         ItemCode = x.Key.ItemCode,
-                                                         QuantityOrdered = x.Sum(x => x.QuantityOrdered)
-
-                                                     });
+                });
 
 
-            var getIssueOut = _context.MiscellaneousIssueDetail.Where(x => x.IsActive == true)
-                                                 .GroupBy(x => new
-                                                 {
+            var getBorrowedOut = _context.BorrowedIssueDetails
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
+                .GroupBy(x => new
+                {
+                    x.ItemCode,
 
-                                                     x.ItemCode
+                }).Select(x => new DtoBorrowedIssue
+                {
 
-                                                 }).Select(x => new DtoMiscIssue
-                                                 {
+                    ItemCode = x.Key.ItemCode,
+                    Quantity = x.Sum(x => x.Quantity)
 
-                                                     ItemCode = x.Key.ItemCode,
-                                                     Quantity = x.Sum(x => x.Quantity)
+                });
 
-                                                 });
+            var getReturned = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .Where(x => x.IsActive == true)                                                           
+                .Where(x => x.IsReturned == true)                                                           
+                .Where(x => x.IsApprovedReturned == true)                                                            
+                .GroupJoin(consumed, returned => returned.Id , consume => consume.BorrowedItemPkey , (returned , consume) => new { returned, consume})
+                .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.returned , consume })
+                .GroupBy(x => new
+                {
 
+                    x.returned.ItemCode,
 
-            var getBorrowedOut = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                              .GroupBy(x => new
-                                                              {
-                                                                 x.ItemCode,
+                }).Select(x => new DtoBorrowedIssue
+                {
 
-                                                              }).Select(x => new DtoBorrowedIssue
-                                                              {
+                    ItemCode = x.Key.ItemCode,
+                    ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
 
-                                                                  ItemCode = x.Key.ItemCode,
-                                                                  Quantity = x.Sum(x => x.Quantity)
-
-                                                              });
-
-            var getReturned = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsReturned == true)
-                                                            .Where(x => x.IsApprovedReturned == true)
-                                                            .GroupJoin(consumed, returned => returned.Id , consume => consume.BorrowedItemPkey , (returned , consume) => new { returned, consume})
-                                                            .SelectMany(x => x.consume.DefaultIfEmpty() , (x , consume) => new {x.returned , consume })
-                                                             .GroupBy(x => new
-                                                             {
-
-                                                                 x.returned.ItemCode,
-
-                                                             }).Select(x => new DtoBorrowedIssue
-                                                             {
-
-                                                                 ItemCode = x.Key.ItemCode,
-                                                                 ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume)
-
-                                                             });
+                });
 
 
             var fuelRegisterOut = _context.FuelRegisters
+               .AsNoTrackingWithIdentityResolution()
                .Include(m => m.Material)
+               .AsSplitQuery()
                .Where(fr => fr.Is_Active == true)
                .Where(fr => fr.Is_Approve == false)
                .GroupBy(fr => new
@@ -1304,6 +1339,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                           });
 
             var wareHouseUnitCost = _context.WarehouseReceived
+                .AsNoTracking()
                 .Where(x => x.IsActive == true)
                 .Where(x => x.ActualReceivingDate >= DateTime.Parse(DateFrom) && x.ActualReceivingDate <= DateTime.Parse(PlusOne))
                 .Select(x => new
@@ -1315,6 +1351,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
             var moveOrderUnitCost = _context.MoveOrders
+                .AsNoTracking()
                  .Where(x => x.IsActive == true)
                  .Where(x => x.IsPrepared == true)
                  .Where(x => x.PreparedDate.Value >= DateTime.Parse(DateFrom) && x.PreparedDate.Value <= DateTime.Parse(PlusOne))
@@ -1329,6 +1366,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                  });
 
             var issueUnitCost = _context.MiscellaneousIssueDetail
+                .AsNoTracking()
                 .Where(x => x.IsActive == true)
                 .Where(x => x.PreparedDate >= DateTime.Parse(DateFrom) && x.PreparedDate <= DateTime.Parse(PlusOne))
                 .GroupBy(x => new
@@ -1345,45 +1383,53 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
 
-            var borrowedUnitCost = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
+            var borrowedUnitCost = _context.BorrowedIssueDetails
+                .AsNoTracking()
+                .Where(x => x.IsActive == true)
                  .Where(x => x.BorrowedDate >= DateTime.Parse(DateFrom) && x.BorrowedDate <= DateTime.Parse(PlusOne))
-                                                              .GroupBy(x => new
-                                                              {
-                                                                  x.WarehouseId,
-                                                                  x.ItemCode,
+                 .GroupBy(x => new
+                 {
+                     x.WarehouseId,
+                     x.ItemCode,
 
-                                                              }).Select(x => new
-                                                              {
-                                                                  x.Key.WarehouseId,
-                                                                  x.Key.ItemCode,
-                                                                  Quantity = x.Sum(x => x.Quantity),
-
-
-                                                              });
+                 }).Select(x => new
+                 {
+                     x.Key.WarehouseId,
+                     x.Key.ItemCode,
+                     Quantity = x.Sum(x => x.Quantity),
 
 
-            var returnUnitCost = _context.BorrowedIssueDetails.Where(x => x.IsActive == true)
-                                                            .Where(x => x.IsReturned == true)
-                                                            .Where(x => x.IsApprovedReturned == true)
-                                                            .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })
-                                                            .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })
-                                                             .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(DateFrom)
-                                                                       && x.returned.IsApprovedReturnedDate.Value <= DateTime.Parse(PlusOne))
-                                                             .GroupBy(x => new
-                                                             {
-                                                                 x.returned.WarehouseId,
-                                                                 x.returned.ItemCode,
+                 });
 
-                                                             }).Select(x => new 
-                                                             {
 
-                                                                 x.Key.WarehouseId,
-                                                                 x.Key.ItemCode,
-                                                                 ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume),
+            var returnUnitCost = _context.BorrowedIssueDetails
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .Where(x => x.IsActive == true)
+                .Where(x => x.IsReturned == true)                                                           
+                .Where(x => x.IsApprovedReturned == true)                                                            
+                .GroupJoin(consumed, returned => returned.Id, consume => consume.BorrowedItemPkey, (returned, consume) => new { returned, consume })                                                         
+                .SelectMany(x => x.consume.DefaultIfEmpty(), (x, consume) => new { x.returned, consume })                                                            
+                .Where(x => x.returned.IsApprovedReturnedDate.Value >= DateTime.Parse(DateFrom)
+                        && x.returned.IsApprovedReturnedDate.Value <= DateTime.Parse(PlusOne))
+                .GroupBy(x => new
+                {
+                    x.returned.WarehouseId,
+                    x.returned.ItemCode,
 
-                                                             });
+                }).Select(x => new
+                {
+
+                    x.Key.WarehouseId,
+                    x.Key.ItemCode,
+                    ReturnQuantity = x.Sum(x => x.returned.Quantity) - x.Sum(x => x.consume.Consume),
+
+                });
+
             var fuelRegisterCost = _context.FuelRegisters
+             .AsNoTrackingWithIdentityResolution()
              .Include(m => m.Material)
+             .AsSplitQuery()
              .Where(fr => fr.Is_Active == true)
              .Where(fr => fr.Is_Approve == false)
              .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).AddDays(1).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
@@ -1399,9 +1445,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
             });
-
-
-
 
             var getUnitPrice = (from warehouse in wareHouseUnitCost
                                 join moveorder in moveOrderUnitCost
@@ -1568,8 +1611,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                                      on material.ItemCode equals fuelPlus.itemCode
                                      into leftJ16
                                      from fuelPlus in leftJ16.DefaultIfEmpty()
-
-
+            
                                      group new
                                      {
 
@@ -1628,7 +1670,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 || Convert.ToString(x.ItemDescription).ToLower().Contains(Search.Trim().ToLower()));
             }
 
-            movementInventory = movementInventory.OrderBy(x => x.ItemCode);
+            movementInventory = movementInventory
+                .AsNoTrackingWithIdentityResolution()
+                .AsSplitQuery()
+                .OrderBy(x => x.ItemCode);
 
  
             return await PagedList<DtoInventoryMovement>.CreateAsync(movementInventory, userParams.PageNumber, userParams.PageSize);
@@ -1943,7 +1988,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     ItemDescription = x.Material.ItemDescription,
                     Uom = x.Material.Uom.UomCode,
                     Category = "",
-                    Quantity = x.Liters,
+                    Quantity = x.Liters != null ? x.Liters : 0,
                     UnitCost = x.Warehouse_Receiving.UnitPrice,
                     LineAmount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
                     Source = Convert.ToString(x.Id),
@@ -1959,7 +2004,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     LocationCode = x.Location_Code,
                     LocationName = x.Location_Name,
                     AccountTitleCode = x.Account_Title_Code,
-                    AccountTitle = x.Account_Title_Name,
+                    AccountTitle = x.Account_Title_Code,
                     EmpId = x.EmpId,
                     Fullname = x.Fullname,
                     AssetTag = x.Asset,
