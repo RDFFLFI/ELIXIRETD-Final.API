@@ -765,7 +765,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Id = r.Id,
                     Source = r.Source,
                     Plate_No = r.Plate_No,
-                    Driver = $"{r.User.EmpId}:{r.User.FullName}",
+                    Driver = r.User.FullName,
                     Item_Code = r.Material.ItemCode,
                     Item_Description = r.Material.ItemDescription,
                     Uom = r.Material.Uom.UomCode,
@@ -799,6 +799,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 results = results
                     .Where(r => r.Transact_At.Value.Date >= Convert.ToDateTime(DateFrom).Date && r.Transact_At.Value.Date <= Convert.ToDateTime(DateTo).Date);
             }
+
+            if (!string.IsNullOrEmpty(Search))
+                results = results.Where(r => r.Driver.Contains(Search) && r.Id.ToString().Contains(Search));
 
             return await PagedList<FuelRegisterReportsDto>.CreateAsync(results, userParams.PageNumber, userParams.PageSize);
         }
