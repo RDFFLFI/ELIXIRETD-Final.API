@@ -162,5 +162,15 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
 
             return Ok("Successfully cancel");
         }
+
+        [HttpPut("view/{id}")]
+        public async Task<IActionResult> GetForApprovalFuel([FromQuery] int id)
+        {
+
+
+         var fuel =   await _unitofwork.FuelRegister.GetForApprovalFuel(id);
+
+            return Ok("Successfully cancel");
+        }
     }
 }

@@ -33,6 +33,8 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE
 
         Task<IReadOnlyList<GetDriverUserDto>> GetDriverUser();
 
+        Task<IReadOnlyList<GetForApprovalFuelDto>> GetForApprovalFuel(int id);
+
 
 
     }

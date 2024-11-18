@@ -65,16 +65,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 fuelRegisterExist.Modified_By = fuel.Modified_By;
                 fuelRegisterExist.Updated_At = DateTime.Now;
                 fuelRegisterExist.Remarks = fuel.Remarks;
-                fuelRegisterExist.Company_Code = fuel.Company_Code;
-                fuelRegisterExist.Company_Name = fuel.Company_Name;
-                fuelRegisterExist.Department_Code = fuel.Department_Code;
-                fuelRegisterExist.Department_Name = fuel.Department_Name;
-                fuelRegisterExist.Location_Code = fuel.Location_Code;
-                fuelRegisterExist.Location_Name = fuel.Location_Name;
-                fuelRegisterExist.Account_Title_Code = fuel.Account_Title_Code;
-                fuelRegisterExist.Account_Title_Name = 
-                fuelRegisterExist.EmpId = fuel.EmpId;
-                fuelRegisterExist.Fullname = fuel.Fullname;
 
             }
             else
@@ -91,20 +81,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Odometer = fuel.Odometer,
                     Added_By = fuel.Added_By,
                     Remarks = fuel.Remarks,
-                    Approve_By = fuel.Approve_By,
-                    Transact_By = fuel.Approve_By,
-                    Transact_At = DateTime.Now,
-                    Approve_At = DateTime.Now,
-                    Is_Approve = true,
-                    Is_Transact = true,
-                    Company_Code = fuel.Company_Code,
-                    Company_Name = fuel.Company_Name,
-                    Department_Code = fuel.Department_Code,
-                    Department_Name = fuel.Department_Name,         
-                    Location_Code = fuel.Location_Code,
-                    Location_Name = fuel.Location_Name,
-                    Account_Title_Code = fuel.Account_Title_Code,
-                    Account_Title_Name = fuel.Account_Title_Name,
+                    Is_Approve = false,
                     
                 };
 
@@ -665,6 +642,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var fuelExist = await _context.FuelRegisters
                 .FirstOrDefaultAsync(f => f.Id == fuel.Id);
 
+            fuelExist.Transact_At = DateTime.Now;
+            fuelExist.Transact_By = fuel.Transact_By;
             fuelExist.Approve_At = DateTime.Now;
             fuelExist.Approve_By = fuel.Approve_By;
             fuelExist.Is_Approve = true;
@@ -750,6 +729,39 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             return user;
 
+        }
+
+        public async Task<IReadOnlyList<GetForApprovalFuelDto>> GetForApprovalFuel(int id)
+        {
+            var fuel = await _context.FuelRegisters
+                .Where(f => f.Id == id && f.Is_Approve == false)
+                .Select(f => new GetForApprovalFuelDto
+                {
+                    Id = f.Id,
+                    Source = f.Source,
+                    UserId = f.UserId.Value,
+                    Driver = f.User.FullName,
+                    MaterialId = f.MaterialId,
+                    Item_Code = f.Material.ItemCode,
+                    Item_Description = f.Material.ItemDescription,
+                    Uom = f.Material.Uom.UomCode,
+                    Item_Categories = f.Material.ItemCategory.ItemCategoryName,
+                    Warehouse_ReceivingId = f.Warehouse_ReceivingId,
+                    Unit_Cost = f.Warehouse_Receiving.UnitPrice,
+                    Liters = f.Liters.Value,
+                    Asset = f.Asset,
+                    Odometer = f.Odometer,
+                    Added_By = f.Added_By,
+                    Created_At = f.Created_At,
+                    Modified_By = f.Modified_By,
+                    Updated_At = f.Updated_At,
+                    Is_Approved = f.Is_Approve,
+                    
+
+
+                }).ToListAsync();
+
+            return fuel;
         }
     }
 }

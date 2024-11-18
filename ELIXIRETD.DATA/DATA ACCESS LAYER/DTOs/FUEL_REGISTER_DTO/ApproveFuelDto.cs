@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office.CoverPageProps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
     {
         public int Id {  get; set; }
         public string Approve_By { get; set; }
+        public string Transact_By { get; set; }
         public string Company_Code { get; set; }
         public string Company_Name { get; set; }
 
