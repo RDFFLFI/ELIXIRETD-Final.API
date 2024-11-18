@@ -2598,43 +2598,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
-                //var receivingConsol = _context.WarehouseReceived
-                //     .AsNoTracking()
-                //     .Join(userList, warehouse => warehouse.AddedBy , user => user.FullName, (warehouse, user) => new {warehouse, user })
-                //     .Where(x => x.warehouse.TransactionType == "Receiving" && x.warehouse.IsActive == true)
-                //     .Select(x => new GeneralLedgerReportDto
-                //     {
-
-                //         SyncId = x.warehouse.Id,
-                //         Transaction_Date = x.warehouse.ActualReceivingDate.Date,
-                //         Item_Code = x.warehouse.ItemCode, 
-                //         Description = x.warehouse.ItemDescription,
-                //         Uom = x.warehouse.Uom,
-                //         Category = "",
-                //         Quantity = x.warehouse.ActualGood,
-                //         Unit_Price = x.warehouse.UnitPrice,
-                //         Line_Amount = Math.Round(x.warehouse.UnitPrice * x.warehouse.ActualGood, 2),
-                //         Po = "N/a",
-                //         Reason = "",
-                //         Reference_No = x.warehouse.PoNumber,
-                //         Supplier = x.warehouse.Supplier,
-                //         Company_Code = "10",
-                //         Company_Name = "RDF Corporate Services",
-                //         Department_Code = "0010",
-                //         Department_Name = "Corporate Common",
-                //         Location_Code = "0001",
-                //         Location = "Head Office",
-                //         Account_Title_Code = "117701",
-                //         Account_Title_Name = "Materials & Supplies Inventory",
-                //         Asset = "",
-                //         Asset_Cip = "",
-                //         System = "ElixirETD_Receiver",
-                //         Service_Provider_Code = x.user.EmpId,
-                //         Service_Provider = x.user.FullName,
-
-
-                //     }).ToList();
-
 
             var moveOrderConsol = _context.TransactOrder
                 .AsNoTracking()
