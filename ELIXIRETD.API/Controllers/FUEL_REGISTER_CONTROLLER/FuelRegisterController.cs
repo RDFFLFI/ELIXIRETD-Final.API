@@ -19,7 +19,6 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             _unitofwork = unitofwork;
         }
 
-
         [HttpPost("create")]
         public async Task<IActionResult> CreateFuelRegister(CreateFuelRegisterDto fuel)
         {
@@ -79,7 +78,6 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
 
             return Ok(fuelResult);
         }
-
 
         [HttpPut("approve")]
         public async Task<IActionResult> ApproveFuel([FromBody]ApproveFuelDto[] fuel)
@@ -163,14 +161,12 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully cancel");
         }
 
-        [HttpPut("view/{id}")]
+        [HttpGet("view")]
         public async Task<IActionResult> GetForApprovalFuel([FromQuery] int id)
         {
+            var fuel = await _unitofwork.FuelRegister.GetForApprovalFuel(id);
 
-
-         var fuel =   await _unitofwork.FuelRegister.GetForApprovalFuel(id);
-
-            return Ok("Successfully cancel");
+            return Ok(fuel);
         }
     }
 }
