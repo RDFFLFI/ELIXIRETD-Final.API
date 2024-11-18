@@ -123,7 +123,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var getWarehouseStocks = _context.WarehouseReceived
                 .Where(x => x.IsActive == true)
                 .Where(x => x.ItemCode.Contains(diesel))
-                .Where(x =>FuelRegister  x.ItemCode.Contains(diesel))
+                .Where(x => x.ItemCode.Contains(diesel))
                  .GroupBy(x => new
                  {
 
