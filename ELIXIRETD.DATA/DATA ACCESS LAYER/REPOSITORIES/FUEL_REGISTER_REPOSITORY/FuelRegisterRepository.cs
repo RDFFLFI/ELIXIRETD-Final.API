@@ -65,6 +65,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 fuelRegisterExist.Modified_By = fuel.Modified_By;
                 fuelRegisterExist.Updated_At = DateTime.Now;
                 fuelRegisterExist.Remarks = fuel.Remarks;
+                fuelRegisterExist.Company_Code = fuel.Company_Code;
+                fuelRegisterExist.Company_Name = fuel.Company_Name;
+                fuelRegisterExist.Department_Code = fuel.Department_Code;
+                fuelRegisterExist.Department_Name = fuel.Department_Name;
+                fuelRegisterExist.Location_Code = fuel.Location_Code;
+                fuelRegisterExist.Location_Name = fuel.Location_Name;
+                fuelRegisterExist.EmpId = fuel.EmpId;
+                fuelRegisterExist.Fullname = fuel.Fullname;
+
 
             }
             else
@@ -82,6 +91,14 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Added_By = fuel.Added_By,
                     Remarks = fuel.Remarks,
                     Is_Approve = false,
+                    Company_Code = fuel.Company_Code,
+                    Company_Name = fuel.Company_Name,
+                    Department_Code = fuel.Department_Code,
+                    Department_Name = fuel.Department_Name,
+                    Location_Code = fuel.Location_Code,
+                    Location_Name = fuel.Location_Name,
+                    EmpId = fuel.EmpId,
+                    Fullname = fuel.Fullname    
                     
                 };
 
@@ -647,16 +664,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             fuelExist.Approve_At = DateTime.Now;
             fuelExist.Approve_By = fuel.Approve_By;
             fuelExist.Is_Approve = true;
-            fuelExist.Company_Code = fuel.Company_Code; 
-            fuelExist.Company_Name = fuel.Company_Name;
-            fuelExist.Department_Code = fuel.Department_Code;
-            fuelExist.Department_Name  = fuel.Department_Name;
-            fuelExist.Location_Code = fuel.Location_Code;
-            fuelExist.Location_Name = fuel.Location_Name;
-            fuelExist.Account_Title_Code = fuel.Account_Title_Code;
-            fuelExist.Account_Title_Name = fuelExist.Account_Title_Name;
-            fuelExist.EmpId = fuel.EmpId;
-            fuelExist.Fullname = fuel.Fullname;
 
             return true;
 
