@@ -16,7 +16,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE
 
         Task<IReadOnlyList<GetMaterialStockByWarehouseDto>> GetMaterialStockByWarehouse();
 
-        Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status , int ? UserId);
+        Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status , string UserId);
 
         Task<bool> ApproveFuel(ApproveFuelDto fuel);
 

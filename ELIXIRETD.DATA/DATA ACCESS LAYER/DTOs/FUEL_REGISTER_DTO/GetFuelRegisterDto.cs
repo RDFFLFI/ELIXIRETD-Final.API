@@ -14,8 +14,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
 
         public string Plate_No { get; set; }
 
-        public int  UserId { get; set; }
-        public string Driver { get; set; }
+        public string RequestorId { get; set; }
+        public string RequestorName { get; set; }
 
         public int? MaterialId { get; set; }
         public string Item_Code { get; set; }

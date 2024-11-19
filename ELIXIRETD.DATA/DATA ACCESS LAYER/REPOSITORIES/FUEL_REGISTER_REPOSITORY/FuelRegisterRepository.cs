@@ -56,7 +56,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             if (fuelRegisterExist is not null)
             {
-                fuelRegisterExist.UserId = fuel.UserId;
+                fuelRegisterExist.RequestorId = fuel.RequestorId;
+                fuelRegisterExist.RequestorName = fuel.RequestorName;
                 fuelRegisterExist.MaterialId = material.Id;
                 fuelRegisterExist.Warehouse_ReceivingId = fuel.Warehouse_ReceivingId;
                 fuelRegisterExist.Liters = fuel.Liters;
@@ -74,7 +75,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 fuelRegisterExist.EmpId = fuel.EmpId;
                 fuelRegisterExist.Fullname = fuel.Fullname;
 
-
             }
             else
             {
@@ -82,7 +82,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 var newFuelRegister = new FuelRegister
                 {
                     Source = "ELIXIR ETD",
-                    UserId = fuel.UserId,
+                    RequestorId = fuel.RequestorId,
+                    RequestorName = fuel.RequestorName, 
                     MaterialId = material.Id,
                     Warehouse_ReceivingId = fuel.Warehouse_ReceivingId,
                     Liters = fuel.Liters,
@@ -530,7 +531,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         }
 
-        public async Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status, int ? UserId)
+        public async Task<PagedList<GetFuelRegisterDto>> GetFuelRegister(UserParams userParams, string Search, string Status, string ? UserId)
         {
             const string forApproval = "For Approval";
             const string approved = "Approved";
@@ -542,7 +543,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var results =  _context.FuelRegisters
                 .Include(r => r.Material)
                 .ThenInclude(r => r.Uom)
-                .Include(x => x.User)
                 .Include(r => r.Material)
                 .ThenInclude(r => r.ItemCategory)
                 .Where(f => f.Is_Active)
@@ -550,9 +550,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 {
                     Id = f.Id,
                     Source = f.Source,
-                    //Plate_No = f.Plate_No,
-                    UserId = f.UserId.Value,
-                    Driver = f.User.FullName,
+                    RequestorId = f.RequestorId,
+                    RequestorName = f.RequestorName,
                     MaterialId = f.MaterialId,
                     Item_Code = f.Material.ItemCode,
                     Item_Description = f.Material.ItemDescription,
@@ -592,13 +591,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
 
             if (!string.IsNullOrEmpty(Search))
-                results = results.Where(r => r.Driver.Contains(Search)
+                results = results.Where(r => r.RequestorName.Contains(Search)
                 || r.Id.ToString().Contains(Search));
 
 
             if (UserId is not null)
             {
-                results = results.Where(r => r.UserId == UserId);
+                results = results.Where(r => r.RequestorName == UserId);
 
             }
 
@@ -746,8 +745,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 {
                     Id = f.Id,
                     Source = f.Source,
-                    UserId = f.UserId.Value,
-                    Driver = f.User.FullName,
                     MaterialId = f.MaterialId,
                     Item_Code = f.Material.ItemCode,
                     Item_Description = f.Material.ItemDescription,

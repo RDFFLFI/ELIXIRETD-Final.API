@@ -58,7 +58,7 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         }
 
         [HttpGet("page")]
-        public async Task<ActionResult<IEnumerable<GetFuelRegisterDto>>> GetFuelRegister([FromQuery] UserParams userParams, [FromQuery] string Search, [FromQuery]string Status, [FromQuery]int? UserId)
+        public async Task<ActionResult<IEnumerable<GetFuelRegisterDto>>> GetFuelRegister([FromQuery] UserParams userParams, [FromQuery] string Search, [FromQuery]string Status, [FromQuery]string UserId)
         {
 
             var fuel = await _unitofwork.FuelRegister.GetFuelRegister(userParams, Search, Status,UserId);

@@ -12,9 +12,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO.ConsolidationDto
 
         public string Source { get; set; }
 
-        public string Plate_No { get; set; }
-
-        public string Driver { get; set; }
+        public string RequestorId { get; set; }
+        public string RequestorName { get; set; }
 
         public string Item_Code { get; set; }
         public string Item_Description { get; set; }

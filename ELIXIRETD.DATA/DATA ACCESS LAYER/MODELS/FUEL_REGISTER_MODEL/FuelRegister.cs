@@ -10,8 +10,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
         public string Source { get; set; }
         public string Plate_No { get; set; }
 
-        public int ? UserId { get; set; }
-        public virtual User User { get; set; }
+        public string RequestorId { get; set; }
+        public string RequestorName { get; set; }
+
 
         public int MaterialId { get; set; }
         public virtual Material Material { get; set; }

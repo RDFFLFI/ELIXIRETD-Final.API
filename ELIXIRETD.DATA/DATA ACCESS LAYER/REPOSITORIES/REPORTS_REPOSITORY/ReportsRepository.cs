@@ -758,14 +758,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Include(m => m.Material)
                 .ThenInclude(id => id.ItemCategory)
                 .Include(w => w.Warehouse_Receiving)
-                .Include(w => w.User)
                 .Where(r => r.Is_Transact == true)
                 .Select(r => new FuelRegisterReportsDto
                 {
                     Id = r.Id,
                     Source = r.Source,
-                    Plate_No = r.Plate_No,
-                    Driver = r.User.FullName,
+                    RequestorId = r.RequestorId,
+                    RequestorName = r.RequestorName,
                     Item_Code = r.Material.ItemCode,
                     Item_Description = r.Material.ItemDescription,
                     Uom = r.Material.Uom.UomCode,
@@ -801,7 +800,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             }
 
             if (!string.IsNullOrEmpty(Search))
-                results = results.Where(r => r.Driver.Contains(Search) && r.Id.ToString().Contains(Search));
+                results = results.Where(r => r.RequestorName.Contains(Search) && r.Id.ToString().Contains(Search));
 
             return await PagedList<FuelRegisterReportsDto>.CreateAsync(results, userParams.PageNumber, userParams.PageSize);
         }
@@ -2877,7 +2876,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Service_Provider = x.Transact_By,
                     Reason = x.Remarks,
                     Reference_No = Convert.ToString(x.Id),
-                    Supplier = $"{x.User.EmpId}:{x.User.FullName}",
+                    Supplier = $"{x.RequestorId}:{x.RequestorName}",
                     Company_Code = x.Company_Code,
                     Company_Name = x.Company_Name,
                     Department_Code = x.Department_Code,
