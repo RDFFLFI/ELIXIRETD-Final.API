@@ -681,7 +681,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY
             var fuelRegister = _context.FuelRegisters
                 .Include(m => m.Material)
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Material.ItemCode.ToLower().Contains(search.Trim().ToLower()))
                 .GroupBy(fr => new
                 {

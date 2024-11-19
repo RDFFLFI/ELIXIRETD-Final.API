@@ -116,7 +116,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
          var fuelRegister = _context.FuelRegisters
         .Include(m => m.Material)
         .Where(fr => fr.Is_Active == true)
-        .Where(fr => fr.Is_Approve == false)
+        .Where(fr => fr.Is_Approve == true)
         .GroupBy(fr => new
         {
             fr.Material.ItemCode,
@@ -320,7 +320,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
             var fuelRegister = _context.FuelRegisters
                .Include(m => m.Material)
                .Where(fr => fr.Is_Active == true)
-               .Where(fr => fr.Is_Approve == false && fr.Material.ItemCode == itemcode)
+               .Where(fr => fr.Is_Approve == true && fr.Material.ItemCode == itemcode)
                .GroupBy(fr => new
                {
                    fr.Material.ItemCode,

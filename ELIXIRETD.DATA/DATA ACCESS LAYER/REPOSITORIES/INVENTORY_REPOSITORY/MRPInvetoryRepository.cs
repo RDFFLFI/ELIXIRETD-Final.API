@@ -227,7 +227,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
             var fuelRegister = _context.FuelRegisters
         .Include(m => m.Material)
         .Where(fr => fr.Is_Active == true)
-        .Where(fr => fr.Is_Approve == false)
+        .Where(fr => fr.Is_Approve == true)
         .GroupBy(fr => new
         {
             fr.Material.ItemCode,
@@ -621,7 +621,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
          var getfuelRegister = _context.FuelRegisters
         .Include(m => m.Material)
         .Where(fr => fr.Is_Active == true)
-        .Where(fr => fr.Is_Approve == false)
+        .Where(fr => fr.Is_Approve == true)
         .GroupBy(fr => new
         {
             fr.Material.ItemCode,
@@ -986,6 +986,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                              });
 
+          var fuelRegister = _context.FuelRegisters
+        .Include(m => m.Material)
+        .Where(fr => fr.Is_Active == true)
+        .Where(fr => fr.Is_Approve == true)
+        .GroupBy(fr => new
+        {
+            fr.Material.ItemCode,
+
+        }).Select(fr => new
+        {
+            itemCode = fr.Key.ItemCode,
+            Quantity = fr.Sum(fr => fr.Liters.Value)
+
+        });
+
+
 
             var getSOH = (from warehouse in getWarehouseStock
                           join reserve in getReserve
@@ -1008,6 +1024,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                           into leftJ4
                           from returned in leftJ4.DefaultIfEmpty()
 
+
+                          join fuel in fuelRegister
+                          on warehouse.ItemCode equals fuel.itemCode
+                          into leftJ5
+                          from fuel in leftJ5.DefaultIfEmpty()
+
                           group new
                           {
 
@@ -1016,6 +1038,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               issue,
                               borrowed,
                               returned,
+                              fuel
 
                           }
 
@@ -1034,7 +1057,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                              total.Sum(x => x.returned.ReturnQuantity != null ? x.returned.ReturnQuantity : 0) -
                              total.Sum(x => x.issue.Quantity != null ? x.issue.Quantity : 0) -
                              total.Sum(x => x.borrowed.Quantity != null ? x.borrowed.Quantity : 0) -
-                             total.Sum(x => x.reserve.QuantityOrdered != null ? x.reserve.QuantityOrdered : 0)
+                             total.Sum(x => x.reserve.QuantityOrdered != null ? x.reserve.QuantityOrdered : 0) -
+                             total.Sum(x => x.fuel.Quantity != null ? x.fuel.Quantity : 0)
                           });
 
 
@@ -1110,20 +1134,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
 
 
-            var fuelRegister = _context.FuelRegisters
-        .Include(m => m.Material)
-        .Where(fr => fr.Is_Active == true)
-        .Where(fr => fr.Is_Approve == false)
-        .GroupBy(fr => new
-        {
-            fr.Material.ItemCode,
 
-        }).Select(fr => new
-        {
-            itemCode = fr.Key.ItemCode,
-            Quantity = fr.Sum(fr => fr.Liters.Value)
-
-        });
 
 
 

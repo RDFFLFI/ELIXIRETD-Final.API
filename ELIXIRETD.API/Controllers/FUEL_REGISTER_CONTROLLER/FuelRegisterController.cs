@@ -83,7 +83,6 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         public async Task<IActionResult> ApproveFuel([FromBody]ApproveFuelDto[] fuel)
         {
 
-
             foreach(var item in fuel)
             {
                 var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(item.Id);
@@ -91,6 +90,7 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
                     return BadRequest("fuel not exist!");
 
                 item.Approve_By = User.Identity.Name;
+                item.Transact_By = User.Identity.Name;
 
                 await _unitofwork.FuelRegister.ApproveFuel(item);
 
@@ -104,7 +104,6 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         [HttpPut("reject")]
         public async Task<IActionResult> RejectFuel([FromBody] RejectFuelDto[] fuel)
         {
-
 
             foreach (var item in fuel)
             {

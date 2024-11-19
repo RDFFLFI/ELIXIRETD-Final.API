@@ -72,6 +72,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                 fuelRegisterExist.Department_Name = fuel.Department_Name;
                 fuelRegisterExist.Location_Code = fuel.Location_Code;
                 fuelRegisterExist.Location_Name = fuel.Location_Name;
+                fuelRegisterExist.Account_Title_Code = fuel.Account_Title_Code;
+                fuelRegisterExist.Account_Title_Name = fuel.Account_Title_Name;
                 fuelRegisterExist.EmpId = fuel.EmpId;
                 fuelRegisterExist.Fullname = fuel.Fullname;
 
@@ -98,6 +100,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
                     Department_Name = fuel.Department_Name,
                     Location_Code = fuel.Location_Code,
                     Location_Name = fuel.Location_Name,
+                    Account_Title_Code = fuel.Account_Title_Code,
+                    Account_Title_Name = fuel.Account_Title_Name,
                     EmpId = fuel.EmpId,
                     Fullname = fuel.Fullname    
                     
@@ -209,7 +213,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             var fuelRegister = _context.FuelRegisters
                 .Include(x => x.Material)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Is_Active == true)
                 .GroupBy(fr => fr.Material.ItemCode)
                 .Select(fr => new
@@ -660,6 +664,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
             fuelExist.Transact_At = DateTime.Now;
             fuelExist.Transact_By = fuel.Transact_By;
+            fuelExist.Is_Transact = true;
             fuelExist.Approve_At = DateTime.Now;
             fuelExist.Approve_By = fuel.Approve_By;
             fuelExist.Is_Approve = true;

@@ -987,7 +987,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var fuelRegister = _context.FuelRegisters
                 .Include(x => x.Material)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Is_Active == true)
                 .GroupBy(fr => fr.Material.ItemCode)
                 .Select(fr => new
@@ -1617,7 +1617,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
             var fuelRegister = await _context.FuelRegisters
                 .Include(x => x.Material)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Is_Active == true)
                 .Where(fr => fr.Warehouse_ReceivingId == id && fr.Material.ItemCode == itemcode)
                 .SumAsync(fr => fr.Liters.Value);
@@ -1766,7 +1766,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
             var fuelRegister = _context.FuelRegisters
                 .Include(m => m.Material)
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == false && fr.Material.ItemCode == itemCode)
+                .Where(fr => fr.Is_Approve == true && fr.Material.ItemCode == itemCode)
                 .GroupBy(fr => new
                 {
                     fr.Material.ItemCode,
@@ -1919,6 +1919,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
      var fuelRegister = _context.FuelRegisters
     .Include(m => m.Material)
     .Where(fr => fr.Is_Active == true)
+    .Where(fr => fr.Is_Approve)
     .GroupBy(fr => new
     {
         fr.Material.ItemCode,
@@ -3366,7 +3367,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                     Department_Code = x.moveOrders.moveOrders.moveOrders.DepartmentCode,
                     Department_Name = x.moveOrders.moveOrders.moveOrders.DepartmentName,
                     Location_Code = x.moveOrders.moveOrders.moveOrders.LocationCode,
-                    Location_Name = x.moveOrders.moveOrders.moveOrders.LocationName,
+                    Location_Name = x.moveOrders.moveOrders.moveOrders.LocationName, 
                     Major_Category_Name = x.moveOrders.material.ItemCategory.ItemCategoryName,
                     //Minor_Category_Name = x.moveOrders.material.
                 });

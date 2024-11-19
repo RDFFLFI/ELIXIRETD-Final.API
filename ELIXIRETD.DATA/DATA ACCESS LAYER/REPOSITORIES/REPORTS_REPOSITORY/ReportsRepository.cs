@@ -1090,7 +1090,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
             var fuelRegisterByDate = _context.FuelRegisters
                 .AsNoTracking()
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
                 .GroupBy(fr => new
                 {
@@ -1109,7 +1109,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 .Include(m => m.Material)
                 .AsSplitQuery()
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == false)
+                .Where(fr => fr.Is_Approve == true)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(PlusOne).AddDays(1).Date && x.Created_At.Date <= (DateToday).Date)
                 .GroupBy(fr => new
                 {
@@ -1269,7 +1269,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                .Include(m => m.Material)
                .AsSplitQuery()
                .Where(fr => fr.Is_Active == true)
-               .Where(fr => fr.Is_Approve == false)
+               .Where(fr => fr.Is_Approve == true)
                .GroupBy(fr => new
                {
                    fr.Material.ItemCode,
@@ -1433,7 +1433,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
              .Include(m => m.Material)
              .AsSplitQuery()
              .Where(fr => fr.Is_Active == true)
-             .Where(fr => fr.Is_Approve == false)
+             .Where(fr => fr.Is_Approve == true)
              .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).AddDays(1).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
             .GroupBy(fr => new
             {
