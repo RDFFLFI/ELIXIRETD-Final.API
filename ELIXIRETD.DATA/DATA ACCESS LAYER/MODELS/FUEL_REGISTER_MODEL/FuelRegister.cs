@@ -8,22 +8,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
     {
        
         public string Source { get; set; }
-        public string Plate_No { get; set; }
-
         public string RequestorId { get; set; }
         public string RequestorName { get; set; }
-
-
-        public int MaterialId { get; set; }
-        public virtual Material Material { get; set; }
-
-        public int? Warehouse_ReceivingId { get; set; }
-        public virtual Warehouse_Receiving Warehouse_Receiving { get; set; }
-
-        public decimal? Liters {  get; set; }
-        public string Asset { get; set; }
-
-        public decimal? Odometer { get; set; }
         public string Company_Code { get; set; }
         public string Company_Name { get; set; }
 
@@ -57,6 +43,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL
 
         public bool Is_Active { get; set; } = true;
         public string Remarks { get; set; }
+
+        public ICollection<FuelRegisterDetail> FuelRegisterDetails { get; set; }
 
     }
 }

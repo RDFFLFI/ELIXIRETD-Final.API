@@ -334,10 +334,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                              });
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                 .Include(m => m.Material)
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == true)
                 .GroupBy(fr => new
                 {
                     fr.Material.ItemCode,
@@ -345,7 +344,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 }).Select(fr => new
                 {
                     itemCode = fr.Key.ItemCode,
-                    Quantity = fr.Sum(fr => fr.Liters)
+                    Quantity = fr.Sum(fr => fr.Liters.Value)
 
                 });
 
@@ -364,7 +363,6 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                               .GroupJoin(fuelRegister, warehouse => warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode , fuel => fuel.itemCode, (warehouse,fuel) => new {warehouse,fuel })
                               .SelectMany(x => x.fuel.DefaultIfEmpty() , (x, fuel) => new
                               {
-                                  //warehouseId = x.warehouse.warehouse.warehouse.warehouse.WarehouseId,
                                   itemcode = x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemCode,
                                   itemdescription = x.warehouse.warehouse.warehouse.warehouse.warehouse.ItemDescription,
                                   uom = x.warehouse.warehouse.warehouse.warehouse.warehouse.Uom,
@@ -387,7 +385,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   Uom = total.First().uom,
                                   RemainingStocks = total.Sum(x => x.WarehouseActualGood) + total.Sum(x => x.Borrowedreturn)
                                   - total.Sum(x => x.ReserveOut) - total.Sum(x => x.IssueOut) - total.Sum(x => x.BorrowedOut) -
-                                  total.Sum(x => x.fuel.Value),
+                                  total.Sum(x => x.fuel),
 
                               }).Where(x => x.RemainingStocks  >= 1 );
 
@@ -595,10 +593,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                                                              });
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                 .Include(m => m.Material)
-                .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == true && fr.Material.ItemCode == itemcode)
+                .Include(m => m.Warehouse_Receiving)
+                .Where(fr => fr.Is_Active == true && fr.Material.ItemCode == itemcode)
                 .GroupBy(fr => new
                 {
                     fr.Material.ItemCode,
@@ -608,7 +606,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                 {
                     itemCode = fr.Key.ItemCode,
                     WarehouseId = fr.Key.Warehouse_ReceivingId,
-                    Quantity = fr.Sum(fr => fr.Liters)
+                    Quantity = fr.Sum(fr => fr.Liters.Value)
 
                 });
 
@@ -632,7 +630,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   IssueOut = x.warehouse.issue.Out != null ? x.warehouse.issue.Out : 0,
                                   BorrowedOut = x.warehouse.warehouse.warehouse.borrowed.Out != null ? x.warehouse.warehouse.warehouse.borrowed.Out : 0,
                                   Borrowedreturn = x.warehouse.warehouse.returned.In != null ? x.warehouse.warehouse.returned.In : 0,
-                                  fuel = fuel.WarehouseId != null ? fuel.WarehouseId : 0,
+                                  fuel = fuel.Quantity != null ? fuel.Quantity : 0,
                                   UnitCost = x.warehouse.warehouse.warehouse.warehouse.warehouse.UnitPrice
 
                               }).GroupBy(x => new
@@ -653,7 +651,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
                                   ItemCode = total.Key.itemcode,
                                   RemainingStocks = total.Key.WarehouseActualGood + total.Key.Borrowedreturn 
                                   - total.Key.MoveOrderOut - total.Key.IssueOut - total.Key.BorrowedOut
-                                  - total.Key.fuel.Value,
+                                  - total.Key.fuel,
                                   ReceivingDate = total.Key.ReceivingDate,
                                   UnitCost = total.Key.UnitCost
 
@@ -995,10 +993,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY
 
                  });
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                .Include(m => m.Material)
+               .Include(m => m.Warehouse_Receiving)
                .Where(fr => fr.Is_Active == true)
-               .Where(fr => fr.Is_Approve == true )
                    .GroupBy(fr => new
                    {
                        fr.Material.ItemCode,

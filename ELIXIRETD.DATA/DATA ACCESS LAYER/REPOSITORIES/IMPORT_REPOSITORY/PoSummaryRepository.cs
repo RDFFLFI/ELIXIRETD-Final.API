@@ -226,10 +226,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY
 
                }).ToListAsync();
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
              .Include(m => m.Material)
              .Where(fr => fr.Is_Active == true)
-             .Where(fr => fr.Is_Approve == true)
              .GroupBy(fr => new
              {
                  fr.Warehouse_ReceivingId,

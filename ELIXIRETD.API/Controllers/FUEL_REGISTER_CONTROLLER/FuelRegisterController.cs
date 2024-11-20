@@ -3,8 +3,10 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.INVENTORY_DTO.MRP;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.EXTENSIONS;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.HELPERS;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
 {
@@ -13,24 +15,55 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
     public class FuelRegisterController : ControllerBase
     {
         private readonly IUnitOfWork _unitofwork;
+        private readonly StoreContext _context;
 
-        public FuelRegisterController(IUnitOfWork unitofwork)
+        public FuelRegisterController(IUnitOfWork unitofwork,StoreContext context)
         {
             _unitofwork = unitofwork;
+            _context = context;
         }
 
-        [HttpPost("create")]
+        [HttpPost("create-fuel")]
         public async Task<IActionResult> CreateFuelRegister(CreateFuelRegisterDto fuel)
         {
 
             fuel.Added_By = User.Identity.Name;
             fuel.Modified_By = User.Identity.Name;
 
-            await _unitofwork.FuelRegister.CreateFuelRegister(fuel);
+             var addFuel =  await _unitofwork.FuelRegister.CreateFuelRegister(fuel);
+
+            var fuelDetailsList = await _context.FuelRegisterDetails
+           .Where(x => x.Is_Active == true && x.FuelRegisterId == null)
+           .ToListAsync();
+
+            foreach (var fuelDetail in fuelDetailsList)
+            {
+                var fuelDetailExist = await _context.FuelRegisterDetails
+                    .FirstOrDefaultAsync(x => x.Id == fuelDetail.Id);
+
+                fuelDetailExist.FuelRegisterId = addFuel.Id;
+            }
+
             await _unitofwork.CompleteAsync();
 
             return Ok("Successfully created");
         }
+
+        [HttpPost("create-fuel-details")]
+        public async Task<IActionResult> CreateFuelRegisterDetails(CreateFuelRegisterDetailsDto fuel)
+        {
+
+            fuel.Added_By = User.Identity.Name;
+            fuel.Modified_By = User.Identity.Name;
+
+            var addFuel = await _unitofwork.FuelRegister.CreateFuelRegisterDetails(fuel);
+
+            await _unitofwork.CompleteAsync();
+
+            return Ok("Successfully created");
+        }
+
+
 
         [HttpGet("material-available")]
         public async Task<IActionResult> GetMaterialByStocks()
@@ -144,16 +177,20 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully transacted");
         }
 
-        [HttpPut("cancel/{id}")]
-        public async Task<IActionResult> CancelFuel([FromRoute] int id)
+        [HttpPut("cancel")]
+        public async Task<IActionResult> CancelFuel([FromBody] int[] item)
         {
-            var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(id);
-            if (fuelNotExist is false)
-                return BadRequest("fuel not exist!");
+
+            foreach(var id in item)
+            {
+                var fuelNotExist = await _unitofwork.FuelRegister.FuelRegisterNotExist(id);
+                if (fuelNotExist is false)
+                    return BadRequest("fuel not exist!");
 
 
-            await _unitofwork.FuelRegister.CancelFuel(id);
+                await _unitofwork.FuelRegister.CancelFuel(id);
 
+            }
 
             await _unitofwork.CompleteAsync();
 

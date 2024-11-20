@@ -754,17 +754,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
         public async Task<PagedList<FuelRegisterReportsDto>> FuelRegisterReports(UserParams userParams, string DateFrom, string DateTo, string Search)
         {
-            var results = _context.FuelRegisters
+            var results = _context.FuelRegisterDetails
                 .Include(m => m.Material)
                 .ThenInclude(id => id.ItemCategory)
                 .Include(w => w.Warehouse_Receiving)
-                .Where(r => r.Is_Transact == true)
+                .Where(r => r.FuelRegister.Is_Transact == true)
                 .Select(r => new FuelRegisterReportsDto
                 {
                     Id = r.Id,
-                    Source = r.Source,
-                    RequestorId = r.RequestorId,
-                    RequestorName = r.RequestorName,
+                    Source = r.FuelRegister.Source,
+                    RequestorId = r.FuelRegister.RequestorId,
+                    RequestorName = r.FuelRegister.RequestorName,
                     Item_Code = r.Material.ItemCode,
                     Item_Description = r.Material.ItemDescription,
                     Uom = r.Material.Uom.UomCode,
@@ -774,26 +774,26 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Liters = r.Liters.Value,
                     Asset = r.Asset,
                     Odometer = r.Odometer,
-                    Company_Code = r.Company_Code,
-                    Company_Name = r.Company_Name,
-                    Department_Code = r.Department_Code,
-                    Department_Name = r.Department_Name,
-                    Location_Code = r.Location_Code,
-                    Location_Name = r.Location_Name,
-                    Account_Title_Code = r.Account_Title_Code,
-                    Account_Title_Name = r.Account_Title_Name,
-                    EmpId = r.EmpId,
-                    Fullname = r.Fullname,
+                    Company_Code = r.FuelRegister.Company_Code,
+                    Company_Name = r.FuelRegister.Company_Name,
+                    Department_Code = r.FuelRegister.Department_Code,
+                    Department_Name = r.FuelRegister.Department_Name,
+                    Location_Code = r.FuelRegister.Location_Code,
+                    Location_Name = r.FuelRegister.Location_Name,
+                    Account_Title_Code = r.FuelRegister.Account_Title_Code,
+                    Account_Title_Name = r.FuelRegister.Account_Title_Name,
+                    EmpId = r.FuelRegister.EmpId,
+                    Fullname = r.FuelRegister.Fullname,
                     Added_By = r.Added_By,
                     Created_At = r.Created_At,
                     Modified_By = r.Modified_By,
-                    Approve_By = r.Approve_By,
-                    Transact_At = r.Transact_At,
-                    Remarks = r.Remarks,
+                    Approve_By = r.FuelRegister.Approve_By,
+                    Transact_At = r.FuelRegister.Transact_At,
+                    Remarks = r.FuelRegister.Remarks,
 
                 });
 
-            if(!string.IsNullOrEmpty(DateTo) && !string.IsNullOrEmpty(DateFrom))
+            if (!string.IsNullOrEmpty(DateTo) && !string.IsNullOrEmpty(DateFrom))
             {
                 results = results
                     .Where(r => r.Transact_At.Value.Date >= Convert.ToDateTime(DateFrom).Date && r.Transact_At.Value.Date <= Convert.ToDateTime(DateTo).Date);
@@ -1087,41 +1087,39 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                  });
 
-            var fuelRegisterByDate = _context.FuelRegisters
+            var fuelRegisterByDate = _context.FuelRegisterDetails
                 .AsNoTracking()
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == true)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
                 .GroupBy(fr => new
                 {
-                      fr.Material.ItemCode,
+                    fr.Material.ItemCode,
 
                 }).Select(fr => new
                 {
-                      itemCode = fr.Key.ItemCode,
-                     Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
+                    itemCode = fr.Key.ItemCode,
+                    Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                 });
 
 
-            var fuelRegisterByDatePlus = _context.FuelRegisters
+            var fuelRegisterByDatePlus = _context.FuelRegisterDetails
                 .AsNoTrackingWithIdentityResolution()
                 .Include(m => m.Material)
                 .AsSplitQuery()
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == true)
                 .Where(x => x.Created_At.Date >= DateTime.Parse(PlusOne).AddDays(1).Date && x.Created_At.Date <= (DateToday).Date)
                 .GroupBy(fr => new
                 {
-                     fr.Material.ItemCode,
+                    fr.Material.ItemCode,
 
                 }).Select(fr => new
                 {
-                      itemCode = fr.Key.ItemCode,
-                      Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
+                    itemCode = fr.Key.ItemCode,
+                    Quantity = fr.Sum(fr => fr.Liters != null ? fr.Liters : 0)
 
                 });
- 
+
             var getReceiveIn = _context.WarehouseReceived
                 .AsNoTracking()
                 .Where(x => x.IsActive == true)                                                        
@@ -1264,12 +1262,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
 
-            var fuelRegisterOut = _context.FuelRegisters
+            var fuelRegisterOut = _context.FuelRegisterDetails
                .AsNoTrackingWithIdentityResolution()
                .Include(m => m.Material)
                .AsSplitQuery()
                .Where(fr => fr.Is_Active == true)
-               .Where(fr => fr.Is_Approve == true)
                .GroupBy(fr => new
                {
                    fr.Material.ItemCode,
@@ -1428,12 +1425,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
-            var fuelRegisterCost = _context.FuelRegisters
+            var fuelRegisterCost = _context.FuelRegisterDetails
              .AsNoTrackingWithIdentityResolution()
              .Include(m => m.Material)
              .AsSplitQuery()
              .Where(fr => fr.Is_Active == true)
-             .Where(fr => fr.Is_Approve == true)
              .Where(x => x.Created_At.Date >= DateTime.Parse(DateFrom).AddDays(1).Date && x.Created_At.Date <= DateTime.Parse(PlusOne).Date)
             .GroupBy(fr => new
             {
@@ -1976,16 +1972,16 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 });
 
 
-            var fuelRegisterConsol = _context.FuelRegisters
+            var fuelRegisterConsol = _context.FuelRegisterDetails
                 .Include(m => m.Material)
                 .ThenInclude(id => id.ItemCategory)
                 .Include(w => w.Warehouse_Receiving)
-                .Where(r => r.Is_Transact == true)
+                .Where(r => r.FuelRegister.Is_Transact == true)
                 .Select(x => new ConsolidateFinanceReportDto
                 {
 
                     Id = x.Id,
-                    TransactionDate = x.Transact_At.Value.Date,
+                    TransactionDate = x.FuelRegister.Transact_At.Value.Date,
                     ItemCode = x.Material.ItemCode,
                     ItemDescription = x.Material.ItemDescription,
                     Uom = x.Material.Uom.UomCode,
@@ -1993,22 +1989,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.Liters != null ? x.Liters : 0,
                     UnitCost = x.Warehouse_Receiving.UnitPrice,
                     LineAmount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
-                    Source = Convert.ToString(x.Id),
+                    Source = Convert.ToString(x.FuelRegisterId),
                     TransactionType = "Returned",
-                    Reason = x.Remarks,
+                    Reason = x.FuelRegister.Remarks,
                     Reference = "",
                     SupplierName = "",
-                    EncodedBy = x.Transact_By,
-                    CompanyCode = x.Company_Code,
-                    CompanyName = x.Company_Name,
-                    DepartmentCode = x.Department_Code,
-                    DepartmentName = x.Department_Name,
-                    LocationCode = x.Location_Code,
-                    LocationName = x.Location_Name,
-                    AccountTitleCode = x.Account_Title_Code,
-                    AccountTitle = x.Account_Title_Code,
-                    EmpId = x.EmpId,
-                    Fullname = x.Fullname,
+                    EncodedBy = x.FuelRegister.Transact_By,
+                    CompanyCode = x.FuelRegister.Company_Code,
+                    CompanyName = x.FuelRegister.Company_Name,
+                    DepartmentCode = x.FuelRegister.Department_Code,
+                    DepartmentName = x.FuelRegister.Department_Name,
+                    LocationCode = x.FuelRegister.Location_Code,
+                    LocationName = x.FuelRegister.Location_Name,
+                    AccountTitleCode = x.FuelRegister.Account_Title_Code,
+                    AccountTitle = x.FuelRegister.Account_Title_Code,
+                    EmpId = x.FuelRegister.EmpId,
+                    Fullname = x.FuelRegister.Fullname,
                     AssetTag = x.Asset,
                     CIPNo = "",
                     Helpdesk = 0,
@@ -2471,16 +2467,17 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 }).ToList();
 
-            var fuelRegisterConsol = _context.FuelRegisters
+            var fuelRegisterConsol = _context.FuelRegisterDetails
                 .Include(m => m.Material)
                 .ThenInclude(id => id.ItemCategory)
+                .Include(m => m.FuelRegister)
                 .Include(w => w.Warehouse_Receiving)
-                .Where(r => r.Is_Transact == true)
+                .Where(r => r.FuelRegister.Is_Transact == true)
                 .Select(x => new ConsolidateAuditReportDto
                 {
 
                     Id = x.Id,
-                    TransactionDate = x.Transact_At.Value.Date.ToString(),
+                    TransactionDate = x.FuelRegister.Transact_At.Value.Date.ToString(),
                     ItemCode = x.Material.ItemCode,
                     ItemDescription = x.Material.ItemDescription,
                     Uom = x.Material.Uom.UomCode,
@@ -2488,22 +2485,22 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Quantity = x.Liters,
                     UnitCost = x.Warehouse_Receiving.UnitPrice,
                     LineAmount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
-                    Source = Convert.ToString(x.Id),
+                    Source = Convert.ToString(x.FuelRegisterId),
                     TransactionType = "Returned",
-                    Reason = x.Remarks,
+                    Reason = x.FuelRegister.Remarks,
                     Reference = "",
                     SupplierName = "",
-                    EncodedBy = x.Transact_By,
-                    CompanyCode = x.Company_Code,
-                    CompanyName = x.Company_Name,
-                    DepartmentCode = x.Department_Code,
-                    DepartmentName = x.Department_Name,
-                    LocationCode = x.Location_Code,
-                    LocationName = x.Location_Name,
-                    AccountTitleCode = x.Account_Title_Code,
-                    AccountTitle = x.Account_Title_Name,
-                    EmpId = x.EmpId,
-                    Fullname = x.Fullname,
+                    EncodedBy = x.FuelRegister.Transact_By,
+                    CompanyCode = x.FuelRegister.Company_Code,
+                    CompanyName = x.FuelRegister.Company_Name,
+                    DepartmentCode = x.FuelRegister.Department_Code,
+                    DepartmentName = x.FuelRegister.Department_Name,
+                    LocationCode = x.FuelRegister.Location_Code,
+                    LocationName = x.FuelRegister.Location_Name,
+                    AccountTitleCode = x.FuelRegister.Account_Title_Code,
+                    AccountTitle = x.FuelRegister.Account_Title_Name,
+                    EmpId = x.FuelRegister.EmpId,
+                    Fullname = x.FuelRegister.Fullname,
                     AssetTag = x.Asset,
                     CIPNo = "",
                     Helpdesk = 0,
@@ -2853,42 +2850,42 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
 
                 });
 
-              var fuelRegisterConsol = _context.FuelRegisters
-                .Include(m => m.Material)
-                .ThenInclude(id => id.ItemCategory)
-                .Include(w => w.Warehouse_Receiving)
-                .Where(r => r.Is_Transact == true)
-                .Select(x => new GeneralLedgerReportDto
-                {
+            var fuelRegisterConsol = _context.FuelRegisterDetails
+              .Include(m => m.Material)
+              .ThenInclude(id => id.ItemCategory)
+              .Include(w => w.Warehouse_Receiving)
+              .Where(r => r.FuelRegister.Is_Transact == true)
+              .Select(x => new GeneralLedgerReportDto
+              {
 
-                    SyncId = x.Id,
-                    Transaction_Date = x.Transact_At.Value.Date,
-                    Item_Code = x.Material.ItemCode,
-                    Description = x.Material.ItemDescription,
-                    Uom = x.Material.Uom.UomCode,
-                    Category = "",
-                    Quantity = x.Liters,
-                    Unit_Price = x.Warehouse_Receiving.UnitPrice,
-                    Line_Amount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
-                    Po = "N/a",
-                    System = "ElixirETD_Fuel_Register",
-                    Service_Provider_Code = "",
-                    Service_Provider = x.Transact_By,
-                    Reason = x.Remarks,
-                    Reference_No = Convert.ToString(x.Id),
-                    Supplier = $"{x.RequestorId}:{x.RequestorName}",
-                    Company_Code = x.Company_Code,
-                    Company_Name = x.Company_Name,
-                    Department_Code = x.Department_Code,
-                    Department_Name = x.Department_Name,
-                    Location_Code = x.Location_Code,
-                    Location = x.Location_Name,
-                    Account_Title_Code = x.Account_Title_Code,
-                    Account_Title_Name = x.Account_Title_Name,
-                    Asset = x.Asset,
-                    Asset_Cip = "",
+                  SyncId = x.Id,
+                  Transaction_Date = x.FuelRegister.Transact_At.Value.Date,
+                  Item_Code = x.Material.ItemCode,
+                  Description = x.Material.ItemDescription,
+                  Uom = x.Material.Uom.UomCode,
+                  Category = "",
+                  Quantity = x.Liters,
+                  Unit_Price = x.Warehouse_Receiving.UnitPrice,
+                  Line_Amount = Math.Round(x.Warehouse_Receiving.UnitPrice * x.Liters.Value, 2),
+                  Po = "N/a",
+                  System = "ElixirETD_Fuel_Register",
+                  Service_Provider_Code = "",
+                  Service_Provider = x.FuelRegister.Transact_By,
+                  Reason = x.FuelRegister.Remarks,
+                  Reference_No = Convert.ToString(x.FuelRegisterId),
+                  Supplier = $"{x.FuelRegister.RequestorId}:{x.FuelRegister.RequestorName}",
+                  Company_Code = x.FuelRegister.Company_Code,
+                  Company_Name = x.FuelRegister.Company_Name,
+                  Department_Code = x.FuelRegister.Department_Code,
+                  Department_Name = x.FuelRegister.Department_Name,
+                  Location_Code = x.FuelRegister.Location_Code,
+                  Location = x.FuelRegister.Location_Name,
+                  Account_Title_Code = x.FuelRegister.Account_Title_Code,
+                  Account_Title_Name = x.FuelRegister.Account_Title_Name,
+                  Asset = x.Asset,
+                  Asset_Cip = "",
 
-                });
+              });
 
 
             if (!string.IsNullOrEmpty(DateFrom) && !string.IsNullOrEmpty(DateTo))
@@ -2933,12 +2930,12 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                 issueConsol=  issueConsol.Where(x => x.SyncId == null);
                 borrowedConsol = borrowedConsol.Where(x => x.SyncId == null);
                 returnedConsol = returnedConsol.Where(x => x.SyncId == null);
-                fuelRegisterConsol = fuelRegisterConsol.Where(x => x.SyncId == null);
+                //fuelRegisterConsol = fuelRegisterConsol.Where(x => x.SyncId == null);
 
             }
 
 
-            var consolidateList =  moveOrderConsol
+            var consolidateList = moveOrderConsol
                 .Concat(await receiptConsol.ToListAsync())
                 .Concat(await issueConsol.ToListAsync())
                 .Concat(await borrowedConsol.ToListAsync())

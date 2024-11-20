@@ -48,5 +48,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.FUEL_REGISTER_DTO
 
         public string Fullname { get; set; }
 
+        public string Transact_By { get; set; }
+
     }
 }

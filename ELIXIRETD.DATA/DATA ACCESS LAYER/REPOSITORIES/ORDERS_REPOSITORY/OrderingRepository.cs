@@ -985,9 +985,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                              });
 
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                 .Include(x => x.Material)
-                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Is_Active == true)
                 .GroupBy(fr => fr.Material.ItemCode)
                 .Select(fr => new
@@ -1615,9 +1614,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
                                                                       .Where(x => x.returned.IsApprovedReturned == true)
                                                                       .SumAsync(x => x.returned.Quantity - (x.itemconsume.Consume != null ? x.itemconsume.Consume : 0));
 
-            var fuelRegister = await _context.FuelRegisters
+            var fuelRegister = await _context.FuelRegisterDetails
                 .Include(x => x.Material)
-                .Where(fr => fr.Is_Approve == true)
                 .Where(fr => fr.Is_Active == true)
                 .Where(fr => fr.Warehouse_ReceivingId == id && fr.Material.ItemCode == itemcode)
                 .SumAsync(fr => fr.Liters.Value);
@@ -1763,10 +1761,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                              });
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                 .Include(m => m.Material)
                 .Where(fr => fr.Is_Active == true)
-                .Where(fr => fr.Is_Approve == true && fr.Material.ItemCode == itemCode)
+                .Where(fr => fr.Material.ItemCode == itemCode)
                 .GroupBy(fr => new
                 {
                     fr.Material.ItemCode,
@@ -1916,10 +1914,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository
 
                                                              });
 
-     var fuelRegister = _context.FuelRegisters
+     var fuelRegister = _context.FuelRegisterDetails
     .Include(m => m.Material)
+    .Include(x => x.Warehouse_Receiving)
     .Where(fr => fr.Is_Active == true)
-    .Where(fr => fr.Is_Approve)
     .GroupBy(fr => new
     {
         fr.Material.ItemCode,

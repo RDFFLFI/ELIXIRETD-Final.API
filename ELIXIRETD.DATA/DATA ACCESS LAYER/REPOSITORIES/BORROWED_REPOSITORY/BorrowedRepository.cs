@@ -113,10 +113,9 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                              });
 
 
-         var fuelRegister = _context.FuelRegisters
+         var fuelRegister = _context.FuelRegisterDetails
         .Include(m => m.Material)
         .Where(fr => fr.Is_Active == true)
-        .Where(fr => fr.Is_Approve == true)
         .GroupBy(fr => new
         {
             fr.Material.ItemCode,
@@ -317,10 +316,11 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY
                                                  });
 
 
-            var fuelRegister = _context.FuelRegisters
+            var fuelRegister = _context.FuelRegisterDetails
                .Include(m => m.Material)
+               .Include(m => m.Warehouse_Receiving)
                .Where(fr => fr.Is_Active == true)
-               .Where(fr => fr.Is_Approve == true && fr.Material.ItemCode == itemcode)
+               .Where(fr => fr.Material.ItemCode == itemcode)
                .GroupBy(fr => new
                {
                    fr.Material.ItemCode,
