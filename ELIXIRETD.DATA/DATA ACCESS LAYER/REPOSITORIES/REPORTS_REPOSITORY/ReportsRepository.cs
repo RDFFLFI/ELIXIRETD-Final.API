@@ -772,8 +772,8 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     Warehouse_ReceivingId = r.Warehouse_ReceivingId,
                     Unit_Cost = r.Warehouse_Receiving.UnitPrice,
                     Liters = r.Liters.Value,
-                    Asset = r.Asset,
-                    Odometer = r.Odometer,
+                    Asset = r.FuelRegister.Asset,
+                    Odometer = r.FuelRegister.Odometer,
                     Company_Code = r.FuelRegister.Company_Code,
                     Company_Name = r.FuelRegister.Company_Name,
                     Department_Code = r.FuelRegister.Department_Code,
@@ -2005,7 +2005,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AccountTitle = x.FuelRegister.Account_Title_Code,
                     EmpId = x.FuelRegister.EmpId,
                     Fullname = x.FuelRegister.Fullname,
-                    AssetTag = x.Asset,
+                    AssetTag = x.FuelRegister.Asset,
                     CIPNo = "",
                     Helpdesk = 0,
                     Rush = ""
@@ -2501,7 +2501,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                     AccountTitle = x.FuelRegister.Account_Title_Name,
                     EmpId = x.FuelRegister.EmpId,
                     Fullname = x.FuelRegister.Fullname,
-                    AssetTag = x.Asset,
+                    AssetTag = x.FuelRegister.Asset,
                     CIPNo = "",
                     Helpdesk = 0,
                     Rush = ""
@@ -2882,7 +2882,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY
                   Location = x.FuelRegister.Location_Name,
                   Account_Title_Code = x.FuelRegister.Account_Title_Code,
                   Account_Title_Name = x.FuelRegister.Account_Title_Name,
-                  Asset = x.Asset,
+                  Asset = x.FuelRegister.Asset,
                   Asset_Cip = "",
 
               });
