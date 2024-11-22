@@ -102,6 +102,13 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         [Column(TypeName = "Date")]
         public DateTime ? DateApproved { get; set; }
 
+        public string Asset_Code { get; set; }
+        public string Asset_Name { get; set; }
+
+        public string Plate_No { get; set; }
+
+        public bool? Is_Asset_Tag { get; set; }
+
 
     }
 }

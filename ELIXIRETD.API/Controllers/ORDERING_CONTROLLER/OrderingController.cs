@@ -28,7 +28,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpPost]
         [Route("AddNewOrders")]
-        public async Task<IActionResult> AddNewOrders([FromBody] Ordering[] order)
+        public async Task<IActionResult> AddNewOrders([FromBody] Ordering[] order, CancellationToken cancellation)
         {
             if (ModelState.IsValid != true )
               return new JsonResult("Something went Wrong!") { StatusCode = 500 };
@@ -36,26 +36,14 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 
                 List<Ordering> DuplicateList = new List<Ordering>();
                 List<Ordering> AvailableImport = new List<Ordering>();
-                //List<Ordering> CustomerCodeNotExist = new List<Ordering>();
                 List<Ordering> CustomerNameNotExist = new List<Ordering>();
-                List<Ordering> UomNotExist = new List<Ordering>();
                 List<Ordering> ItemCodesExist = new List<Ordering>();
-                //List<Ordering> ItemDescriptionNotExist = new List<Ordering>();
-                //List<Ordering> QuantityInValid = new List<Ordering>();
                 List<Ordering> PreviousDateNeeded = new List<Ordering>();
                 List<Ordering> AccountCodeEmpty = new List<Ordering>();
                 List<Ordering> AccountTitleEmpty = new List<Ordering>();
-                //List<Ordering> DepartmentCodeanNameNotExist = new List <Ordering>();
-                //List<Ordering> CompanyCodeanNameNotExist = new List<Ordering>();
-                //List<Ordering> LocationCodeanNameNotExist = new List<Ordering>();
 
                 foreach (Ordering items in order)
                 {
-
-                    //if (items.QuantityOrdered <= 0)
-                    //{
-                    //    QuantityInValid.Add(items);
-                    //
 
                     if (order.Count(x => x.TrasactId == items.TrasactId && x.ItemCode == items.ItemCode && x.Customercode == items.Customercode && x.CustomerType == items.CustomerType) > 1)
                     {
@@ -63,72 +51,52 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                         continue;
 
                     }
-
-                    if(string.IsNullOrEmpty(items.AccountCode))
-                    {
-                        AccountCodeEmpty.Add(items);
-                        continue;
-                    }
-                    if(string.IsNullOrEmpty(items.AccountTitles))
-                    {
-                        AccountTitleEmpty.Add(items);
-                        continue;
-                    }
                  
                         var validateOrderNoAndItemcode = await _unitofwork.Orders.ValidateExistOrderandItemCode(items.TrasactId, items.ItemCode , items.CustomerType , items.ItemdDescription , items.Customercode);
                         var validateDateNeeded = await _unitofwork.Orders.ValidateDateNeeded(items);
-                        //var validateCustomerCode = await _unitofwork.Orders.ValidateCustomerCode(items.Customercode);
                         var validateCustomerName = await _unitofwork.Orders.ValidateCustomerName(items.Customercode , items.CustomerName , items.CustomerType);
-                        var validateItemCode = await _unitofwork.Orders.ValidateItemCode(items.ItemCode , items.ItemdDescription, items.Uom);
-                        //var validateItemDescription = await _unitofwork.Orders.ValidateItemDescription(items.ItemdDescription);
-                        var validateUom = await _unitofwork.Orders.ValidateUom(items.Uom);
-                        //var validateQuantity = await _unitofwork.Orders.ValidateQuantity(items.QuantityOrdered);
-                        //var validateDepartmentCodeAndName = await _unitofwork.Orders.ValidateDepartment(items.Department);
-                        //var validateCompanyCodeAndName = await _unitofwork.Orders.ValidateCompany(items.CompanyCode, items.CompanyName);
-                        //var validateLocationCodeAndName = await _unitofwork.Orders.ValidateLocation(items.LocationCode, items.LocationName);
+                        var validateItemCode = await _context.Materials
+                        .Include(x => x.Uom)
+                        .FirstOrDefaultAsync(x => x.ItemCode == items.ItemCode && x.IsActive);
+                        
 
-                        if (validateOrderNoAndItemcode == true)
-                        {
-                            DuplicateList.Add(items);
-                        }
-                        else if (validateDateNeeded == false)
-                        {
-                            PreviousDateNeeded.Add(items);
-                        }
+                    if (validateOrderNoAndItemcode == true)
+                    {
+                        DuplicateList.Add(items);
+                    }
+                    else if (validateDateNeeded == false)
+                    {
+                        PreviousDateNeeded.Add(items);
+                    }
 
-                        //else if (validateCustomerCode == false)
-                        //{
-                        //    CustomerCodeNotExist.Add(items);
-                        //}
+                    else if (validateCustomerName == false)
+                    {
+                        CustomerNameNotExist.Add(items);
+                    }
 
-                        else if (validateCustomerName == false)
-                        {
-                            CustomerNameNotExist.Add(items);
-                        }
+                    else if (validateItemCode is null)
+                    {
+                        ItemCodesExist.Add(items);
+                    }
+                    else if (string.IsNullOrEmpty(items.AccountCode))
+                    {
+                        AccountCodeEmpty.Add(items);
+                    }
 
-                        else if (validateItemCode == false)
-                        {
-                            ItemCodesExist.Add(items);
-                        }
-                        //else if (validateItemDescription == false)
-                        //{
-                        //    ItemDescriptionNotExist.Add(items);
-                        //}
+                    else if (string.IsNullOrEmpty(items.AccountTitles))
+                    {
+                        AccountTitleEmpty.Add(items);
+                    }
 
-                        else if (validateUom == false)
-                        {
-                            UomNotExist.Add(items);
-                        }
-                       
-                        else
-                        {
-
+                    else
+                    {
+                        items.ItemdDescription = validateItemCode.ItemDescription;
+                        items.Uom = validateItemCode.Uom.UomCode;
                         items.SyncDate = DateTime.Now;
                         AvailableImport.Add(items);
-                        await _unitofwork.Orders.AddNewOrders(items);
+                        await _unitofwork.Orders.AddNewOrders(items, cancellation);
 
-                        }
-  
+                    }
                 }
 
                 var resultList = new
@@ -136,17 +104,13 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                    AvailableImport,
                    DuplicateList,
                    ItemCodesExist,
-                   UomNotExist,
                    CustomerNameNotExist,
                    PreviousDateNeeded,
                    AccountCodeEmpty,
                    AccountTitleEmpty
-
-
-                  
                 };
 
-                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && UomNotExist.Count == 0 && PreviousDateNeeded.Count == 0 
+                if ( DuplicateList.Count == 0&& CustomerNameNotExist.Count == 0  && ItemCodesExist.Count == 0  && PreviousDateNeeded.Count == 0 
                     && AccountTitleEmpty.Count == 0 && AccountCodeEmpty.Count == 0)
                 {
                     await _unitofwork.CompleteAsync();
@@ -161,109 +125,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         }
 
 
-        // ===================================== Prepared Schedule ============================================================
 
+      
        
 
-        [HttpPut]
-        [Route("SchedulePreparedOrderedDate")]
-        public async Task<IActionResult> SchedulePreparedOrderedDate([FromBody] Ordering[] orders)
-        {
-            if (orders == null || !orders.Any())
-            {
-                return BadRequest("Orders not provided.");
-            }
-
-            var generate = new GenerateOrderNo();
-            generate.Rush = orders.Count(x => x.IsRush == true) > 0;
-
-
-            generate.IsActive = true;
-
-            if (!await _unitofwork.Orders.GenerateNumber(generate))
-            {
-                return BadRequest("Failed to generate order number.");
-            }
-
-            await _unitofwork.CompleteAsync();
-
-
-            foreach (Ordering order in orders)
-            {
-          
-
-                    if (!await _unitofwork.Orders.ValidatePrepareDate(order))
-                    {
-                        return BadRequest("Date needed must be in the future.");
-                    }
-
-
-                    order.OrderNoPKey = generate.Id;
-
-
-                    if (!await _unitofwork.Orders.SchedulePreparedDate(order))
-                    {
-                        return BadRequest("Failed to schedule prepared date");
-                    }
-
-                
-            }
-        
-                await _unitofwork.CompleteAsync();
-                return new JsonResult("Orders scheduled successfully");
-
-                          
-        }
-       
-        [HttpPut]
-        [Route("ReturnCancelledOrders")]
-        public async Task<IActionResult> ReturnCancelledOrders([FromBody] Ordering orders)
-        {
-            var validate = await _unitofwork.Orders.ReturnCancelOrdersInList(orders);
-
-            if (validate == false)
-                return BadRequest("Orders is not exist");
-
-            await _unitofwork.CompleteAsync();
-            return Ok("Succesfully Return Cancel Orders");
-        }
-
-        [HttpGet]
-        [Route("GetAllListOfCancelledOrders")]
-        public async Task<IActionResult> GetAllListOfCancelledOrders()
-        {
-            var orders = await _unitofwork.Orders.GetAllListOfCancelOrders();
-            return Ok(orders);
-        }
-        
- //============================================== Prepared Ordering ===============================================================================
-
-
-        [HttpGet]
-        [Route("DetailedListOfOrders")]
-        public async Task<IActionResult> DetailedListofOrders([FromQuery]string customer)
-        {
-            var orders = await _unitofwork.Orders.DetailedListOfOrders(customer);
-            return Ok(orders);
-        }
-
-
-        [HttpGet]
-        [Route("OrderSummary")]
-        public async Task<IActionResult> Ordersummary([FromQuery] string DateFrom, [FromQuery] string DateTo)
-        {
-
-         
-            if (string.IsNullOrEmpty(DateFrom) || string.IsNullOrEmpty(DateTo))
-            {
-                return BadRequest("Date range is required");
-            }
-
-            var orderSummary = await _unitofwork.Orders.OrderSummary(DateFrom, DateTo);
-
-            return Ok(orderSummary);
-
-        }
 
      
 
@@ -443,8 +308,8 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         [Route("CancelOrders")]
         public async Task<IActionResult> Cancelorders([FromBody] Ordering orders)
         {
-
-            orders.Modified_By = User.Identity.Name;
+           
+            //orders.Modified_By = User.Identity.Name;
             var existing = await _unitofwork.Orders.CancelOrders(orders);
 
             if (existing == false)
@@ -633,8 +498,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             return Ok(orders);
         }
 
-
-
         [HttpGet]
         [Route("GetAvailableStockFromWarehouse")]
         public async Task<IActionResult> GetAvailableStockFromWarehouse([FromQuery] int id, [FromQuery] string itemcode)
@@ -648,6 +511,11 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             if (!await validate)
                 return BadRequest("No id or itemcode existing");
 
+
+            if(orders == null)
+            {
+                return Ok("[]");
+            }
 
             var resultList = new
             {
@@ -685,7 +553,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.DateNeeded = Convert.ToDateTime(details.DateNeeded);
             order.PreparedDate = Convert.ToDateTime(details.PrepareDate);
             order.DepartmentName = details.Department;
-
             order.DepartmentCode = details.DepartmentCode;
             order.CompanyCode = details.CompanyCode;
             order.CompanyName = details.CompanyName;
@@ -695,7 +562,6 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.AccountTitles = details.AccountTitles;
             order.EmpId = details.EmpId;
             order.FullName = details.FullName;
-            
             order.CustomerName = details.CustomerName;
             order.Customercode = details.CustomerCode;
             order.AddressOrder = details.Address;
@@ -722,7 +588,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             order.HelpdeskNo = details.HelpDeskNo;
 
             order.Requestor = details.Requestor;
-            order.Approver = details.Approver;
+            order.Approver = User.Identity.Name;
             order.DateApproved = Convert.ToDateTime(details.DateApproved);
 
 
@@ -771,12 +637,16 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
         public async Task<IActionResult> AddSavePreparedMoveOrder([FromBody] MoveOrder[] orders)
         {
 
-            foreach (MoveOrder items in orders)
+            foreach (var items in orders)
             {
                 if (!await _unitofwork.Orders.SavePreparedMoveOrder(items))
                     return BadRequest("No order no exist");
 
+                items.PreparedBy =  items.PreparedBy;
+                items.Approver = items.Approver;
+
             }
+
             await _unitofwork.CompleteAsync();
 
             return new JsonResult("Successfully added!");
@@ -1026,10 +896,10 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
 
         [HttpGet]
         [Route("GetTotalListForMoveOrder")]
-        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status)
+        public async Task<IActionResult> GetTotalListForMoveOrder([FromQuery] bool status , [FromQuery] string search)
         {
 
-            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status);
+            var orders = await _unitofwork.Orders.TotalListForTransactMoveOrder(status , search);
 
             return Ok(orders);
 
@@ -1058,7 +928,7 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
                 items.IsTransact = true;
                 items.IsActive = true;
                 items.PreparedDate = DateTime.Now;
-                items.PreparedBy = User.Identity.Name;
+                items.PreparedBy = items.PreparedBy;
 
                 if (!await _unitofwork.Orders.TransanctListOfMoveOrders(items))
                     return BadRequest("no order exist");
@@ -1086,6 +956,46 @@ namespace ELIXIRETD.API.Controllers.ORDERING_CONTROLLER
             var order = await _unitofwork.Orders.ListofServedDto();
 
             return Ok(order);
+        }
+
+
+        [HttpGet("MoveOrderAssetTag")]
+        public async Task<ActionResult<IEnumerable<DtoMoveOrderAssetTag>>> MoveOrderAssetTag([FromQuery] UserParams userParams)
+        {
+            var assetTag = await _unitofwork.Orders.MoveOrderAssetTag(userParams);
+
+            Response.AddPaginationHeader(assetTag.CurrentPage, assetTag.PageSize, assetTag.TotalCount, assetTag.TotalPages, assetTag.HasNextPage, assetTag.HasPreviousPage);
+
+            var assetTagResult = new
+            {
+                assetTag,
+                assetTag.CurrentPage,
+                assetTag.PageSize,
+                assetTag.TotalCount,
+                assetTag.TotalPages,
+                assetTag.HasNextPage,
+                assetTag.HasPreviousPage
+            };
+
+            return Ok(assetTagResult);
+
+        }
+
+        [HttpPut("IsAssetTag")]
+        public async Task<IActionResult> IsAssetTag([FromBody] IsAssetTagDto[] id)
+        {
+
+            foreach (var item in id)
+            {
+                var  items = await _unitofwork.Orders.IsAssetTag(item);
+
+                if (items == false)
+                    return BadRequest("order not exist");
+            }
+
+            await _unitofwork.CompleteAsync();
+            return Ok("success");
+
         }
 
     }

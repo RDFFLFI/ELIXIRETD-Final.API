@@ -16,10 +16,12 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.SETUP_INTERFACE
 
         Task<bool> SupplierCodeExist(string supplier);
 
+        Task<bool> UpdateManualSupplier(UpdateManualSupplierDto supplier);
+
 
         // validation
 
-        Task<Supplier> GetBySupplierNo(int supplierNo);
+        Task<Supplier> GetBySupplierNo(int ? supplierNo);
         Task<Supplier> GetById(int id);
         Task Update(Supplier supplier);
 

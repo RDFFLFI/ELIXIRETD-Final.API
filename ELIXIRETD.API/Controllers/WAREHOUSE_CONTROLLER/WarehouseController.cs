@@ -61,7 +61,12 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
             //}
             //receiving.UnitPrice = unitprice.UnitPrice;
 
-                                            
+            //var lotSectionExist = await _unitOfWork.Receives.ValidateLotSectionExist(receiving.LotSection);
+
+            //if (lotSectionExist is false)
+            //{
+            //    return BadRequest("Invalid item setup: Lot section is not specified");
+            //}
 
             if (receiving.ActualDelivered <= 0)
                 return BadRequest("Received failed, please check your input in actual delivered!");
@@ -93,9 +98,9 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<ActionResult<IEnumerable<PoSummaryDto>>> GetAllAvailablePoWithPaginationOrig([FromQuery] UserParams userParams, [FromQuery] string search)
         {
 
-            if (search == null)
+            //if (search == null)
 
-                return await GetAllPoWithPagination(userParams);
+            //    return await GetAllPoWithPagination(userParams);
 
             var posummary = await _unitOfWork.Receives.GetPoSummaryByStatusWithPaginationOrig(userParams, search);
 
@@ -246,14 +251,14 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         // -------------------- ADDITIONAL
 
 
-        [HttpGet]
-        [Route("GetAllListOfWarehouseReceivingIdNull")]
-        public async Task<IActionResult> GetAllListOfWarehouseReceivingIdNull()
-        {
-            var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId();
+        //[HttpGet]
+        //[Route("GetAllListOfWarehouseReceivingIdNull")]
+        //public async Task<IActionResult> GetAllListOfWarehouseReceivingIdNull()
+        //{
+        //    var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId();
 
-            return Ok(warehouse);
-        }
+        //    return Ok(warehouse);
+        //}
 
 
         [HttpGet]
@@ -261,9 +266,9 @@ namespace ELIXIRETD.API.Controllers.WAREHOUSE_CONTROLLER
         public async Task<IActionResult> GetAllListOfWarehouseReceivingId([FromQuery] string search)
         {
 
-            if (search == null)
+            //if (search == null)
 
-                return await GetAllListOfWarehouseReceivingIdNull();
+            //    return await GetAllListOfWarehouseReceivingIdNull();
 
 
             var warehouse = await _unitOfWork.Receives.ListOfWarehouseReceivingId(search);

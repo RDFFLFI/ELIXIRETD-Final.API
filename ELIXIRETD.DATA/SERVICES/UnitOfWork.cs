@@ -1,5 +1,6 @@
 ﻿using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.CORE.INTERFACES.BORROWED_INTERFACE;
+using ELIXIRETD.DATA.CORE.INTERFACES.FUEL_REGISTER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.IMPORT_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.INVENTORY_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.Orders;
@@ -9,6 +10,7 @@ using ELIXIRETD.DATA.CORE.INTERFACES.USER_INTERFACE;
 using ELIXIRETD.DATA.CORE.INTERFACES.WAREHOUSE_INTERFACE;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.BORROWED_REPOSITORY;
+using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.IMPORT_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.INVENTORY_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.OrderingRepository;
@@ -16,6 +18,7 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.REPORTS_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.WAREHOUSE_REPOSITORY;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
+using MediatR;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ELIXIRETD.DATA.SERVICES
@@ -24,6 +27,7 @@ namespace ELIXIRETD.DATA.SERVICES
 
     {
         private readonly StoreContext _context;
+        private readonly IMediator _mediator;
 
         private IDbContextTransaction _transaction;
 
@@ -67,10 +71,14 @@ namespace ELIXIRETD.DATA.SERVICES
         public IReports Reports { get; set; }
 
 
-        public UnitOfWork(StoreContext context)
+        public IFuelRegisterRepository FuelRegister { get; set; }
+
+        public UnitOfWork(StoreContext context, IMediator mediator)
 
         {
             _context = context;
+            _mediator = mediator;
+
 
             Users = new UserRepository(_context);
             Roles = new RoleRepository(_context);
@@ -91,6 +99,7 @@ namespace ELIXIRETD.DATA.SERVICES
             Inventory = new MRPInvetoryRepository(_context);
             TransactType = new TransactTypeRepository(_context);
             Reports = new ReportsRepository(_context);
+            FuelRegister = new FuelRegisterRepository(_context);
 
         }
 
@@ -98,7 +107,6 @@ namespace ELIXIRETD.DATA.SERVICES
         {
             await _context.SaveChangesAsync();
         }
-
 
         public void Dispose()
         {

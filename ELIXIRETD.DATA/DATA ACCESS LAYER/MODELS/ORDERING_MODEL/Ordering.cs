@@ -96,5 +96,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.ORDERING_MODEL
         public DateTime? Modified_Date { get;set; }
         public string Modified_By { get; set;}
 
+        public string Asset_Code { get; set; }
+        public string Asset_Name { get; set; }
+
+        public string Plate_No { get; set; }
+
     }
 }

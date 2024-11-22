@@ -2,9 +2,9 @@ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.SERVICES;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using    Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -13,16 +13,27 @@ ConfigurationManager configuration = builder.Configuration;
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
+//builder.Services.AddMediatR(x =>
+//{
+//    x.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+//    //x.RegisterServicesFromAssemblies(typeof(ConsolidateFinanceExport.ConsolidateFinanceExportCommand).Assembly);
+//});
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+ builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DevConnection");
-builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString));
+builder.Services.AddDbContext<StoreContext>(x => x.UseSqlServer(connectionString, sqlOptions => sqlOptions.CommandTimeout(320)));
 
-    builder.Services.AddAuthentication(authOptions =>
+builder.Services.AddAuthentication(authOptions =>
     {
         authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,6 +70,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddTransient(typeof(IUserService), typeof(UserService));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 
 var app = builder.Build();

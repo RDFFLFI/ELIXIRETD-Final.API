@@ -1,4 +1,4 @@
-﻿using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
+﻿ using ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.USER_MODEL;
 using ELIXIRETD.DATA.DATA_ACCESS_LAYER.STORE_CONTEXT;
 using ELIXIRETD.DATA.CORE.ICONFIGURATION;
 using ELIXIRETD.DATA.JWT.AUTHENTICATION;
@@ -18,7 +18,8 @@ namespace ELIXIRETD.DATA.SERVICES
 
         public UserService(
                                    StoreContext context,
-                                   IConfiguration configuration)
+                                   IConfiguration configuration
+            )
         {
             _context = context;
             _configuration = configuration;
@@ -68,12 +69,12 @@ namespace ELIXIRETD.DATA.SERVICES
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
 
-                Subject = new ClaimsIdentity(new Claim[] {
+                Subject = new ClaimsIdentity(new Claim[] { 
                     new Claim("id", user.Id.ToString()),
                     new Claim(ClaimTypes.Name , user.FullName)
 
                 }),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = null,
                 SigningCredentials = new SigningCredentials
                (new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
 

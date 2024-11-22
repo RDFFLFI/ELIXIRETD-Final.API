@@ -15,15 +15,9 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
     {
       
       
-        Task<IReadOnlyList<OrderSummaryDto>> OrderSummary(string DateFrom, string DateTo);
-        Task<bool> SchedulePreparedDate(Ordering orders);
-        Task<bool> GenerateNumber(GenerateOrderNo generate);
         Task<bool> EditQuantityOrder(Ordering orders);
         Task <bool> ApprovePreparedDate(Ordering orders);
         Task<bool> RejectPreparedDate(Ordering orders);
-        Task<IReadOnlyList<GetAllListCancelOrdersDto>> GetAllListOfCancelOrders();
-        Task<bool> ReturnCancelOrdersInList( Ordering orders);
-        Task<IReadOnlyList<DetailedListofOrdersDto>> DetailedListOfOrders (string customer);
       
         Task<IReadOnlyList<GetallOrderfroScheduleApproveDto>> GetAllOrdersForScheduleApproval(int list);
         Task<IReadOnlyList<GetAllCalendarApproveDto>> GetAllApprovedOrdersForCalendar(bool status );
@@ -58,7 +52,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
       
       
-        Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status);
+        Task<IReadOnlyList<TotalListForTransactMoveOrderDto>> TotalListForTransactMoveOrder(bool status, string search);
 
         Task<IReadOnlyList<ListOfMoveOrdersForTransactDto>> ListOfMoveOrdersForTransact(int orderid);
 
@@ -125,7 +119,7 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
 
         //====================================================== Update Orders ==================================================================
 
-        Task<bool> AddNewOrders(Ordering Orders);
+        Task<bool> AddNewOrders(Ordering Orders, CancellationToken cancellation);
         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPagination(UserParams userParams/*, bool status*/);
 
         Task<PagedList<GetAllListofOrdersPaginationDto>> GetAllListofOrdersPaginationOrig (UserParams userParams, string search/* , bool status*/);
@@ -179,6 +173,14 @@ namespace ELIXIRETD.DATA.CORE.INTERFACES.Orders
         Task<IReadOnlyList<TrackingofOrderingTransactionDto>> TrackingofOrderingTransaction();
 
         Task<IList<ListofServedDto>> ListofServedDto();
+
+        Task<PagedList<DtoMoveOrderAssetTag>> MoveOrderAssetTag(UserParams userParams);
+
+
+        Task<bool> IsAssetTag(IsAssetTagDto id);
+
+
+
 
 
     }

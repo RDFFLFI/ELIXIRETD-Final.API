@@ -292,6 +292,155 @@ namespace ELIXIRETD.DATA.Migrations
                     b.ToTable("BorrowedIssueDetails");
                 });
 
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegister", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Account_Title_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Account_Title_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Added_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Approve_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Approve_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Asset")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Company_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Company_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Department_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Department_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmpId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Is_Active")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Approve")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Reject")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Is_Transact")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location_Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Odometer")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Reject_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reject_Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Transact_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Transact_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Updated_At")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FuelRegisters");
+                });
+
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegisterDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Added_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FuelRegisterId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Is_Active")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("Liters")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Updated_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Warehouse_ReceivingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FuelRegisterId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("Warehouse_ReceivingId");
+
+                    b.ToTable("FuelRegisterDetails");
+                });
+
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL.PoSummary", b =>
                 {
                     b.Property<int>("Id")
@@ -299,6 +448,9 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal?>("ActualRemaining")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("AddedBy")
                         .HasColumnType("nvarchar(max)");
@@ -324,6 +476,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<bool?>("IsCancelled")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsReceived")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItemCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -336,16 +491,31 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<DateTime>("PO_Date")
                         .HasColumnType("Date");
 
-                    b.Property<int>("PO_Number")
-                        .HasColumnType("int");
+                    b.Property<string>("PO_Number")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PR_Date")
                         .HasColumnType("Date");
 
-                    b.Property<int>("PR_Number")
-                        .HasColumnType("int");
+                    b.Property<string>("PR_Number")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PR_Year_Number")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RRNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReceiveDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SINumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")
@@ -602,6 +772,12 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("AssetTag")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Asset_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Asset_Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CancelBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -677,6 +853,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<bool>("IsTransact")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("Is_Asset_Tag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItemCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -703,6 +882,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<int>("OrderNoPkey")
                         .HasColumnType("int");
+
+                    b.Property<string>("Plate_No")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PreparedBy")
                         .HasColumnType("nvarchar(max)");
@@ -772,6 +954,12 @@ namespace ELIXIRETD.DATA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AssetTag")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Asset_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Asset_Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CancelDate")
@@ -875,6 +1063,9 @@ namespace ELIXIRETD.DATA.Migrations
 
                     b.Property<int>("OrderNoPKey")
                         .HasColumnType("int");
+
+                    b.Property<string>("Plate_No")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PreparedBy")
                         .HasColumnType("nvarchar(max)");
@@ -1234,6 +1425,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("ItemDescription")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("LotSectionId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Material_No")
                         .HasColumnType("int");
 
@@ -1258,6 +1452,8 @@ namespace ELIXIRETD.DATA.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemCategoryId");
+
+                    b.HasIndex("LotSectionId");
 
                     b.HasIndex("UomId");
 
@@ -1311,6 +1507,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Manual")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ModifyBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -1329,7 +1528,7 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<string>("SupplierName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Supplier_No")
+                    b.Property<int?>("Supplier_No")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SyncDate")
@@ -1605,6 +1804,9 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<decimal>("ActualGood")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("ActualReceiving")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("ActualReceivingDate")
                         .HasColumnType("datetime2");
 
@@ -1638,11 +1840,20 @@ namespace ELIXIRETD.DATA.Migrations
                     b.Property<int?>("MiscellaneousReceiptId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PoNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("PR_Year_Number")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PoNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PoSummaryId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("RRDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RRNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
@@ -1673,6 +1884,29 @@ namespace ELIXIRETD.DATA.Migrations
                     b.ToTable("WarehouseReceived");
                 });
 
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegisterDetail", b =>
+                {
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegister", "FuelRegister")
+                        .WithMany("FuelRegisterDetails")
+                        .HasForeignKey("FuelRegisterId");
+
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.WAREHOUSE_MODEL.Warehouse_Receiving", "Warehouse_Receiving")
+                        .WithMany()
+                        .HasForeignKey("Warehouse_ReceivingId");
+
+                    b.Navigation("FuelRegister");
+
+                    b.Navigation("Material");
+
+                    b.Navigation("Warehouse_Receiving");
+                });
+
             modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotSection", b =>
                 {
                     b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotNames", "LotNames")
@@ -1690,6 +1924,10 @@ namespace ELIXIRETD.DATA.Migrations
                         .WithMany()
                         .HasForeignKey("ItemCategoryId");
 
+                    b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.SETUP_MODEL.LotSection", "LotSection")
+                        .WithMany()
+                        .HasForeignKey("LotSectionId");
+
                     b.HasOne("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.Uom", "Uom")
                         .WithMany()
                         .HasForeignKey("UomId")
@@ -1697,6 +1935,8 @@ namespace ELIXIRETD.DATA.Migrations
                         .IsRequired();
 
                     b.Navigation("ItemCategory");
+
+                    b.Navigation("LotSection");
 
                     b.Navigation("Uom");
                 });
@@ -1732,6 +1972,11 @@ namespace ELIXIRETD.DATA.Migrations
                         .IsRequired();
 
                     b.Navigation("UserRole");
+                });
+
+            modelBuilder.Entity("ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.FUEL_REGISTER_MODEL.FuelRegister", b =>
+                {
+                    b.Navigation("FuelRegisterDetails");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
     {
 
         public int MIRId { get; set; }
+        public int Id { get; set; }
         public string Requestor { get; set; }
         public string Approver { get; set; }
         public string CustomerCode { get; set; }
@@ -59,11 +60,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.DTOs.REPORTS_DTO
         public string MoveOrderDate { get; set; }
         public string MoveOrderBy { get; set; }
         public string TransactedBy { get; set; }
-        public bool TransactionType { get; set; }
-        public string TransactedDate { get; set; }
+        public string TransactionType { get; set; }
+        public DateTime TransactedDate { get; set; }
         public string DeliveryDate { get; set; }
 
+        public string PicUp_Date { get; set; }
+
         public string ItemRemarks { get; set; }
+
+        public string Reference {  get; set; }
 
 
 

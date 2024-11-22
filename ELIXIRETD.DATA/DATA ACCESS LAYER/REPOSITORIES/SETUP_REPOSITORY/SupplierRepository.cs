@@ -68,7 +68,23 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
         public async Task<bool> AddSupplier(Supplier supplier)
         {
             supplier.Id = 0;
-            await _context.Suppliers.AddAsync(supplier);
+
+            var addSupplier = new Supplier
+            {
+                Supplier_No = supplier.Supplier_No,
+                SupplierCode = supplier.SupplierCode,   
+                SupplierName = supplier.SupplierName,
+                AddedBy = supplier.AddedBy,
+                DateAdded = supplier.DateAdded,
+                ModifyBy = supplier.AddedBy,
+                SyncDate = DateTime.Now,
+                StatusSync = "New Added"
+                
+
+            };
+
+
+            await _context.Suppliers.AddAsync(addSupplier);
 
             return true;
         }
@@ -142,7 +158,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                                 
         }
 
-        public async Task<Supplier> GetBySupplierNo(int supplierNo)
+        public async Task<Supplier> GetBySupplierNo(int ? supplierNo)
         {
             return await _context.Suppliers.FirstOrDefaultAsync(x => x.Supplier_No == supplierNo);
         }
@@ -158,6 +174,21 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
             await Task.CompletedTask;
         }
 
+        public async Task<bool> UpdateManualSupplier(UpdateManualSupplierDto supplier)
+        {
+           var existingSupplier  = await _context.Suppliers.FirstOrDefaultAsync(x => x.Id == supplier.Id);
+            if(existingSupplier == null)
+            {
+                return false;
+            }
 
+            existingSupplier.SupplierName = supplier.SupplierName;
+            existingSupplier.SupplierCode = supplier.SupplierCode;
+            existingSupplier.ModifyBy = supplier.ModifiedBy;
+            
+
+            return true;
+            
+        }
     }
 }

@@ -246,6 +246,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.SETUP_REPOSITORY
                                         AddedBy = x.AddedBy,
                                         IsActive = x.IsActive,
                                         DateAdded = x.DateAdded.ToString("MM/dd/yyyy")
+
                                     }).Where(x => x.LotName.ToLower().Contains(search.Trim().ToLower())
                                      || x.LotCode.ToLower().Contains(search.Trim().ToLower()));
 

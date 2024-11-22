@@ -10,13 +10,15 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 {
     public class PoSummary : BaseEntity
     {
-        public int PR_Number { get; set; }
+        public string PR_Number { get; set; }
+
+        public string PR_Year_Number { get; set; }
 
 
         [Column(TypeName = "Date")]
         public DateTime PR_Date { get; set; }
 
-        public int PO_Number { get; set; }
+        public string PO_Number { get; set; }
 
 
         [Column(TypeName = "Date")]
@@ -53,6 +55,18 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.MODELS.IMPORT_MODEL
 
         public string CancelBy { get; set; }
         public bool? IsCancelled { get; set; }
+
+
+        public string ? RRNo { get; set; }
+
+        public DateTime? RRDate { get; set; }
+
+        public DateTime? ReceiveDate { get; set; }
+        public string SINumber { get; set; }
+
+        public decimal? ActualRemaining { get; set; }
+
+        public bool? IsReceived { get; set; } = false;
 
         //public DateTime SyncDate { get; set; } 
 
