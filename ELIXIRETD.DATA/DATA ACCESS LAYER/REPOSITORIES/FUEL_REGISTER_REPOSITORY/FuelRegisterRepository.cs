@@ -736,8 +736,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             {
                 return false;
             }
-        
-
+       
             fuelExist.Transact_At = DateTime.Now;
             fuelExist.Transact_By = fuel.Transacted_By;
             fuelExist.Is_Transact = true;
