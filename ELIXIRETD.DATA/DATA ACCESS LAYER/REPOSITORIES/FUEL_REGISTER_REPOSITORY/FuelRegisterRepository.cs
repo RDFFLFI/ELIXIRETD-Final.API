@@ -52,7 +52,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
             var material = await _context.Materials
                 .FirstOrDefaultAsync(m => m.ItemCode.ToUpper() == fuel.Item_Code);
 
-            if (fuelDetailsExist is null)
+            if (fuelDetailsExist is not null)
             {
                 fuelDetailsExist.MaterialId = material.Id;
                 fuelDetailsExist.Warehouse_ReceivingId = fuel.Warehouse_ReceivingId;
@@ -689,7 +689,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         public async Task<bool> FuelRegisterNotExist(int id)
         {
-            var fuelExist = await _context.FuelRegisters
+            var fuelExist = await _context.FuelRegisterDetails
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             if (fuelExist is null)
@@ -747,7 +747,7 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         public async Task<bool> CancelFuel(int id)
         {
-            var fuelExist = await _context.FuelRegisters
+            var fuelExist = await _context.FuelRegisterDetails
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             fuelExist.Is_Active = false;
@@ -784,10 +784,10 @@ namespace ELIXIRETD.DATA.DATA_ACCESS_LAYER.REPOSITORIES.FUEL_REGISTER_REPOSITORY
 
         }
 
-        public async Task<IReadOnlyList<GetForApprovalFuelDto>> GetForApprovalFuel(int id)
+        public async Task<IReadOnlyList<GetForApprovalFuelDto>> GetForApprovalFuel()
         {
             var fuel = await _context.FuelRegisterDetails
-                .Where(f => f.Id == id && f.Is_Active)
+                .Where(f => f.Is_Active)
                 .Select(f => new GetForApprovalFuelDto
                 {
                     Id = f.Id,

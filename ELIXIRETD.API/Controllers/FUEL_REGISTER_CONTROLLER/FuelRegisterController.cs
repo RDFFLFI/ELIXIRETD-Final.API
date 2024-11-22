@@ -63,8 +63,6 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
             return Ok("Successfully created");
         }
 
-
-
         [HttpGet("material-available")]
         public async Task<IActionResult> GetMaterialByStocks()
         {
@@ -198,9 +196,9 @@ namespace ELIXIRETD.API.Controllers.FUEL_REGISTER_CONTROLLER
         }
 
         [HttpGet("view")]
-        public async Task<IActionResult> GetForApprovalFuel([FromQuery] int id)
+        public async Task<IActionResult> GetForApprovalFuel()
         {
-            var fuel = await _unitofwork.FuelRegister.GetForApprovalFuel(id);
+            var fuel = await _unitofwork.FuelRegister.GetForApprovalFuel();
 
             return Ok(fuel);
         }
